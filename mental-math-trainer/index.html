@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>暗算道場</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #F5EFE3;
+    --surface: #FFFFFF;
+    --surface-2: #EDE4D2;
+    --border: #DED2B8;
+    --ink: #2B211A;
+    --ink-muted: #6B5D4F;
+    --ink-faint: #948673;
+    --accent: #A8722F;
+    --accent-ink: #FFFCF6;
+    --good: #3F7457;
+    --good-soft: #E1EEE3;
+    --bad: #AC4634;
+    --bad-soft: #F5E3DD;
+    --shadow: rgba(43, 33, 26, 0.12);
+
+    --font-display: "Fraunces", ui-serif, Georgia, serif;
+    --font-body: "Inter", -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17110C;
+      --surface: #221A13;
+      --surface-2: #2C2218;
+      --border: #3B2E1F;
+      --ink: #F1E7D6;
+      --ink-muted: #B9A98E;
+      --ink-faint: #83725B;
+      --accent: #DDAB5C;
+      --accent-ink: #201505;
+      --good: #7DB694;
+      --good-soft: #223229;
+      --bad: #E08669;
+      --bad-soft: #3A241E;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #17110C;
+    --surface: #221A13;
+    --surface-2: #2C2218;
+    --border: #3B2E1F;
+    --ink: #F1E7D6;
+    --ink-muted: #B9A98E;
+    --ink-faint: #83725B;
+    --accent: #DDAB5C;
+    --accent-ink: #201505;
+    --good: #7DB694;
+    --good-soft: #223229;
+    --bad: #E08669;
+    --bad-soft: #3A241E;
+    --shadow: rgba(0, 0, 0, 0.4);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    padding: 32px 16px 64px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .eyebrow {
+    margin: 0 0 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+  }
+  .hero h1 {
+    margin: 0 0 10px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(28px, 6vw, 40px);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .tagline {
+    margin: 0 auto;
+    max-width: 46ch;
+    color: var(--ink-muted);
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+  .tagline + .tagline { margin-top: 6px; }
+  .tagline a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .tagline a:hover { text-decoration: underline; }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .row:last-child { border-bottom: none; }
+  .row-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+  }
+  .row-sub {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+  }
+  select, input[type="number"] {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    padding: 5px 7px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 0;
+  }
+  .field input[type="number"] {
+    width: 90px;
+    text-align: right;
+  }
+  .hint {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin-top: 2px;
+  }
+  button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    padding: 12px 20px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    width: 100%;
+    font-weight: 700;
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-secondary {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .btn-row button { flex: 1; }
+  .error-msg {
+    color: var(--bad);
+    font-size: 0.85rem;
+    margin-top: 8px;
+    display: none;
+  }
+
+  /* practice screen */
+  #practice-screen { display: none; }
+  .practice-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    font-family: var(--font-mono);
+    color: var(--ink-muted);
+    margin-bottom: 10px;
+  }
+  .timer-bar-track {
+    height: 6px;
+    background: var(--surface-2);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .timer-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 100%;
+    transition: width 0.05s linear;
+  }
+  .problem-box {
+    text-align: center;
+    padding: 36px 10px 16px;
+  }
+  .problem-type-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .problem-text-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .problem-text {
+    font-family: var(--font-mono);
+    font-size: 2.4rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 1px;
+    min-height: 60px;
+    word-break: break-word;
+  }
+  .problem-hidden {
+    color: var(--ink-faint);
+    font-size: 1.4rem;
+  }
+  .speak-btn {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    font-size: 1.2rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .speak-btn:hover:not(:disabled) { border-color: var(--accent); }
+  .speak-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .answer-form {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .answer-form input[type="text"] {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 1.3rem;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .answer-form input[type="text"]:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .feedback {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    display: none;
+    font-size: 0.95rem;
+  }
+  .feedback.correct {
+    display: block;
+    background: var(--good-soft);
+    color: var(--good);
+  }
+  .feedback.wrong {
+    display: block;
+    background: var(--bad-soft);
+    color: var(--bad);
+  }
+  .feedback .answer-line {
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .feedback .explanation {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    color: var(--ink);
+    font-weight: 400;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  .quit-link {
+    display: block;
+    text-align: center;
+    margin-top: 18px;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  /* result screen */
+  #result-screen { display: none; }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .stat-box {
+    text-align: center;
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 14px 8px;
+  }
+  .stat-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    margin-top: 3px;
+  }
+  .miss-list {
+    margin-top: 14px;
+    font-size: 0.88rem;
+  }
+  .miss-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .miss-item:last-child { border-bottom: none; }
+  .miss-item .given { color: var(--bad); }
+  .miss-item .correct { color: var(--good); font-weight: 600; }
+
+  @media (max-width: 480px) {
+    .stat-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  }
+
+  /* ---------- スマホ表示の調整 ---------- */
+  .card + .card,
+  .card + .btn-primary,
+  .card + .error-msg,
+  .error-msg + .btn-primary { margin-top: 16px; }
+  .row-label input[type="checkbox"] { flex: none; }
+  .answer-form input[type="text"] { flex: 1 1 0; min-width: 0; }
+  .answer-form button { flex: none; white-space: nowrap; }
+  @media (max-width: 480px) {
+    .card { padding: 18px 16px; }
+    .row { flex-wrap: wrap; row-gap: 6px; }
+    .row-sub { margin-left: auto; white-space: nowrap; }
+    select, input[type="number"], input[type="text"] { font-size: 16px; }
+    select, input[type="number"] { padding: 7px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="hero">
+    <p class="eyebrow">ARTHUR BENJAMIN'S SECRETS OF MENTAL MATH</p>
+    <h1>暗算道場</h1>
+    <p class="tagline">「暗算の達人」に登場するテクニックを、四則演算と組み合わせて実戦形式で練習します。</p>
+    <p class="tagline"><a href="reference.html">→ 暗算テクニック帳でコツを先に覚える</a></p>
+  </header>
+
+  <!-- ============ SETUP SCREEN ============ -->
+  <div id="setup-screen">
+    <div class="card">
+      <h2>四則演算</h2>
+
+      <div class="row" data-op="add">
+        <label class="row-label"><input type="checkbox" class="op-enable" checked> 足し算</label>
+        <div class="row-sub">
+          <select class="digitsA"></select> 桁 + <select class="digitsB"></select> 桁
+        </div>
+      </div>
+
+      <div class="row" data-op="sub">
+        <label class="row-label"><input type="checkbox" class="op-enable" checked> 引き算</label>
+        <div class="row-sub">
+          <select class="digitsA"></select> 桁 − <select class="digitsB"></select> 桁
+        </div>
+      </div>
+
+      <div class="row" data-op="mul">
+        <label class="row-label"><input type="checkbox" class="op-enable" checked> 掛け算</label>
+        <div class="row-sub">
+          <select class="digitsA"></select> 桁 × <select class="digitsB"></select> 桁
+        </div>
+      </div>
+
+      <div class="row" data-op="div">
+        <label class="row-label"><input type="checkbox" class="op-enable"> 割り算</label>
+        <div class="row-sub">
+          <select class="digitsA"></select> 桁 ÷ <select class="digitsB"></select> 桁
+        </div>
+      </div>
+      <p class="hint">割り算は割り切れる問題のみ出題されます(割る数の桁数 ÷ 商の桁数)。</p>
+    </div>
+
+    <div class="card">
+      <h2>「暗算の達人」テクニック</h2>
+
+      <div class="row" data-tech="square2">
+        <label class="row-label"><input type="checkbox" class="tech-enable"> 2乗の暗算</label>
+        <div class="row-sub"><select class="tech-digits"><option value="2">2桁</option><option value="3">3桁</option></select></div>
+      </div>
+
+      <div class="row" data-tech="squareEnd5">
+        <label class="row-label"><input type="checkbox" class="tech-enable"> 5で終わる数の2乗</label>
+        <div class="row-sub"><select class="tech-digits"><option value="2">2桁</option><option value="3">3桁</option></select></div>
+      </div>
+
+      <div class="row" data-tech="times11">
+        <label class="row-label"><input type="checkbox" class="tech-enable"> 11倍</label>
+        <div class="row-sub"><select class="tech-digits"><option value="2">2桁</option><option value="3">3桁</option></select></div>
+      </div>
+
+      <div class="row" data-tech="nearBase">
+        <label class="row-label"><input type="checkbox" class="tech-enable"> 基準数に近い数同士の掛け算</label>
+        <div class="row-sub">基準<select class="tech-base"><option value="50">50</option><option value="100" selected>100</option><option value="1000">1000</option></select> 例: 97×103</div>
+      </div>
+
+      <div class="row" data-tech="cube">
+        <label class="row-label"><input type="checkbox" class="tech-enable"> 2桁の3乗</label>
+        <div class="row-sub">例: 47³</div>
+      </div>
+
+      <div class="row" data-tech="sqrt">
+        <label class="row-label"><input type="checkbox" class="tech-enable"> 平方根の概算</label>
+        <div class="row-sub">小数第<select class="tech-digits"><option value="1">1</option><option value="2" selected>2</option></select>位まで</div>
+      </div>
+
+      <div class="row" data-tech="weekday">
+        <label class="row-label"><input type="checkbox" class="tech-enable"> 曜日当て(カレンダー計算)</label>
+        <div class="row-sub">1901〜2099年</div>
+      </div>
+
+      <div class="row" data-tech="fraction">
+        <label class="row-label"><input type="checkbox" class="tech-enable"> 分数→小数の暗算変換</label>
+        <div class="row-sub">小数第<select class="tech-digits"><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option></select>位まで</div>
+      </div>
+      <p class="hint">分数は 1/3, 1/6, 1/7, 1/9, 1/11, 1/13, 1/17, 1/19 など書籍で扱われる系列から出題されます。</p>
+    </div>
+
+    <div class="card">
+      <h2>表示・音声設定</h2>
+      <div class="field">
+        <div>
+          <div class="row-label">問題の表示秒数</div>
+          <div class="hint">指定秒数が経過すると問題が隠れ、記憶(または音声)で解答します。0 = 常に表示</div>
+        </div>
+        <input type="number" id="displaySeconds" min="0" max="120" value="0">
+      </div>
+      <div class="field">
+        <div>
+          <div class="row-label">出題数</div>
+          <div class="hint">0 を指定すると手動で終了するまで無制限に出題</div>
+        </div>
+        <input type="number" id="problemCount" min="0" max="200" value="10">
+      </div>
+      <div class="field">
+        <label class="row-label"><input type="checkbox" id="autoSpeak"> 出題時に音声で自動読み上げ</label>
+      </div>
+      <p class="hint" id="speech-support-hint"></p>
+    </div>
+
+    <button class="btn-primary" id="start-btn">トレーニング開始</button>
+    <p class="error-msg" id="setup-error">少なくとも1つの演算またはテクニックを有効にしてください。</p>
+  </div>
+
+  <!-- ============ PRACTICE SCREEN ============ -->
+  <div id="practice-screen">
+    <div class="card">
+      <div class="practice-top">
+        <span id="progress-label">問題 1/10</span>
+        <span id="score-label">正解 0</span>
+      </div>
+      <div class="timer-bar-track"><div class="timer-bar-fill" id="timer-fill"></div></div>
+
+      <div class="problem-box">
+        <div class="problem-type-label" id="problem-type-label"></div>
+        <div class="problem-text-row">
+          <div class="problem-text" id="problem-text"></div>
+          <button type="button" class="speak-btn" id="speak-btn" title="問題を音声で読み上げる">🔊</button>
+        </div>
+      </div>
+
+      <form class="answer-form" id="answer-form" autocomplete="off">
+        <input type="text" id="answer-input" inputmode="decimal" placeholder="答えを入力" autocomplete="off">
+        <button type="submit" class="btn-primary" id="submit-btn" style="width:auto;">回答</button>
+      </form>
+
+      <div class="feedback" id="feedback"></div>
+
+      <span class="quit-link" id="quit-link">中断して結果を見る</span>
+    </div>
+  </div>
+
+  <!-- ============ RESULT SCREEN ============ -->
+  <div id="result-screen">
+    <div class="card">
+      <h2>結果</h2>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-num" id="stat-correct">0</div>
+          <div class="stat-label">正解数</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-accuracy">0%</div>
+          <div class="stat-label">正答率</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-avgtime">0.0s</div>
+          <div class="stat-label">平均解答時間</div>
+        </div>
+      </div>
+      <div class="miss-list" id="miss-list"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" id="back-to-setup-btn">設定に戻る</button>
+      <button class="btn-primary" id="retry-btn">同じ設定でもう一度</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "mentalMathTrainerSettings";
+  var JP_WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
+
+  // ---------- element refs ----------
+  var setupScreen = document.getElementById("setup-screen");
+  var practiceScreen = document.getElementById("practice-screen");
+  var resultScreen = document.getElementById("result-screen");
+
+  var startBtn = document.getElementById("start-btn");
+  var setupError = document.getElementById("setup-error");
+
+  var progressLabel = document.getElementById("progress-label");
+  var scoreLabel = document.getElementById("score-label");
+  var timerFill = document.getElementById("timer-fill");
+  var problemTypeLabel = document.getElementById("problem-type-label");
+  var problemText = document.getElementById("problem-text");
+  var speakBtn = document.getElementById("speak-btn");
+  var answerForm = document.getElementById("answer-form");
+  var answerInput = document.getElementById("answer-input");
+  var feedbackEl = document.getElementById("feedback");
+  var quitLink = document.getElementById("quit-link");
+
+  var statCorrect = document.getElementById("stat-correct");
+  var statAccuracy = document.getElementById("stat-accuracy");
+  var statAvgTime = document.getElementById("stat-avgtime");
+  var missList = document.getElementById("miss-list");
+  var backToSetupBtn = document.getElementById("back-to-setup-btn");
+  var retryBtn = document.getElementById("retry-btn");
+
+  // populate digit selects (1-6) for the 4 operation rows
+  document.querySelectorAll(".row[data-op] select").forEach(function (sel) {
+    for (var i = 1; i <= 6; i++) {
+      var opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = i;
+      sel.appendChild(opt);
+    }
+  });
+  // sensible defaults
+  function setDefaultDigits(op, a, b) {
+    var row = document.querySelector('.row[data-op="' + op + '"]');
+    row.querySelector(".digitsA").value = a;
+    row.querySelector(".digitsB").value = b;
+  }
+  setDefaultDigits("add", 3, 3);
+  setDefaultDigits("sub", 3, 3);
+  setDefaultDigits("mul", 2, 1);
+  setDefaultDigits("div", 1, 2);
+
+  // ---------- speech synthesis ----------
+  var speechSupported = "speechSynthesis" in window;
+  var jaVoice = null;
+  function pickJaVoice() {
+    if (!speechSupported) return;
+    var voices = window.speechSynthesis.getVoices();
+    jaVoice = voices.filter(function (v) { return v.lang && v.lang.indexOf("ja") === 0; })[0] || null;
+  }
+  if (speechSupported) {
+    pickJaVoice();
+    window.speechSynthesis.onvoiceschanged = pickJaVoice;
+  } else {
+    document.getElementById("autoSpeak").disabled = true;
+    document.getElementById("speech-support-hint").textContent = "お使いのブラウザは音声読み上げ(Web Speech API)に対応していません。";
+    speakBtn.disabled = true;
+  }
+  function speak(text) {
+    if (!speechSupported || !text) return;
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = "ja-JP";
+    if (jaVoice) u.voice = jaVoice;
+    u.rate = 0.95;
+    window.speechSynthesis.speak(u);
+  }
+  speakBtn.addEventListener("click", function () {
+    if (session && session.current) speak(session.current.speech);
+  });
+
+  // ---------- settings persistence ----------
+  function readSettingsFromForm() {
+    var s = { ops: {}, tech: {}, displaySeconds: 0, problemCount: 10, autoSpeak: false };
+    document.querySelectorAll(".row[data-op]").forEach(function (row) {
+      var op = row.getAttribute("data-op");
+      s.ops[op] = {
+        enabled: row.querySelector(".op-enable").checked,
+        digitsA: parseInt(row.querySelector(".digitsA").value, 10),
+        digitsB: parseInt(row.querySelector(".digitsB").value, 10)
+      };
+    });
+    document.querySelectorAll(".row[data-tech]").forEach(function (row) {
+      var t = row.getAttribute("data-tech");
+      var digitsSel = row.querySelector(".tech-digits");
+      var baseSel = row.querySelector(".tech-base");
+      s.tech[t] = {
+        enabled: row.querySelector(".tech-enable").checked,
+        digits: digitsSel ? parseInt(digitsSel.value, 10) : null,
+        base: baseSel ? parseInt(baseSel.value, 10) : null
+      };
+    });
+    s.displaySeconds = Math.max(0, parseInt(document.getElementById("displaySeconds").value, 10) || 0);
+    s.problemCount = Math.max(0, parseInt(document.getElementById("problemCount").value, 10) || 0);
+    s.autoSpeak = speechSupported && document.getElementById("autoSpeak").checked;
+    return s;
+  }
+
+  function applySettingsToForm(s) {
+    if (!s) return;
+    document.querySelectorAll(".row[data-op]").forEach(function (row) {
+      var op = row.getAttribute("data-op");
+      var cfg = s.ops && s.ops[op];
+      if (!cfg) return;
+      row.querySelector(".op-enable").checked = !!cfg.enabled;
+      if (cfg.digitsA) row.querySelector(".digitsA").value = cfg.digitsA;
+      if (cfg.digitsB) row.querySelector(".digitsB").value = cfg.digitsB;
+    });
+    document.querySelectorAll(".row[data-tech]").forEach(function (row) {
+      var t = row.getAttribute("data-tech");
+      var cfg = s.tech && s.tech[t];
+      if (!cfg) return;
+      row.querySelector(".tech-enable").checked = !!cfg.enabled;
+      var digitsSel = row.querySelector(".tech-digits");
+      if (digitsSel && cfg.digits) digitsSel.value = cfg.digits;
+      var baseSel = row.querySelector(".tech-base");
+      if (baseSel && cfg.base) baseSel.value = cfg.base;
+    });
+    if (typeof s.displaySeconds === "number") document.getElementById("displaySeconds").value = s.displaySeconds;
+    if (typeof s.problemCount === "number") document.getElementById("problemCount").value = s.problemCount;
+    if (speechSupported) document.getElementById("autoSpeak").checked = !!s.autoSpeak;
+  }
+
+  function saveSettings(s) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch (e) {}
+  }
+  function loadSettings() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+  applySettingsToForm(loadSettings());
+
+  // ---------- problem generation ----------
+  function randInt(min, max) { // inclusive
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  function randDigits(n) { // n-digit positive integer
+    if (n <= 1) return randInt(1, 9);
+    return randInt(Math.pow(10, n - 1), Math.pow(10, n) - 1);
+  }
+  function countBorrows(a, b) { // number of borrows when subtracting b from a the standard way
+    var n = Math.max(String(a).length, String(b).length);
+    var borrow = 0, count = 0;
+    for (var place = 0; place < n; place++) {
+      var pv = Math.pow(10, place);
+      var da = (Math.floor(a / pv) % 10) - borrow;
+      var db = Math.floor(b / pv) % 10;
+      if (da < db) { count++; borrow = 1; } else { borrow = 0; }
+    }
+    return count;
+  }
+
+  var FRACTION_DENOMS = [3, 6, 7, 9, 11, 13, 17, 19];
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  // ---------- explanations (「暗算の達人」のテクニック解説) ----------
+  function explainAdd(a, b) {
+    var maxLen = Math.max(String(a).length, String(b).length);
+    var running = 0, steps = [];
+    for (var place = maxLen - 1; place >= 0; place--) {
+      var pv = Math.pow(10, place);
+      var add = ((Math.floor(a / pv) % 10) + (Math.floor(b / pv) % 10)) * pv;
+      var next = running + add;
+      if (next !== running) steps.push(next);
+      running = next;
+    }
+    if (steps.length === 0) steps.push(running);
+    return "大きい位から順に足す(左から計算): " + a + " + " + b + " → " + steps.join(" → ");
+  }
+
+  function explainSub(a, b) {
+    var lenB = String(b).length;
+    var running = a, steps = [];
+    for (var place = lenB - 1; place >= 0; place--) {
+      var pv = Math.pow(10, place);
+      var digitB = Math.floor(b / pv) % 10;
+      if (digitB === 0) continue;
+      running -= digitB * pv;
+      steps.push(running);
+    }
+    if (steps.length === 0) steps.push(running);
+    return "大きい位から順に引く(左から計算): " + a + " − " + b + " → " + steps.join(" → ");
+  }
+
+  function explainSubComplement(a, b) {
+    var n = Math.max(String(a).length, String(b).length);
+    var p = Math.pow(10, n);
+    var complement = p - b;
+    var sum = a + complement;
+    var result = sum - p;
+    return "繰り下がりが多いので補数を使う: " + b + " の補数(" + n + "桁基準, " + p + "−" + b + ") = " + complement +
+      " → 引き算の代わりに足し算 " + a + " + " + complement + " = " + sum +
+      " → 先頭の桁(" + p + ")を引く = " + result + "(繰り下がりなしで計算できる)";
+  }
+
+  function explainMulSingleDigit(big, small) {
+    var len = String(big).length;
+    var running = 0, steps = [];
+    for (var place = len - 1; place >= 0; place--) {
+      var pv = Math.pow(10, place);
+      var digit = Math.floor(big / pv) % 10;
+      if (digit === 0) continue;
+      running += digit * pv * small;
+      steps.push(running);
+    }
+    if (steps.length === 0) steps.push(running);
+    return "位ごとに分けて掛けて足す: " + big + " × " + small + " → " + steps.join(" → ");
+  }
+
+  function explainMulTwoDigit(a, b) {
+    var a1 = Math.floor(a / 10), a0 = a % 10;
+    var b1 = Math.floor(b / 10), b0 = b % 10;
+    var t1 = a1 * b1 * 100, t2 = (a1 * b0 + a0 * b1) * 10, t3 = a0 * b0;
+    return "2桁×2桁の分配法則: " + a + "×" + b + " = (" + (a1 * 10) + "+" + a0 + ")×(" + (b1 * 10) + "+" + b0 + ") = " +
+      t1 + " + " + t2 + " + " + t3 + " = " + (t1 + t2 + t3);
+  }
+
+  function explainMulGeneral(a, b) {
+    var small = Math.min(a, b), big = Math.max(a, b);
+    var lastDigit = small % 10;
+    var roundPart = small - lastDigit;
+    var part1 = big * roundPart, part2 = big * lastDigit;
+    return "小さい方をキリの良い数＋端数に分ける: " + small + " = " + roundPart + " + " + lastDigit +
+      " → " + big + "×" + roundPart + "=" + part1 + "、" + big + "×" + lastDigit + "=" + part2 +
+      " → " + part1 + " + " + part2 + " = " + (part1 + part2);
+  }
+
+  function explainMul(a, b) {
+    var small = Math.min(a, b), big = Math.max(a, b);
+    if (small < 10) return explainMulSingleDigit(big, small);
+    if (a >= 10 && a <= 99 && b >= 10 && b <= 99) return explainMulTwoDigit(a, b);
+    return explainMulGeneral(a, b);
+  }
+
+  function explainDiv(dividend, divisor, quotient) {
+    var lenQ = String(quotient).length;
+    var remaining = dividend, steps = [], parts = [];
+    for (var place = lenQ - 1; place >= 0; place--) {
+      var pv = Math.pow(10, place);
+      var digit = Math.floor(quotient / pv) % 10;
+      if (digit === 0) continue;
+      var chunk = digit * pv;
+      var sub = chunk * divisor;
+      remaining -= sub;
+      parts.push(chunk);
+      steps.push(divisor + "×" + chunk + "=" + sub + "(残り" + remaining + ")");
+    }
+    if (steps.length === 0) steps.push("商=" + quotient);
+    return "商をキリの良い数に分けて引く(チャンク法): " + steps.join(" → ") + " → 商 = " + parts.join("+") + " = " + quotient;
+  }
+
+  function explainSquare(n) {
+    var rem = n % 10;
+    if (rem === 0) {
+      return n + " は10の倍数なのでそのまま計算: " + n + "² = " + (n * n);
+    }
+    var dist = Math.min(rem, 10 - rem);
+    var lower = n - dist, upper = n + dist;
+    return "基準数(10の倍数)を使う: " + n + "² = (" + lower + "×" + upper + ") + " + dist + "² = " +
+      (lower * upper) + " + " + (dist * dist) + " = " + (n * n);
+  }
+
+  function explainSquareEnd5(n) {
+    var tens = Math.floor(n / 10);
+    var product = tens * (tens + 1);
+    return "5で終わる数の2乗: 5の前の数×(その数+1)の後ろに25をつける → " + tens + "×" + (tens + 1) + "=" + product + " → " + product + "25 = " + (n * n);
+  }
+
+  function explainTimes11(n) {
+    var s = String(n);
+    if (s.length === 2) {
+      var a = parseInt(s[0], 10), b = parseInt(s[1], 10);
+      var sum = a + b;
+      if (sum < 10) {
+        return "2桁×11: 両端の数字の間に、その和(" + sum + ")を挟む → " + a + "" + sum + "" + b + " = " + (n * 11);
+      }
+      return "2桁×11: 両端の数字の和が" + sum + "で繰り上がり → " + (a + 1) + "" + (sum - 10) + "" + b + " = " + (n * 11);
+    }
+    return "11倍 = ×10 + 元の数: " + n + "×11 = " + (n * 10) + " + " + n + " = " + (n * 11);
+  }
+
+  function explainNearBase(a, b, base) {
+    var x = a - base, y = b - base;
+    var cross = a + y;
+    var xy = x * y;
+    var xyStr = xy >= 0 ? ("+ " + xy) : ("− " + Math.abs(xy));
+    return "基準" + base + "の技: " + a + "=" + base + (x >= 0 ? "+" + x : x) + ", " + b + "=" + base + (y >= 0 ? "+" + y : y) +
+      " → " + cross + "×" + base + " " + xyStr + " = " + (cross * base) + " " + xyStr + " = " + (a * b);
+  }
+
+  function explainCube(n) {
+    var z = Math.round(n / 10) * 10;
+    var d = n - z;
+    var dStr = d >= 0 ? "+" + d : String(d);
+    var t1 = z * z * z, t2 = 3 * z * z * d, t3 = 3 * z * d * d, t4 = d * d * d;
+    return "近い10の倍数に分ける: " + n + " = " + z + dStr + " → " +
+      z + "³=" + t1 + "、3×" + z + "²×(" + d + ")=" + t2 + "、3×" + z + "×(" + d + ")²=" + t3 + "、(" + d + ")³=" + t4 +
+      " → 合計 " + t1 + " + " + t2 + " + " + t3 + " + " + t4 + " = " + (t1 + t2 + t3 + t4);
+  }
+
+  function explainSqrt(a, d, N, trueVal) {
+    var dStr = d >= 0 ? "+" + d : String(d);
+    var adj = d / (2 * a);
+    var approx = a + adj;
+    return "近い平方数を基準にする: " + a + "² = " + (a * a) + "、" + N + " = " + (a * a) + dStr +
+      " → √" + N + " ≈ " + a + " + " + d + "/(2×" + a + ") = " + a + " + " + adj.toFixed(3) +
+      " ≈ " + approx.toFixed(3) + "(実際の値: " + trueVal.toFixed(4) + "…)";
+  }
+
+  function explainFraction(num, den) {
+    if (den === 7) {
+      return "7分の一族は「142857」の循環を回転させたもの: " + num + "/7 = " + (num / 7).toFixed(6) + "…";
+    }
+    if (den === 11) {
+      var block = num * 9;
+      var blockStr = block < 10 ? "0" + block : "" + block;
+      return "11分の一族: 分子×9 を2桁にして繰り返す → " + num + "×9=" + block + " → " + num + "/11 = 0." + blockStr + blockStr + "…";
+    }
+    if (den === 9) {
+      return "9分の一族: 分子の数字をそのまま繰り返すだけ → " + num + "/9 = 0." + num + num + num + "…";
+    }
+    if (den === 3) {
+      var d3 = num * 3;
+      return "3分の一族: 分子×3の数字を繰り返す → " + num + "/3 = 0." + d3 + d3 + d3 + "…";
+    }
+    return "1/" + den + " = " + (1 / den).toFixed(6) + "… を覚えておき、" + num + "/" + den + " = " + num + " × (1/" + den + ") として掛け算で求める → " + num + "/" + den + " = " + (num / den).toFixed(6) + "…";
+  }
+
+  function explainWeekday(y, m, d, wdIdx) {
+    var century = Math.floor(y / 100);
+    var anchor = (5 * (century % 4) + 2) % 7;
+    var yy = y % 100;
+    var a = Math.floor(yy / 12), b = yy % 12, c = Math.floor(b / 4);
+    var doomsdayYear = (anchor + a + b + c) % 7;
+    var leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+    var refDays = { 1: leap ? 4 : 3, 2: leap ? 29 : 28, 3: 14, 4: 4, 5: 9, 6: 6, 7: 11, 8: 8, 9: 5, 10: 10, 11: 7, 12: 12 };
+    var refDay = refDays[m];
+    var diff = d - refDay;
+    return "世紀の基準日(" + (century * 100) + "年代の元日周辺の曜日)は" + JP_WEEKDAYS[anchor] + "曜 → 年コード: " +
+      yy + "を12で割って商" + a + "・余り" + b + "、余りを4で割った商" + c + " → " + a + "+" + b + "+" + c + " を足すと、" +
+      y + "年の基準日(ドゥームズデー)は" + JP_WEEKDAYS[doomsdayYear] + "曜 → " + m + "月の基準日は" + refDay + "日 → " +
+      d + "日との差は" + diff + "日 → " + JP_WEEKDAYS[doomsdayYear] + "曜から" + diff + "日ずらすと" + JP_WEEKDAYS[wdIdx] + "曜";
+  }
+
+  function generateSubPair(cfg) {
+    function makePair() {
+      var x = randDigits(cfg.digitsA), y = randDigits(cfg.digitsB);
+      if (x < y) { var tmp = x; x = y; y = tmp; }
+      return { a: x, b: y };
+    }
+    // ~50% of the time, bias toward a borrow-heavy example for extra variety/practice
+    if (Math.random() < 0.5) {
+      var best = makePair(), bestBorrows = countBorrows(best.a, best.b);
+      for (var i = 0; i < 7; i++) {
+        var candidate = makePair();
+        var borrows = countBorrows(candidate.a, candidate.b);
+        if (borrows > bestBorrows) { best = candidate; bestBorrows = borrows; }
+      }
+      return best;
+    }
+    return makePair();
+  }
+
+  function generateProblem(settings) {
+    var pool = [];
+    Object.keys(settings.ops).forEach(function (op) {
+      if (settings.ops[op].enabled) pool.push({ kind: "op", op: op });
+    });
+    Object.keys(settings.tech).forEach(function (t) {
+      if (settings.tech[t].enabled) pool.push({ kind: "tech", tech: t });
+    });
+    if (pool.length === 0) return null;
+    var pick = pool[randInt(0, pool.length - 1)];
+
+    if (pick.kind === "op") {
+      return generateOpProblem(pick.op, settings.ops[pick.op]);
+    }
+    return generateTechProblem(pick.tech, settings.tech[pick.tech]);
+  }
+
+  function generateOpProblem(op, cfg) {
+    var a, b, answer, display, label, explanation, speech;
+    if (op === "add") {
+      a = randDigits(cfg.digitsA); b = randDigits(cfg.digitsB);
+      answer = a + b; display = a + " + " + b; label = "足し算";
+      explanation = explainAdd(a, b);
+      speech = a + " たす " + b;
+    } else if (op === "sub") {
+      var pair = generateSubPair(cfg);
+      a = pair.a; b = pair.b;
+      answer = a - b; display = a + " − " + b; label = "引き算";
+      explanation = countBorrows(a, b) >= 2 ? explainSubComplement(a, b) : explainSub(a, b);
+      speech = a + " ひく " + b;
+    } else if (op === "mul") {
+      a = randDigits(cfg.digitsA); b = randDigits(cfg.digitsB);
+      answer = a * b; display = a + " × " + b; label = "掛け算";
+      explanation = explainMul(a, b);
+      speech = a + " かける " + b;
+    } else { // div
+      var divisor = randDigits(cfg.digitsA);
+      var quotient = randDigits(cfg.digitsB);
+      var dividend = divisor * quotient;
+      answer = quotient; display = dividend + " ÷ " + divisor; label = "割り算";
+      explanation = explainDiv(dividend, divisor, quotient);
+      speech = dividend + " わる " + divisor;
+    }
+    return { label: label, display: display, answer: answer, tolerance: 0, explanation: explanation, speech: speech };
+  }
+
+  function generateTechProblem(tech, cfg) {
+    if (tech === "square2") {
+      var n = randDigits(cfg.digits || 2);
+      return { label: "2乗の暗算", display: n + "²", answer: n * n, tolerance: 0, explanation: explainSquare(n), speech: n + " の2乗" };
+    }
+    if (tech === "squareEnd5") {
+      var digits = cfg.digits || 2;
+      var lead = digits === 2 ? randInt(1, 9) : randInt(10, 99);
+      var n2 = lead * 10 + 5;
+      return { label: "5で終わる数の2乗", display: n2 + "²", answer: n2 * n2, tolerance: 0, explanation: explainSquareEnd5(n2), speech: n2 + " の2乗" };
+    }
+    if (tech === "times11") {
+      var n3 = randDigits(cfg.digits || 2);
+      return { label: "11倍", display: n3 + " × 11", answer: n3 * 11, tolerance: 0, explanation: explainTimes11(n3), speech: n3 + " かける 11" };
+    }
+    if (tech === "nearBase") {
+      var base = cfg.base || 100;
+      var ranges = { 50: 8, 100: 15, 1000: 30 };
+      var r = ranges[base] || Math.round(base * 0.15);
+      var aN = randInt(base - r, base + r);
+      var bN = randInt(base - r, base + r);
+      return {
+        label: base + "に近い数同士の掛け算", display: aN + " × " + bN, answer: aN * bN, tolerance: 0,
+        explanation: explainNearBase(aN, bN, base), speech: aN + " かける " + bN
+      };
+    }
+    if (tech === "cube") {
+      var nC = randInt(11, 97);
+      return { label: "2桁の3乗", display: nC + "³", answer: nC * nC * nC, tolerance: 0, explanation: explainCube(nC), speech: nC + " の3乗" };
+    }
+    if (tech === "sqrt") {
+      var digitsSqrt = cfg.digits || 2;
+      var aS = randInt(5, 60);
+      var maxD = Math.max(1, Math.floor(aS / 3));
+      var dS = randInt(-maxD, maxD);
+      if (dS === 0) dS = 1;
+      var NS = aS * aS + dS;
+      var trueVal = Math.sqrt(NS);
+      var roundedS = parseFloat(trueVal.toFixed(digitsSqrt));
+      var tolS = 0.5 * Math.pow(10, -digitsSqrt) + 0.02;
+      return {
+        label: "平方根の概算(小数第" + digitsSqrt + "位まで)",
+        display: "√" + NS + " ≈ ?",
+        answer: roundedS, tolerance: tolS, isFraction: true, decimalDigits: digitsSqrt,
+        explanation: explainSqrt(aS, dS, NS, trueVal),
+        speech: "ルート " + NS + " は、およそいくつ"
+      };
+    }
+    if (tech === "weekday") {
+      var yW = randInt(1901, 2099);
+      var mW = randInt(1, 12);
+      var leapW = (yW % 4 === 0 && yW % 100 !== 0) || yW % 400 === 0;
+      var dimArr = [31, leapW ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      var dW = randInt(1, dimArr[mW - 1]);
+      var wdIdx = new Date(yW, mW - 1, dW).getDay();
+      return {
+        label: "曜日当て(カレンダー計算)",
+        display: yW + "年" + mW + "月" + dW + "日は何曜日?",
+        answer: wdIdx, tolerance: 0, isWeekday: true,
+        explanation: explainWeekday(yW, mW, dW, wdIdx),
+        speech: yW + "年" + mW + "月" + dW + "日は、何曜日でしょう"
+      };
+    }
+    if (tech === "fraction") {
+      var digits2 = cfg.digits || 4;
+      var den = FRACTION_DENOMS[randInt(0, FRACTION_DENOMS.length - 1)];
+      var num = randInt(1, den - 1);
+      var trueValF = num / den;
+      var roundedF = parseFloat(trueValF.toFixed(digits2));
+      var tolF = 0.5 * Math.pow(10, -digits2);
+      return {
+        label: "分数→小数(小数第" + digits2 + "位まで)",
+        display: num + " / " + den + " = ?",
+        answer: roundedF,
+        tolerance: tolF,
+        isFraction: true,
+        decimalDigits: digits2,
+        explanation: explainFraction(num, den),
+        speech: den + "分の" + num
+      };
+    }
+    return null;
+  }
+
+  // ---------- session state ----------
+  var session = null; // { settings, problems config live-generated, index, correctCount, results:[], current, timerHandle, hideHandle, startTime }
+
+  function showScreen(name) {
+    setupScreen.style.display = name === "setup" ? "block" : "none";
+    practiceScreen.style.display = name === "practice" ? "block" : "none";
+    resultScreen.style.display = name === "result" ? "block" : "none";
+  }
+
+  startBtn.addEventListener("click", function () {
+    var settings = readSettingsFromForm();
+    var testPool = Object.keys(settings.ops).some(function (k) { return settings.ops[k].enabled; }) ||
+                    Object.keys(settings.tech).some(function (k) { return settings.tech[k].enabled; });
+    if (!testPool) {
+      setupError.style.display = "block";
+      return;
+    }
+    setupError.style.display = "none";
+    saveSettings(settings);
+    startSession(settings);
+  });
+
+  function startSession(settings) {
+    session = {
+      settings: settings,
+      index: 0,
+      correctCount: 0,
+      results: [],
+      totalCount: settings.problemCount, // 0 = unlimited
+      awaitingNext: false
+    };
+    showScreen("practice");
+    nextProblem();
+  }
+
+  function clearTimers() {
+    if (session.timerHandle) { clearInterval(session.timerHandle); session.timerHandle = null; }
+  }
+
+  function nextProblem() {
+    clearTimers();
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    answerInput.value = "";
+    answerInput.readOnly = false;
+    session.awaitingNext = false;
+
+    var problem = generateProblem(session.settings);
+    session.current = problem;
+    session.problemStartTime = performance.now();
+    session.hiddenAt = null;
+
+    var total = session.totalCount > 0 ? session.totalCount : "∞";
+    progressLabel.textContent = "問題 " + (session.index + 1) + "/" + total;
+    scoreLabel.textContent = "正解 " + session.correctCount;
+
+    problemTypeLabel.textContent = problem.label;
+    problemText.textContent = problem.display;
+    problemText.classList.remove("problem-hidden");
+
+    answerInput.setAttribute("inputmode", problem.isWeekday ? "text" : "decimal");
+    answerInput.placeholder = problem.isWeekday ? "曜日を入力(例: 火)" : "答えを入力";
+
+    if (session.settings.autoSpeak) speak(problem.speech);
+
+    var displaySeconds = session.settings.displaySeconds;
+    if (displaySeconds > 0) {
+      var elapsedMs = 0;
+      var durationMs = displaySeconds * 1000;
+      timerFill.style.width = "100%";
+      session.timerHandle = setInterval(function () {
+        elapsedMs += 50;
+        var pct = Math.max(0, 100 - (elapsedMs / durationMs) * 100);
+        timerFill.style.width = pct + "%";
+        if (elapsedMs >= durationMs) {
+          clearInterval(session.timerHandle);
+          session.timerHandle = null;
+          problemText.textContent = "?";
+          problemText.classList.add("problem-hidden");
+        }
+      }, 50);
+    } else {
+      timerFill.style.width = "100%";
+    }
+
+    setTimeout(function () { answerInput.focus(); }, 0);
+  }
+
+  answerForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    handleAnswerAction();
+  });
+
+  answerInput.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    handleAnswerAction();
+  });
+
+  function handleAnswerAction() {
+    if (!session) return;
+    if (session.awaitingNext) {
+      finishOrNext();
+      return;
+    }
+    submitAnswer();
+  }
+
+  function submitAnswer() {
+    clearTimers();
+    var problem = session.current;
+    var raw = answerInput.value.trim();
+    var elapsedSec = (performance.now() - session.problemStartTime) / 1000;
+
+    var isCorrect, given;
+    if (problem.isWeekday) {
+      var norm = raw.replace(/曜日|曜/g, "").trim();
+      var idx = JP_WEEKDAYS.indexOf(norm);
+      isCorrect = idx !== -1 && idx === problem.answer;
+      given = raw === "" ? null : raw;
+    } else {
+      var rawNum = raw.replace(/,/g, "");
+      given = rawNum === "" ? NaN : parseFloat(rawNum);
+      if (isNaN(given)) {
+        isCorrect = false;
+      } else if (problem.tolerance > 0) {
+        isCorrect = Math.abs(given - problem.answer) <= problem.tolerance;
+      } else {
+        isCorrect = given === problem.answer;
+      }
+      given = isNaN(given) ? null : given;
+    }
+
+    session.results.push({
+      display: problem.display,
+      label: problem.label,
+      correctAnswer: problem.answer,
+      isWeekday: !!problem.isWeekday,
+      given: given,
+      isCorrect: isCorrect,
+      timeSec: elapsedSec
+    });
+
+    problemText.textContent = problem.display;
+    problemText.classList.remove("problem-hidden");
+
+    var explanationHtml = problem.explanation
+      ? '<div class="explanation">解説: ' + escapeHtml(problem.explanation) + "</div>"
+      : "";
+
+    var ansDisplay = problem.isWeekday ? (JP_WEEKDAYS[problem.answer] + "曜日")
+      : (problem.isFraction ? problem.answer.toFixed(problem.decimalDigits) : problem.answer);
+
+    if (isCorrect) {
+      session.correctCount++;
+      feedbackEl.className = "feedback correct";
+      feedbackEl.innerHTML = "正解! (" + elapsedSec.toFixed(1) + "秒)" + explanationHtml;
+    } else {
+      feedbackEl.className = "feedback wrong";
+      feedbackEl.innerHTML = "不正解" + (given === null ? "(未回答)" : "") + '<div class="answer-line">正解: ' + problem.display.replace(" = ?", "").replace("は何曜日?", "は") + " " + ansDisplay + "</div>" + explanationHtml;
+    }
+
+    scoreLabel.textContent = "正解 " + session.correctCount;
+    answerInput.readOnly = true;
+    session.awaitingNext = true;
+    session.index++;
+
+    var isLast = session.totalCount > 0 && session.index >= session.totalCount;
+    var btn = document.getElementById("submit-btn");
+    btn.textContent = isLast ? "結果を見る" : "次へ";
+  }
+
+  function finishOrNext() {
+    var isLast = session.totalCount > 0 && session.index >= session.totalCount;
+    document.getElementById("submit-btn").textContent = "回答";
+    if (isLast) {
+      showResults();
+    } else {
+      nextProblem();
+    }
+  }
+
+  quitLink.addEventListener("click", function () {
+    if (!session) return;
+    clearTimers();
+    showResults();
+  });
+
+  function showResults() {
+    clearTimers();
+    showScreen("result");
+    var results = session.results;
+    var correct = results.filter(function (r) { return r.isCorrect; }).length;
+    var total = results.length;
+    var accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+    var avgTime = total > 0 ? (results.reduce(function (s, r) { return s + r.timeSec; }, 0) / total) : 0;
+
+    statCorrect.textContent = correct + " / " + total;
+    statAccuracy.textContent = accuracy + "%";
+    statAvgTime.textContent = avgTime.toFixed(1) + "s";
+
+    var misses = results.filter(function (r) { return !r.isCorrect; });
+    if (misses.length === 0) {
+      missList.innerHTML = '<p class="hint">誤答はありませんでした。</p>';
+    } else {
+      missList.innerHTML = "";
+      misses.forEach(function (m) {
+        var div = document.createElement("div");
+        div.className = "miss-item";
+        var givenText = m.given === null ? "未回答" : m.given;
+        var correctText = m.isWeekday ? (JP_WEEKDAYS[m.correctAnswer] + "曜日") : m.correctAnswer;
+        div.innerHTML = "<span>" + m.display.replace(" = ?", "") + "</span>" +
+          '<span><span class="given">' + givenText + "</span> → <span class=\"correct\">" + correctText + "</span></span>";
+        missList.appendChild(div);
+      });
+    }
+  }
+
+  backToSetupBtn.addEventListener("click", function () {
+    session = null;
+    showScreen("setup");
+  });
+  retryBtn.addEventListener("click", function () {
+    var settings = readSettingsFromForm();
+    startSession(settings);
+  });
+
+  showScreen("setup");
+})();
+</script>
+</body>
+</html>
