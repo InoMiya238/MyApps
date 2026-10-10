@@ -577,16 +577,41 @@
     return refusalMessage(result === 'denied' ? MSG_DENIED : MSG_DEFAULT);
   }
 
+  // スマホのChromeは new Notification() を使えず、Service Worker(sw.js)経由でだけ通知を出せる。
+  // sw.js は https か localhost で開いたときだけ登録できる
+  var MSG_MOBILE = 'スマホでは、公開したページ(https)で開いたときだけ通知を使えます。切に戻しました。';
+  var swReg = null;
+  function isAndroid(){
+    try { return /Android/i.test(navigator.userAgent); } catch (e) { return false; }
+  }
+  function registerSw(){
+    try {
+      if (isFileProtocol() || !('serviceWorker' in navigator)) return Promise.resolve(null);
+      return navigator.serviceWorker.register('sw.js').then(function(reg){
+        // 通知を出せるのは、sw.js が動きはじめてから
+        navigator.serviceWorker.ready.then(function(ready){ swReg = ready; }, function(){});
+        return reg;
+      }, function(){ return null; });
+    } catch (e) { return Promise.resolve(null); }
+  }
+  // 許可が出たあと、通知を出す手段があるか確かめてから「入」にする
+  function enableNotify(){
+    registerSw().then(function(reg){
+      if (!reg && isAndroid()) setNotify(false, MSG_MOBILE);
+      else setNotify(true, '');
+    });
+  }
+
   function requestNotify(){
     if (!('Notification' in window)) { setNotify(false, MSG_UNSUPPORTED); return; }
     try {
-      if (Notification.permission === 'granted') { setNotify(true, ''); return; }
+      if (Notification.permission === 'granted') { enableNotify(); return; }
       if (Notification.permission === 'denied') { setNotify(false, permissionMessage('denied')); return; }
       var done = false;
       var onResult = function(result){
         if (done) return;
         done = true;
-        if (result === 'granted') setNotify(true, '');
+        if (result === 'granted') enableNotify();
         else setNotify(false, permissionMessage(result));
       };
       var p = Notification.requestPermission(onResult);
@@ -606,12 +631,24 @@
     if (!notifyOn) return;
     try {
       if (!('Notification' in window) || Notification.permission !== 'granted') return;
-      var n = new Notification(ALERT_TEXT[mode], {
+      var options = {
         body: ended === 'focus'
           ? '集中が終わりました。' + minutes.break + '分休みましょう'
           : '休憩が終わりました。' + setNo + 'セット目を始めます',
-        tag: 'pomodoro-timer'
-      });
+        tag: 'pomodoro-timer',
+        renotify: true
+      };
+      var title = ALERT_TEXT[mode];
+      if (swReg && swReg.showNotification) {
+        swReg.showNotification(title, options).catch(function(){});
+        return;
+      }
+      // スマホで sw.js の準備がまだのときは、準備ができしだい出す
+      if (isAndroid() && 'serviceWorker' in navigator && !isFileProtocol()) {
+        navigator.serviceWorker.ready.then(function(r){ return r.showNotification(title, options); }).catch(function(){});
+        return;
+      }
+      var n = new Notification(title, options);
       n.onclick = function(){ try { window.focus(); n.close(); } catch (e) {} };
     } catch (e) { /* 通知できなくても続ける */ }
   }
@@ -620,7 +657,7 @@
     if (!notifyOn) { renderNotify(''); return; }
     var supported = ('Notification' in window), permission = '';
     try { permission = supported ? Notification.permission : ''; } catch (e) { permission = ''; }
-    if (permission === 'granted') renderNotify('');
+    if (permission === 'granted') { renderNotify(''); enableNotify(); }
     else setNotify(false, supported ? permissionMessage(permission) : MSG_UNSUPPORTED);
   })();
 
