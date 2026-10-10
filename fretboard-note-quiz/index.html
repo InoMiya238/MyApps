@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>指板ノート道場</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #F5EFE3;
+    --surface: #FFFFFF;
+    --surface-2: #EDE4D2;
+    --border: #DED2B8;
+    --ink: #2B211A;
+    --ink-muted: #6B5D4F;
+    --ink-faint: #948673;
+    --accent: #A8722F;
+    --accent-ink: #FFFCF6;
+    --good: #3F7457;
+    --good-soft: #E1EEE3;
+    --bad: #AC4634;
+    --bad-soft: #F5E3DD;
+    --shadow: rgba(43, 33, 26, 0.12);
+
+    --wood-a: #3B2417;
+    --wood-b: #2A1810;
+    --fret-wire: #D6D0C1;
+    --nut: #C9A24B;
+    --inlay: #F0E8D8;
+    --string-steel: #DEDACC;
+    --string-bronze: #C6A464;
+    --marker-glow: #FFC169;
+    --marker-core: #FFF4E0;
+
+    --font-display: "Fraunces", ui-serif, Georgia, serif;
+    --font-body: "Inter", -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17110C;
+      --surface: #221A13;
+      --surface-2: #2C2218;
+      --border: #3B2E1F;
+      --ink: #F1E7D6;
+      --ink-muted: #B9A98E;
+      --ink-faint: #83725B;
+      --accent: #DDAB5C;
+      --accent-ink: #201505;
+      --good: #7DB694;
+      --good-soft: #223229;
+      --bad: #E08669;
+      --bad-soft: #3A241E;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #17110C;
+    --surface: #221A13;
+    --surface-2: #2C2218;
+    --border: #3B2E1F;
+    --ink: #F1E7D6;
+    --ink-muted: #B9A98E;
+    --ink-faint: #83725B;
+    --accent: #DDAB5C;
+    --accent-ink: #201505;
+    --good: #7DB694;
+    --good-soft: #223229;
+    --bad: #E08669;
+    --bad-soft: #3A241E;
+    --shadow: rgba(0, 0, 0, 0.4);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    padding: 32px 16px 64px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .eyebrow {
+    margin: 0 0 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+  }
+
+  .hero h1 {
+    margin: 0 0 10px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(28px, 6vw, 40px);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .tagline {
+    margin: 0 auto;
+    max-width: 46ch;
+    color: var(--ink-muted);
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+
+  .site-nav {
+    margin: 12px 0 0;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    font-size: 13px;
+  }
+
+  .site-nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .site-nav a:hover { text-decoration: underline; }
+
+  /* ---------- Settings ---------- */
+  .settings {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px 28px;
+    align-items: flex-end;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+
+  .setting-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .setting-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .string-toggles {
+    display: flex;
+    gap: 6px;
+  }
+
+  .string-chip {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.12s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .string-chip:hover { transform: translateY(-1px); }
+
+  .string-chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .string-chip:focus-visible,
+  button:focus-visible,
+  input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .fret-range {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+  }
+
+  .fret-range input {
+    width: 52px;
+    padding: 7px 6px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .notation-toggle {
+    display: flex;
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    overflow: hidden;
+  }
+
+  .notation-btn {
+    border: none;
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 7px 14px;
+    cursor: pointer;
+  }
+
+  .notation-btn.active {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .reset-btn {
+    margin-left: auto;
+    align-self: center;
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--ink-muted);
+    border-radius: 9px;
+    padding: 9px 14px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- Quiz card ---------- */
+  .quiz-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 2px 10px var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .question {
+    margin: 0;
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 21px;
+    font-weight: 600;
+  }
+
+  .fretboard-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15), 0 4px 14px var(--shadow);
+  }
+
+  #fretboardSvg { display: block; width: 100%; height: auto; }
+
+  .query-marker-ring {
+    fill: none;
+    stroke: var(--marker-glow);
+    stroke-width: 2;
+    opacity: 0.55;
+    transform-origin: center;
+    animation: pulse 1.6s ease-out infinite;
+  }
+
+  @keyframes pulse {
+    0%   { r: 9;  opacity: 0.6; }
+    70%  { r: 18; opacity: 0; }
+    100% { r: 18; opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .query-marker-ring { animation: none; opacity: 0.35; }
+  }
+
+  .feedback {
+    margin: 0;
+    min-height: 22px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .feedback.good { color: var(--good); }
+  .feedback.bad { color: var(--bad); }
+
+  .answers {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    max-width: 560px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .answer-btn {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .answer-btn:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--accent); }
+  .answer-btn:disabled { cursor: default; }
+
+  .answer-btn.correct {
+    background: var(--good-soft);
+    border-color: var(--good);
+    color: var(--good);
+  }
+
+  .answer-btn.incorrect {
+    background: var(--bad-soft);
+    border-color: var(--bad);
+    color: var(--bad);
+  }
+
+  /* ---------- Stats ---------- */
+  .stats {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .stat-tiles {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  .stat-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 14px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    margin-top: 3px;
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.05em;
+  }
+
+  .string-stats {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .string-stats-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 2px;
+  }
+
+  .string-row {
+    display: grid;
+    grid-template-columns: 22px 1fr 40px;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .string-row-label {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-muted);
+  }
+
+  .string-row-track {
+    height: 7px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+
+  .string-row-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  .string-row-pct {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-faint);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 480px) {
+    .answers { grid-template-columns: repeat(4, 1fr); }
+    .stat-tiles { grid-template-columns: repeat(2, 1fr); }
+    .settings { flex-direction: column; align-items: stretch; }
+    .reset-btn { margin-left: 0; align-self: flex-start; }
+  }
+
+  /* ---------- スマホ表示の調整 ---------- */
+  @media (max-width: 480px) {
+    .notation-toggle { align-self: flex-start; }
+    .notation-btn { padding: 9px 18px; }
+    .string-toggles { gap: 8px; flex-wrap: wrap; }
+    .string-chip { width: 40px; height: 40px; }
+    .fret-range input { font-size: 16px; padding: 9px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="hero">
+    <p class="eyebrow">STANDARD TUNING · E&nbsp;A&nbsp;D&nbsp;G&nbsp;B&nbsp;E</p>
+    <h1>指板ノート道場</h1>
+    <p class="tagline">ハイライトされた位置の音名を答えて、フレットボード上の音を体に覚え込ませる練習ページです。</p>
+    <nav class="site-nav">
+      <a href="reference.html">指板ノート帳（音名早見表）</a>
+      <a href="pentatonic.html">ペンタトニックスケール帳</a>
+    </nav>
+  </header>
+
+  <section class="settings" aria-label="出題設定">
+    <div class="setting-group">
+      <span class="setting-label">対象弦</span>
+      <div class="string-toggles" id="stringToggles"></div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">フレット範囲</span>
+      <div class="fret-range">
+        <input type="number" id="fretMin" min="0" max="15" value="0" aria-label="最小フレット">
+        <span>–</span>
+        <input type="number" id="fretMax" min="0" max="15" value="12" aria-label="最大フレット">
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">表記</span>
+      <div class="notation-toggle" role="group" aria-label="シャープ・フラット表記">
+        <button type="button" class="notation-btn active" data-notation="sharp" aria-pressed="true">♯</button>
+        <button type="button" class="notation-btn" data-notation="flat" aria-pressed="false">♭</button>
+      </div>
+    </div>
+
+    <button type="button" class="reset-btn" id="resetBtn">成績をリセット</button>
+  </section>
+
+  <section class="quiz-card">
+    <p class="question" id="questionText">この音は?</p>
+    <div class="fretboard-wrap">
+      <svg id="fretboardSvg" viewBox="0 0 640 220" preserveAspectRatio="xMidYMid meet" role="img" aria-label="フレットボード上の出題位置"></svg>
+    </div>
+    <p class="feedback" id="feedbackText" aria-live="polite">&nbsp;</p>
+    <div class="answers" id="answerGrid"></div>
+  </section>
+
+  <section class="stats" aria-label="成績">
+    <div class="stat-tiles">
+      <div class="stat-tile">
+        <div class="stat-value" id="statTotal">0</div>
+        <div class="stat-label">出題数</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-value" id="statAccuracy">–</div>
+        <div class="stat-label">正答率</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-value" id="statStreak">0</div>
+        <div class="stat-label">連続正解</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-value" id="statBest">0</div>
+        <div class="stat-label">最高連続</div>
+      </div>
+    </div>
+
+    <div class="string-stats">
+      <div class="string-stats-title">弦ごとの正答率</div>
+      <div id="stringStatsBody"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var SHARP_NAMES = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
+  var FLAT_NAMES  = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"];
+
+  // index 0 = high e (top of diagram) .. index 5 = low E (bottom)
+  var STRINGS = [
+    { label: "e", open: 4,  kind: "steel"  },
+    { label: "B", open: 11, kind: "steel"  },
+    { label: "G", open: 7,  kind: "steel"  },
+    { label: "D", open: 2,  kind: "bronze" },
+    { label: "A", open: 9,  kind: "bronze" },
+    { label: "E", open: 4,  kind: "bronze" }
+  ];
+
+  var state = {
+    included: [true, true, true, true, true, true],
+    fretMin: 0,
+    fretMax: 12,
+    notation: "sharp",
+    locked: false,
+    current: null,
+    stats: {
+      total: 0,
+      correct: 0,
+      streak: 0,
+      best: 0,
+      perString: [
+        { total: 0, correct: 0 }, { total: 0, correct: 0 }, { total: 0, correct: 0 },
+        { total: 0, correct: 0 }, { total: 0, correct: 0 }, { total: 0, correct: 0 }
+      ]
+    }
+  };
+
+  var svgNS = "http://www.w3.org/2000/svg";
+  var el = function (id) { return document.getElementById(id); };
+
+  function noteIndexOf(stringIdx, fret) {
+    return (STRINGS[stringIdx].open + fret) % 12;
+  }
+
+  function noteName(idx) {
+    return (state.notation === "sharp" ? SHARP_NAMES : FLAT_NAMES)[idx];
+  }
+
+  // ---------- String toggles ----------
+  function buildStringToggles() {
+    var wrap = el("stringToggles");
+    wrap.innerHTML = "";
+    STRINGS.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "string-chip" + (state.included[i] ? " active" : "");
+      btn.textContent = s.label;
+      btn.setAttribute("aria-pressed", String(state.included[i]));
+      btn.setAttribute("aria-label", (6 - i) + "弦 " + s.label);
+      btn.addEventListener("click", function () {
+        var activeCount = state.included.filter(Boolean).length;
+        if (state.included[i] && activeCount === 1) return; // keep at least one string
+        state.included[i] = !state.included[i];
+        buildStringToggles();
+        if (!state.included[state.current.stringIdx]) nextQuestion();
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
+  // ---------- Fretboard rendering ----------
+  var SCALE_LEN = 640;
+  function fretX(n) { return SCALE_LEN * (1 - Math.pow(2, -n / 12)); }
+
+  var MARKER_FRETS = [3, 5, 7, 9, 15];
+  var DOUBLE_MARKER_FRETS = [12, 24];
+
+  function svgEl(tag, attrs) {
+    var e = document.createElementNS(svgNS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  function renderFretboard() {
+    var svg = el("fretboardSvg");
+    svg.innerHTML = "";
+
+    var fretMin = state.fretMin, fretMax = state.fretMax;
+    var boardTop = 30, boardBottom = 190;
+    var stringY = function (i) { return boardTop + i * ((boardBottom - boardTop) / 5); };
+
+    var xStart = fretMin === 0 ? -66 : fretX(fretMin - 1);
+    var xEnd = fretX(fretMax) + 34;
+    svg.setAttribute("viewBox", xStart + " 0 " + (xEnd - xStart) + " 220");
+
+    // wood background
+    svg.appendChild(svgEl("defs", {})).innerHTML =
+      '<linearGradient id="woodGrad" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="var(--wood-a)"/>' +
+      '<stop offset="100%" stop-color="var(--wood-b)"/>' +
+      "</linearGradient>";
+    svg.appendChild(svgEl("rect", {
+      x: xStart - 10, y: 0, width: (xEnd - xStart) + 20, height: 220, fill: "url(#woodGrad)"
+    }));
+
+    // inlay dots (single)
+    MARKER_FRETS.forEach(function (n) {
+      if (n < fretMin || n > fretMax) return;
+      var prev = n > 0 ? fretX(n - 1) : -33;
+      var cx = (prev + fretX(n)) / 2;
+      var cy = (stringY(2) + stringY(3)) / 2;
+      svg.appendChild(svgEl("circle", { cx: cx, cy: cy, r: 5.5, fill: "var(--inlay)", opacity: 0.85 }));
+    });
+    // inlay dots (double, at 12/24)
+    DOUBLE_MARKER_FRETS.forEach(function (n) {
+      if (n < fretMin || n > fretMax) return;
+      var prev = fretX(n - 1);
+      var cx = (prev + fretX(n)) / 2;
+      [1.5, 4].forEach(function (i) {
+        svg.appendChild(svgEl("circle", { cx: cx, cy: stringY(i), r: 5.5, fill: "var(--inlay)", opacity: 0.85 }));
+      });
+    });
+
+    // fret wires
+    for (var n = Math.max(fretMin, 1); n <= fretMax; n++) {
+      svg.appendChild(svgEl("line", {
+        x1: fretX(n), y1: boardTop - 10, x2: fretX(n), y2: boardBottom + 10,
+        stroke: "var(--fret-wire)", "stroke-width": 2.5, "stroke-linecap": "round"
+      }));
+    }
+    // nut
+    if (fretMin === 0) {
+      svg.appendChild(svgEl("line", {
+        x1: 0, y1: boardTop - 12, x2: 0, y2: boardBottom + 12,
+        stroke: "var(--nut)", "stroke-width": 6, "stroke-linecap": "round"
+      }));
+    }
+
+    // strings
+    STRINGS.forEach(function (s, i) {
+      svg.appendChild(svgEl("line", {
+        x1: xStart, y1: stringY(i), x2: xEnd, y2: stringY(i),
+        stroke: s.kind === "bronze" ? "var(--string-bronze)" : "var(--string-steel)",
+        "stroke-width": 1.4 + i * 0.55, "stroke-linecap": "round"
+      }));
+      var label = svgEl("text", {
+        x: xStart + (fretMin === 0 ? 16 : 6), y: stringY(i) + 4,
+        "font-family": "var(--font-mono)", "font-size": 12, "font-weight": 700,
+        fill: "var(--inlay)", opacity: 0.75, "text-anchor": "middle"
+      });
+      label.textContent = s.label;
+      svg.appendChild(label);
+    });
+
+    // fret number labels
+    MARKER_FRETS.concat(DOUBLE_MARKER_FRETS).concat([fretMin, fretMax]).forEach(function (n) {
+      if (n < fretMin || n > fretMax) return;
+      var t = svgEl("text", {
+        x: fretX(n), y: boardBottom + 26,
+        "font-family": "var(--font-mono)", "font-size": 11, "font-weight": 600,
+        fill: "var(--inlay)", opacity: 0.55, "text-anchor": "middle"
+      });
+      t.textContent = String(n);
+      svg.appendChild(t);
+    });
+
+    // query marker
+    if (state.current) {
+      var fret = state.current.fret;
+      var sIdx = state.current.stringIdx;
+      var mx = fret === 0 ? -33 : (fretX(fret - 1) + fretX(fret)) / 2;
+      var my = stringY(sIdx);
+      svg.appendChild(svgEl("circle", { cx: mx, cy: my, r: 9, class: "query-marker-ring", id: "markerRing" }));
+      svg.appendChild(svgEl("circle", {
+        cx: mx, cy: my, r: 8, fill: "var(--marker-glow)", stroke: "var(--marker-core)", "stroke-width": 2, id: "markerCore"
+      }));
+    }
+  }
+
+  // ---------- Answer grid ----------
+  function buildAnswerGrid() {
+    var grid = el("answerGrid");
+    grid.innerHTML = "";
+    for (var i = 0; i < 12; i++) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "answer-btn";
+      btn.dataset.index = String(i);
+      btn.textContent = noteName(i);
+      btn.setAttribute("aria-label", noteName(i));
+      btn.addEventListener("click", onAnswer);
+      grid.appendChild(btn);
+    }
+  }
+
+  function refreshAnswerLabels() {
+    var buttons = el("answerGrid").querySelectorAll(".answer-btn");
+    buttons.forEach(function (b) {
+      var i = Number(b.dataset.index);
+      b.textContent = noteName(i);
+      b.setAttribute("aria-label", noteName(i));
+    });
+  }
+
+  // ---------- Question flow ----------
+  function pickIncludedStrings() {
+    var idxs = [];
+    state.included.forEach(function (on, i) { if (on) idxs.push(i); });
+    return idxs;
+  }
+
+  function nextQuestion() {
+    var candidates = pickIncludedStrings();
+    var stringIdx = candidates[Math.floor(Math.random() * candidates.length)];
+    var span = state.fretMax - state.fretMin + 1;
+    var fret = state.fretMin + Math.floor(Math.random() * span);
+    state.current = { stringIdx: stringIdx, fret: fret, note: noteIndexOf(stringIdx, fret) };
+    state.locked = false;
+
+    el("questionText").textContent = "この音は?";
+    var fb = el("feedbackText");
+    fb.textContent = " ";
+    fb.className = "feedback";
+
+    el("answerGrid").querySelectorAll(".answer-btn").forEach(function (b) {
+      b.classList.remove("correct", "incorrect");
+      b.disabled = false;
+    });
+
+    renderFretboard();
+  }
+
+  function onAnswer(e) {
+    if (state.locked) return;
+    state.locked = true;
+
+    var chosen = Number(e.currentTarget.dataset.index);
+    var correct = state.current.note;
+    var isRight = chosen === correct;
+    var sIdx = state.current.stringIdx;
+
+    var s = state.stats;
+    s.total++;
+    s.perString[sIdx].total++;
+    if (isRight) {
+      s.correct++;
+      s.streak++;
+      s.best = Math.max(s.best, s.streak);
+      s.perString[sIdx].correct++;
+    } else {
+      s.streak = 0;
+    }
+
+    var buttons = el("answerGrid").querySelectorAll(".answer-btn");
+    buttons.forEach(function (b) {
+      b.disabled = true;
+      var i = Number(b.dataset.index);
+      if (i === correct) b.classList.add("correct");
+      else if (i === chosen) b.classList.add("incorrect");
+    });
+
+    var fb = el("feedbackText");
+    var stringNumber = 6 - sIdx;
+    var fretLabel = state.current.fret === 0 ? "開放弦" : (state.current.fret + "フレット");
+    if (isRight) {
+      fb.textContent = "正解 — 第" + stringNumber + "弦 " + fretLabel + " = " + noteName(correct);
+      fb.className = "feedback good";
+    } else {
+      fb.textContent = "不正解 — 正解は " + noteName(correct) + "（第" + stringNumber + "弦 " + fretLabel + "）";
+      fb.className = "feedback bad";
+    }
+
+    updateStatsUI();
+    window.setTimeout(nextQuestion, isRight ? 700 : 1250);
+  }
+
+  function updateStatsUI() {
+    var s = state.stats;
+    el("statTotal").textContent = String(s.total);
+    el("statAccuracy").textContent = s.total ? Math.round((s.correct / s.total) * 100) + "%" : "–";
+    el("statStreak").textContent = String(s.streak);
+    el("statBest").textContent = String(s.best);
+
+    var body = el("stringStatsBody");
+    body.innerHTML = "";
+    STRINGS.forEach(function (str, i) {
+      var ps = s.perString[i];
+      var pct = ps.total ? Math.round((ps.correct / ps.total) * 100) : 0;
+      var row = document.createElement("div");
+      row.className = "string-row";
+      row.innerHTML =
+        '<span class="string-row-label">' + str.label + '</span>' +
+        '<span class="string-row-track"><span class="string-row-fill" style="width:' + pct + '%"></span></span>' +
+        '<span class="string-row-pct">' + (ps.total ? pct + "%" : "–") + '</span>';
+      body.appendChild(row);
+    });
+  }
+
+  function resetStats() {
+    state.stats = {
+      total: 0, correct: 0, streak: 0, best: 0,
+      perString: STRINGS.map(function () { return { total: 0, correct: 0 }; })
+    };
+    updateStatsUI();
+  }
+
+  // ---------- Settings wiring ----------
+  function clampFretInputs(source) {
+    var minInput = el("fretMin"), maxInput = el("fretMax");
+    var min = Math.max(0, Math.min(15, parseInt(minInput.value, 10) || 0));
+    var max = Math.max(0, Math.min(15, parseInt(maxInput.value, 10) || 0));
+    if (min > max) {
+      if (source === "min") max = min; else min = max;
+    }
+    minInput.value = String(min);
+    maxInput.value = String(max);
+    state.fretMin = min;
+    state.fretMax = max;
+  }
+
+  el("fretMin").addEventListener("change", function () { clampFretInputs("min"); nextQuestion(); });
+  el("fretMax").addEventListener("change", function () { clampFretInputs("max"); nextQuestion(); });
+
+  document.querySelectorAll(".notation-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".notation-btn").forEach(function (b) {
+        b.classList.remove("active");
+        b.setAttribute("aria-pressed", "false");
+      });
+      btn.classList.add("active");
+      btn.setAttribute("aria-pressed", "true");
+      state.notation = btn.dataset.notation;
+      refreshAnswerLabels();
+      if (!state.locked) return;
+    });
+  });
+
+  el("resetBtn").addEventListener("click", resetStats);
+
+  // ---------- Init ----------
+  buildStringToggles();
+  buildAnswerGrid();
+  updateStatsUI();
+  nextQuestion();
+})();
+</script>
+</body>
+</html>

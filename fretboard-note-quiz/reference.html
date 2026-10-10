@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>指板ノート帳</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #F5EFE3;
+    --surface: #FFFFFF;
+    --surface-2: #EDE4D2;
+    --border: #DED2B8;
+    --ink: #2B211A;
+    --ink-muted: #6B5D4F;
+    --ink-faint: #948673;
+    --accent: #A8722F;
+    --accent-ink: #FFFCF6;
+    --good: #3F7457;
+    --good-soft: #E1EEE3;
+    --bad: #AC4634;
+    --bad-soft: #F5E3DD;
+    --shadow: rgba(43, 33, 26, 0.12);
+
+    --wood-a: #3B2417;
+    --wood-b: #2A1810;
+    --fret-wire: #D6D0C1;
+    --nut: #C9A24B;
+    --inlay: #F0E8D8;
+    --string-steel: #DEDACC;
+    --string-bronze: #C6A464;
+    --marker-glow: #FFC169;
+    --marker-core: #FFF4E0;
+
+    --font-display: "Fraunces", ui-serif, Georgia, serif;
+    --font-body: "Inter", -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17110C;
+      --surface: #221A13;
+      --surface-2: #2C2218;
+      --border: #3B2E1F;
+      --ink: #F1E7D6;
+      --ink-muted: #B9A98E;
+      --ink-faint: #83725B;
+      --accent: #DDAB5C;
+      --accent-ink: #201505;
+      --good: #7DB694;
+      --good-soft: #223229;
+      --bad: #E08669;
+      --bad-soft: #3A241E;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #17110C;
+    --surface: #221A13;
+    --surface-2: #2C2218;
+    --border: #3B2E1F;
+    --ink: #F1E7D6;
+    --ink-muted: #B9A98E;
+    --ink-faint: #83725B;
+    --accent: #DDAB5C;
+    --accent-ink: #201505;
+    --good: #7DB694;
+    --good-soft: #223229;
+    --bad: #E08669;
+    --bad-soft: #3A241E;
+    --shadow: rgba(0, 0, 0, 0.4);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    padding: 32px 16px 64px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .eyebrow {
+    margin: 0 0 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+  }
+
+  .hero h1 {
+    margin: 0 0 10px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(28px, 6vw, 40px);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .tagline {
+    margin: 0 auto;
+    max-width: 46ch;
+    color: var(--ink-muted);
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+
+  .site-nav {
+    margin: 12px 0 0;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    font-size: 13px;
+  }
+
+  .site-nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .site-nav a:hover { text-decoration: underline; }
+
+  /* ---------- Controls ---------- */
+  .controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px 28px;
+    align-items: flex-end;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+
+  .setting-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .setting-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .notation-toggle {
+    display: flex;
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    overflow: hidden;
+  }
+
+  .notation-btn {
+    border: none;
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 7px 14px;
+    cursor: pointer;
+  }
+
+  .notation-btn.active {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .notation-btn:focus-visible,
+  .note-pick-btn:focus-visible,
+  a.quiz-link:focus-visible,
+  .clear-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .quiz-link {
+    margin-left: auto;
+    align-self: center;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-radius: 9px;
+    padding: 10px 16px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  /* ---------- Reference card ---------- */
+  .reference-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 2px 10px var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .fretboard-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15), 0 4px 14px var(--shadow);
+  }
+
+  #refSvg { display: block; width: 100%; height: auto; }
+
+  .note-badge-circle { transition: opacity 0.15s ease, r 0.15s ease; }
+  .note-badge-text { transition: opacity 0.15s ease; pointer-events: none; }
+
+  .note-picker {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    max-width: 560px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .note-pick-btn {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .note-pick-btn:hover { transform: translateY(-2px); border-color: var(--accent); }
+
+  .note-pick-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .picker-hint {
+    margin: 0;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 480px) {
+    .note-picker { grid-template-columns: repeat(4, 1fr); }
+    .controls-bar { flex-direction: column; align-items: stretch; }
+    .quiz-link { margin-left: 0; text-align: center; }
+  }
+
+  /* ---------- Study cards ---------- */
+  .study-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 620px) {
+    .study-grid { grid-template-columns: 1fr; }
+  }
+
+  .study-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .study-card h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  .study-card p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .study-card .rule {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .open-string-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+  }
+
+  .open-string-table th {
+    text-align: left;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 0 8px 6px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .open-string-table td {
+    padding: 6px 8px 6px 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--ink);
+  }
+
+  .open-string-table tr:last-child td { border-bottom: none; }
+
+  .open-string-table td.note-cell {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .semitone-strip {
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    padding: 6px 2px 10px;
+  }
+
+  .st-chip {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .st-gap {
+    flex: none;
+    width: 20px;
+    height: 2px;
+    background: var(--border);
+    position: relative;
+  }
+
+  .st-gap.half {
+    width: 9px;
+    background: var(--accent);
+  }
+
+  .st-gap.half::after {
+    content: "半音";
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: var(--accent);
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+
+  /* ---------- スマホ表示の調整 ---------- */
+  .study-card { min-width: 0; }
+  @media (max-width: 620px) {
+    .study-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .notation-toggle { align-self: flex-start; }
+    .notation-btn { padding: 9px 16px; }
+    .study-card { padding: 20px 18px; }
+    .semitone-strip { overflow-x: visible; padding-bottom: 16px; }
+    .st-chip { flex: 0 1 22px; width: auto; min-width: 0; height: auto; aspect-ratio: 1; font-size: 9px; border-width: 1px; }
+    .st-gap { flex: 1 1 0; width: auto; min-width: 2px; }
+    .st-gap.half { flex: 0 0 8px; width: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="hero">
+    <p class="eyebrow">NOTE REFERENCE · 0–12 FRET</p>
+    <h1>指板ノート帳</h1>
+    <p class="tagline">0〜12フレットの音名を一覧できる早見表です。下の音名をタップすると、指板上のすべての位置がハイライトされます。</p>
+    <nav class="site-nav">
+      <a href="index.html">指板ノート道場（クイズ）</a>
+      <a href="pentatonic.html">ペンタトニックスケール帳</a>
+    </nav>
+  </header>
+
+  <section class="controls-bar" aria-label="表示設定">
+    <div class="setting-group">
+      <span class="setting-label">表記</span>
+      <div class="notation-toggle" role="group" aria-label="シャープ・フラット表記">
+        <button type="button" class="notation-btn active" data-notation="sharp" aria-pressed="true">♯</button>
+        <button type="button" class="notation-btn" data-notation="flat" aria-pressed="false">♭</button>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">表示</span>
+      <div class="notation-toggle" role="group" aria-label="表示する音の範囲">
+        <button type="button" class="notation-btn active" data-mode="all" aria-pressed="true">すべて</button>
+        <button type="button" class="notation-btn" data-mode="natural" aria-pressed="false">ナチュラルのみ</button>
+      </div>
+    </div>
+
+    <a class="quiz-link" href="index.html">クイズに挑戦 →</a>
+  </section>
+
+  <section class="reference-card">
+    <div class="fretboard-wrap">
+      <svg id="refSvg" viewBox="0 0 640 220" preserveAspectRatio="xMidYMid meet" role="img" aria-label="0から12フレットまでの全音名"></svg>
+    </div>
+    <div class="note-picker" id="notePicker"></div>
+    <p class="picker-hint" id="pickerHint">音をタップすると、指板上のすべての位置がハイライトされます。</p>
+  </section>
+
+  <section class="study-grid" aria-label="覚え方のポイント">
+    <div class="study-card">
+      <h2>開放弦</h2>
+      <p>太い6弦から細い1弦まで、開放弦の音名は次の通りです。</p>
+      <table class="open-string-table">
+        <thead><tr><th>弦</th><th>音名</th></tr></thead>
+        <tbody id="openStringBody"></tbody>
+      </table>
+    </div>
+
+    <div class="study-card">
+      <h2>半音のルール</h2>
+      <p>音名は基本的に1フレット=半音、2フレット=全音の間隔ですが、<span class="rule">E→FとB→Cの間だけ半音</span>なので♯/♭が存在しません。</p>
+      <div class="semitone-strip" id="semitoneStrip"></div>
+    </div>
+
+    <div class="study-card">
+      <h2>オクターブ早見</h2>
+      <p>同じ音名は<span class="rule">2弦隣・2フレット先</span>に見つかります。ただし またぐ2弦にG弦(3弦)とB弦(2弦)が含まれる場合だけ<span class="rule">3フレット先</span>になります。G-B間だけチューニングが長3度だからです。</p>
+    </div>
+
+    <div class="study-card">
+      <h2>5フレット早見</h2>
+      <p>各弦の<span class="rule">5フレットの音</span>は、1本細い弦の開放弦と同じ音になります。ただし<span class="rule">G弦(3弦)だけは4フレット</span>がB弦の開放と一致します。</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var SHARP_NAMES = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
+  var FLAT_NAMES  = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"];
+  var NATURAL_INDICES = { 0: true, 2: true, 4: true, 5: true, 7: true, 9: true, 11: true };
+
+  // index 0 = high e (top of diagram) .. index 5 = low E (bottom)
+  var STRINGS = [
+    { label: "e", number: 1, open: 4,  kind: "steel"  },
+    { label: "B", number: 2, open: 11, kind: "steel"  },
+    { label: "G", number: 3, open: 7,  kind: "steel"  },
+    { label: "D", number: 4, open: 2,  kind: "bronze" },
+    { label: "A", number: 5, open: 9,  kind: "bronze" },
+    { label: "E", number: 6, open: 4,  kind: "bronze" }
+  ];
+
+  var FRET_MIN = 0, FRET_MAX = 12;
+
+  var state = {
+    notation: "sharp",
+    mode: "all", // "all" | "natural"
+    highlighted: null // note index 0-11, or null
+  };
+
+  var svgNS = "http://www.w3.org/2000/svg";
+  var el = function (id) { return document.getElementById(id); };
+
+  function noteIndexOf(stringIdx, fret) {
+    return (STRINGS[stringIdx].open + fret) % 12;
+  }
+
+  function noteName(idx) {
+    return (state.notation === "sharp" ? SHARP_NAMES : FLAT_NAMES)[idx];
+  }
+
+  // ---------- Fretboard rendering ----------
+  var SCALE_LEN = 640;
+  function fretX(n) { return SCALE_LEN * (1 - Math.pow(2, -n / 12)); }
+
+  var MARKER_FRETS = [3, 5, 7, 9];
+  var DOUBLE_MARKER_FRET = 12;
+
+  function svgEl(tag, attrs) {
+    var e = document.createElementNS(svgNS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  function renderFretboard() {
+    var svg = el("refSvg");
+    svg.innerHTML = "";
+
+    var boardTop = 30, boardBottom = 190;
+    var stringY = function (i) { return boardTop + i * ((boardBottom - boardTop) / 5); };
+
+    var xStart = -66;
+    var xEnd = fretX(FRET_MAX) + 34;
+    svg.setAttribute("viewBox", xStart + " 0 " + (xEnd - xStart) + " 220");
+
+    var defs = svgEl("defs", {});
+    defs.innerHTML =
+      '<linearGradient id="woodGradRef" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="var(--wood-a)"/>' +
+      '<stop offset="100%" stop-color="var(--wood-b)"/>' +
+      "</linearGradient>";
+    svg.appendChild(defs);
+    svg.appendChild(svgEl("rect", {
+      x: xStart - 10, y: 0, width: (xEnd - xStart) + 20, height: 220, fill: "url(#woodGradRef)"
+    }));
+
+    // inlay dots (single)
+    MARKER_FRETS.forEach(function (n) {
+      var cx = (fretX(n - 1) + fretX(n)) / 2;
+      var cy = (stringY(2) + stringY(3)) / 2;
+      svg.appendChild(svgEl("circle", { cx: cx, cy: cy, r: 5, fill: "var(--inlay)", opacity: 0.5 }));
+    });
+    // inlay dots (double, at 12)
+    var dcx = (fretX(DOUBLE_MARKER_FRET - 1) + fretX(DOUBLE_MARKER_FRET)) / 2;
+    [1.5, 4].forEach(function (i) {
+      svg.appendChild(svgEl("circle", { cx: dcx, cy: stringY(i), r: 5, fill: "var(--inlay)", opacity: 0.5 }));
+    });
+
+    // fret wires
+    for (var n = 1; n <= FRET_MAX; n++) {
+      svg.appendChild(svgEl("line", {
+        x1: fretX(n), y1: boardTop - 10, x2: fretX(n), y2: boardBottom + 10,
+        stroke: "var(--fret-wire)", "stroke-width": 2.5, "stroke-linecap": "round"
+      }));
+    }
+    // nut
+    svg.appendChild(svgEl("line", {
+      x1: 0, y1: boardTop - 12, x2: 0, y2: boardBottom + 12,
+      stroke: "var(--nut)", "stroke-width": 6, "stroke-linecap": "round"
+    }));
+
+    // strings
+    STRINGS.forEach(function (s, i) {
+      svg.appendChild(svgEl("line", {
+        x1: xStart, y1: stringY(i), x2: xEnd, y2: stringY(i),
+        stroke: s.kind === "bronze" ? "var(--string-bronze)" : "var(--string-steel)",
+        "stroke-width": 1.4 + i * 0.55, "stroke-linecap": "round"
+      }));
+      var label = svgEl("text", {
+        x: xStart + 16, y: stringY(i) + 4,
+        "font-family": "var(--font-mono)", "font-size": 12, "font-weight": 700,
+        fill: "var(--inlay)", opacity: 0.55, "text-anchor": "middle"
+      });
+      label.textContent = s.label;
+      svg.appendChild(label);
+    });
+
+    // fret number labels
+    for (var fn = 0; fn <= FRET_MAX; fn++) {
+      var t = svgEl("text", {
+        x: fn === 0 ? -33 : fretX(fn), y: boardBottom + 26,
+        "font-family": "var(--font-mono)", "font-size": 10.5, "font-weight": 600,
+        fill: "var(--inlay)", opacity: 0.45, "text-anchor": "middle"
+      });
+      t.textContent = String(fn);
+      svg.appendChild(t);
+    }
+
+    // note badges
+    STRINGS.forEach(function (s, sIdx) {
+      for (var fret = FRET_MIN; fret <= FRET_MAX; fret++) {
+        var idx = noteIndexOf(sIdx, fret);
+        var isNatural = !!NATURAL_INDICES[idx];
+        if (state.mode === "natural" && !isNatural) continue;
+
+        var bx = fret === 0 ? -33 : (fretX(fret - 1) + fretX(fret)) / 2;
+        var by = stringY(sIdx);
+        var isActive = state.highlighted === idx;
+        var dimmed = state.highlighted !== null && !isActive;
+
+        var r = isNatural ? 9.5 : 8;
+        if (isActive) r += 1.5;
+
+        var circle = svgEl("circle", {
+          cx: bx, cy: by, r: r,
+          fill: isActive ? "var(--marker-glow)" : (isNatural ? "var(--inlay)" : "var(--surface)"),
+          "fill-opacity": isActive ? 0.98 : (dimmed ? 0.16 : (isNatural ? 0.92 : 0.4)),
+          stroke: isActive ? "var(--marker-core)" : "none",
+          "stroke-width": isActive ? 2 : 0,
+          class: "note-badge-circle"
+        });
+        svg.appendChild(circle);
+
+        var text = svgEl("text", {
+          x: bx, y: by + (isNatural ? 3.5 : 3),
+          "font-family": "var(--font-mono)",
+          "font-size": isNatural ? 10.5 : 8.5,
+          "font-weight": isNatural ? 700 : 600,
+          "text-anchor": "middle",
+          fill: isActive ? "var(--wood-a)" : "var(--wood-a)",
+          opacity: isActive ? 1 : (dimmed ? 0.16 : (isNatural ? 0.92 : 0.55)),
+          class: "note-badge-text"
+        });
+        text.textContent = noteName(idx);
+        svg.appendChild(text);
+      }
+    });
+  }
+
+  // ---------- Note picker ----------
+  function buildNotePicker() {
+    var grid = el("notePicker");
+    grid.innerHTML = "";
+    for (var i = 0; i < 12; i++) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "note-pick-btn";
+      btn.dataset.index = String(i);
+      btn.textContent = noteName(i);
+      btn.setAttribute("aria-pressed", "false");
+      btn.addEventListener("click", function (e) {
+        var i2 = Number(e.currentTarget.dataset.index);
+        state.highlighted = state.highlighted === i2 ? null : i2;
+        refreshPickerState();
+        renderFretboard();
+      });
+      grid.appendChild(btn);
+    }
+  }
+
+  function refreshPickerState() {
+    el("notePicker").querySelectorAll(".note-pick-btn").forEach(function (b) {
+      var i = Number(b.dataset.index);
+      var active = state.highlighted === i;
+      b.classList.toggle("active", active);
+      b.setAttribute("aria-pressed", String(active));
+    });
+    el("pickerHint").textContent = state.highlighted === null
+      ? "音をタップすると、指板上のすべての位置がハイライトされます。"
+      : noteName(state.highlighted) + " の位置をハイライト中 — もう一度タップで解除";
+  }
+
+  function refreshPickerLabels() {
+    el("notePicker").querySelectorAll(".note-pick-btn").forEach(function (b) {
+      b.textContent = noteName(Number(b.dataset.index));
+    });
+    refreshPickerState();
+  }
+
+  // ---------- Static reference content ----------
+  function buildOpenStringTable() {
+    var body = el("openStringBody");
+    body.innerHTML = "";
+    STRINGS.forEach(function (s) {
+      var tr = document.createElement("tr");
+      tr.innerHTML = "<td>第" + s.number + "弦" + (s.number === 6 ? "（太）" : s.number === 1 ? "（細）" : "") + "</td>" +
+        '<td class="note-cell">' + s.label + "</td>";
+      body.appendChild(tr);
+    });
+  }
+
+  function buildSemitoneStrip() {
+    var strip = el("semitoneStrip");
+    strip.innerHTML = "";
+    var HALF_AFTER = { 4: true, 11: true }; // E->F, B->C
+    for (var i = 0; i < 12; i++) {
+      var chip = document.createElement("span");
+      chip.className = "st-chip";
+      chip.textContent = SHARP_NAMES[i];
+      strip.appendChild(chip);
+      if (i < 11) {
+        var gap = document.createElement("span");
+        gap.className = "st-gap" + (HALF_AFTER[i] ? " half" : "");
+        strip.appendChild(gap);
+      }
+    }
+  }
+
+  // ---------- Settings wiring ----------
+  document.querySelectorAll('.notation-btn[data-notation]').forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll('.notation-btn[data-notation]').forEach(function (b) {
+        b.classList.remove("active");
+        b.setAttribute("aria-pressed", "false");
+      });
+      btn.classList.add("active");
+      btn.setAttribute("aria-pressed", "true");
+      state.notation = btn.dataset.notation;
+      refreshPickerLabels();
+      renderFretboard();
+    });
+  });
+
+  document.querySelectorAll('.notation-btn[data-mode]').forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll('.notation-btn[data-mode]').forEach(function (b) {
+        b.classList.remove("active");
+        b.setAttribute("aria-pressed", "false");
+      });
+      btn.classList.add("active");
+      btn.setAttribute("aria-pressed", "true");
+      state.mode = btn.dataset.mode;
+      renderFretboard();
+    });
+  });
+
+  // ---------- Init ----------
+  buildNotePicker();
+  refreshPickerState();
+  buildOpenStringTable();
+  buildSemitoneStrip();
+  renderFretboard();
+})();
+</script>
+</body>
+</html>
