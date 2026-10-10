@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ポモドーロタイマー</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F6F3EE;
+    --surface: #FFFFFF;
+    --surface-2: #ECE7DE;
+    --border: #D9D2C5;
+    --ink: #22201C;
+    --ink-muted: #5E5A52;
+    --ink-faint: #8A857B; /* 飾り専用 */
+    --focus: #B83A26;
+    --focus-ink: #FFFFFF;
+    --focus-soft: #F6DDD6;
+    --break: #1F7A6E;
+    --break-ink: #FFFFFF;
+    --break-soft: #D9EEE9;
+    --shadow: rgba(30, 24, 18, 0.12);
+    --font-display: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", sans-serif;
+    --font-body: "Zen Kaku Gothic New", -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #171513;
+      --surface: #211E1B;
+      --surface-2: #2B2723;
+      --border: #3D3832;
+      --ink: #EFEAE2;
+      --ink-muted: #B0A99D;
+      --ink-faint: #7A7469;
+      --focus: #F0806A;
+      --focus-ink: #1A0F0C;
+      --focus-soft: #3A211B;
+      --break: #4FC0AE;
+      --break-ink: #0B1512;
+      --break-soft: #1E3A34;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #171513;
+    --surface: #211E1B;
+    --surface-2: #2B2723;
+    --border: #3D3832;
+    --ink: #EFEAE2;
+    --ink-muted: #B0A99D;
+    --ink-faint: #7A7469;
+    --focus: #F0806A;
+    --focus-ink: #1A0F0C;
+    --focus-soft: #3A211B;
+    --break: #4FC0AE;
+    --break-ink: #0B1512;
+    --break-soft: #1E3A34;
+    --shadow: rgba(0, 0, 0, 0.4);
+  }
+  body[data-mode="focus"] { --mode: var(--focus); --mode-ink: var(--focus-ink); --mode-soft: var(--focus-soft); }
+  body[data-mode="break"] { --mode: var(--break); --mode-ink: var(--break-ink); --mode-soft: var(--break-soft); }
+
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--mode-soft);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    transition: background-color 0.4s ease;
+    -webkit-text-size-adjust: 100%;
+  }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+  .app {
+    width: 100%;
+    max-width: 560px;
+    padding: 16px 20px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* 1. ヘッダー */
+  .header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; margin-bottom: 28px; }
+  .header h1 { margin: 0; font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: var(--ink-muted); white-space: nowrap; }
+  .test-badge { margin-left: 6px; padding: 1px 6px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.7rem; font-weight: 500; }
+  .theme-group { display: flex; flex-shrink: 0; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); padding: 2px; }
+  .theme-group button { position: relative; border: 0; background: transparent; color: var(--ink-muted); border-radius: 999px; padding: 4px 10px; min-height: 32px; font-size: 0.78rem; font-weight: 500; white-space: nowrap; }
+  .theme-group button::before { content: ""; position: absolute; top: -6px; bottom: -6px; left: 0; right: 0; }
+  .theme-group button[aria-pressed="true"] { background: var(--surface-2); color: var(--ink); font-weight: 700; }
+
+  /* 2〜5. タイマー */
+  .timer { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .mode-label { display: inline-block; padding: 4px 28px; border-radius: 999px; background: var(--mode); color: var(--mode-ink); font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; letter-spacing: 0.1em; text-indent: 0.1em; transition: background-color 0.4s ease; }
+  .time { margin-top: 4px; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 700; font-size: clamp(4.5rem, 22vw, 11rem); line-height: 1.1; letter-spacing: -0.03em; white-space: nowrap; color: var(--ink); }
+  .paused-note { min-height: 1.6em; font-weight: 700; color: var(--ink-muted); visibility: hidden; }
+  body[data-state="paused"] .paused-note { visibility: visible; }
+  body[data-state="paused"] .time { color: var(--ink-muted); }
+  .bar { align-self: stretch; height: 10px; margin-top: 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); overflow: hidden; }
+  .bar-fill { height: 100%; width: 0; background: var(--mode); border-radius: 999px; }
+  .set-count { margin-top: 10px; color: var(--ink-muted); font-weight: 500; }
+
+  /* 6. ボタン */
+  .controls { display: flex; gap: 12px; margin-top: 18px; }
+  .btn { min-height: 48px; padding: 8px 8px; white-space: nowrap; border-radius: 12px; font-weight: 700; font-size: 1.05rem; }
+  .btn-main { flex: 2; border: 2px solid var(--mode); background: var(--mode); color: var(--mode-ink); box-shadow: 0 4px 14px var(--shadow); transition: background-color 0.4s ease, border-color 0.4s ease; }
+  .btn-sub { flex: 1; border: 2px solid var(--ink-muted); background: transparent; color: var(--ink); }
+  .btn:active { transform: translateY(1px); }
+
+  /* 7. 設定カード */
+  .card { margin-top: 28px; padding: 6px 16px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); box-shadow: 0 2px 10px var(--shadow); }
+  .row { padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .row:last-child { border-bottom: 0; }
+  .row-head { display: flex; align-items: center; gap: 12px; }
+  .row-title { flex: 1 1 0; min-width: 0; font-weight: 700; line-height: 1.35; }
+  .row-title > span { display: inline-block; margin-right: 8px; white-space: nowrap; }
+  .row-state { font-weight: 500; font-size: 0.88rem; color: var(--ink-muted); }
+  .hint { margin: 6px 0 0; font-size: 0.85rem; color: var(--ink-muted); }
+  .hint[hidden] { display: none; }
+  .btn-small { flex-shrink: 0; min-height: 40px; padding: 4px 14px; border: 1px solid var(--ink-muted); border-radius: 10px; background: transparent; color: var(--ink); font-size: 0.88rem; font-weight: 500; }
+  .switch { position: relative; flex-shrink: 0; width: 52px; height: 32px; padding: 0; border: 2px solid var(--ink-muted); border-radius: 999px; background: var(--surface-2); transition: background-color 0.15s ease; }
+  .switch::before { content: ""; position: absolute; top: -8px; bottom: -8px; left: -4px; right: -4px; }
+  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--ink-muted); transition: transform 0.15s ease, background-color 0.15s ease; }
+  .switch[aria-checked="true"] { background: var(--mode); border-color: var(--mode); }
+  .switch[aria-checked="true"]::after { transform: translateX(20px); background: var(--mode-ink); }
+  .minutes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+  .field label { display: block; font-size: 0.85rem; color: var(--ink-muted); }
+  .field-input { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+  .field input { width: 100%; min-width: 0; min-height: 44px; padding: 4px 10px; border: 1px solid var(--ink-muted); border-radius: 10px; background: var(--bg); color: var(--ink); font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 1.1rem; }
+  .minutes-foot { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-top: 10px; }
+
+  /* 8. 区切りのお知らせ */
+  .alert { position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px; background: var(--mode); color: var(--mode-ink); text-align: center; cursor: pointer; visibility: hidden; opacity: 0; }
+  .alert.open { visibility: visible; opacity: 1; }
+  .alert.fading { opacity: 0; transition: opacity 0.6s ease; }
+  .alert.blink { animation: alert-blink 2s ease-in-out infinite; }
+  @keyframes alert-blink {
+    0%, 100% { background-color: var(--mode); }
+    50% { background-color: var(--mode-soft); }
+  }
+  /* 文字の下に同色の帯を敷き、明滅中でも読めるようにする */
+  .alert-panel { max-width: 100%; padding: 20px 12px; border-radius: 20px; background: var(--mode); color: var(--mode-ink); }
+  .alert-title { margin: 0; font-family: var(--font-display); font-size: clamp(2.5rem, 12vw, 7rem); font-weight: 900; line-height: 1.2; word-break: keep-all; }
+  .alert-time { margin-top: 8px; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 700; font-size: clamp(2rem, 9vw, 4.5rem); line-height: 1.2; }
+  .alert-set { font-weight: 700; font-size: 1.1rem; }
+  .alert-hint { position: absolute; left: 8px; right: 8px; bottom: max(16px, env(safe-area-inset-bottom)); margin: 0; }
+  .alert-hint span { display: inline-block; padding: 6px 14px; border-radius: 999px; background: var(--mode); color: var(--mode-ink); font-size: 0.9rem; font-weight: 500; }
+
+  @media (max-width: 480px) {
+    .app { padding: 12px 16px 24px; }
+    .header { margin-bottom: 20px; }
+    .btn { min-height: 52px; }
+    .theme-group button { padding: 4px 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body, .mode-label, .btn-main, .switch, .switch::after { transition: none; }
+    .alert.blink { animation: none; }
+    .alert.fading { transition: none; }
+  }
+</style>
+</head>
+<body data-mode="focus" data-state="idle">
+
+<main class="app">
+  <header class="header">
+    <h1>ポモドーロタイマー<span class="test-badge" id="testBadge" hidden>確認用 60倍速</span></h1>
+    <div class="theme-group" role="group" aria-label="表示テーマ">
+      <button type="button" data-theme-choice="auto" aria-pressed="true">自動</button>
+      <button type="button" data-theme-choice="light" aria-pressed="false">ライト</button>
+      <button type="button" data-theme-choice="dark" aria-pressed="false">ダーク</button>
+    </div>
+  </header>
+
+  <section class="timer" aria-label="タイマー">
+    <div class="mode-label" id="modeLabel">集中</div>
+    <div class="time" id="time" role="timer" aria-live="off">25:00</div>
+    <div class="paused-note" id="pausedNote">一時停止中</div>
+    <div class="bar" aria-hidden="true"><div class="bar-fill" id="barFill"></div></div>
+    <div class="set-count" id="setCount">1セット目</div>
+  </section>
+
+  <div class="controls">
+    <button type="button" class="btn btn-main" id="mainBtn">開始</button>
+    <button type="button" class="btn btn-sub" id="resetBtn">リセット</button>
+  </div>
+
+  <section class="card" aria-label="設定">
+    <div class="row">
+      <div class="row-head">
+        <div class="row-title"><span id="soundLabel">アラーム音</span><span class="row-state" id="soundState">出す</span></div>
+        <button type="button" class="btn-small" id="testSoundBtn">音を試す</button>
+        <button type="button" class="switch" id="soundSwitch" role="switch" aria-checked="true" aria-labelledby="soundLabel"></button>
+      </div>
+      <p class="hint" id="soundHint" hidden>区切りは画面全体でお知らせします</p>
+    </div>
+
+    <div class="row">
+      <div class="row-head">
+        <div class="row-title"><span id="notifyLabel">ブラウザーの通知</span><span class="row-state" id="notifyState">切</span></div>
+        <button type="button" class="switch" id="notifySwitch" role="switch" aria-checked="false" aria-labelledby="notifyLabel"></button>
+      </div>
+      <p class="hint" id="notifyMsg" role="status" hidden></p>
+    </div>
+
+    <div class="row">
+      <div class="row-title">時間の変更</div>
+      <div class="minutes">
+        <div class="field">
+          <label for="focusMin">集中(1〜90分)</label>
+          <div class="field-input"><input type="number" id="focusMin" min="1" max="90" step="1" inputmode="numeric" value="25"><span>分</span></div>
+        </div>
+        <div class="field">
+          <label for="breakMin">休憩(1〜30分)</label>
+          <div class="field-input"><input type="number" id="breakMin" min="1" max="30" step="1" inputmode="numeric" value="5"><span>分</span></div>
+        </div>
+      </div>
+      <div class="minutes-foot">
+        <button type="button" class="btn-small" id="defaultsBtn">初期値に戻す(25分 / 5分)</button>
+      </div>
+      <p class="hint" id="applyNote" hidden>変更は次の区間から反映されます</p>
+    </div>
+  </section>
+</main>
+
+<div class="alert" id="alert" aria-live="assertive">
+  <div class="alert-panel">
+    <p class="alert-title" id="alertTitle"></p>
+    <div aria-hidden="true">
+      <div class="alert-time" id="alertTime"></div>
+      <div class="alert-set" id="alertSet"></div>
+    </div>
+  </div>
+  <p class="alert-hint"><span>タップかキーで閉じます</span></p>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  // ---------- 定数 ----------
+  var KEY_SOUND = 'pomodoro-timer:sound';
+  var KEY_THEME = 'pomodoro-timer:theme';
+  var KEY_NOTIFY = 'pomodoro-timer:notify';
+  var KEY_MINUTES = 'pomodoro-timer:minutes';
+  var APP_TITLE = 'ポモドーロタイマー';
+  var DEFAULT_MINUTES = { focus: 25, break: 5 };
+  var LIMITS = { focus: [1, 90], break: [1, 30] };
+  var MODE_NAME = { focus: '集中', break: '休憩' };
+  var ALERT_TEXT = { focus: '集中の時間です', break: '休憩の時間です' };
+  var ALERT_AUTO_CLOSE_MS = 8000;
+  var ALERT_FADE_MS = 600;
+  var ALERT_BLINK_MS = 60000;
+
+  // 確認用: URLに ?test=1 を付けると、1分を1秒として進める
+  var TEST = /[?&]test=1(&|$)/.test(location.search);
+  var UNIT_MS = TEST ? 1000 : 60000;
+
+  // ---------- 保存 ----------
+  function load(key){
+    try { return localStorage.getItem(key); } catch (e) { return null; }
+  }
+  function save(key, value){
+    try { localStorage.setItem(key, value); } catch (e) { /* 保存できなくても続ける */ }
+  }
+
+  function clampMinutes(mode, value, fallback){
+    var n = Math.round(Number(value));
+    if (value === '' || value === null || !isFinite(n)) return fallback;
+    return Math.min(LIMITS[mode][1], Math.max(LIMITS[mode][0], n));
+  }
+
+  var minutes = { focus: DEFAULT_MINUTES.focus, break: DEFAULT_MINUTES.break };
+  (function(){
+    try {
+      var saved = JSON.parse(load(KEY_MINUTES) || 'null');
+      if (saved && typeof saved === 'object') {
+        // 数値か文字列だけ受け付ける(true などが1分にならないように)
+        var pick = function(m){
+          var v = saved[m];
+          return (typeof v === 'number' || typeof v === 'string') ? clampMinutes(m, v, DEFAULT_MINUTES[m]) : DEFAULT_MINUTES[m];
+        };
+        minutes.focus = pick('focus');
+        minutes.break = pick('break');
+      }
+    } catch (e) { /* こわれた値は無視 */ }
+  })();
+  var soundOn = load(KEY_SOUND) !== '0';
+  var notifyOn = load(KEY_NOTIFY) === '1';
+
+  // ---------- 要素 ----------
+  function $(id){ return document.getElementById(id); }
+  var body = document.body;
+  var elModeLabel = $('modeLabel'), elTime = $('time'), elBarFill = $('barFill'), elSetCount = $('setCount');
+  var elMainBtn = $('mainBtn'), elResetBtn = $('resetBtn');
+  var elSoundSwitch = $('soundSwitch'), elSoundState = $('soundState'), elSoundHint = $('soundHint'), elTestSound = $('testSoundBtn');
+  var elNotifySwitch = $('notifySwitch'), elNotifyState = $('notifyState'), elNotifyMsg = $('notifyMsg');
+  var elFocusMin = $('focusMin'), elBreakMin = $('breakMin'), elDefaults = $('defaultsBtn'), elApplyNote = $('applyNote');
+  var elAlert = $('alert'), elAlertTitle = $('alertTitle'), elAlertTime = $('alertTime'), elAlertSet = $('alertSet');
+
+  function setText(el, text){ if (el.textContent !== text) el.textContent = text; }
+
+  // ---------- タイマーの状態 ----------
+  var mode = 'focus';     // focus | break
+  var state = 'idle';     // idle | running | paused
+  var setNo = 1;
+  var segMs = minutes.focus * UNIT_MS;  // いまの区間の長さ
+  var remainMs = segMs;                 // 残り(停止中はこの値を保持)
+  var endAt = 0;                        // 動作中の終了時刻(Date.now() 基準)
+
+  function durationOf(m){ return minutes[m] * UNIT_MS; }
+
+  function formatRemain(ms){
+    // 表示は「分:秒」。確認用のときは60倍速で同じ見た目になる
+    var totalSec = Math.max(0, Math.ceil(ms / UNIT_MS * 60 - 1e-6));
+    var m = Math.floor(totalSec / 60), s = totalSec % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function start(){
+    if (state === 'running') return;
+    ensureAudio();
+    startTicker();
+    endAt = Date.now() + remainMs;
+    state = 'running';
+    render();
+  }
+  function pause(){
+    if (state !== 'running') return;
+    tick();                       // 区切りを過ぎていたら先に進めておく
+    remainMs = Math.max(0, endAt - Date.now());
+    state = 'paused';
+    render();
+  }
+  function toggle(){
+    if (state === 'running') pause(); else start();
+  }
+  function reset(){
+    closeAlert();
+    mode = 'focus';
+    state = 'idle';
+    setNo = 1;
+    segMs = durationOf('focus');
+    remainMs = segMs;
+    stopTicker();
+    render();
+  }
+
+  // 終了時刻から残りを計算する。区切りをいくつ過ぎていても順に進め、お知らせは最後の1回だけ
+  function tick(){
+    if (state === 'running') {
+      var now = Date.now();
+      var ended = null;
+      while (now >= endAt) {
+        ended = mode;
+        mode = (mode === 'focus') ? 'break' : 'focus';
+        if (mode === 'focus') setNo++;
+        segMs = durationOf(mode);
+        endAt += segMs;
+      }
+      remainMs = endAt - now;
+      if (ended) announce(ended);
+    }
+    render();
+  }
+
+  // 裏のタブでは setInterval が大きく間引かれるので、Worker の時計も併用する(使えなければ setInterval だけ)
+  // idle に戻ったら止め、次の開始でまた起こす
+  var tickerStarted = false, worker = null, workerUrl = null;
+  function startTicker(){
+    if (tickerStarted) return;
+    tickerStarted = true;
+    try {
+      var src = 'setInterval(function(){postMessage(0);},500);';
+      workerUrl = URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
+      worker = new Worker(workerUrl);
+      worker.onmessage = tick;
+      worker.onerror = function(e){ if (e && e.preventDefault) e.preventDefault(); };
+    } catch (e) { worker = null; /* Worker が使えない環境 */ }
+  }
+  function stopTicker(){
+    tickerStarted = false;
+    try { if (worker) worker.terminate(); } catch (e) {}
+    try { if (workerUrl) URL.revokeObjectURL(workerUrl); } catch (e) {}
+    worker = null;
+    workerUrl = null;
+  }
+  setInterval(tick, 250);
+  document.addEventListener('visibilitychange', tick);
+  window.addEventListener('focus', tick);
+  window.addEventListener('pageshow', tick);
+
+  // ---------- 表示 ----------
+  function render(){
+    if (body.getAttribute('data-mode') !== mode) body.setAttribute('data-mode', mode);
+    if (body.getAttribute('data-state') !== state) body.setAttribute('data-state', state);
+
+    var timeText = formatRemain(remainMs);
+    var setText_ = setNo + 'セット目';
+    setText(elModeLabel, MODE_NAME[mode]);
+    setText(elTime, timeText);
+    setText(elSetCount, setText_);
+    setText(elMainBtn, state === 'running' ? '一時停止' : (state === 'paused' ? '再開' : '開始'));
+
+    var progress = segMs > 0 ? 1 - remainMs / segMs : 0;
+    progress = Math.min(1, Math.max(0, progress));
+    elBarFill.style.width = (progress * 100).toFixed(2) + '%';
+
+    elApplyNote.hidden = (state === 'idle');
+
+    var title;
+    if (alertOpen) {
+      setText(elAlertTime, MODE_NAME[mode] + ' ' + timeText);
+      setText(elAlertSet, setText_);
+      var phase = Math.floor((Date.now() - alertStart) / 1000) % 2;
+      title = phase === 0 ? ALERT_TEXT[alertMode] : '● ● ●';
+    } else if (state === 'idle') {
+      title = APP_TITLE;
+    } else {
+      title = MODE_NAME[mode] + ' ' + timeText + ' - ' + APP_TITLE;
+    }
+    if (document.title !== title) document.title = title;
+  }
+
+  // ---------- 区切りのお知らせ ----------
+  var alertOpen = false, alertStart = 0, alertMode = 'break';
+  var alertTimer = null;
+  var reduceMotion = null;
+  try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)'); } catch (e) { reduceMotion = null; }
+
+  function clearAlertTimer(){
+    if (alertTimer !== null) { clearTimeout(alertTimer); alertTimer = null; }
+  }
+
+  // ended: 終わった区間。この時点で mode は次の区間になっている
+  function announce(ended){
+    clearAlertTimer();
+    alertOpen = true;
+    alertStart = Date.now();
+    alertMode = mode;
+    elAlert.classList.remove('fading', 'blink');
+    elAlertTitle.textContent = ALERT_TEXT[mode];
+    elAlert.classList.add('open');
+
+    // 音が「出す」でも実際に鳴らせなかったときは、音なしと同じ扱いにする
+    var played = soundOn && beep(ended === 'focus' ? 880 : 660);
+    if (played) {
+      // 音あり: 3回鳴らし、明滅なし。8秒で自動的に消える
+      alertTimer = setTimeout(fadeAlert, ALERT_AUTO_CLOSE_MS);
+    } else {
+      // 音なし: 閉じるまで消さない。最初の60秒だけ明滅
+      elAlert.classList.add('blink');
+      alertTimer = setTimeout(function(){
+        alertTimer = null;
+        elAlert.classList.remove('blink');
+      }, ALERT_BLINK_MS);
+    }
+    notify(ended);
+  }
+  function fadeAlert(){
+    alertTimer = null;
+    if (reduceMotion && reduceMotion.matches) { closeAlert(); return; }
+    elAlert.classList.add('fading');
+    alertTimer = setTimeout(closeAlert, ALERT_FADE_MS);
+  }
+  function closeAlert(){
+    clearAlertTimer();
+    elAlert.classList.remove('open', 'fading', 'blink');
+    if (!alertOpen) return;
+    alertOpen = false;
+    elAlertTitle.textContent = '';
+    render();
+  }
+  elAlert.addEventListener('click', closeAlert);
+
+  // ---------- 音(Web Audio API) ----------
+  var audioCtx = null;
+  function ensureAudio(){
+    try {
+      if (!audioCtx) {
+        var Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return null;
+        audioCtx = new Ctx();
+      }
+      if (audioCtx.state === 'suspended' && audioCtx.resume) {
+        var p = audioCtx.resume();
+        if (p && p.catch) p.catch(function(){});
+      }
+    } catch (e) { audioCtx = null; }
+    return audioCtx;
+  }
+  // サイン波を3回(各0.25秒、間隔0.15秒)。いま実際に鳴らせる状態なら true を返す
+  function beep(freq){
+    try {
+      if (!audioCtx) return false;
+      var canPlay = (audioCtx.state === 'running');
+      if (audioCtx.state === 'suspended' && audioCtx.resume) {
+        var p = audioCtx.resume();
+        if (p && p.catch) p.catch(function(){});
+      }
+      var t0 = audioCtx.currentTime + 0.05;
+      for (var i = 0; i < 3; i++) {
+        var t = t0 + i * 0.4;
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.35, t + 0.04);
+        gain.gain.setValueAtTime(0.35, t + 0.17);
+        gain.gain.linearRampToValueAtTime(0, t + 0.25);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(t);
+        osc.stop(t + 0.27);
+      }
+      return canPlay;
+    } catch (e) { return false; /* 音が出せなくても続ける */ }
+  }
+
+  function renderSound(){
+    elSoundSwitch.setAttribute('aria-checked', soundOn ? 'true' : 'false');
+    setText(elSoundState, soundOn ? '出す' : '出さない');
+    elSoundHint.hidden = soundOn;
+  }
+  elSoundSwitch.addEventListener('click', function(e){
+    if (swallowClick(e)) return;
+    soundOn = !soundOn;
+    save(KEY_SOUND, soundOn ? '1' : '0');
+    renderSound();
+  });
+  elTestSound.addEventListener('click', function(e){
+    if (swallowClick(e)) return;
+    ensureAudio();
+    beep(880);
+  });
+
+  // ---------- ブラウザーの通知 ----------
+  function renderNotify(message){
+    elNotifySwitch.setAttribute('aria-checked', notifyOn ? 'true' : 'false');
+    setText(elNotifyState, notifyOn ? '入' : '切');
+    if (message) { elNotifyMsg.textContent = message; elNotifyMsg.hidden = false; }
+    else { elNotifyMsg.textContent = ''; elNotifyMsg.hidden = true; }
+  }
+  function setNotify(on, message){
+    notifyOn = on;
+    save(KEY_NOTIFY, on ? '1' : '0');
+    renderNotify(message);
+  }
+  var MSG_UNSUPPORTED = 'このブラウザーは通知に対応していないため、切に戻しました。';
+  var MSG_DENIED = '通知が許可されていないため、切に戻しました。ブラウザーの設定で許可できます。';
+  var MSG_DEFAULT = '通知が許可されなかったため、切にしました。';
+  var MSG_FAILED = '通知を使えなかったため、切にしました。';
+  var MSG_FILE = 'このファイルを直接開いた状態では、通知を使えないことがあります。';
+  function isFileProtocol(){
+    try { return location.protocol === 'file:'; } catch (e) { return false; }
+  }
+  // 許可が得られなかった理由を1行にまとめる
+  function refusalMessage(base){
+    return isFileProtocol() ? base + MSG_FILE : base;
+  }
+  function permissionMessage(result){
+    return refusalMessage(result === 'denied' ? MSG_DENIED : MSG_DEFAULT);
+  }
+
+  function requestNotify(){
+    if (!('Notification' in window)) { setNotify(false, MSG_UNSUPPORTED); return; }
+    try {
+      if (Notification.permission === 'granted') { setNotify(true, ''); return; }
+      if (Notification.permission === 'denied') { setNotify(false, permissionMessage('denied')); return; }
+      var done = false;
+      var onResult = function(result){
+        if (done) return;
+        done = true;
+        if (result === 'granted') setNotify(true, '');
+        else setNotify(false, permissionMessage(result));
+      };
+      var p = Notification.requestPermission(onResult);
+      if (p && typeof p.then === 'function') {
+        p.then(onResult, function(){ if (!done) { done = true; setNotify(false, refusalMessage(MSG_FAILED)); } });
+      }
+    } catch (e) {
+      setNotify(false, refusalMessage(MSG_FAILED));
+    }
+  }
+  elNotifySwitch.addEventListener('click', function(e){
+    if (swallowClick(e)) return;
+    if (notifyOn) setNotify(false, '');
+    else requestNotify();
+  });
+  function notify(ended){
+    if (!notifyOn) return;
+    try {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      var n = new Notification(ALERT_TEXT[mode], {
+        body: ended === 'focus'
+          ? '集中が終わりました。' + minutes.break + '分休みましょう'
+          : '休憩が終わりました。' + setNo + 'セット目を始めます',
+        tag: 'pomodoro-timer'
+      });
+      n.onclick = function(){ try { window.focus(); n.close(); } catch (e) {} };
+    } catch (e) { /* 通知できなくても続ける */ }
+  }
+  // 保存では「入」でも、いま許可がなければ切に戻す
+  (function(){
+    if (!notifyOn) { renderNotify(''); return; }
+    var supported = ('Notification' in window), permission = '';
+    try { permission = supported ? Notification.permission : ''; } catch (e) { permission = ''; }
+    if (permission === 'granted') renderNotify('');
+    else setNotify(false, supported ? permissionMessage(permission) : MSG_UNSUPPORTED);
+  })();
+
+  // ---------- 時間の変更 ----------
+  function applyMinutes(){
+    save(KEY_MINUTES, JSON.stringify(minutes));
+    if (state === 'idle') {
+      // 未開始ならすぐ反映。動作中・一時停止中は次の区間から(durationOf が次回に読む)
+      segMs = durationOf('focus');
+      remainMs = segMs;
+    }
+    render();
+  }
+  function bindMinutes(input, m){
+    // 入力の途中は、範囲内の整数のときだけ反映する(欄は書き換えない)
+    input.addEventListener('input', function(){
+      var raw = input.value;
+      if (!/^\d+$/.test(raw)) return;
+      var n = Number(raw);
+      if (n < LIMITS[m][0] || n > LIMITS[m][1]) return;
+      if (n === minutes[m]) return;
+      minutes[m] = n;
+      applyMinutes();
+    });
+    // 確定したら範囲に丸めて欄も直す
+    input.addEventListener('change', function(){
+      minutes[m] = clampMinutes(m, input.value, minutes[m]);
+      input.value = String(minutes[m]);
+      applyMinutes();
+    });
+  }
+  bindMinutes(elFocusMin, 'focus');
+  bindMinutes(elBreakMin, 'break');
+  elDefaults.addEventListener('click', function(e){
+    if (swallowClick(e)) return;
+    minutes.focus = DEFAULT_MINUTES.focus;
+    minutes.break = DEFAULT_MINUTES.break;
+    elFocusMin.value = String(minutes.focus);
+    elBreakMin.value = String(minutes.break);
+    applyMinutes();
+  });
+
+  // ---------- ボタンとキー ----------
+  // キーで操作した直後(お知らせを閉じた / Spaceで開始・一時停止した)は、そのキーを離すまで
+  // キーボード由来のクリック(detail が 0)だけを捨てる。マウスやタップのクリックは通す
+  var heldKey = null;
+  function keyId(e){ return e.code || e.key || 'key'; }
+  function swallowClick(e){ return heldKey !== null && (!e || e.detail === 0); }
+
+  elMainBtn.addEventListener('click', function(e){
+    if (swallowClick(e)) return;
+    toggle();
+  });
+  elResetBtn.addEventListener('click', function(e){
+    if (swallowClick(e)) return;
+    reset();
+  });
+
+  function isSpace(e){ return e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar'; }
+  // 文字を打ち込む部品かどうか(ボタンやスイッチは含めない)
+  var NON_TEXT_INPUT = { button: 1, submit: 1, reset: 1, checkbox: 1, radio: 1, range: 1, color: 1, file: 1, image: 1 };
+  function isTextEntry(el){
+    if (!el || !el.tagName) return false;
+    var tag = el.tagName;
+    if (tag === 'INPUT') return !NON_TEXT_INPUT[(el.type || 'text').toLowerCase()];
+    return tag === 'TEXTAREA' || tag === 'SELECT' || !!el.isContentEditable;
+  }
+
+  // マウスやタップで押してフォーカスが残っているだけの部品を覚えておく。
+  // (:focus-visible は、キーを押した時点でマウス由来のフォーカスでも真になるので使えない)
+  var pointerFocused = null;
+  document.addEventListener('click', function(e){
+    if (e.detail === 0) return;    // キーボード由来のクリック
+    // ラベル経由のフォーカス移動が済んでから読む
+    setTimeout(function(){ pointerFocused = document.activeElement; }, 0);
+  }, true);
+  // ウィンドウが裏に回っただけのときは消さない
+  document.addEventListener('focusout', function(){ if (document.hasFocus()) pointerFocused = null; });
+
+  // ボタン・スイッチで、かつキーボード操作でフォーカスされているか
+  function isKeyboardFocusedControl(el){
+    if (!el || !el.tagName) return false;
+    var tag = el.tagName;
+    if (!(tag === 'BUTTON' || tag === 'A' || tag === 'SUMMARY' || (tag === 'INPUT' && !isTextEntry(el)))) return false;
+    return el !== pointerFocused;
+  }
+
+  document.addEventListener('keydown', function(e){
+    var id = keyId(e);
+    if (e.key === 'Tab') pointerFocused = null;
+    if (heldKey !== null) {
+      if (id === heldKey && e.repeat) { e.preventDefault(); return; }  // 押しっぱなしの連続入力
+      heldKey = null;                                                   // 別のキー、または keyup を取りこぼしたあとの押し直し
+    }
+    var typing = isTextEntry(e.target);
+    var modified = e.ctrlKey || e.metaKey || e.altKey;
+    if (alertOpen) {
+      if (typing) return;          // 入力中はキーでは閉じず、入力を通す(クリック・タップでは閉じる)
+      closeAlert();
+      if (!modified) {
+        heldKey = id;
+        e.preventDefault();
+      }
+      return;
+    }
+    if (!isSpace(e) || modified || typing) return;
+    // キーボードで移動してきたボタンやスイッチは、Spaceも部品自身の動作に任せる。
+    // ここで heldKey を立てないので、keyup も部品のクリックもそのまま通る
+    if (isKeyboardFocusedControl(e.target)) return;
+    // マウスやタップで押してフォーカスが残っているだけなら、Spaceは開始 / 一時停止に回す
+    e.preventDefault();
+    if (e.repeat) return;
+    heldKey = id;
+    toggle();
+  });
+  document.addEventListener('keyup', function(e){
+    if (heldKey === null || keyId(e) !== heldKey) return;
+    e.preventDefault();
+    // ボタンのクリックは keyup のあとに出るので、少し待ってから解除する
+    setTimeout(function(){ heldKey = null; }, 0);
+  });
+  window.addEventListener('blur', function(){ heldKey = null; });
+
+  // ---------- テーマ ----------
+  var themeButtons = document.querySelectorAll('[data-theme-choice]');
+  function applyTheme(theme){
+    if (theme === 'light' || theme === 'dark') {
+      document.documentElement.setAttribute('data-theme', theme);
+    } else {
+      theme = 'auto';
+      document.documentElement.removeAttribute('data-theme');
+    }
+    for (var i = 0; i < themeButtons.length; i++) {
+      var on = themeButtons[i].getAttribute('data-theme-choice') === theme;
+      themeButtons[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+  }
+  for (var i = 0; i < themeButtons.length; i++) {
+    themeButtons[i].addEventListener('click', function(e){
+      if (swallowClick(e)) return;
+      var theme = this.getAttribute('data-theme-choice');
+      save(KEY_THEME, theme);
+      applyTheme(theme);
+    });
+  }
+  applyTheme(load(KEY_THEME) || 'auto');
+
+  // ---------- はじめの表示 ----------
+  if (TEST) $('testBadge').hidden = false;
+  elFocusMin.value = String(minutes.focus);
+  elBreakMin.value = String(minutes.break);
+  renderSound();
+  render();
+})();
+</script>
+</body>
+</html>
