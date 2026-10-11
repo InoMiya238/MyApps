@@ -1,0 +1,60 @@
+/* 学習シリーズ共通の土台。
+   色は各アプリの theme.css で決める。ここでは変数の名前だけを使う。
+   このファイルが使う色の変数: --bg --ink --ink-muted --border --accent
+   theme.css で決める変数の一覧は CLAUDE.md の「デザイン方針」を参照。
+   一覧ページ(Apps/index.html)もこのファイルを読み込む。
+   ページごとの違い(.app の幅など)は、各ページの <style> で上書きする。 */
+
+:root {
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Inter", -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  padding: 32px 16px 64px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ページ全体の枠。max-width と gap は各ページで決める */
+.app {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- 見出し ---------- */
+.hero {
+  text-align: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.eyebrow {
+  margin: 0 0 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+}
+.hero h1 {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(28px, 6vw, 40px);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+/* max-width は各ページで決める */
+.tagline {
+  margin: 0 auto;
+  color: var(--ink-muted);
+  font-size: 14.5px;
+  line-height: 1.6;
+}

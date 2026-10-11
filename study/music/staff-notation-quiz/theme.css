@@ -1,0 +1,61 @@
+/* 五線譜ノート道場 の色。変数名は学習シリーズ共通(shared/base.css を参照)。 */
+:root {
+  --bg: #F5EFE3;
+  --surface: #FFFFFF;
+  --surface-2: #EDE4D2;
+  --border: #DED2B8;
+  --ink: #2B211A;
+  --ink-muted: #6B5D4F;
+  --ink-faint: #948673;
+  --accent: #A8722F;
+  --accent-ink: #FFFCF6;
+  --good: #3F7457;
+  --good-soft: #E1EEE3;
+  --bad: #AC4634;
+  --bad-soft: #F5E3DD;
+  --shadow: rgba(43, 33, 26, 0.12);
+  --paper-a: #FFFDF8;
+  --paper-b: #F7F0E1;
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17110C;
+    --surface: #221A13;
+    --surface-2: #2C2218;
+    --border: #3B2E1F;
+    --ink: #F1E7D6;
+    --ink-muted: #B9A98E;
+    --ink-faint: #83725B;
+    --accent: #DDAB5C;
+    --accent-ink: #201505;
+    --good: #7DB694;
+    --good-soft: #223229;
+    --bad: #E08669;
+    --bad-soft: #3A241E;
+    --shadow: rgba(0, 0, 0, 0.4);
+    --paper-a: #241B12;
+    --paper-b: #1C150E;
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  --bg: #17110C;
+  --surface: #221A13;
+  --surface-2: #2C2218;
+  --border: #3B2E1F;
+  --ink: #F1E7D6;
+  --ink-muted: #B9A98E;
+  --ink-faint: #83725B;
+  --accent: #DDAB5C;
+  --accent-ink: #201505;
+  --good: #7DB694;
+  --good-soft: #223229;
+  --bad: #E08669;
+  --bad-soft: #3A241E;
+  --shadow: rgba(0, 0, 0, 0.4);
+  --paper-a: #241B12;
+  --paper-b: #1C150E;
+}

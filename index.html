@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ページ一覧</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/base.css">
+
+<style>
+  /* 一覧ページの色。見本(暗算道場)と同じ色み */
+  :root {
+    --bg: #F5EFE3;
+    --surface: #FFFFFF;
+    --surface-2: #EDE4D2;
+    --border: #DED2B8;
+    --ink: #2B211A;
+    --ink-muted: #6B5D4F;
+    --ink-faint: #948673;
+    --accent: #A8722F;
+    --accent-ink: #FFFCF6;
+    --shadow: rgba(43, 33, 26, 0.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17110C;
+      --surface: #221A13;
+      --surface-2: #2C2218;
+      --border: #3B2E1F;
+      --ink: #F1E7D6;
+      --ink-muted: #B9A98E;
+      --ink-faint: #83725B;
+      --accent: #DDAB5C;
+      --accent-ink: #201505;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17110C;
+    --surface: #221A13;
+    --surface-2: #2C2218;
+    --border: #3B2E1F;
+    --ink: #F1E7D6;
+    --ink-muted: #B9A98E;
+    --ink-faint: #83725B;
+    --accent: #DDAB5C;
+    --accent-ink: #201505;
+    --shadow: rgba(0, 0, 0, 0.4);
+  }
+
+  .app { max-width: 900px; gap: 28px; }
+  .tagline { max-width: 46ch; }
+
+  /* ---------- 区分 ---------- */
+  .group { display: flex; flex-direction: column; gap: 14px; }
+  .group-head { display: flex; align-items: baseline; gap: 10px; }
+  .group-head h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+  }
+  .group-head span {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--ink-muted);
+  }
+  .subject {
+    margin: 6px 0 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-muted);
+  }
+
+  /* ---------- カード ---------- */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 12px;
+  }
+  .card {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .card h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .card h3 a { color: var(--ink); text-decoration: none; }
+  .card h3 a:hover { color: var(--accent); }
+  .card p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+  .card .more {
+    margin-top: auto;
+    padding-top: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 13px;
+  }
+  .card .more a { color: var(--ink-muted); font-weight: 600; text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+  .card .more a:hover { color: var(--ink); }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+  @media (max-width: 480px) {
+    .cards { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <p class="eyebrow">APPS</p>
+    <h1>ページ一覧</h1>
+    <p class="tagline">学習用のページと、単体で使うツールの入口です。</p>
+  </header>
+
+  <section class="group">
+    <div class="group-head"><h2>学習</h2><span>STUDY</span></div>
+
+    <p class="subject">音楽</p>
+    <div class="cards">
+      <article class="card">
+        <h3><a href="study/music/fretboard-note-quiz/index.html">指板ノート道場</a></h3>
+        <p>ギターの指板で、ハイライトされた位置の音名を答える練習。</p>
+        <div class="more">
+          <a href="study/music/fretboard-note-quiz/reference.html">指板ノート帳</a>
+          <a href="study/music/fretboard-note-quiz/pentatonic.html">ペンタトニックスケール帳</a>
+        </div>
+      </article>
+      <article class="card">
+        <h3><a href="study/music/staff-notation-quiz/index.html">五線譜ノート道場</a></h3>
+        <p>音の高さ(音名)と音の長さ(リズム)を切り替えて、楽譜を読む練習。</p>
+        <div class="more">
+          <a href="study/music/staff-notation-quiz/reference.html">音符の読み方帳</a>
+        </div>
+      </article>
+    </div>
+
+    <p class="subject">数学</p>
+    <div class="cards">
+      <article class="card">
+        <h3><a href="study/math/mental-math-trainer/index.html">暗算道場</a></h3>
+        <p>暗算のテクニックを、四則演算と組み合わせて実戦形式で練習。</p>
+        <div class="more">
+          <a href="study/math/mental-math-trainer/reference.html">暗算テクニック帳</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="group">
+    <div class="group-head"><h2>ツール</h2><span>TOOLS</span></div>
+    <div class="cards">
+      <article class="card">
+        <h3><a href="tools/function-grapher/index.html">関数グラフ描画ツール</a></h3>
+        <p>1変数・2変数・陰関数などの式を入力して、グラフを描く。</p>
+      </article>
+      <article class="card">
+        <h3><a href="tools/habit-tracker/index.html">習慣トラッカー</a></h3>
+        <p>毎日の習慣を記録する。</p>
+      </article>
+      <article class="card">
+        <h3><a href="tools/pomodoro-timer/index.html">ポモドーロタイマー</a></h3>
+        <p>作業と休憩を、時間を区切ってくり返す。</p>
+      </article>
+    </div>
+  </section>
+</div>
+</body>
+</html>

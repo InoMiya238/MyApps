@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>暗算テクニック帳</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 900px; gap: 24px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 56ch; }
+
+  /* ---------- Controls bar ---------- */
+  .controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 20px;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 20px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .controls-bar p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .quiz-link {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-radius: 9px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .quiz-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- TOC ---------- */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .toc-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 10px;
+  }
+  .toc ol {
+    margin: 0;
+    padding-left: 1.2em;
+    columns: 2;
+    column-gap: 24px;
+    font-size: 13.5px;
+  }
+  .toc li { margin-bottom: 6px; break-inside: avoid; }
+  .toc a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .toc a:hover { text-decoration: underline; }
+  @media (max-width: 560px) { .toc ol { columns: 1; } }
+
+  /* ---------- Study cards ---------- */
+  .study-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 700px) {
+    .study-grid { grid-template-columns: 1fr; }
+  }
+
+  .study-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-margin-top: 16px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .study-card.wide { grid-column: 1 / -1; }
+
+  .study-card h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .study-card h2 .num {
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .study-card .tag {
+    align-self: flex-start;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    background: var(--surface-2);
+    padding: 3px 9px;
+    border-radius: 999px;
+  }
+  .study-card p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+  .study-card .rule {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .example {
+    background: var(--surface-2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .example .ex-title {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+  .example .steps {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.85;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--ink);
+  }
+  .example .result {
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--good);
+    margin-top: 2px;
+  }
+
+  footer.cta {
+    text-align: center;
+    padding: 8px 0 0;
+  }
+  footer.cta p {
+    margin: 10px 0 0;
+    color: var(--ink-muted);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="hero">
+    <p class="eyebrow">ARTHUR BENJAMIN'S SECRETS OF MENTAL MATH</p>
+    <h1>暗算テクニック帳</h1>
+    <p class="tagline">アーサー・ベンジャミン著「暗算の達人」に登場する暗算テクニックの早見帳です。各項目は道場(クイズ)の出題形式に対応しており、道場では音声で問題を読み上げることもできます。</p>
+  </header>
+
+  <section class="controls-bar" aria-label="ナビゲーション">
+    <p>読んだらすぐ実戦。道場では音声読み上げにも対応しています。</p>
+    <a class="quiz-link" href="index.html">道場でクイズに挑戦 →</a>
+  </section>
+
+  <nav class="toc" aria-label="目次">
+    <p class="toc-title">目次</p>
+    <ol>
+      <li><a href="#basic">左から計算する基本方針</a></li>
+      <li><a href="#add">足し算</a></li>
+      <li><a href="#sub">引き算・補数法</a></li>
+      <li><a href="#mul1">1桁を掛ける掛け算</a></li>
+      <li><a href="#mul2">2桁×2桁の掛け算</a></li>
+      <li><a href="#mulround">端数分解法</a></li>
+      <li><a href="#square">2乗の暗算</a></li>
+      <li><a href="#square5">5で終わる数の2乗</a></li>
+      <li><a href="#times11">11倍のトリック</a></li>
+      <li><a href="#nearbase">基準数に近い数の掛け算</a></li>
+      <li><a href="#cube">2桁の3乗</a></li>
+      <li><a href="#sqrt">平方根の概算</a></li>
+      <li><a href="#div">割り算・チャンク法</a></li>
+      <li><a href="#fraction">分数→小数の変換</a></li>
+      <li><a href="#weekday">曜日当て(カレンダー計算)</a></li>
+      <li><a href="#casting9">検算：九去法</a></li>
+    </ol>
+  </nav>
+
+  <section class="study-grid">
+    <article class="study-card wide" id="basic">
+      <h2><span class="num">00</span>左から計算する — 全ての基本方針</h2>
+      <span class="tag">基礎</span>
+      <p>
+        学校では右(1の位)から筆算するのが普通ですが、暗算では逆に<span class="rule">大きい位から</span>計算します。
+        答えを声に出したり書き留めたりするとき、人は左から読むからです。大きい位から確定させれば、答えの「だいたいの大きさ」も早く分かります。
+        この本のテクニックの多くは「大きい位から」と「キリの良い数に近づける」という2つの発想の組み合わせです。
+      </p>
+    </article>
+
+    <article class="study-card" id="add">
+      <h2><span class="num">01</span>足し算</h2>
+      <span class="tag">四則演算</span>
+      <p>大きい位から順に足し、途中経過を暫定合計として保持します。</p>
+      <div class="example">
+        <div class="ex-title">例: 358 + 476</div>
+        <div class="steps">百: 300+400=700
+十: 700+50+70=820
+一: 820+8+6=834</div>
+        <div class="result">358 + 476 = 834</div>
+      </div>
+    </article>
+
+    <article class="study-card" id="sub">
+      <h2><span class="num">02</span>引き算・補数法</h2>
+      <span class="tag">四則演算</span>
+      <p>繰り下がりが多い時は、<span class="rule">a−b = (a+(10ⁿ−b))−10ⁿ</span> のように補数を足してから最後にキリの良い数を引きます。</p>
+      <div class="example">
+        <div class="ex-title">例: 700 − 398(繰り下がり多)</div>
+        <div class="steps">398の補数: 1000−398=602
+700+602=1302
+1302−1000=302</div>
+        <div class="result">700 − 398 = 302</div>
+      </div>
+    </article>
+
+    <article class="study-card" id="mul1">
+      <h2><span class="num">03</span>1桁を掛ける掛け算</h2>
+      <span class="tag">掛け算</span>
+      <p>大きい数を位ごとに分解し、それぞれに1桁を掛けてから足します。</p>
+      <div class="example">
+        <div class="ex-title">例: 6432 × 7</div>
+        <div class="steps">6000×7=42000
++400×7=44800
++30×7=45010
++2×7=45024</div>
+        <div class="result">6432 × 7 = 45024</div>
+      </div>
+    </article>
+
+    <article class="study-card" id="mul2">
+      <h2><span class="num">04</span>2桁×2桁の掛け算</h2>
+      <span class="tag">掛け算</span>
+      <p><span class="rule">(a₁×10+a₀)(b₁×10+b₀) = a₁b₁×100 + (a₁b₀+a₀b₁)×10 + a₀b₀</span> の分配法則(FOIL)で展開します。</p>
+      <div class="example">
+        <div class="ex-title">例: 47 × 63</div>
+        <div class="steps">40×60=2400
+40×3+7×60=540
+7×3=21
+2400+540+21=2961</div>
+        <div class="result">47 × 63 = 2961</div>
+      </div>
+    </article>
+
+    <article class="study-card" id="mulround">
+      <h2><span class="num">05</span>端数分解法</h2>
+      <span class="tag">掛け算</span>
+      <p>片方がキリの良い数に近いとき、「キリの良い数 ± 端数」に分けます。</p>
+      <div class="example">
+        <div class="ex-title">例: 79 × 6</div>
+        <div class="steps">79=80−1
+80×6=480
+1×6=6
+480−6=474</div>
+        <div class="result">79 × 6 = 474</div>
+      </div>
+    </article>
+
+    <article class="study-card" id="square">
+      <h2><span class="num">06</span>2乗の暗算</h2>
+      <span class="tag">2乗</span>
+      <p>n²の代わりに、nから同じ距離dだけ離れた2数を掛けます。<span class="rule">n² = (n−d)×(n+d) + d²</span></p>
+      <div class="example">
+        <div class="ex-title">例: 47²(d=3で50に寄せる)</div>
+        <div class="steps">44×50=2200
+3²=9
+2200+9=2209</div>
+        <div class="result">47² = 2209</div>
+      </div>
+    </article>
+
+    <article class="study-card" id="square5">
+      <h2><span class="num">07</span>5で終わる数の2乗</h2>
+      <span class="tag">2乗</span>
+      <p>1の位が5の数は特別に簡単です。<span class="rule">(10n+5)² = n×(n+1)の後ろに25</span></p>
+      <div class="example">
+        <div class="ex-title">例: 65²</div>
+        <div class="steps">n=6 → 6×7=42
+42の後ろに25 → 4225</div>
+        <div class="result">65² = 4225</div>
+      </div>
+    </article>
+
+    <article class="study-card" id="times11">
+      <h2><span class="num">08</span>11倍のトリック</h2>
+      <span class="tag">掛け算</span>
+      <p>2桁×11は、<span class="rule">両端の数字の間にその和を挟む</span>だけ。和が10以上なら繰り上げます。</p>
+      <div class="example">
+        <div class="ex-title">例: 68 × 11(繰り上がりあり)</div>
+        <div class="steps">両端: 6と8
+和: 6+8=14 → 繰り上げ
+7 4 8</div>
+        <div class="result">68 × 11 = 748</div>
+      </div>
+    </article>
+
+    <article class="study-card" id="nearbase">
+      <h2><span class="num">09</span>基準数に近い数の掛け算</h2>
+      <span class="tag">掛け算</span>
+      <p>2数がどちらも基準(50・100・1000など)に近いとき、<span class="rule">a×b = (a+b−base)×base + (a−base)(b−base)</span> で求めます。</p>
+      <div class="example">
+        <div class="ex-title">例: 97 × 103(基準100)</div>
+        <div class="steps">97=100−3, 103=100+3
+交差項: 97+3=100
+100×100=10000
+(−3)×3=−9
+10000−9=9991</div>
+        <div class="result">97 × 103 = 9991</div>
+      </div>
+    </article>
+
+    <article class="study-card" id="cube">
+      <h2><span class="num">10</span>2桁の3乗</h2>
+      <span class="tag">3乗</span>
+      <p>近い10の倍数zと端数dに分け、二項展開します。<span class="rule">n³ = z³ + 3z²d + 3zd² + d³</span></p>
+      <div class="example">
+        <div class="ex-title">例: 47³(z=50, d=−3)</div>
+        <div class="steps">z³=125000
+3z²d=3×2500×(−3)=−22500
+3zd²=3×50×9=1350
+d³=−27
+合計=103823</div>
+        <div class="result">47³ = 103823</div>
+      </div>
+    </article>
+
+    <article class="study-card" id="sqrt">
+      <h2><span class="num">11</span>平方根の概算</h2>
+      <span class="tag">平方根</span>
+      <p>近い平方数を基準に、<span class="rule">√(a²+d) ≈ a + d/(2a)</span> という1次近似で見積もります。</p>
+      <div class="example">
+        <div class="ex-title">例: √47</div>
+        <div class="steps">47=6²+11 (a=6, d=11)
+6+11/12=6+0.917
+≈6.92(実際は6.856)</div>
+        <div class="result">√47 ≈ 6.9</div>
+      </div>
+      <p>基準aが大きく、差dが小さいほど誤差が減ります。実戦ではaをできるだけ近い数に取るのがコツです。</p>
+    </article>
+
+    <article class="study-card" id="div">
+      <h2><span class="num">12</span>割り算・チャンク法</h2>
+      <span class="tag">四則演算</span>
+      <p>商をキリの良い塊(チャンク)に分け、割る数を掛けたものを順に引きます。</p>
+      <div class="example">
+        <div class="ex-title">例: 1078 ÷ 14</div>
+        <div class="steps">14×70=980 → 残98
+14×7=98 → 残0
+70+7=77</div>
+        <div class="result">1078 ÷ 14 = 77</div>
+      </div>
+    </article>
+
+    <article class="study-card" id="fraction">
+      <h2><span class="num">13</span>分数→小数の変換</h2>
+      <span class="tag">分数</span>
+      <p>よく使う分母の「一族」にはパターンがあります。9分の一族は分子をそのまま繰り返すだけ。11分の一族は分子×9を2桁で繰り返します。</p>
+      <div class="example">
+        <div class="ex-title">例: 4/11</div>
+        <div class="steps">4×9=36
+2桁で繰り返す → 0.363636…</div>
+        <div class="result">4/11 = 0.3636…</div>
+      </div>
+      <p>7分の一族は「142857」の循環を回転させたもの。1/7=0.142857…、2/7=0.285714…、3/7=0.428571…</p>
+    </article>
+
+    <article class="study-card wide" id="weekday">
+      <h2><span class="num">14</span>曜日当て(カレンダー計算)</h2>
+      <span class="tag">カレンダー</span>
+      <p>
+        任意の日付の曜日を暗算で求める「ドゥームズデー・アルゴリズム」です。
+        各世紀には基準となる曜日(アンカー)があり、<span class="rule">1900年代=水曜、2000年代=火曜</span> のように決まっています。
+        そこに年ごとの補正(年コード)を足すと、その年の「ドゥームズデー(基準日)」の曜日が分かります。
+        基準日は毎月ほぼ同じ曜日になる日で、<span class="rule">4/4, 6/6, 8/8, 10/10, 12/12</span>(偶数月はゾロ目)、
+        <span class="rule">5/9, 9/5, 7/11, 11/7</span>(「9時から5時に7-11で働く」の語呂合わせ)、3/14(円周率の日)、そして1/3(うるう年は1/4)・2月の月末日です。
+      </p>
+      <div class="example">
+        <div class="ex-title">例: 1994年7月16日は何曜日?</div>
+        <div class="steps">世紀基準(1900年代)=水曜
+年コード: 94÷12=商7 余10、10÷4=商2 → 7+10+2=19 → 19%7=5
+水曜+5 → 1994年のドゥームズデー=月曜
+7月の基準日=11日、16日との差=5日
+月曜+5日 → 土曜</div>
+        <div class="result">1994年7月16日 = 土曜日</div>
+      </div>
+    </article>
+
+    <article class="study-card wide" id="casting9">
+      <h2><span class="num">15</span>検算：九去法(ボーナス)</h2>
+      <span class="tag">検算</span>
+      <p>
+        計算結果の見直しに使う技です。各数の「各桁を全部足し、1桁になるまで繰り返した値」(デジタルルート)を使うと、
+        掛け算・足し算の答えのデジタルルートは、元の数のデジタルルート同士を同じ演算した結果と一致するはずです。クイズには出題されない、確認用の習慣です。
+      </p>
+      <div class="example">
+        <div class="ex-title">例: 47 × 63 = 2961 の検算</div>
+        <div class="steps">47 → 4+7=11 → 1+1=2
+63 → 6+3=9
+2×9=18 → 1+8=9
+2961 → 2+9+6+1=18 → 1+8=9(一致)</div>
+        <div class="result">デジタルルートが一致 → 検算OK</div>
+      </div>
+    </article>
+  </section>
+
+  <footer class="cta">
+    <a class="quiz-link" href="index.html">道場でクイズに挑戦 →</a>
+    <p>道場の設定画面ではテクニックを個別にON/OFFでき、音声の自動読み上げも選べます。まずは1〜2個に絞って練習するのがおすすめです。</p>
+  </footer>
+</div>
+</body>
+</html>

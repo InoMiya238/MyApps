@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>関数グラフ描画ツール</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --panel-bg: #ffffff;
+    --border: #dfe3e8;
+    --text: #1f2530;
+    --text-dim: #6b7280;
+    --accent: #4363d8;
+    --danger: #d63447;
+    --grid-line: #e3e6ea;
+    --grid-line-strong: #c3c9d1;
+    --axis: #33394a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Segoe UI", sans-serif;
+  }
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  header {
+    padding: 14px 20px 10px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel-bg);
+  }
+  header h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  header p {
+    margin: 4px 0 0;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+  #main {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+  }
+  #sidebar {
+    width: 320px;
+    min-width: 260px;
+    background: var(--panel-bg);
+    border-right: 1px solid var(--border);
+    padding: 14px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  #functionList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .func-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #fafbfc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 8px;
+  }
+  .func-row.has-error {
+    border-color: var(--danger);
+  }
+  .color-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex: none;
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.15);
+  }
+  .func-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    outline: none;
+    color: var(--text);
+  }
+  .mode-badge {
+    flex: none;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: #eef0fb;
+    color: var(--accent);
+    white-space: nowrap;
+    display: none;
+  }
+  .mode-badge.show { display: inline-block; }
+  .mode-badge.mode-registered { background: #eef1f4; color: #5b6472; }
+  .func-toggle {
+    flex: none;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+  }
+  .func-remove {
+    flex: none;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
+  .func-remove:hover {
+    background: #eee;
+    color: var(--danger);
+  }
+  .func-error {
+    font-size: 11.5px;
+    color: var(--danger);
+    padding: 0 4px;
+    display: none;
+  }
+  .func-row.has-error + .func-error {
+    display: block;
+  }
+  #addFuncBtn {
+    align-self: flex-start;
+    border: 1px dashed var(--border);
+    background: transparent;
+    color: var(--accent);
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  #addFuncBtn:hover {
+    background: #eef0fb;
+  }
+  .section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    margin: 8px 0 2px;
+  }
+  .controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  button.tool-btn {
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    font-size: 12.5px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+  button.tool-btn:hover {
+    background: #f0f1f4;
+  }
+  label.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+  #viewInfo {
+    font-size: 11.5px;
+    color: var(--text-dim);
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    line-height: 1.6;
+    background: #fafbfc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+  #helpText {
+    font-size: 11.5px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  #helpText code {
+    background: #f0f1f4;
+    padding: 1px 4px;
+    border-radius: 4px;
+  }
+  #canvasWrap {
+    flex: 1;
+    position: relative;
+    min-width: 0;
+  }
+  #graphCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+    touch-action: none;
+  }
+  #graphCanvas.dragging {
+    cursor: grabbing;
+  }
+  @media (max-width: 720px) {
+    #main { flex-direction: column; }
+    #sidebar {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      max-height: 42vh;
+    }
+  }
+  @media (max-width: 720px) {
+    header { padding: 10px 14px 8px; }
+    .func-input { font-size: 16px; padding: 6px 0; }
+    .func-toggle { width: 22px; height: 22px; }
+    .func-remove { font-size: 20px; padding: 6px 8px; }
+    #helpText { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>関数グラフ描画ツール</h1>
+    <p>1変数関数・2変数関数・陰関数・合成関数に対応。マウスホイールでズーム、ドラッグでパンできます。</p>
+  </header>
+  <div id="main">
+    <div id="sidebar">
+      <div class="section-title">関数</div>
+      <div id="functionList"></div>
+      <button id="addFuncBtn">+ 関数を追加</button>
+
+      <div class="section-title">表示</div>
+      <div class="controls-row">
+        <button class="tool-btn" id="resetViewBtn">表示をリセット</button>
+        <label class="checkbox-row"><input type="checkbox" id="gridToggle" checked> グリッド表示</label>
+      </div>
+
+      <div id="viewInfo"></div>
+
+      <div id="helpText">
+        <b>基本:</b> <code>sin(x) + x^2/4</code>, <code>1/(x-2)</code>, <code>2sin(3x)</code><br>
+        <b>関数の定義と合成関数:</b> <code>f(x) = x^2 + 1</code> のように定義すると、
+        他の行から <code>f(g(x))</code> のように呼び出して合成できます(定義順は問いません)。<br>
+        <b>2変数関数(ヒートマップ表示):</b> <code>x^2 - y^2</code>, <code>sin(x)*cos(y)</code><br>
+        <b>陰関数(方程式):</b> <code>x^2 + y^2 = 4</code>, <code>y^2 = x</code><br>
+        使用可能な関数: sin, cos, tan, asin, acos, atan, sinh, cosh, tanh,
+        sqrt, cbrt, abs, exp, ln (自然対数), log (常用対数), log2, floor,
+        ceil, round, sign, pow(a,b), atan2(y,x), min(...), max(...)<br>
+        定数: pi, e, tau
+      </div>
+    </div>
+    <div id="canvasWrap">
+      <canvas id="graphCanvas"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------------------------------------------------------------------
+  // Expression parser / evaluator (no eval / no Function-from-string).
+  // Grammar:
+  //   expr    := term (('+'|'-') term)*
+  //   term    := unary ( ('*'|'/'|'%') unary | <implicit multiply> )*
+  //   unary   := ('+'|'-') unary | power
+  //   power   := primary ('^' unary)?         // right-assoc
+  //   primary := NUMBER
+  //            | IDENT '(' expr (',' expr)* ')'   // function call
+  //            | IDENT                             // variable / constant
+  //            | '(' expr ')'
+  //
+  // A row's text is classified before parsing:
+  //   "name(params) = body"  -> registers a named, composable function
+  //   "x^2 + y^2 = 4"        -> implicit equation, drawn via marching squares
+  //   "y = ..." / "z = ..."  -> cosmetic label, stripped
+  //   otherwise               -> plain expression; free variables decide
+  //                              whether it plots as y=f(x) or a 2-var field
+  // ---------------------------------------------------------------------
+
+  const FUNCTIONS_1ARG = {
+    sin: Math.sin, cos: Math.cos, tan: Math.tan,
+    asin: Math.asin, acos: Math.acos, atan: Math.atan,
+    sinh: Math.sinh, cosh: Math.cosh, tanh: Math.tanh,
+    asinh: Math.asinh, acosh: Math.acosh, atanh: Math.atanh,
+    sqrt: Math.sqrt, cbrt: Math.cbrt, abs: Math.abs,
+    exp: Math.exp, ln: Math.log, log: Math.log10, log2: Math.log2,
+    floor: Math.floor, ceil: Math.ceil, round: Math.round,
+    sign: Math.sign, trunc: Math.trunc,
+  };
+  const FUNCTIONS_NARY = {
+    pow: (a, b) => Math.pow(a, b),
+    atan2: (a, b) => Math.atan2(a, b),
+    min: (...a) => Math.min(...a),
+    max: (...a) => Math.max(...a),
+  };
+  const CONSTANTS = { pi: Math.PI, e: Math.E, tau: Math.PI * 2 };
+  const RESERVED = new Set([
+    ...Object.keys(FUNCTIONS_1ARG), ...Object.keys(FUNCTIONS_NARY), ...Object.keys(CONSTANTS),
+  ]);
+  const MAX_CALL_DEPTH = 256;
+
+  function tokenize(src) {
+    const tokens = [];
+    let i = 0;
+    const n = src.length;
+    while (i < n) {
+      const c = src[i];
+      if (c === " " || c === "\t" || c === "\n") { i++; continue; }
+      if (/[0-9.]/.test(c)) {
+        let j = i;
+        while (j < n && /[0-9.]/.test(src[j])) j++;
+        if (src[j] === "e" || src[j] === "E") {
+          let k = j + 1;
+          if (src[k] === "+" || src[k] === "-") k++;
+          if (/[0-9]/.test(src[k])) {
+            j = k;
+            while (j < n && /[0-9]/.test(src[j])) j++;
+          }
+        }
+        const raw = src.slice(i, j);
+        const value = parseFloat(raw);
+        if (Number.isNaN(value)) throw new Error(`数値を読み取れません: "${raw}"`);
+        tokens.push({ type: "NUMBER", value });
+        i = j;
+        continue;
+      }
+      if (/[A-Za-z_]/.test(c)) {
+        let j = i;
+        while (j < n && /[A-Za-z_0-9]/.test(src[j])) j++;
+        tokens.push({ type: "IDENT", value: src.slice(i, j) });
+        i = j;
+        continue;
+      }
+      if ("+-*/^%(),".includes(c)) {
+        tokens.push({ type: c });
+        i++;
+        continue;
+      }
+      throw new Error(`使用できない文字です: "${c}"`);
+    }
+    return tokens;
+  }
+
+  // allowedVars: array of variable names valid as bare identifiers in this expression.
+  function parse(src, allowedVars) {
+    const allowedVarSet = new Set(allowedVars);
+    const tokens = tokenize(src);
+    let pos = 0;
+
+    function peek() { return tokens[pos]; }
+    function next() { return tokens[pos++]; }
+    function expect(type) {
+      const t = next();
+      if (!t || t.type !== type) {
+        throw new Error(`"${type}" が必要です`);
+      }
+      return t;
+    }
+    function atEnd() { return pos >= tokens.length; }
+
+    function parseExpr() {
+      let node = parseTerm();
+      while (!atEnd() && (peek().type === "+" || peek().type === "-")) {
+        const op = next().type;
+        const rhs = parseTerm();
+        node = { type: "bin", op, left: node, right: rhs };
+      }
+      return node;
+    }
+
+    function startsFactor(t) {
+      return t && (t.type === "NUMBER" || t.type === "IDENT" || t.type === "(");
+    }
+
+    function parseTerm() {
+      let node = parseUnary();
+      while (!atEnd()) {
+        const t = peek();
+        if (t.type === "*" || t.type === "/" || t.type === "%") {
+          const op = next().type;
+          const rhs = parseUnary();
+          node = { type: "bin", op, left: node, right: rhs };
+        } else if (startsFactor(t)) {
+          // implicit multiplication, e.g. "2x", "2sin(x)", "x(x+1)"
+          const rhs = parseUnary();
+          node = { type: "bin", op: "*", left: node, right: rhs };
+        } else {
+          break;
+        }
+      }
+      return node;
+    }
+
+    function parseUnary() {
+      if (!atEnd() && (peek().type === "+" || peek().type === "-")) {
+        const op = next().type;
+        const arg = parseUnary();
+        return op === "-" ? { type: "neg", arg } : arg;
+      }
+      return parsePower();
+    }
+
+    function parsePower() {
+      const base = parsePrimary();
+      if (!atEnd() && peek().type === "^") {
+        next();
+        const exp = parseUnary();
+        return { type: "bin", op: "^", left: base, right: exp };
+      }
+      return base;
+    }
+
+    function parsePrimary() {
+      if (atEnd()) throw new Error("式が途中で終わっています");
+      const t = peek();
+      if (t.type === "NUMBER") {
+        next();
+        return { type: "num", value: t.value };
+      }
+      if (t.type === "(") {
+        next();
+        const node = parseExpr();
+        expect(")");
+        return node;
+      }
+      if (t.type === "IDENT") {
+        next();
+        const raw = t.value;
+        const lower = raw.toLowerCase();
+        const isDeclaredVar = allowedVarSet.has(raw);
+        if (!atEnd() && peek().type === "(" && !isDeclaredVar) {
+          // function call: builtin, or a user-defined name resolved at eval time
+          next(); // consume '('
+          const args = [parseExpr()];
+          while (!atEnd() && peek().type === ",") {
+            next();
+            args.push(parseExpr());
+          }
+          expect(")");
+          return { type: "call", name: lower, args };
+        }
+        if (isDeclaredVar) return { type: "var", name: raw };
+        if (lower in CONSTANTS) return { type: "const", value: CONSTANTS[lower] };
+        if (lower in FUNCTIONS_1ARG || lower in FUNCTIONS_NARY) {
+          throw new Error(`関数 "${raw}" には括弧と引数が必要です (例: ${raw}(x))`);
+        }
+        throw new Error(
+          `不明な変数です: "${raw}"。使えるのは ${[...allowedVarSet].join(", ") || "(なし)"} です。` +
+          `他の変数を使うには "名前(${raw}) = 式" の形式で関数を定義してください。`
+        );
+      }
+      throw new Error(`式を解析できません (予期しないトークン: ${t.type})`);
+    }
+
+    const ast = parseExpr();
+    if (!atEnd()) {
+      throw new Error(`式の末尾に余分な文字があります: "${tokens.slice(pos).map(t => t.value ?? t.type).join("")}"`);
+    }
+    return ast;
+  }
+
+  function collectVars(node, set) {
+    switch (node.type) {
+      case "var": set.add(node.name); break;
+      case "neg": collectVars(node.arg, set); break;
+      case "bin": collectVars(node.left, set); collectVars(node.right, set); break;
+      case "call": node.args.forEach(a => collectVars(a, set)); break;
+    }
+    return set;
+  }
+
+  // env: plain object mapping variable name -> number. registry: name(lowercase) -> {params, ast}.
+  function evalAst(node, env, registry, depth) {
+    switch (node.type) {
+      case "num": return node.value;
+      case "const": return node.value;
+      case "var": {
+        if (!(node.name in env)) throw new Error(`変数 "${node.name}" の値が指定されていません`);
+        return env[node.name];
+      }
+      case "neg": return -evalAst(node.arg, env, registry, depth);
+      case "bin": {
+        const a = evalAst(node.left, env, registry, depth);
+        const b = evalAst(node.right, env, registry, depth);
+        switch (node.op) {
+          case "+": return a + b;
+          case "-": return a - b;
+          case "*": return a * b;
+          case "/": return a / b;
+          case "%": return a % b;
+          case "^": return Math.pow(a, b);
+        }
+        break;
+      }
+      case "call": {
+        if (node.name in FUNCTIONS_1ARG) {
+          if (node.args.length !== 1) throw new Error(`関数 "${node.name}" の引数の数が正しくありません`);
+          return FUNCTIONS_1ARG[node.name](evalAst(node.args[0], env, registry, depth));
+        }
+        if (node.name in FUNCTIONS_NARY) {
+          return FUNCTIONS_NARY[node.name](...node.args.map(a => evalAst(a, env, registry, depth)));
+        }
+        const entry = registry[node.name];
+        if (!entry) throw new Error(`不明な関数です: ${node.name}`);
+        if (depth > MAX_CALL_DEPTH) throw new Error("再帰が深すぎます(循環参照の可能性があります)");
+        if (node.args.length !== entry.params.length) {
+          throw new Error(`関数 "${node.name}" の引数の数が正しくありません(必要: ${entry.params.length}個)`);
+        }
+        const argVals = node.args.map(a => evalAst(a, env, registry, depth));
+        const newEnv = {};
+        entry.params.forEach((p, i) => { newEnv[p] = argVals[i]; });
+        return evalAst(entry.ast, newEnv, registry, depth + 1);
+      }
+    }
+    throw new Error("評価に失敗しました");
+  }
+
+  // ---------------------------------------------------------------------
+  // Row text classification
+  // ---------------------------------------------------------------------
+
+  function classifyBody(bodyText) {
+    const ast = parse(bodyText, ["x", "y"]);
+    const freeVars = collectVars(ast, new Set());
+    const mode = freeVars.has("y") ? "field" : "explicit";
+    return { mode, ast };
+  }
+
+  function classifyAndCompile(text) {
+    const trimmed = (text || "").trim();
+    if (!trimmed) return { mode: "empty" };
+
+    const eqIdx = trimmed.indexOf("=");
+    if (eqIdx === -1) return classifyBody(trimmed);
+
+    const lhsRaw = trimmed.slice(0, eqIdx).trim();
+    const rhsRaw = trimmed.slice(eqIdx + 1).trim();
+    if (!lhsRaw) throw new Error("= の左側が空です");
+    if (!rhsRaw) throw new Error("= の右側が空です");
+
+    const headerMatch = lhsRaw.match(/^([A-Za-z_]\w*)\(([^()]*)\)$/);
+    if (headerMatch) {
+      const defName = headerMatch[1];
+      const lowerName = defName.toLowerCase();
+      const paramNames = headerMatch[2].split(",").map(s => s.trim());
+      const validHeader =
+        !RESERVED.has(lowerName) &&
+        paramNames.length > 0 &&
+        paramNames.every(p => /^[A-Za-z_]\w*$/.test(p)) &&
+        new Set(paramNames).size === paramNames.length &&
+        !paramNames.some(p => RESERVED.has(p.toLowerCase()));
+
+      if (validHeader) {
+        const ast = parse(rhsRaw, paramNames);
+        return { mode: "header", name: lowerName, displayName: defName, params: paramNames, ast };
+      }
+      // invalid header (reserved name, bad params, ...) -> fall through as an equation/body
+    }
+
+    const bareMatch = lhsRaw.match(/^[A-Za-z_]\w*$/);
+    if (bareMatch) {
+      // cosmetic label, e.g. "y = ...", "z = ..."
+      return classifyBody(rhsRaw);
+    }
+
+    // genuine implicit equation, e.g. "x^2 + y^2 = 4"
+    const lhsAst = parse(lhsRaw, ["x", "y"]);
+    const rhsAst = parse(rhsRaw, ["x", "y"]);
+    const combined = { type: "bin", op: "-", left: lhsAst, right: rhsAst };
+    const freeVars = collectVars(combined, new Set());
+    if (freeVars.size === 0) throw new Error("x または y を含む式にしてください");
+    return { mode: "implicit", ast: combined };
+  }
+
+  // ---------------------------------------------------------------------
+  // App state
+  // ---------------------------------------------------------------------
+
+  const PALETTE = [
+    "#4363d8", "#e6194b", "#3cb44b", "#f58231",
+    "#911eb4", "#42a5a5", "#c9962c", "#e6407a",
+  ];
+  let colorCursor = 0;
+  function nextColor() {
+    return PALETTE[(colorCursor++) % PALETTE.length];
+  }
+
+  let rowIdCounter = 0;
+  const rows = []; // { id, expr, color, enabled, mode, evalX, evalXY, registryName, error, els:{...} }
+  const registry = Object.create(null); // lowercase name -> { params, ast }
+
+  const canvas = document.getElementById("graphCanvas");
+  const ctx = canvas.getContext("2d");
+  const functionListEl = document.getElementById("functionList");
+  const viewInfoEl = document.getElementById("viewInfo");
+  const gridToggle = document.getElementById("gridToggle");
+
+  const view = {
+    cx: 0,
+    cy: 0,
+    scale: 1, // world units per CSS pixel
+  };
+
+  function initialScale() {
+    const rect = canvas.getBoundingClientRect();
+    const width = Math.max(rect.width, 1);
+    return 20 / width; // show roughly x in [-10, 10] initially
+  }
+
+  function resetView() {
+    view.cx = 0;
+    view.cy = 0;
+    view.scale = initialScale();
+    scheduleRender();
+  }
+
+  // ---------------------------------------------------------------------
+  // Function row UI
+  // ---------------------------------------------------------------------
+
+  function addRow(initialExpr) {
+    const id = ++rowIdCounter;
+    const row = {
+      id,
+      expr: initialExpr ?? "",
+      color: nextColor(),
+      enabled: true,
+      mode: "empty",
+      evalX: null,
+      evalXY: null,
+      registryName: null,
+      error: null,
+    };
+    rows.push(row);
+    buildRowDom(row);
+    recompileAll();
+    return row;
+  }
+
+  function removeRow(id) {
+    const idx = rows.findIndex(r => r.id === id);
+    if (idx === -1) return;
+    const row = rows[idx];
+    row.els.wrap.remove();
+    row.els.errorEl.remove();
+    rows.splice(idx, 1);
+    recompileAll();
+  }
+
+  function buildRowDom(row) {
+    const wrap = document.createElement("div");
+    wrap.className = "func-row";
+
+    const dot = document.createElement("div");
+    dot.className = "color-dot";
+    dot.style.background = row.color;
+    dot.title = "クリックで色を変更";
+    dot.addEventListener("click", () => {
+      row.color = nextColor();
+      dot.style.background = row.color;
+      scheduleRender();
+    });
+
+    const input = document.createElement("input");
+    input.className = "func-input";
+    input.type = "text";
+    input.spellcheck = false;
+    input.autocomplete = "off";
+    input.placeholder = "例: f(x)=x^2, x^2+y^2=4, f(g(x))";
+    input.value = row.expr;
+    input.addEventListener("input", () => {
+      row.expr = input.value;
+      recompileAll();
+    });
+
+    const badge = document.createElement("span");
+    badge.className = "mode-badge";
+
+    const toggle = document.createElement("input");
+    toggle.type = "checkbox";
+    toggle.className = "func-toggle";
+    toggle.checked = row.enabled;
+    toggle.title = "表示切り替え";
+    toggle.addEventListener("change", () => {
+      row.enabled = toggle.checked;
+      scheduleRender();
+    });
+
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "func-remove";
+    removeBtn.textContent = "×";
+    removeBtn.title = "削除";
+    removeBtn.addEventListener("click", () => removeRow(row.id));
+
+    wrap.appendChild(dot);
+    wrap.appendChild(input);
+    wrap.appendChild(badge);
+    wrap.appendChild(toggle);
+    wrap.appendChild(removeBtn);
+
+    const errorEl = document.createElement("div");
+    errorEl.className = "func-error";
+
+    functionListEl.appendChild(wrap);
+    functionListEl.appendChild(errorEl);
+
+    row.els = { wrap, input, errorEl, dot, badge };
+  }
+
+  const MODE_LABELS = {
+    field: "2変数(ヒートマップ)",
+    implicit: "陰関数",
+    registered: "定義のみ(未描画)",
+  };
+
+  function updateRowUI() {
+    for (const row of rows) {
+      const { wrap, errorEl, badge } = row.els;
+      if (row.error) {
+        wrap.classList.add("has-error");
+        errorEl.textContent = row.error;
+      } else {
+        wrap.classList.remove("has-error");
+        errorEl.textContent = "";
+      }
+      let label = MODE_LABELS[row.mode] || "";
+      if (row.registryName && row.mode !== "registered") {
+        label = label ? `${label} ・ 定義名: ${row.registryName}` : `定義名: ${row.registryName}`;
+      }
+      badge.textContent = label;
+      badge.classList.toggle("show", !!label);
+      badge.classList.toggle("mode-registered", row.mode === "registered");
+    }
+  }
+
+  function walkCallNames(node, registry, into) {
+    if (!node) return;
+    switch (node.type) {
+      case "neg": walkCallNames(node.arg, registry, into); break;
+      case "bin": walkCallNames(node.left, registry, into); walkCallNames(node.right, registry, into); break;
+      case "call":
+        if (registry[node.name]) into.add(node.name);
+        node.args.forEach(a => walkCallNames(a, registry, into));
+        break;
+    }
+  }
+
+  function detectCycles() {
+    const names = Object.keys(registry);
+    const adj = {};
+    for (const name of names) {
+      const calls = new Set();
+      walkCallNames(registry[name].ast, registry, calls);
+      adj[name] = calls;
+    }
+    const state = {};
+    const cyclic = new Set();
+    function dfs(name, stack) {
+      state[name] = 1;
+      stack.push(name);
+      for (const dep of adj[name]) {
+        if (state[dep] === 1) {
+          const idx = stack.indexOf(dep);
+          for (let i = idx; i < stack.length; i++) cyclic.add(stack[i]);
+          cyclic.add(name);
+        } else if (state[dep] !== 2) {
+          dfs(dep, stack);
+        }
+      }
+      stack.pop();
+      state[name] = 2;
+    }
+    for (const name of names) {
+      if (state[name] === undefined) dfs(name, []);
+    }
+    if (cyclic.size) {
+      for (const row of rows) {
+        if (row.registryName && cyclic.has(row.registryName.toLowerCase())) {
+          row.error = `循環参照が検出されました: ${[...cyclic].join(" ↔ ")}`;
+          row.mode = "error";
+          row.evalX = null;
+          row.evalXY = null;
+        }
+      }
+    }
+  }
+
+  function recompileAll() {
+    for (const k of Object.keys(registry)) delete registry[k];
+
+    for (const row of rows) {
+      row.error = null;
+      row.evalX = null;
+      row.evalXY = null;
+      row.registryName = null;
+      row.mode = "empty";
+      try {
+        const result = classifyAndCompile(row.expr);
+        if (result.mode === "empty") continue;
+
+        if (result.mode === "header") {
+          if (registry[result.name]) {
+            throw new Error(`関数名 "${result.displayName}" は他の行と重複しています`);
+          }
+          registry[result.name] = { params: result.params, ast: result.ast };
+          row.registryName = result.displayName;
+          const paramSet = new Set(result.params);
+          const onlyAxisVars = [...paramSet].every(p => p === "x" || p === "y");
+          if (result.params.length === 0 || (result.params.length === 1 && paramSet.has("x"))) {
+            row.mode = "explicit";
+            const ast = result.ast, hasX = paramSet.has("x");
+            row.evalX = (x) => evalAst(ast, hasX ? { x } : {}, registry, 0);
+          } else if (onlyAxisVars && result.params.length <= 2 && paramSet.has("y")) {
+            row.mode = "field";
+            const ast = result.ast, hasX = paramSet.has("x");
+            row.evalXY = (x, y) => evalAst(ast, hasX ? { x, y } : { y }, registry, 0);
+          } else {
+            row.mode = "registered";
+          }
+          continue;
+        }
+
+        if (result.mode === "explicit") {
+          row.mode = "explicit";
+          const ast = result.ast;
+          row.evalX = (x) => evalAst(ast, { x }, registry, 0);
+          continue;
+        }
+        if (result.mode === "field") {
+          row.mode = "field";
+          const ast = result.ast;
+          row.evalXY = (x, y) => evalAst(ast, { x, y }, registry, 0);
+          continue;
+        }
+        if (result.mode === "implicit") {
+          row.mode = "implicit";
+          const ast = result.ast;
+          row.evalXY = (x, y) => evalAst(ast, { x, y }, registry, 0);
+          continue;
+        }
+      } catch (e) {
+        row.error = e.message;
+        row.mode = "error";
+      }
+    }
+
+    detectCycles();
+
+    // sanity-check evaluation so runtime-only errors (unknown fn, bad arity, cycles) surface immediately
+    for (const row of rows) {
+      if (row.error) continue;
+      try {
+        if (row.mode === "explicit" && row.evalX) row.evalX(1);
+        else if ((row.mode === "field" || row.mode === "implicit") && row.evalXY) row.evalXY(1, 1);
+        else if (row.mode === "registered" && row.registryName) {
+          const entry = registry[row.registryName.toLowerCase()];
+          const dummyEnv = {};
+          entry.params.forEach(p => { dummyEnv[p] = 1; });
+          evalAst(entry.ast, dummyEnv, registry, 0);
+        }
+      } catch (e) {
+        row.error = e.message;
+        row.mode = "error";
+        row.evalX = null;
+        row.evalXY = null;
+      }
+    }
+
+    updateRowUI();
+    scheduleRender();
+  }
+
+  document.getElementById("addFuncBtn").addEventListener("click", () => addRow(""));
+
+  // ---------------------------------------------------------------------
+  // Rendering helpers: grid lines, axes, explicit curves
+  // ---------------------------------------------------------------------
+
+  function niceStep(range, targetCount) {
+    if (range <= 0 || targetCount <= 0) return 1;
+    const rawStep = range / targetCount;
+    const mag = Math.pow(10, Math.floor(Math.log10(rawStep)));
+    const norm = rawStep / mag;
+    let step;
+    if (norm < 1.5) step = 1;
+    else if (norm < 3) step = 2;
+    else if (norm < 7) step = 5;
+    else step = 10;
+    return step * mag;
+  }
+
+  function formatLabel(value, step) {
+    const decimals = Math.max(0, -Math.floor(Math.log10(step)) + (step < 1 ? 0 : 0));
+    let s;
+    if (Math.abs(value) < step / 1000) {
+      s = "0";
+    } else {
+      s = value.toFixed(Math.min(6, Math.max(0, decimals)));
+      s = s.replace(/\.?0+$/, "");
+    }
+    return s;
+  }
+
+  // ---------------------------------------------------------------------
+  // 2-variable grid sampling + marching squares (implicit curves & contours)
+  // ---------------------------------------------------------------------
+
+  function sampleGrid(evalXY, xMin, xMax, yMin, yMax, cols, rows) {
+    const xs = new Float64Array(cols + 1);
+    const ys = new Float64Array(rows + 1);
+    for (let i = 0; i <= cols; i++) xs[i] = xMin + (xMax - xMin) * i / cols;
+    for (let j = 0; j <= rows; j++) ys[j] = yMin + (yMax - yMin) * j / rows;
+    const grid = new Array(rows + 1);
+    for (let j = 0; j <= rows; j++) {
+      const rowArr = new Float64Array(cols + 1);
+      const yj = ys[j];
+      for (let i = 0; i <= cols; i++) {
+        let v;
+        try { v = evalXY(xs[i], yj); } catch (e) { v = NaN; }
+        rowArr[i] = Number.isFinite(v) ? v : NaN;
+      }
+      grid[j] = rowArr;
+    }
+    return { grid, xs, ys };
+  }
+
+  function traceContour(grid, xs, ys, level, toPx, toPy, ctx) {
+    const rowsN = grid.length - 1, colsN = grid[0].length - 1;
+    ctx.beginPath();
+    for (let j = 0; j < rowsN; j++) {
+      const rowTop = grid[j], rowBot = grid[j + 1];
+      for (let i = 0; i < colsN; i++) {
+        const vTL = rowTop[i] - level, vTR = rowTop[i + 1] - level;
+        const vBR = rowBot[i + 1] - level, vBL = rowBot[i] - level;
+        if (!Number.isFinite(vTL) || !Number.isFinite(vTR) || !Number.isFinite(vBR) || !Number.isFinite(vBL)) continue;
+        const sTL = vTL > 0, sTR = vTR > 0, sBR = vBR > 0, sBL = vBL > 0;
+        if (sTL === sTR && sTR === sBR && sBR === sBL) continue;
+        const x0 = xs[i], x1 = xs[i + 1], y0 = ys[j], y1 = ys[j + 1];
+        const pts = [];
+        if (sTL !== sTR) { const t = vTL / (vTL - vTR); pts.push([x0 + (x1 - x0) * t, y0]); }
+        if (sTR !== sBR) { const t = vTR / (vTR - vBR); pts.push([x1, y0 + (y1 - y0) * t]); }
+        if (sBR !== sBL) { const t = vBL / (vBL - vBR); pts.push([x1 + (x0 - x1) * t, y1]); }
+        if (sBL !== sTL) { const t = vBL / (vBL - vTL); pts.push([x0, y1 + (y0 - y1) * t]); }
+        for (let k = 0; k + 1 < pts.length; k += 2) {
+          ctx.moveTo(toPx(pts[k][0]), toPy(pts[k][1]));
+          ctx.lineTo(toPx(pts[k + 1][0]), toPy(pts[k + 1][1]));
+        }
+      }
+    }
+    ctx.stroke();
+  }
+
+  function colorForValue(v, lo, hi) {
+    let t;
+    if (lo < 0 && hi > 0) {
+      const m = Math.max(-lo, hi) || 1;
+      t = 0.5 + 0.5 * (v / m);
+    } else {
+      t = (v - lo) / ((hi - lo) || 1);
+    }
+    t = Math.min(1, Math.max(0, t));
+    // diverging colormap: blue -> white -> red
+    let r, g, b;
+    if (t < 0.5) {
+      const s = t / 0.5;
+      r = Math.round(40 + (255 - 40) * s);
+      g = Math.round(90 + (255 - 90) * s);
+      b = Math.round(220 + (255 - 220) * s);
+    } else {
+      const s = (t - 0.5) / 0.5;
+      r = Math.round(255 + (220 - 255) * s);
+      g = Math.round(255 + (60 - 255) * s);
+      b = Math.round(255 + (70 - 255) * s);
+    }
+    return [r, g, b];
+  }
+
+  function renderField(row, grid, xs, ys, width, height, toPx, toPy) {
+    let lo = Infinity, hi = -Infinity;
+    for (const rowArr of grid) {
+      for (const v of rowArr) {
+        if (Number.isFinite(v)) { if (v < lo) lo = v; if (v > hi) hi = v; }
+      }
+    }
+    if (!Number.isFinite(lo) || !Number.isFinite(hi)) return null;
+    if (lo === hi) { lo -= 1; hi += 1; }
+
+    const cols = grid[0].length - 1, rowsN = grid.length - 1;
+    const off = document.createElement("canvas");
+    off.width = cols + 1;
+    off.height = rowsN + 1;
+    const octx = off.getContext("2d");
+    const imgData = octx.createImageData(cols + 1, rowsN + 1);
+    for (let j = 0; j <= rowsN; j++) {
+      const rowArr = grid[j];
+      for (let i = 0; i <= cols; i++) {
+        const v = rowArr[i];
+        const idx = (j * (cols + 1) + i) * 4;
+        if (!Number.isFinite(v)) { imgData.data[idx + 3] = 0; continue; }
+        const [r, g, b] = colorForValue(v, lo, hi);
+        imgData.data[idx] = r; imgData.data[idx + 1] = g; imgData.data[idx + 2] = b; imgData.data[idx + 3] = 235;
+      }
+    }
+    octx.putImageData(imgData, 0, 0);
+
+    ctx.save();
+    ctx.globalAlpha = 0.6;
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(off, 0, 0, width, height);
+    ctx.restore();
+
+    ctx.save();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = row.color;
+    ctx.globalAlpha = 0.75;
+    const levels = 6;
+    for (let k = 1; k < levels; k++) {
+      traceContour(grid, xs, ys, lo + (hi - lo) * k / levels, toPx, toPy, ctx);
+    }
+    ctx.restore();
+
+    return { lo, hi };
+  }
+
+  function drawLegend(row, index, lo, hi, width) {
+    const barW = 100, barH = 10;
+    const x = width - barW - 14;
+    const y = 14 + index * 30;
+    const grad = ctx.createLinearGradient(x, 0, x + barW, 0);
+    const steps = 8;
+    for (let k = 0; k <= steps; k++) {
+      const v = lo + (hi - lo) * k / steps;
+      const [r, g, b] = colorForValue(v, lo, hi);
+      grad.addColorStop(k / steps, `rgb(${r},${g},${b})`);
+    }
+    ctx.save();
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    ctx.fillRect(x - 6, y - 6, barW + 12, barH + 22);
+    ctx.fillStyle = grad;
+    ctx.fillRect(x, y, barW, barH);
+    ctx.strokeStyle = "rgba(0,0,0,0.15)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, barW, barH);
+    ctx.fillStyle = "#33394a";
+    ctx.font = "10px -apple-system, sans-serif";
+    ctx.textBaseline = "top";
+    ctx.textAlign = "left";
+    ctx.fillText(lo.toFixed(2), x, y + barH + 3);
+    ctx.textAlign = "right";
+    ctx.fillText(hi.toFixed(2), x + barW, y + barH + 3);
+    ctx.textAlign = "left";
+    ctx.fillStyle = row.color;
+    ctx.fillText(row.registryName ? `${row.registryName}(x,y)` : "f(x,y)", x, y - 12);
+    ctx.restore();
+  }
+
+  // ---------------------------------------------------------------------
+  // Main render
+  // ---------------------------------------------------------------------
+
+  function render() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.max(1, Math.round(rect.width));
+    const height = Math.max(1, Math.round(rect.height));
+    if (canvas.width !== width * dpr || canvas.height !== height * dpr) {
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, width, height);
+
+    const { cx, cy, scale } = view;
+    const xMin = cx - (width / 2) * scale;
+    const xMax = cx + (width / 2) * scale;
+    const yMin = cy - (height / 2) * scale;
+    const yMax = cy + (height / 2) * scale;
+
+    const toPx = (x) => (x - cx) / scale + width / 2;
+    const toPy = (y) => height / 2 - (y - cy) / scale;
+
+    if (gridToggle.checked) {
+      const stepX = niceStep(xMax - xMin, Math.max(2, width / 80));
+      const stepY = niceStep(yMax - yMin, Math.max(2, height / 80));
+
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "#e3e6ea";
+      ctx.beginPath();
+      const startX = Math.ceil(xMin / stepX) * stepX;
+      for (let gx = startX; gx <= xMax; gx += stepX) {
+        const px = Math.round(toPx(gx)) + 0.5;
+        ctx.moveTo(px, 0);
+        ctx.lineTo(px, height);
+      }
+      const startY = Math.ceil(yMin / stepY) * stepY;
+      for (let gy = startY; gy <= yMax; gy += stepY) {
+        const py = Math.round(toPy(gy)) + 0.5;
+        ctx.moveTo(0, py);
+        ctx.lineTo(width, py);
+      }
+      ctx.stroke();
+
+      // axis labels
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "11px -apple-system, sans-serif";
+      const axisPy = Math.min(Math.max(toPy(0), 12), height - 6);
+      ctx.textBaseline = "top";
+      for (let gx = startX; gx <= xMax; gx += stepX) {
+        if (Math.abs(gx) < stepX / 1000) continue;
+        const px = toPx(gx);
+        ctx.fillText(formatLabel(gx, stepX), px + 3, axisPy + 2);
+      }
+      const axisPx = Math.min(Math.max(toPx(0), 2), width - 30);
+      for (let gy = startY; gy <= yMax; gy += stepY) {
+        if (Math.abs(gy) < stepY / 1000) continue;
+        const py = toPy(gy);
+        ctx.fillText(formatLabel(gy, stepY), axisPx + 3, py - 12);
+      }
+    }
+
+    // axes
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = "#33394a";
+    ctx.beginPath();
+    if (yMin <= 0 && yMax >= 0) {
+      const py = Math.round(toPy(0)) + 0.5;
+      ctx.moveTo(0, py);
+      ctx.lineTo(width, py);
+    }
+    if (xMin <= 0 && xMax >= 0) {
+      const px = Math.round(toPx(0)) + 0.5;
+      ctx.moveTo(px, 0);
+      ctx.lineTo(px, height);
+    }
+    ctx.stroke();
+
+    // 2-variable rows (field heatmaps first, so curves/contours draw on top)
+    const fieldCellPx = 8, implicitCellPx = 6;
+    const legends = [];
+    for (const row of rows) {
+      if (!row.enabled || row.mode !== "field" || !row.evalXY) continue;
+      const cols = Math.min(400, Math.max(20, Math.round(width / fieldCellPx)));
+      const rowsN = Math.min(400, Math.max(20, Math.round(height / fieldCellPx)));
+      const { grid, xs, ys } = sampleGrid(row.evalXY, xMin, xMax, yMin, yMax, cols, rowsN);
+      const range = renderField(row, grid, xs, ys, width, height, toPx, toPy);
+      if (range) legends.push({ row, lo: range.lo, hi: range.hi });
+    }
+
+    // implicit-equation rows
+    for (const row of rows) {
+      if (!row.enabled || row.mode !== "implicit" || !row.evalXY) continue;
+      const cols = Math.min(500, Math.max(30, Math.round(width / implicitCellPx)));
+      const rowsN = Math.min(500, Math.max(30, Math.round(height / implicitCellPx)));
+      const { grid, xs, ys } = sampleGrid(row.evalXY, xMin, xMax, yMin, yMax, cols, rowsN);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = row.color;
+      traceContour(grid, xs, ys, 0, toPx, toPy, ctx);
+    }
+
+    // explicit curves y = f(x)
+    const jumpThresholdPx = height * 3;
+    for (const row of rows) {
+      if (!row.enabled || row.mode !== "explicit" || !row.evalX) continue;
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = row.color;
+      ctx.beginPath();
+      let started = false;
+      let prevPy = null;
+      for (let px = 0; px <= width; px++) {
+        const x = cx + (px - width / 2) * scale;
+        let y;
+        try {
+          y = row.evalX(x);
+        } catch (e) {
+          y = NaN;
+        }
+        if (!Number.isFinite(y)) {
+          started = false;
+          prevPy = null;
+          continue;
+        }
+        const py = toPy(y);
+        if (!started) {
+          ctx.moveTo(px, py);
+          started = true;
+        } else if (prevPy !== null && Math.abs(py - prevPy) > jumpThresholdPx) {
+          ctx.moveTo(px, py);
+        } else {
+          ctx.lineTo(px, py);
+        }
+        prevPy = py;
+      }
+      ctx.stroke();
+    }
+
+    legends.forEach((l, idx) => drawLegend(l.row, idx, l.lo, l.hi, width));
+
+    viewInfoEl.innerHTML =
+      `x: ${xMin.toFixed(2)} 〜 ${xMax.toFixed(2)}<br>` +
+      `y: ${yMin.toFixed(2)} 〜 ${yMax.toFixed(2)}`;
+  }
+
+  let renderScheduled = false;
+  function scheduleRender() {
+    if (renderScheduled) return;
+    renderScheduled = true;
+    requestAnimationFrame(() => {
+      renderScheduled = false;
+      render();
+    });
+  }
+
+  // ---------------------------------------------------------------------
+  // Interaction: wheel zoom, drag pan, touch pan/pinch
+  // ---------------------------------------------------------------------
+
+  function zoomAt(pxOffsetX, pxOffsetY, factor) {
+    const rect = canvas.getBoundingClientRect();
+    const width = rect.width, height = rect.height;
+    const worldX = view.cx + (pxOffsetX - width / 2) * view.scale;
+    const worldY = view.cy - (pxOffsetY - height / 2) * view.scale;
+    view.scale *= factor;
+    view.cx = worldX - (pxOffsetX - width / 2) * view.scale;
+    view.cy = worldY + (pxOffsetY - height / 2) * view.scale;
+    scheduleRender();
+  }
+
+  canvas.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const factor = Math.exp(e.deltaY * 0.0015);
+    zoomAt(e.clientX - rect.left, e.clientY - rect.top, factor);
+  }, { passive: false });
+
+  let dragging = false;
+  let lastX = 0, lastY = 0;
+
+  canvas.addEventListener("mousedown", (e) => {
+    dragging = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    canvas.classList.add("dragging");
+  });
+  window.addEventListener("mousemove", (e) => {
+    if (!dragging) return;
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    view.cx -= dx * view.scale;
+    view.cy += dy * view.scale;
+    scheduleRender();
+  });
+  window.addEventListener("mouseup", () => {
+    dragging = false;
+    canvas.classList.remove("dragging");
+  });
+
+  // touch support
+  let touchState = null;
+  canvas.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 1) {
+      touchState = { mode: "pan", x: e.touches[0].clientX, y: e.touches[0].clientY };
+    } else if (e.touches.length === 2) {
+      const [a, b] = e.touches;
+      touchState = {
+        mode: "pinch",
+        dist: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY),
+        midX: (a.clientX + b.clientX) / 2,
+        midY: (a.clientY + b.clientY) / 2,
+      };
+    }
+  }, { passive: false });
+
+  canvas.addEventListener("touchmove", (e) => {
+    e.preventDefault();
+    if (!touchState) return;
+    if (touchState.mode === "pan" && e.touches.length === 1) {
+      const t = e.touches[0];
+      const dx = t.clientX - touchState.x;
+      const dy = t.clientY - touchState.y;
+      touchState.x = t.clientX;
+      touchState.y = t.clientY;
+      view.cx -= dx * view.scale;
+      view.cy += dy * view.scale;
+      scheduleRender();
+    } else if (touchState.mode === "pinch" && e.touches.length === 2) {
+      const [a, b] = e.touches;
+      const dist = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+      const rect = canvas.getBoundingClientRect();
+      const midX = (a.clientX + b.clientX) / 2 - rect.left;
+      const midY = (a.clientY + b.clientY) / 2 - rect.top;
+      const factor = touchState.dist / dist;
+      touchState.dist = dist;
+      zoomAt(midX, midY, factor);
+    }
+  }, { passive: false });
+
+  canvas.addEventListener("touchend", () => { touchState = null; });
+  canvas.addEventListener("touchcancel", () => { touchState = null; });
+
+  document.getElementById("resetViewBtn").addEventListener("click", resetView);
+  gridToggle.addEventListener("change", scheduleRender);
+
+  window.addEventListener("resize", scheduleRender);
+  new ResizeObserver(scheduleRender).observe(canvas);
+
+  // ---------------------------------------------------------------------
+  // Init
+  // ---------------------------------------------------------------------
+
+  addRow("sin(x)");
+  addRow("x^2 / 4");
+  resetView();
+  scheduleRender();
+})();
+</script>
+</body>
+</html>
