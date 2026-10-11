@@ -1,0 +1,83 @@
+/* 将棋道場 の色。変数名は学習シリーズ共通(shared/base.css を参照)。
+   --board から下は盤面図(board.js)が使う色。 */
+:root {
+  --bg: #F3EEE2;
+  --surface: #FFFDF8;
+  --surface-2: #EAE2CF;
+  --border: #D9CDB2;
+  --ink: #231C15;
+  --ink-muted: #5F5446;
+  --ink-faint: #746754;
+  --accent: #2F4F7F;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E3EAF4;
+  --good: #3F7457;
+  --good-soft: #E1EEE3;
+  --bad: #AC4634;
+  --bad-soft: #F5E3DD;
+  --shadow: rgba(35, 28, 21, 0.12);
+  --board: #E4C07A;
+  --board-line: #4E3A1E;
+  --board-mark: #A97528;
+  --board-aim: #A3201A;
+  --piece: #F8E8C0;
+  --piece-edge: #7A5E30;
+  --piece-ink: #1E1710;
+  --piece-promoted: #A3201A;
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14110D;
+    --surface: #1E1913;
+    --surface-2: #29221A;
+    --border: #3B3125;
+    --ink: #F0E8D9;
+    --ink-muted: #BBAD95;
+    --ink-faint: #94856F;
+    --accent: #8DB3E2;
+    --accent-ink: #0C1A2B;
+    --accent-soft: #1B2738;
+    --good: #7DB694;
+    --good-soft: #223229;
+    --bad: #E08669;
+    --bad-soft: #3A241E;
+    --shadow: rgba(0, 0, 0, 0.4);
+    --board: #B08A52;
+    --board-line: #3A2A14;
+    --board-mark: #6A4C1E;
+    --board-aim: #7A130C;
+    --piece: #E6D2A2;
+    --piece-edge: #5C4524;
+    --piece-ink: #1C150D;
+    --piece-promoted: #8E1A12;
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  --bg: #14110D;
+  --surface: #1E1913;
+  --surface-2: #29221A;
+  --border: #3B3125;
+  --ink: #F0E8D9;
+  --ink-muted: #BBAD95;
+  --ink-faint: #94856F;
+  --accent: #8DB3E2;
+  --accent-ink: #0C1A2B;
+  --accent-soft: #1B2738;
+  --good: #7DB694;
+  --good-soft: #223229;
+  --bad: #E08669;
+  --bad-soft: #3A241E;
+  --shadow: rgba(0, 0, 0, 0.4);
+  --board: #B08A52;
+  --board-line: #3A2A14;
+  --board-mark: #6A4C1E;
+  --board-aim: #7A130C;
+  --piece: #E6D2A2;
+  --piece-edge: #5C4524;
+  --piece-ink: #1C150D;
+  --piece-promoted: #8E1A12;
+}

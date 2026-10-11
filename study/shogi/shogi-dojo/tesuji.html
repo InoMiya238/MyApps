@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>手筋帳 | 将棋道場</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 960px; gap: 22px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  /* ---------- 絞り込みタブ ---------- */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .tab {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .tab:hover { border-color: var(--accent); color: var(--ink); }
+  .tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .tab:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- カード ---------- */
+  .ref-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+    gap: 18px;
+  }
+  .ref-card {
+    min-width: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    scroll-margin-top: 16px;
+  }
+  .ref-card[hidden] { display: none; }
+  .ref-card:target,
+  .ref-card.is-target { border-color: var(--accent); }
+
+  .card-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+  }
+  .card-head h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 600;
+  }
+  .yomi {
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+  .chip {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .ref-card dl { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  .ref-card dt {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+  }
+  .ref-card dd {
+    margin: 2px 0 0;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--ink-muted);
+  }
+  .ref-card dd ul { margin: 0; padding-left: 1.2em; }
+  .ref-card dd a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .ref-card dd a:hover { text-decoration: underline; }
+  .lead {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  .tabs .tab { flex: 0 1 auto; min-width: 44px; }
+  .legend {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+  .legend-sep { color: var(--ink-faint); }
+  .swatch {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+  }
+  .swatch-key { background: var(--board-mark); }
+  .swatch-aim { background: var(--board); border: 3px solid var(--board-aim); }
+  .page-note {
+    margin: -10px 0 0;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- スマホ表示の調整 ---------- */
+  @media (max-width: 480px) {
+    .ref-card { padding: 18px 16px 20px; }
+    .tab { padding: 10px 10px; font-size: 13.5px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="hero">
+    <p class="eyebrow">SHOGI · 囲い・戦法・手筋</p>
+    <h1>手筋帳</h1>
+    <p class="tagline">駒ごとの基本の手筋を、部分図と短い説明でまとめました。</p>
+    <nav class="site-nav" aria-label="将棋道場のページ">
+      <a href="index.html">クイズ道場</a>
+      <a href="castles.html">囲い図鑑</a>
+      <a href="openings.html">戦法帳</a>
+      <span aria-current="page">手筋帳</span>
+      <a href="glossary.html">用語帳</a>
+    </nav>
+  </header>
+
+  <div class="tabs" id="tabs" role="group" aria-label="駒での絞り込み">
+    <button type="button" class="tab active" data-group="all" aria-pressed="true">すべて</button>
+    <button type="button" class="tab" data-group="歩" aria-pressed="false">歩</button>
+    <button type="button" class="tab" data-group="香" aria-pressed="false">香</button>
+    <button type="button" class="tab" data-group="桂" aria-pressed="false">桂</button>
+    <button type="button" class="tab" data-group="銀" aria-pressed="false">銀</button>
+    <button type="button" class="tab" data-group="金" aria-pressed="false">金</button>
+    <button type="button" class="tab" data-group="角" aria-pressed="false">角</button>
+    <button type="button" class="tab" data-group="飛" aria-pressed="false">飛</button>
+    <button type="button" class="tab" data-group="そのほか" aria-pressed="false">そのほか</button>
+  </div>
+
+  <p class="legend">
+    <span class="legend-item"><span class="swatch swatch-key" aria-hidden="true"></span>濃いマス = 主役の駒</span>
+    <span class="legend-sep" aria-hidden="true">/</span>
+    <span class="legend-item"><span class="swatch swatch-aim" aria-hidden="true"></span>赤い枠 = ねらっているマス</span>
+  </p>
+  <p class="page-note">図はどれも先手(下側)がその手筋の手を指した直後です。点線の辺は、盤の一部を切り出したところです。</p>
+
+  <section class="ref-grid" id="grid" aria-label="手筋の一覧"></section>
+</div>
+
+<script src="data.js"></script>
+<script src="board.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var grid = document.getElementById("grid");
+  var tabs = document.querySelectorAll("#tabs .tab");
+
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function textItem(label, text) {
+    var wrap = el("div");
+    wrap.appendChild(el("dt", "", label));
+    wrap.appendChild(el("dd", "", text));
+    return wrap;
+  }
+
+  function buildCard(t) {
+    var card = el("article", "ref-card");
+    card.id = t.id;
+    card.dataset.group = t.piece;
+
+    var head = el("div", "card-head");
+    head.appendChild(el("h2", "", t.name));
+    head.appendChild(el("span", "yomi", t.yomi));
+    head.appendChild(el("span", "chip", t.piece));
+    card.appendChild(head);
+
+    var boardBox = el("div");
+    card.appendChild(boardBox);
+    ShogiBoard.render(boardBox, t.board, {});
+
+    var dl = el("dl");
+    dl.appendChild(textItem("どんな手か", t.what));
+    dl.appendChild(textItem("効果", t.effect));
+    card.appendChild(dl);
+    return card;
+  }
+
+  function setFilter(group) {
+    tabs.forEach(function (t) {
+      var on = t.dataset.group === group;
+      t.classList.toggle("active", on);
+      t.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    grid.querySelectorAll(".ref-card").forEach(function (card) {
+      card.hidden = !(group === "all" || card.dataset.group === group);
+    });
+  }
+
+  // #id つきで開かれたとき、その項目を見えるようにして目立たせる
+  function focusHash() {
+    var id = "";
+    try { id = decodeURIComponent(location.hash.slice(1)); } catch (e) { /* こわれたアンカーは無視 */ }
+    grid.querySelectorAll(".is-target").forEach(function (c) { c.classList.remove("is-target"); });
+    if (!id) return;
+    var card = document.getElementById(id);
+    if (!card || !card.classList.contains("ref-card")) return;
+    if (card.hidden) setFilter("all");
+    card.classList.add("is-target");
+    card.scrollIntoView({ block: "start" });
+  }
+
+  SHOGI_DATA.tesuji.forEach(function (t) { grid.appendChild(buildCard(t)); });
+  tabs.forEach(function (t) {
+    t.addEventListener("click", function () { setFilter(t.dataset.group); });
+  });
+  window.addEventListener("hashchange", focusHash);
+  focusHash();
+})();
+</script>
+</body>
+</html>
