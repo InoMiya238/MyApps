@@ -36,6 +36,8 @@
     border-bottom: 1px solid var(--border);
     background: var(--panel-bg);
   }
+  .back-link { display: inline-block; margin-bottom: 4px; color: var(--text-dim); font-size: 12px; font-weight: 600; text-decoration: none; }
+  .back-link:hover { color: var(--accent); text-decoration: underline; }
   header h1 {
     margin: 0;
     font-size: 18px;
@@ -246,6 +248,7 @@
 <body>
 <div id="app">
   <header>
+    <a class="back-link" href="../../index.html">← ページ一覧</a>
     <h1>関数グラフ描画ツール</h1>
     <p>1変数関数・2変数関数・陰関数・合成関数に対応。マウスホイールでズーム、ドラッグでパンできます。</p>
   </header>

@@ -96,6 +96,8 @@
   }
 
   /* 1. ヘッダー */
+  .back-link { align-self: flex-start; margin-bottom: 6px; padding: 4px 0; color: var(--ink-muted); font-size: 0.82rem; font-weight: 500; text-decoration: none; }
+  .back-link:hover { color: var(--ink); text-decoration: underline; }
   .header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; margin-bottom: 28px; }
   .header h1 { margin: 0; font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: var(--ink-muted); white-space: nowrap; }
   .test-badge { margin-left: 6px; padding: 1px 6px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.7rem; font-weight: 500; }
@@ -177,6 +179,7 @@
 <body data-mode="focus" data-state="idle">
 
 <main class="app">
+  <a class="back-link" href="../../index.html">← ページ一覧</a>
   <header class="header">
     <h1>ポモドーロタイマー<span class="test-badge" id="testBadge" hidden>確認用 60倍速</span></h1>
     <div class="theme-group" role="group" aria-label="表示テーマ">
