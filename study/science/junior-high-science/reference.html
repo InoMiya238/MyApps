@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>中学理科の要点帳</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 900px; gap: 24px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 56ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- Controls bar ---------- */
+  .controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 20px;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 20px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .controls-bar p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .quiz-link {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-radius: 9px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .quiz-link.small { padding: 9px 13px; font-size: 12.5px; }
+
+  /* ---------- TOC(分野ごとの列) ---------- */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .toc-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    margin: 0 0 10px;
+  }
+  .toc-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 12px 24px;
+  }
+  .toc-group { min-width: 0; }
+  .toc-grade {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 13.5px;
+  }
+  .toc li { margin-bottom: 6px; display: flex; gap: 6px; align-items: baseline; min-width: 0; }
+  .toc li .no {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .toc a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .toc a:hover { text-decoration: underline; }
+  .toc .pending-mark { font-size: 11px; color: var(--ink-faint); font-weight: 400; white-space: nowrap; }
+  @media (max-width: 700px) {
+    .toc-groups { grid-template-columns: 1fr; gap: 14px; }
+  }
+
+  /* ---------- 学年の区切り ---------- */
+  .grade-section { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 16px; }
+  .grade-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .grade-head h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .grade-head .unit-count {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- Study cards ---------- */
+  .study-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px;
+  }
+  .study-card {
+    min-width: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-margin-top: 16px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .study-card.wide { grid-column: 1 / -1; }
+  .study-card.is-target { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 1px 2px var(--shadow); }
+
+  .study-card h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .study-card h2 .num {
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .study-card .tag {
+    align-self: flex-start;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    background: var(--surface-2);
+    padding: 3px 9px;
+    border-radius: 999px;
+  }
+  .study-card p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+  .card-body { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .card-col, .blocks, .figs { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .block { min-width: 0; }
+  /* 図のある単元: 左に要点と表、右に図と例題を並べる */
+  .study-card.wide .card-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px 24px;
+    align-items: start;
+  }
+  .points {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    line-height: 1.8;
+  }
+  .points li {
+    position: relative;
+    padding-left: 14px;
+    overflow-wrap: anywhere;
+  }
+  .points li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.75em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .points b { color: var(--ink); font-weight: 700; }
+
+  .example {
+    background: var(--surface-2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+  .example .ex-title {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--ink-faint);
+  }
+  .example .ex-q {
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  /* 問いの文の中に置いた表・与えられた値 */
+  .example .ex-q > div, .example .ex-q > dl { margin-top: 8px; margin-bottom: 8px; }
+  .example .ex-q > :first-child { margin-top: 0; }
+  .example .ex-q > :last-child { margin-bottom: 0; }
+  .example .steps {
+    font-size: 13px;
+    line-height: 1.85;
+    color: var(--ink);
+    padding-left: 10px;
+    border-left: 2px solid var(--border);
+  }
+  .example .result {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--good);
+    margin-top: 2px;
+    overflow-wrap: anywhere;
+  }
+  .example .result::before { content: "答え "; font-size: 11px; font-weight: 600; color: var(--ink-faint); margin-right: 4px; }
+
+  .pending {
+    padding: 12px 14px;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    color: var(--ink-faint);
+    font-size: 13px;
+  }
+
+  .card-foot {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 12px;
+  }
+  .unit-stat {
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .weak-tag {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--bad);
+    background: var(--bad-soft);
+    border: 1px solid var(--bad);
+    border-radius: 999px;
+    padding: 3px 7px;
+  }
+
+  footer.cta {
+    text-align: center;
+    padding: 8px 0 0;
+  }
+  footer.cta p {
+    margin: 10px 0 0;
+    color: var(--ink-muted);
+    font-size: 13px;
+  }
+
+  /* ===== 理科の表示部品 ここから(index.html と reference.html で同じ内容。変えるときは両方を直す) ===== */
+  .steps { display: flex; flex-direction: column; gap: 3px; }
+  .step { min-width: 0; overflow-wrap: anywhere; }
+  .rule { color: var(--accent); font-weight: 700; }
+
+  /* ふりがな */
+  rt { font-family: var(--font-body); font-size: 0.5em; font-weight: 400; color: var(--ink-muted); user-select: none; }
+  .question:has(ruby), .choice-body:has(ruby), .points li:has(ruby), .step:has(ruby) { line-height: 2.1; }
+
+  /* 単位つきの数値、化学式、分数 */
+  .qty { white-space: nowrap; }
+  .qty .n { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .qty .u { font-family: var(--font-body); font-size: .92em; margin-left: .18em; }
+  .qty .u.tight { margin-left: 0; }
+  .chem { font-family: var(--font-body); white-space: nowrap; }
+  .chem sub { font-size: .7em; line-height: 0; position: relative; top: .32em; vertical-align: baseline; }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; font-size: 0.82em; line-height: 1.15; margin: 0 0.12em; }
+  .frac .num { padding: 0 0.25em 0.08em; }
+  .frac .den { padding: 0.08em 0.25em 0; border-top: 0.09em solid currentColor; align-self: stretch; text-align: center; }
+
+  /* 図の枠 */
+  .sci-fig { margin: 0; padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; min-width: 0; }
+  .sci-fig svg { display: block; width: 100%; max-width: 340px; height: auto; margin: 0 auto; }
+  .sci-fig figcaption { margin-top: 8px; font-size: 12px; line-height: 1.6; color: var(--ink-muted); text-align: left; }
+  .q-figure { margin: 0 0 18px; min-width: 0; }
+  .q-figure[hidden] { display: none; }
+  .sci-defs { pointer-events: none; }
+
+  /* 図の中の文字 */
+  .sci-svg text { font-family: var(--font-body); }
+  .fig-label { font-size: 13px; fill: var(--ink); }
+  .fig-small { font-size: 12px; fill: var(--ink-muted); }
+  .sci-svg .fig-num { font-family: var(--font-mono); font-size: 12px; fill: var(--ink-muted); }
+  .sci-svg .fig-val { font-family: var(--font-mono); font-size: 12px; font-weight: 700; fill: var(--ink); }
+  .fig-halo { paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+  .fig-key { stroke: var(--accent); stroke-width: 1.5; fill: var(--surface); }
+  .fig-key.on { stroke-width: 3; fill: var(--accent-soft); }
+  .fig-key-t { font-size: 14px; font-weight: 700; fill: var(--ink); text-anchor: middle; dominant-baseline: central; }
+
+  /* 図の線と面 */
+  .fig-shape { stroke: var(--ink); stroke-width: 2; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .fig-line { stroke: var(--accent); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .fig-line-2 { stroke: var(--ink); stroke-width: 2; fill: none; stroke-dasharray: 5 4; }
+  .fig-line-3 { stroke: var(--ink-muted); stroke-width: 2; fill: none; stroke-dasharray: 1.5 4; stroke-linecap: round; }
+  .fig-dash { stroke: var(--ink-muted); stroke-width: 1.5; fill: none; stroke-dasharray: 4 4; }
+  .fig-thin { stroke: var(--ink-muted); stroke-width: 1; fill: none; }
+  .fig-axis { stroke: var(--ink-muted); stroke-width: 1.5; fill: none; }
+  .fig-grid { stroke: var(--ink-faint); stroke-width: 1; stroke-opacity: .45; fill: none; }
+  .fig-force { stroke: var(--accent); stroke-width: 3; fill: none; }
+  .fig-detail { stroke: var(--ink); stroke-width: 1.2; fill: none; stroke-linecap: round; }
+  .fig-fill { fill: var(--accent-soft); }
+  .fig-fill-2 { fill: var(--surface-2); }
+  .fig-fill-0 { fill: var(--surface); }
+  .fig-point { fill: var(--accent); }
+  .fig-point-2 { fill: var(--ink); }
+  .fig-point-3 { fill: var(--ink-muted); }
+  .fig-solid { fill: var(--ink); }
+  .fig-dot { fill: var(--ink-muted); }
+  .pat-s { stroke: var(--ink-muted); stroke-width: 1; fill: none; }
+  .pat-f { fill: var(--ink-muted); }
+  .arrow-ink { fill: var(--ink); }
+  .arrow-accent { fill: var(--accent); }
+
+  /* 表。幅がせまいとき、.stack の表は1行を1枚のカードに組みかえる(表を入れた場所の幅で決まる) */
+  .tbl-wrap { position: relative; min-width: 0; container-type: inline-size; }
+  .sci-table { width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.5; color: var(--ink); }
+  .sci-table th, .sci-table td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  .sci-table th { background: var(--surface-2); font-weight: 600; }
+  .sci-table th[scope="row"] { min-width: 5.6em; overflow-wrap: break-word; }
+  .sci-table.compact th[scope="row"] { min-width: 3.3em; }
+  .sci-table:not(.stack) thead th { min-width: 5.6em; }
+  .sci-table caption { font-size: 12px; color: var(--ink-faint); text-align: left; padding-bottom: 6px; }
+  .sci-table.compact { font-size: 12.5px; }
+  .sci-table.compact th, .sci-table.compact td { padding: 5px 6px; }
+  .example .sci-table th, .feedback .sci-table th { background: var(--surface); }
+  @container (max-width: 480px) {
+    .sci-table.stack, .sci-table.stack tbody { display: block; }
+    .sci-table.stack caption { display: block; }
+    .sci-table.stack thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .sci-table.stack tr { display: block; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+    .sci-table.stack tr:last-child { margin-bottom: 0; }
+    .sci-table.stack th[scope="row"] { display: block; border: 0; font-size: 13.5px; font-weight: 700; }
+    .sci-table.stack td { display: grid; grid-template-columns: 6.5em 1fr; gap: 8px; border: 0; border-top: 1px solid var(--border); }
+    .sci-table.stack td::before { content: attr(data-label); font-size: 12px; color: var(--ink-muted); }
+  }
+
+  /* 与えられた値 */
+  .given { display: grid; grid-template-columns: auto auto; justify-content: center; gap: 4px 14px; margin: 0; padding: 10px 14px; background: var(--surface-2); border-radius: 10px; font-size: 14.5px; color: var(--ink); }
+  .given dt { color: var(--ink-muted); }
+  .given dd { margin: 0; font-weight: 600; text-align: right; }
+  .example .given, .feedback .given { background: var(--surface); }
+
+  /* 公式の箱、計算式の行 */
+  .formula { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 10px; padding: 10px 12px; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 10px; font-size: 15px; font-weight: 600; color: var(--ink); }
+  .calc { font-size: 13.5px; line-height: 1.9; overflow-wrap: anywhere; }
+  .calc .op { margin: 0 .3em; font-family: var(--font-mono); }
+
+  /* 分類の枝分かれ */
+  .branch, .branch ul { list-style: none; margin: 0; }
+  .branch { padding: 0; }
+  .branch ul { margin-top: 4px; padding-left: 14px; border-left: 2px solid var(--border); }
+  .branch li { padding: 4px 0 4px 10px; min-width: 0; overflow-wrap: anywhere; }
+  .branch > li { padding-left: 0; }
+  .branch-q { font-size: 12.5px; color: var(--ink-muted); }
+  .branch-when { display: block; font-size: 12px; font-weight: 600; color: var(--ink-faint); }
+  .branch-leaf { display: inline-block; padding: 2px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--ink); font-weight: 700; font-size: 13.5px; }
+  .branch-note { margin-left: 8px; font-size: 12.5px; color: var(--ink-muted); }
+
+  /* 間違えた問題の中の教材と図 */
+  .miss-q .given, .miss-q .tbl-wrap { margin-top: 6px; }
+  .miss-fig { flex: 1 1 100%; min-width: 0; margin-top: 6px; }
+  .miss-fig summary { font-size: .82rem; color: var(--accent); font-weight: 600; cursor: pointer; min-height: 32px; display: flex; align-items: center; }
+  .miss-fig summary::before { content: "▸"; margin-right: 6px; }
+  .miss-fig[open] summary::before { content: "▾"; }
+  .miss-fig summary::-webkit-details-marker { display: none; }
+  .miss-fig summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* ===== 理科の表示部品 ここまで ===== */
+
+  @media (max-width: 700px) {
+    .study-grid { grid-template-columns: minmax(0, 1fr); }
+    .study-card.wide .card-body { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .controls-bar { padding: 14px 16px; }
+    .toc { padding: 16px; }
+    .study-card { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow" id="eyebrow">JUNIOR HIGH SCIENCE · 中1 全13単元</p>
+    <h1>中学理科の要点帳</h1>
+    <p class="tagline">単元ごとの要点・図・例題をまとめた早見帳です。読んだらその単元のクイズへ進めます。</p>
+    <nav class="site-nav" aria-label="中学理科道場のページ">
+      <a href="index.html">クイズ道場</a>
+      <span aria-current="page">要点帳</span>
+    </nav>
+  </header>
+
+  <section class="controls-bar" aria-label="ナビゲーション">
+    <p>読んだらその単元のクイズへ。各単元の下のボタンから進めます。</p>
+    <a class="quiz-link" href="index.html">道場でクイズに挑戦 →</a>
+  </section>
+
+  <nav class="toc" aria-label="目次">
+    <p class="toc-title">目次</p>
+    <div class="toc-groups" id="tocGroups"></div>
+  </nav>
+
+  <div id="sections" style="display: contents"></div>
+
+  <footer class="cta">
+    <a class="quiz-link" href="index.html">道場でクイズに挑戦 →</a>
+    <p>道場では、単元を選んで4択クイズで練習できます。正答率は単元ごとに残ります。</p>
+  </footer>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="data.js"></script>
+<script src="data-g1.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // 図の共通定義(模様・矢じり)を、ページの先頭に1回だけ入れる
+  document.body.insertAdjacentHTML("afterbegin", JHS.defs());
+
+  var tocGroups = document.getElementById("tocGroups");
+  var sections = document.getElementById("sections");
+  var stats = JHS.loadStats();   // 読むだけ。このページでは保存しない
+  var grades = JHS.activeGrades();
+
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  // データファイルの図・表・式(作者が書いたHTML)を入れる
+  function htmlEl(tag, className, html) {
+    var e = el(tag, className);
+    e.innerHTML = html;
+    return e;
+  }
+  function pct(correct, total) { return Math.round((correct / total) * 100) + "%"; }
+
+  // 見出しの学年と単元数は、データから作る
+  if (grades.length > 0) {
+    document.getElementById("eyebrow").textContent = "JUNIOR HIGH SCIENCE · " +
+      (grades.length === 1 ? grades[0].short : grades[0].short + "〜" + grades[grades.length - 1].short) +
+      " 全" + JHS.UNITS.length + "単元";
+  }
+
+  function buildCard(u) {
+    var c = JHS.contentOf(u.id), ready = JHS.isReady(u.id);
+    var card = el("article", "study-card" + (c && c.figures.length > 0 ? " wide" : ""));
+    card.id = u.id;
+
+    var h2 = el("h2");
+    h2.appendChild(el("span", "num", u.no));
+    h2.appendChild(document.createTextNode(u.name));
+    card.appendChild(h2);
+    card.appendChild(el("span", "tag", u.area));
+    if (u.sub) card.appendChild(el("p", "", u.sub));
+
+    if (!c) {
+      card.appendChild(el("div", "pending", "準備中です。この単元の要点とクイズは、あとから追加されます。"));
+      return card;
+    }
+
+    // 左の列: 要点 → 表・公式・枝分かれ。右の列: 図 → 例題(せまい画面では、この順に1列で並ぶ)
+    var body = el("div", "card-body"), left = el("div", "card-col"), right = el("div", "card-col");
+    if (c.points.length > 0) {
+      var ul = el("ul", "points");
+      c.points.forEach(function (p) { ul.appendChild(htmlEl("li", "", p)); });
+      left.appendChild(ul);
+    }
+    if (c.blocks.length > 0) {
+      var blocks = el("div", "blocks");
+      c.blocks.forEach(function (b) { blocks.appendChild(htmlEl("div", "block", b)); });
+      left.appendChild(blocks);
+    }
+    if (c.figures.length > 0) {
+      var figs = el("div", "figs");
+      c.figures.forEach(function (f) { figs.insertAdjacentHTML("beforeend", JHS.fig(f.html, f.caption)); });
+      right.appendChild(figs);
+    }
+    if (c.example) {
+      var ex = el("div", "example");
+      ex.appendChild(el("div", "ex-title", "例題"));
+      ex.appendChild(htmlEl("div", "ex-q", c.example.title || ""));
+      if (Array.isArray(c.example.steps) && c.example.steps.length > 0) {
+        var holder = el("div");
+        holder.innerHTML = JHS.steps(c.example.steps);
+        ex.appendChild(holder.firstChild);
+      }
+      if (c.example.result) ex.appendChild(htmlEl("div", "result", c.example.result));
+      right.appendChild(ex);
+    }
+    if (left.children.length > 0) body.appendChild(left);
+    if (right.children.length > 0) body.appendChild(right);
+    card.appendChild(body);
+
+    var foot = el("div", "card-foot");
+    var rec = stats.byUnit[u.id];
+    var stat = el("span", "unit-stat");
+    if (rec && rec.total > 0) {
+      stat.textContent = "正答率 " + pct(rec.correct, rec.total) + "(" + rec.correct + "/" + rec.total + ")";
+      if (JHS.isWeak(rec)) stat.appendChild(el("span", "weak-tag", "苦手"));
+    } else {
+      stat.textContent = ready ? "まだ解いていません" : "クイズは準備中";
+    }
+    foot.appendChild(stat);
+    if (ready) {
+      var link = el("a", "quiz-link small", "この単元をクイズで練習 →");
+      link.href = "index.html?unit=" + encodeURIComponent(u.id);
+      foot.appendChild(link);
+    }
+    card.appendChild(foot);
+    return card;
+  }
+
+  grades.forEach(function (g) {
+    var units = JHS.unitsOf(g.id);
+
+    // 目次: 分野ごとの列(学年が2つ以上あるときは、分野名の前に学年をつける)
+    JHS.AREAS.forEach(function (area) {
+      var inArea = units.filter(function (u) { return u.area === area; });
+      if (inArea.length === 0) return;
+      var group = el("div", "toc-group");
+      group.appendChild(el("p", "toc-grade", (grades.length > 1 ? g.short + " " : "") + area));
+      var ol = el("ol");
+      inArea.forEach(function (u) {
+        var li = el("li");
+        li.appendChild(el("span", "no", u.no));
+        var wrap = el("span");
+        var a = el("a", "", u.name);
+        a.href = "#" + u.id;
+        wrap.appendChild(a);
+        if (!JHS.contentOf(u.id)) wrap.appendChild(el("span", "pending-mark", "(準備中)"));
+        li.appendChild(wrap);
+        ol.appendChild(li);
+      });
+      group.appendChild(ol);
+      tocGroups.appendChild(group);
+    });
+
+    // 学年のまとまり
+    var sec = el("section", "grade-section");
+    sec.id = g.id;
+    var head = el("div", "grade-head");
+    head.appendChild(el("h2", "", g.name));
+    head.appendChild(el("span", "unit-count", units.length + "単元"));
+    sec.appendChild(head);
+    var grid = el("div", "study-grid");
+    units.forEach(function (u) { grid.appendChild(buildCard(u)); });
+    sec.appendChild(grid);
+    sections.appendChild(sec);
+  });
+
+  // #単元ID つきで開かれたとき、描き終えてからその単元へ移動して目立たせる
+  function focusHash() {
+    var id = "";
+    try { id = decodeURIComponent(location.hash.slice(1)); } catch (e) { /* こわれたアンカーは無視 */ }
+    sections.querySelectorAll(".is-target").forEach(function (c) { c.classList.remove("is-target"); });
+    if (!id) return;
+    var target = document.getElementById(id);
+    if (!target || !sections.contains(target)) return;
+    if (target.classList.contains("study-card")) target.classList.add("is-target");
+    target.scrollIntoView({ block: "start" });
+  }
+  window.addEventListener("hashchange", focusHash);
+  focusHash();
+  // フォントが読みこまれると高さが変わるので、もう一度合わせる
+  if (location.hash && document.fonts && document.fonts.ready) document.fonts.ready.then(focusHash);
+})();
+</script>
+</body>
+</html>

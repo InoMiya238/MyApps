@@ -1,0 +1,61 @@
+/* 中学国語道場 の色。変数名は学習シリーズ共通(shared/base.css を参照)。 */
+:root {
+  color-scheme: light;
+  --bg: #F5F1EE;
+  --surface: #FFFFFF;
+  --surface-2: #EEE6E1;
+  --border: #DDD0CA;
+  --ink: #2A1E20;
+  --ink-muted: #5E4E52;
+  --ink-faint: #6F5E62;
+  --accent: #8F2B48;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #F7E6EA;
+  --good: #2A6B4C;
+  --good-soft: #DFF0E6;
+  --bad: #9C4310;
+  --bad-soft: #F9E8D8;
+  --shadow: rgba(42, 30, 32, 0.10);
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #161112;
+    --surface: #1F1819;
+    --surface-2: #2B2123;
+    --border: #423336;
+    --ink: #F1E9E8;
+    --ink-muted: #C0AFB1;
+    --ink-faint: #A39194;
+    --accent: #EC9BB0;
+    --accent-ink: #2E0A16;
+    --accent-soft: #3A1E27;
+    --good: #7FCBA4;
+    --good-soft: #1D3128;
+    --bad: #EBA26A;
+    --bad-soft: #3A2616;
+    --shadow: rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #161112;
+  --surface: #1F1819;
+  --surface-2: #2B2123;
+  --border: #423336;
+  --ink: #F1E9E8;
+  --ink-muted: #C0AFB1;
+  --ink-faint: #A39194;
+  --accent: #EC9BB0;
+  --accent-ink: #2E0A16;
+  --accent-soft: #3A1E27;
+  --good: #7FCBA4;
+  --good-soft: #1D3128;
+  --bad: #EBA26A;
+  --bad-soft: #3A2616;
+  --shadow: rgba(0, 0, 0, 0.4);
+}
