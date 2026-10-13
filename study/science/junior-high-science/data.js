@@ -1,6 +1,6 @@
 // 中学理科道場: 学年・分野・単元の定義と、学年別ファイル(data-g1.js など)が中身を登録するための入れ物。
 // 表・公式・図などの表示部品を組み立てる関数も、このファイルに置く。
-// 読み込む順番: shared/store.js → data.js → data-g1.js
+// 読み込む順番: shared/store.js → data.js → data-g1.js → data-g2.js
 //
 // ■ 単元の中身の登録(学年別ファイルに書く。分野ごとに1つの IIFE にまとめる)
 //   JHS.register("単元ID", {
@@ -34,7 +34,7 @@
 //   JHS.num(2.7)                       小数の表示("2.7")。JHS.num(1, 1) は "1.0"(小数第1位までそろえる)
 //   JHS.q(2.7, "g/cm³")                単位つきの数値。JHS.q(25, "%") JHS.q(100, "℃") JHS.q(40, "倍") は、すき間を自動でつめる。
 //                                      数値と単位の間に文字のスペースは入れない。1つ目に文字列を渡すと、そのまま出す
-//   JHS.chem("CO2")                    化学式(英字のあとの数字を下つきにする)。中1では問題に使わない
+//   JHS.chem("CO2")                    化学式(英字のあとの数字を下つきにする)。中1では問題に使わない(中2からは使う)
 //   JHS.frac("質量", "体積")           分数
 //   JHS.formula("密度", JHS.frac("質量", "体積"))                     公式の箱(左辺 = 右辺)
 //   JHS.given([["質量", JHS.q(54, "g")], ["体積", JHS.q(20, "cm³")]])   与えられた値の箱(名前と値の組)
@@ -119,7 +119,8 @@ var JHS = (function () {
   var COUNTS = [5, 10, 20];
 
   var GRADES = [
-    { id: "g1", short: "中1", name: "中学1年" }
+    { id: "g1", short: "中1", name: "中学1年" },
+    { id: "g2", short: "中2", name: "中学2年" }
   ];
 
   // 分野。設定画面の小見出し、要点帳の目次、成績の「分野ごとの正答率」は、この順に並ぶ
@@ -140,7 +141,26 @@ var JHS = (function () {
     { id: "g1-force", grade: "g1", area: "物理", name: "力", sub: "フックの法則・力のつり合い" },
     { id: "g1-volcanoes", grade: "g1", area: "地学", name: "火山と火成岩" },
     { id: "g1-earthquakes", grade: "g1", area: "地学", name: "地震" },
-    { id: "g1-strata", grade: "g1", area: "地学", name: "地層と化石", sub: "堆積岩・化石" }
+    { id: "g1-strata", grade: "g1", area: "地学", name: "地層と化石", sub: "堆積岩・化石" },
+
+    { id: "g2-cells", grade: "g2", area: "生物", name: "細胞のつくり", sub: "植物と動物の細胞・単細胞生物と多細胞生物" },
+    { id: "g2-plant-functions", grade: "g2", area: "生物", name: "植物のつくりとはたらき", sub: "光合成・呼吸・蒸散・葉と茎と根" },
+    { id: "g2-digestion", grade: "g2", area: "生物", name: "消化と吸収" },
+    { id: "g2-respiration-circulation", grade: "g2", area: "生物", name: "呼吸・血液・排出", sub: "肺・心臓と血液の循環・じん臓" },
+    { id: "g2-stimulus-response", grade: "g2", area: "生物", name: "刺激と反応", sub: "感覚器官・神経・骨と筋肉" },
+    { id: "g2-decomposition-atoms", grade: "g2", area: "化学", name: "分解と原子・分子", sub: "熱分解・電気分解・元素記号" },
+    { id: "g2-chemical-equations", grade: "g2", area: "化学", name: "化学式と化学反応式", sub: "単体と化合物・物質どうしが結びつく変化" },
+    { id: "g2-oxidation-reduction", grade: "g2", area: "化学", name: "酸化と還元", sub: "燃焼・還元・熱の出入り" },
+    { id: "g2-chemical-mass", grade: "g2", area: "化学", name: "化学変化と質量", sub: "質量保存の法則・質量の比" },
+    { id: "g2-circuits", grade: "g2", area: "物理", name: "回路と電流・電圧", sub: "直列回路と並列回路" },
+    { id: "g2-ohms-law", grade: "g2", area: "物理", name: "オームの法則と抵抗" },
+    { id: "g2-electric-power", grade: "g2", area: "物理", name: "電力と熱量", sub: "電力・熱量・電力量" },
+    { id: "g2-static-electrons", grade: "g2", area: "物理", name: "静電気と電流の正体", sub: "放電・電子・放射線" },
+    { id: "g2-magnetic-field", grade: "g2", area: "物理", name: "電流と磁界", sub: "磁界・モーター・電磁誘導" },
+    { id: "g2-pressure-weather", grade: "g2", area: "地学", name: "圧力と気象観測", sub: "圧力・大気圧・天気図の記号" },
+    { id: "g2-clouds-humidity", grade: "g2", area: "地学", name: "雲のでき方と湿度", sub: "飽和水蒸気量・露点・湿度" },
+    { id: "g2-fronts", grade: "g2", area: "地学", name: "前線と天気の変化", sub: "高気圧と低気圧・気団・前線" },
+    { id: "g2-japan-weather", grade: "g2", area: "地学", name: "日本の天気", sub: "季節風・四季の天気・台風" }
   ];
 
   var byId = {};
@@ -420,15 +440,18 @@ var JHS = (function () {
   }
   function graph(o) {
     var g = graphScale(o), s = "";
+    // 目盛りの数字は、刻みに小数があれば小数の桁をそろえる(0.9、1.0、1.1)
+    function digitsOf(axis) { var m = /\.(\d+)$/.exec(String(axis.step)); return m ? m[1].length : undefined; }
+    var dx = digitsOf(o.x), dy = digitsOf(o.y);
     ticks(o.x).forEach(function (v) {
       var X = px(g.X(v));
       s += '<line class="fig-grid" x1="' + X + '" y1="' + g.top + '" x2="' + X + '" y2="' + g.bottom + '"/>' +
-        txt(g.X(v), g.bottom + 15, num(v), { cls: "fig-num", anchor: "middle" });
+        txt(g.X(v), g.bottom + 15, num(v, dx), { cls: "fig-num", anchor: "middle" });
     });
     ticks(o.y).forEach(function (v) {
       var Y = px(g.Y(v));
       s += '<line class="fig-grid" x1="' + g.left + '" y1="' + Y + '" x2="' + g.right + '" y2="' + Y + '"/>' +
-        txt(g.left - 6, g.Y(v) + 4, num(v), { cls: "fig-num", anchor: "end" });
+        txt(g.left - 6, g.Y(v) + 4, num(v, dy), { cls: "fig-num", anchor: "end" });
     });
     s += '<path class="fig-axis" d="M' + g.left + " " + g.top + "V" + g.bottom + "H" + g.right + '"/>';
 

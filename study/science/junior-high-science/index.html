@@ -146,7 +146,8 @@
   /* 学年タブ(単元のある学年が2つ以上のときだけ出す) */
   .grade-tabs {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
     gap: 8px;
     margin-bottom: 12px;
   }
@@ -627,9 +628,10 @@
   .sci-table { width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.5; color: var(--ink); }
   .sci-table th, .sci-table td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
   .sci-table th { background: var(--surface-2); font-weight: 600; }
-  .sci-table th[scope="row"] { min-width: 5.6em; overflow-wrap: break-word; }
+  .sci-table th[scope="row"] { min-width: 6.4em; overflow-wrap: break-word; }
   .sci-table.compact th[scope="row"] { min-width: 3.3em; }
   .sci-table:not(.stack) thead th { min-width: 5.6em; }
+  .sci-table.compact thead th { min-width: 3.3em; }
   .sci-table caption { font-size: 12px; color: var(--ink-faint); text-align: left; padding-bottom: 6px; }
   .sci-table.compact { font-size: 12.5px; }
   .sci-table.compact th, .sci-table.compact td { padding: 5px 6px; }
@@ -824,6 +826,7 @@
 <script src="../../../shared/store.js"></script>
 <script src="data.js"></script>
 <script src="data-g1.js"></script>
+<script src="data-g2.js"></script>
 <script>
 (function () {
   "use strict";
@@ -877,6 +880,7 @@
       document.getElementById("gradeNote").textContent = "いまは" + span + "の" + n + "単元です。中2・中3はあとから追加します。";
     } else {
       selectGradeBtn.textContent = "この学年をすべて選ぶ";
+      document.getElementById("clearAllBtn").textContent = "この学年をはずす";
     }
   })();
 
@@ -887,7 +891,15 @@
     if (saved) {
       count = saved.count;
       saved.units.forEach(function (id) { if (JHS.isReady(id)) { selected[id] = true; restored = true; } });
-      if (restored) currentGrade = saved.grade;
+      if (restored) {
+        currentGrade = saved.grade;
+        // 保存された学年に選択が1つもなければ、選択のある最初の学年を開く
+        if (!JHS.unitsOf(currentGrade).some(function (u) { return selected[u.id]; })) {
+          for (var k = 0; k < JHS.GRADES.length; k++) {
+            if (JHS.unitsOf(JHS.GRADES[k].id).some(function (u) { return selected[u.id]; })) { currentGrade = JHS.GRADES[k].id; break; }
+          }
+        }
+      }
     }
     if (!restored) {
       for (var i = 0; i < JHS.GRADES.length; i++) {
@@ -1084,8 +1096,9 @@
     readyUnits(currentGrade).forEach(function (u) { selected[u.id] = true; });
     renderSetup();
   });
+  // 表示している学年の選択だけをはずす(ほかの学年の選択は残す)
   document.getElementById("clearAllBtn").addEventListener("click", function () {
-    selected = {};
+    JHS.unitsOf(currentGrade).forEach(function (u) { delete selected[u.id]; });
     renderSetup();
   });
   countSelect.addEventListener("change", function () {

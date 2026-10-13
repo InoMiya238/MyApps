@@ -66,6 +66,8 @@
     white-space: nowrap;
   }
   .quiz-link.small { padding: 9px 13px; font-size: 12.5px; }
+  .toc-back { font-size: 12.5px; font-weight: 600; color: var(--accent); text-decoration: none; padding: 9px 4px; }
+  .toc-back:hover { text-decoration: underline; }
 
   /* ---------- TOC(分野ごとの列) ---------- */
   .toc {
@@ -381,9 +383,10 @@
   .sci-table { width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.5; color: var(--ink); }
   .sci-table th, .sci-table td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
   .sci-table th { background: var(--surface-2); font-weight: 600; }
-  .sci-table th[scope="row"] { min-width: 5.6em; overflow-wrap: break-word; }
+  .sci-table th[scope="row"] { min-width: 6.4em; overflow-wrap: break-word; }
   .sci-table.compact th[scope="row"] { min-width: 3.3em; }
   .sci-table:not(.stack) thead th { min-width: 5.6em; }
+  .sci-table.compact thead th { min-width: 3.3em; }
   .sci-table caption { font-size: 12px; color: var(--ink-faint); text-align: left; padding-bottom: 6px; }
   .sci-table.compact { font-size: 12.5px; }
   .sci-table.compact th, .sci-table.compact td { padding: 5px 6px; }
@@ -461,7 +464,7 @@
     <a class="quiz-link" href="index.html">道場でクイズに挑戦 →</a>
   </section>
 
-  <nav class="toc" aria-label="目次">
+  <nav class="toc" id="toc" aria-label="目次">
     <p class="toc-title">目次</p>
     <div class="toc-groups" id="tocGroups"></div>
   </nav>
@@ -477,6 +480,7 @@
 <script src="../../../shared/store.js"></script>
 <script src="data.js"></script>
 <script src="data-g1.js"></script>
+<script src="data-g2.js"></script>
 <script>
 (function () {
   "use strict";
@@ -570,6 +574,9 @@
       stat.textContent = ready ? "まだ解いていません" : "クイズは準備中";
     }
     foot.appendChild(stat);
+    var back = el("a", "toc-back", "↑ 目次へ");
+    back.href = "#toc";
+    foot.appendChild(back);
     if (ready) {
       var link = el("a", "quiz-link small", "この単元をクイズで練習 →");
       link.href = "index.html?unit=" + encodeURIComponent(u.id);
