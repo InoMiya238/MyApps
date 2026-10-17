@@ -1,0 +1,129 @@
+/* 正規表現道場 の色。変数名は学習シリーズ共通(shared/base.css を参照)。
+   --code-* は正規表現・コードの表示(.rx-block / .rx-input)だけで使う。ライトでも暗い画面にする。
+   --mark-* はマッチした箇所の色分け(.rx-block の中の .mk)で使う。 */
+:root {
+  color-scheme: light;
+  --bg: #EBF2F1;
+  --surface: #FFFFFF;
+  --surface-2: #DCE9E7;
+  --border: #C5D8D5;
+  --ink: #12211F;
+  --ink-muted: #435755;
+  --ink-faint: #566B68;
+  --accent: #0A6B66;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #D8EEEB;
+  --good: #2C6A1E;
+  --good-soft: #E0F0D9;
+  --bad: #A8372A;
+  --bad-soft: #F7E0DB;
+  --shadow: rgba(18, 33, 31, 0.10);
+  --code-bg: #0F1D1C;
+  --code-border: #24403D;
+  --code-ink: #D6F2EE;
+  --code-muted: #86A8A3;
+  --code-kw: #6EE2D3;
+  --code-fn: #8CCBFF;
+  --code-str: #F2C27A;
+  --code-num: #B9E59A;
+  --code-esc: #FF9EC4;
+  --code-cls: #A6E3A1;
+  --code-grp: #C8A8FF;
+  --code-qnt: #FFB070;
+  --code-blank: #FFD166;
+  --code-blank-bg: #3A3420;
+  --code-caret: #6EE2D3;
+  --code-good: #9EDFB3;
+  --code-bad: #FF9B8A;
+  --mark-a: #1E6E64;
+  --mark-b: #5B4A8C;
+  --mark-ink: #FFFFFF;
+  --mark-line: #6EE2D3;
+  --mark-zero: #FFD166;
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #091514;
+    --surface: #0F201E;
+    --surface-2: #162C2A;
+    --border: #24403C;
+    --ink: #DCEDEA;
+    --ink-muted: #A2BDB8;
+    --ink-faint: #84A19C;
+    --accent: #5ED2C4;
+    --accent-ink: #04201D;
+    --accent-soft: #133633;
+    --good: #9BD38A;
+    --good-soft: #192E16;
+    --bad: #EE8E78;
+    --bad-soft: #3A221D;
+    --shadow: rgba(0, 0, 0, 0.45);
+    --code-bg: #061110;
+    --code-border: #24433F;
+    --code-ink: #D3EFEA;
+    --code-muted: #82A39E;
+    --code-kw: #6EE2D3;
+    --code-fn: #8CCBFF;
+    --code-str: #F2C27A;
+    --code-num: #B9E59A;
+    --code-esc: #FF9EC4;
+    --code-cls: #A6E3A1;
+    --code-grp: #C8A8FF;
+    --code-qnt: #FFB070;
+    --code-blank: #FFD166;
+    --code-blank-bg: #3A3420;
+    --code-caret: #6EE2D3;
+    --code-good: #9EDFB3;
+    --code-bad: #FF9B8A;
+    --mark-a: #1E6E64;
+    --mark-b: #5B4A8C;
+    --mark-ink: #FFFFFF;
+    --mark-line: #6EE2D3;
+    --mark-zero: #FFD166;
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #091514;
+  --surface: #0F201E;
+  --surface-2: #162C2A;
+  --border: #24403C;
+  --ink: #DCEDEA;
+  --ink-muted: #A2BDB8;
+  --ink-faint: #84A19C;
+  --accent: #5ED2C4;
+  --accent-ink: #04201D;
+  --accent-soft: #133633;
+  --good: #9BD38A;
+  --good-soft: #192E16;
+  --bad: #EE8E78;
+  --bad-soft: #3A221D;
+  --shadow: rgba(0, 0, 0, 0.45);
+  --code-bg: #061110;
+  --code-border: #24433F;
+  --code-ink: #D3EFEA;
+  --code-muted: #82A39E;
+  --code-kw: #6EE2D3;
+  --code-fn: #8CCBFF;
+  --code-str: #F2C27A;
+  --code-num: #B9E59A;
+  --code-esc: #FF9EC4;
+  --code-cls: #A6E3A1;
+  --code-grp: #C8A8FF;
+  --code-qnt: #FFB070;
+  --code-blank: #FFD166;
+  --code-blank-bg: #3A3420;
+  --code-caret: #6EE2D3;
+  --code-good: #9EDFB3;
+  --code-bad: #FF9B8A;
+  --mark-a: #1E6E64;
+  --mark-b: #5B4A8C;
+  --mark-ink: #FFFFFF;
+  --mark-line: #6EE2D3;
+  --mark-zero: #FFD166;
+}

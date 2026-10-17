@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>正規表現記法帳</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 900px; gap: 24px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 56ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+  a:focus-visible,
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- 正規表現・マッチ表示の部品(index.html と同じ内容。変えるときは両方を直す) ---------- */
+  .rx-block,
+  .rx-input {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--code-ink);
+    min-width: 0;
+  }
+  .rx-block {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .rx-block .kw { color: var(--code-kw); font-weight: 600; }
+  .rx-block .dl { color: var(--code-kw); }
+  .rx-block .fn { color: var(--code-fn); }
+  .rx-block .str { color: var(--code-str); }
+  .rx-block .num { color: var(--code-num); }
+  .rx-block .esc { color: var(--code-esc); }
+  .rx-block .cls { color: var(--code-cls); }
+  .rx-block .grp { color: var(--code-grp); font-weight: 600; }
+  .rx-block .qnt { color: var(--code-qnt); font-weight: 600; }
+  .rx-block .cm { color: var(--code-muted); }
+  .rx-block .blank {
+    color: var(--code-blank);
+    background: var(--code-blank-bg);
+    border-radius: 4px;
+    padding: 0 3px;
+    font-weight: 700;
+  }
+  .rx-block .filled {
+    color: var(--code-blank);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .rx-block .filled span { color: inherit; }
+  .rx-inline { font-family: var(--font-mono); }
+  .rx-inline .kw, .rx-inline .dl, .rx-inline .esc, .rx-inline .cls,
+  .rx-inline .grp, .rx-inline .qnt { color: var(--accent); font-weight: 700; }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    background: var(--surface-2);
+    color: var(--ink);
+    padding: 1px 5px;
+    border-radius: 5px;
+    overflow-wrap: anywhere;
+  }
+  code.nw { white-space: nowrap; }
+  .q-mark, .ctl { color: var(--ink-faint); font-weight: 400; }
+  .rx-block .q-mark, .rx-block .ctl { color: var(--code-muted); }
+  .str-chip {
+    display: inline-block;
+    max-width: 100%;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--surface-2);
+    color: var(--ink);
+    padding: 1px 7px;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .mk {
+    background: var(--mark-a);
+    color: var(--mark-ink);
+    border-radius: 3px;
+    box-shadow: inset 0 -2px 0 var(--mark-line);
+  }
+  .mk.alt { background: var(--mark-b); }
+  .mk-zero {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    margin: 0 1px;
+    vertical-align: -0.15em;
+    background: var(--mark-zero);
+    border-radius: 1px;
+  }
+  .hl-rows { display: flex; flex-direction: column; gap: 4px; }
+  .hl-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 2px 12px;
+  }
+  .hl-text { min-width: 0; overflow-wrap: anywhere; }
+  .hl-note { flex: none; font-family: var(--font-body); font-size: 12px; color: var(--code-muted); }
+  .hl-note.ok { color: var(--code-good); }
+  .hl-note.ng { color: var(--code-bad); font-weight: 600; }
+  /* ---------- 正規表現・マッチ表示の部品 ここまで ---------- */
+
+  /* ---------- 試してみる ---------- */
+  .tester {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 2px var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scroll-margin-top: 16px;
+  }
+  .tester h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+  .tester .lead { margin: -4px 0 0; color: var(--ink-muted); font-size: 13px; line-height: 1.7; }
+  .field-label {
+    margin: 0 0 5px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+  }
+  .rx-input:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .rx-input.has-error { border-color: var(--bad); }
+  .pattern-line { display: flex; align-items: center; gap: 2px; cursor: text; }
+  .pattern-line .sl { flex: none; color: var(--code-kw); font-weight: 700; user-select: none; }
+  .rx-input input,
+  .rx-input textarea {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    background: transparent;
+    border: 0;
+    outline: none;
+    padding: 2px 0;
+    color: var(--code-ink);
+    caret-color: var(--code-caret);
+    font: inherit;
+    font-size: 16px;
+  }
+  .rx-input textarea { display: block; resize: vertical; min-height: 4.8em; line-height: 1.6; }
+  .rx-input input::placeholder,
+  .rx-input textarea::placeholder { color: var(--code-muted); opacity: 1; }
+  .rx-input .flag-text { flex: none; color: var(--code-kw); min-width: 1ch; }
+  .flag-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .flag-btn {
+    min-width: 0;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 9px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .flag-btn b { font-family: var(--font-mono); font-size: 14px; color: var(--accent); }
+  .flag-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .flag-btn[aria-pressed="true"] b { color: var(--accent-ink); }
+  .tester-status { margin: 0; font-size: 13px; font-weight: 600; color: var(--ink-muted); }
+  .tester-status.error { color: var(--bad); }
+  .tester-out { min-height: 3.2em; }
+  .match-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+  }
+  .match-list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    min-width: 0;
+  }
+  .match-list li:last-child { border-bottom: none; }
+  .match-list .m-no { font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
+  .match-list .m-pos { font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); }
+  .match-list .m-groups { flex: 1 1 100%; display: flex; flex-wrap: wrap; gap: 4px 12px; color: var(--ink-muted); }
+  .match-list .m-groups span { min-width: 0; }
+  .match-list .g-name { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--accent); margin-right: 4px; }
+  .match-list .undef { font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); font-style: italic; }
+  .replace-out { margin: 0; }
+  .tester .hint { margin: 0; font-size: 12px; color: var(--ink-faint); line-height: 1.6; }
+
+  /* ---------- Controls bar ---------- */
+  .controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 16px;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 20px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .search-box {
+    flex: 1 1 320px;
+    min-width: 0;
+    padding: 8px 12px;
+  }
+  .search-box label { display: flex; align-items: center; gap: 1ch; cursor: text; }
+  .search-box .p { flex: none; color: var(--code-kw); font-weight: 600; user-select: none; }
+  .search-box input::-webkit-search-cancel-button { filter: grayscale(1); }
+  .bar-side {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-left: auto;
+  }
+  .hit-count {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+  .quiz-link {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-radius: 9px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  /* ---------- TOC ---------- */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .toc[hidden] { display: none; }
+  .toc-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    margin: 0 0 10px;
+  }
+  .toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 24px;
+    font-size: 13.5px;
+  }
+  .toc li { min-width: 0; display: flex; gap: 8px; align-items: baseline; }
+  .toc li .no {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .toc a { color: var(--ink); text-decoration: none; font-weight: 600; overflow-wrap: anywhere; }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+
+  .no-hit {
+    margin: 0;
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 14px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+  }
+  .no-hit[hidden] { display: none; }
+
+  /* ---------- 単元の区切り ---------- */
+  .grade-section { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 16px; }
+  .grade-section[hidden] { display: none; }
+  .grade-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .grade-head h2 {
+    margin: 0;
+    min-width: 0;
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .grade-head h2 .no {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .grade-head .dojo-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .grade-head .dojo-link:hover { text-decoration: underline; }
+
+  /* ---------- 記法のカード ---------- */
+  .study-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .study-card {
+    min-width: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-margin-top: 16px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .study-card[hidden] { display: none; }
+  .study-card.is-target { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 1px 2px var(--shadow); }
+  .card-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+  }
+  .study-card h3 {
+    margin: 0;
+    min-width: 0;
+    font-family: var(--font-mono);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--accent);
+    overflow-wrap: anywhere;
+  }
+  .study-card .tag {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--accent);
+    background: var(--surface-2);
+    padding: 3px 9px;
+    border-radius: 999px;
+    overflow-wrap: anywhere;
+  }
+  .study-card p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+  .sub-title {
+    margin: 4px 0 0;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+  }
+  .study-card .sub-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; }
+  .study-card .sub-head .sub-title { margin: 0; }
+  .try-btn {
+    min-height: 32px;
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--ink-muted);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .try-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .study-card .rx-block { font-size: 13px; }
+  .opt-list {
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px 14px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .opt-list dt {
+    min-width: 0;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .opt-list dd {
+    margin: 0;
+    min-width: 0;
+    color: var(--ink-muted);
+    overflow-wrap: anywhere;
+  }
+  .note-list {
+    margin: 0;
+    padding: 10px 12px 10px 28px;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 8px 8px 0;
+    color: var(--ink);
+    font-size: 12.5px;
+    line-height: 1.7;
+  }
+  .note-list li { overflow-wrap: anywhere; }
+  .note-list li + li { margin-top: 4px; }
+
+  footer.cta {
+    text-align: center;
+    padding: 8px 0 0;
+  }
+  footer.cta p {
+    margin: 10px 0 0;
+    color: var(--ink-muted);
+    font-size: 13px;
+  }
+
+  @media (max-width: 700px) {
+    .study-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .tester { padding: 16px; }
+    .controls-bar { padding: 14px 16px; }
+    .search-box { flex-basis: 100%; }
+    .bar-side { margin-left: 0; width: 100%; justify-content: space-between; }
+    .toc { padding: 16px; }
+    .toc ol { gap: 6px 14px; }
+    .study-card { padding: 16px; }
+    .rx-block, .rx-input { font-size: 13px; padding: 10px 12px; }
+    .study-card .rx-block { font-size: 12.5px; }
+    .flag-btn { padding: 6px 8px; font-size: 12px; }
+    .opt-list { grid-template-columns: 1fr; gap: 0; }
+    .opt-list dd { margin-bottom: 8px; }
+    .opt-list dd:last-child { margin-bottom: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">REGEX REFERENCE</p>
+    <h1>正規表現記法帳</h1>
+    <p class="tagline">道場の8単元で出てくる記法を、意味・例・注意でまとめた早見帳です。JavaScriptの正規表現で説明します。「試してみる」で、自分の正規表現をその場で動かせます。</p>
+    <nav class="site-nav" aria-label="正規表現道場のページ">
+      <a href="index.html">道場</a>
+      <span aria-current="page">記法帳</span>
+    </nav>
+  </header>
+
+  <!-- ============ 試してみる ============ -->
+  <section class="tester" id="tester" aria-labelledby="testerHeading">
+    <h2 id="testerHeading">試してみる</h2>
+    <p class="lead">パターンと文字列を入れると、マッチしたところに色がつきます。入力はこのページの中だけで動かし、どこにも送りません。</p>
+
+    <div>
+      <p class="field-label" id="patternLabel">パターン</p>
+      <div class="rx-input" id="patternBox">
+        <label class="pattern-line">
+          <span class="sl" aria-hidden="true">/</span>
+          <input type="text" id="patternInput" aria-labelledby="patternLabel" value="(\d+)-(\d+)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="300">
+          <span class="sl" aria-hidden="true">/</span><span class="flag-text" id="flagText" aria-hidden="true"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="flag-row" role="group" aria-label="フラグ" id="flagRow">
+      <button type="button" class="flag-btn" data-flag="g"><b>g</b>すべて</button>
+      <button type="button" class="flag-btn" data-flag="i"><b>i</b>大小無視</button>
+      <button type="button" class="flag-btn" data-flag="m"><b>m</b>行ごと</button>
+      <button type="button" class="flag-btn" data-flag="s"><b>s</b>. が改行にも</button>
+      <button type="button" class="flag-btn" data-flag="u"><b>u</b>Unicode</button>
+    </div>
+
+    <div>
+      <p class="field-label" id="textLabel">テスト文字列</p>
+      <div class="rx-input">
+        <textarea id="textInput" aria-labelledby="textLabel" rows="3" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="2000">電話 03-1234 と 045-678
+注文番号 2024-05</textarea>
+      </div>
+    </div>
+
+    <div>
+      <p class="field-label" id="replaceLabel">置きかえ(省略可。$1 や $&lt;name&gt; が使えます)</p>
+      <div class="rx-input">
+        <label class="pattern-line">
+          <input type="text" id="replaceInput" aria-labelledby="replaceLabel" placeholder="例: $2-$1" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="300">
+        </label>
+      </div>
+    </div>
+
+    <p class="tester-status" id="testerStatus" role="status" aria-live="polite"></p>
+    <pre class="rx-block tester-out" id="testerOut" aria-label="マッチした箇所"></pre>
+    <ol class="match-list" id="matchList"></ol>
+    <div id="replaceBox" hidden>
+      <p class="field-label">置きかえた結果(replace)</p>
+      <pre class="rx-block replace-out" id="replaceOut"></pre>
+    </div>
+    <p class="hint">長さ0のマッチ(<code>^</code> や <code>\b</code> など)は、細い縦線で示します。タブは ⇥、改行は ↵ で示します。くり返しを入れ子にした正規表現(例: <code>(a+)+$</code>)は、文字列によってはとても時間がかかることがあります。</p>
+  </section>
+
+  <section class="controls-bar" aria-label="絞り込み">
+    <div class="rx-input search-box">
+      <label>
+        <span class="p" aria-hidden="true">/</span>
+        <input type="search" id="searchInput" placeholder="記法・意味で検索" aria-label="記法・意味で絞り込み(例: 先読み)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
+      </label>
+    </div>
+    <div class="bar-side">
+      <span class="hit-count" id="hitCount" role="status" aria-live="polite"></span>
+      <a class="quiz-link" href="index.html">道場で練習する →</a>
+    </div>
+  </section>
+
+  <nav class="toc" id="toc" aria-label="目次">
+    <p class="toc-title">目次</p>
+    <ol id="tocList"></ol>
+  </nav>
+
+  <p class="no-hit" id="noHit" hidden>見つかりませんでした。別のことばで試してください。</p>
+
+  <div id="sections" style="display: contents"></div>
+
+  <footer class="cta">
+    <a class="quiz-link" href="index.html">道場で練習する →</a>
+    <p>道場では、単元を選んで4択か穴埋め入力で練習できます。正答率は単元ごとに残ります。</p>
+  </footer>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var tocList = document.getElementById("tocList");
+  var toc = document.getElementById("toc");
+  var sections = document.getElementById("sections");
+  var searchInput = document.getElementById("searchInput");
+  var hitCount = document.getElementById("hitCount");
+  var noHit = document.getElementById("noHit");
+  var entries = [];   // { card 要素, 検索用の文字 }
+  var sectionEls = [];
+
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function codeEl(text) { return el("code", /^\S{1,16}$/.test(text) ? "nw" : "", text); }
+  function richEl(tag, className, s) {
+    var e = el(tag, className);
+    String(s).split("`").forEach(function (part, i) {
+      if (!part) return;
+      e.appendChild(i % 2 === 1 ? codeEl(part) : document.createTextNode(part));
+    });
+    return e;
+  }
+  function appendCode(parent, code) {
+    RGX.tokenize(code).forEach(function (tk) {
+      if (!tk.t) { parent.appendChild(document.createTextNode(tk.s)); return; }
+      parent.appendChild(el("span", tk.t, tk.s));
+    });
+  }
+  // 文字を足す。タブと改行は印にして見えるようにする。keepBreak なら改行の印のあとで実際に改行する
+  function appendVisible(parent, s, keepBreak) {
+    String(s).split(/([\t\n\r])/).forEach(function (part) {
+      if (!part) return;
+      if (part === "\t") parent.appendChild(el("span", "ctl", "⇥"));
+      else if (part === "\n") {
+        parent.appendChild(el("span", "ctl", "↵"));
+        if (keepBreak) parent.appendChild(document.createTextNode("\n"));
+      } else if (part === "\r") parent.appendChild(el("span", "ctl", "␍"));
+      else parent.appendChild(document.createTextNode(part));
+    });
+  }
+  // マッチしたところに色をつけた文字列。quoted なら前後に " をつける
+  function markedEl(text, matches, quoted, keepBreak) {
+    var e = el("span");
+    if (quoted) e.appendChild(el("span", "q-mark", "\""));
+    var pos = 0;
+    matches.forEach(function (m, i) {
+      if (m.index < pos) return;
+      appendVisible(e, text.slice(pos, m.index), keepBreak);
+      if (m.end === m.index) {
+        var z = el("span", "mk-zero");
+        z.title = "長さ0のマッチ";
+        e.appendChild(z);
+      } else {
+        var mk = el("span", "mk" + (i % 2 === 1 ? " alt" : ""));
+        mk.title = "マッチ " + (i + 1);
+        appendVisible(mk, text.slice(m.index, m.end), keepBreak);
+        e.appendChild(mk);
+      }
+      pos = m.end;
+    });
+    appendVisible(e, text.slice(pos), keepBreak);
+    if (quoted) e.appendChild(el("span", "q-mark", "\""));
+    return e;
+  }
+  function strChip(text) {
+    var c = markedEl(text, [], true, false);
+    c.className = "str-chip";
+    return c;
+  }
+
+  // ---------- 試してみる ----------
+  var patternInput = document.getElementById("patternInput");
+  var patternBox = document.getElementById("patternBox");
+  var flagText = document.getElementById("flagText");
+  var textInput = document.getElementById("textInput");
+  var replaceInput = document.getElementById("replaceInput");
+  var testerStatus = document.getElementById("testerStatus");
+  var testerOut = document.getElementById("testerOut");
+  var matchList = document.getElementById("matchList");
+  var replaceBox = document.getElementById("replaceBox");
+  var replaceOut = document.getElementById("replaceOut");
+  var flagBtns = Array.prototype.slice.call(document.querySelectorAll(".flag-btn"));
+  var MAX_SHOW = 200;   // 一覧に出すマッチの数の上限
+  var MAX_FIND = 5000;  // 探すマッチの数の上限(テスト文字列は最大2000文字)
+  var flags = { g: true };
+
+  function flagString() { return "gimsu".split("").filter(function (f) { return flags[f]; }).join(""); }
+  function renderFlags() {
+    flagBtns.forEach(function (b) { b.setAttribute("aria-pressed", flags[b.dataset.flag] ? "true" : "false"); });
+    flagText.textContent = flagString();
+  }
+  flagBtns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      flags[b.dataset.flag] = !flags[b.dataset.flag];
+      renderFlags();
+      runTester();
+    });
+  });
+
+  function runTester() {
+    var src = patternInput.value, text = textInput.value;
+    testerOut.innerHTML = "";
+    matchList.innerHTML = "";
+    replaceBox.hidden = true;
+    testerStatus.className = "tester-status";
+    patternBox.classList.remove("has-error");
+    if (!src) {
+      testerStatus.textContent = "パターンを入れてください。";
+      appendVisible(testerOut, text, true);
+      return;
+    }
+    // 入力欄は / と / の間なので、リテラルと同じ形にして読む(/ は \/ と書く)
+    var p = RGX.parseLiteral("/" + src + "/" + flagString());
+    if (p.error) {
+      testerStatus.textContent = "正規表現として読めません: " + p.error;
+      testerStatus.className = "tester-status error";
+      patternBox.classList.add("has-error");
+      appendVisible(testerOut, text, true);
+      return;
+    }
+    // 長さ0のマッチは文字列の長さ+1か所まであるので、上限はそれより多くし、超えたら「以上」と出す
+    var matches = RGX.findMatches(p.re, text, MAX_FIND + 1);
+    var over = matches.length > MAX_FIND;
+    if (over) matches = matches.slice(0, MAX_FIND);
+    testerStatus.textContent = matches.length === 0 ? "マッチしません。" :
+      (flags.g ? "マッチ " + matches.length + " 件" + (over ? "以上" : "") : "最初のマッチ(g をつけると、すべてのマッチを探します)");
+    testerOut.appendChild(markedEl(text, matches, false, true));
+
+    matches.slice(0, MAX_SHOW).forEach(function (m, i) {
+      var li = el("li");
+      li.appendChild(el("span", "m-no", "#" + (i + 1)));
+      li.appendChild(strChip(m.text));
+      li.appendChild(el("span", "m-pos", "位置 " + m.index + "〜" + m.end));
+      if (m.groups.length > 0) {
+        var gs = el("div", "m-groups");
+        var names = {};
+        if (m.named) {
+          // 名前つきグループの番号を探す。キャプチャするかっこを左から数え、(?<名前> のものに名前を当てる
+          var capRe = /\\.|\[(?:\\.|[^\]\\])*\]|\((?!\?)|\(\?<([A-Za-z_$][\w$]*)>/g, cm, n = 0;
+          while ((cm = capRe.exec(p.source)) !== null) {
+            if (cm[0].charAt(0) !== "(") continue;
+            n++;
+            if (cm[1]) names[n] = cm[1];
+          }
+        }
+        m.groups.forEach(function (g, k) {
+          var s = el("span");
+          s.appendChild(el("span", "g-name", "$" + (k + 1) + (names[k + 1] ? " <" + names[k + 1] + ">" : "")));
+          s.appendChild(g === undefined ? el("span", "undef", "undefined") : strChip(g));
+          gs.appendChild(s);
+        });
+        li.appendChild(gs);
+      }
+      matchList.appendChild(li);
+    });
+    if (matches.length > MAX_SHOW) matchList.appendChild(el("li", "", "ほか " + (matches.length - MAX_SHOW) + " 件"));
+
+    if (replaceInput.value !== "") {
+      replaceBox.hidden = false;
+      replaceOut.innerHTML = "";
+      appendVisible(replaceOut, text.replace(p.re, replaceInput.value), true);
+    }
+  }
+  var timer = null;
+  function schedule() {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(runTester, 120);
+  }
+  [patternInput, textInput, replaceInput].forEach(function (x) {
+    x.addEventListener("input", function (e) { if (!e.isComposing) schedule(); });
+    x.addEventListener("compositionend", schedule);
+  });
+
+  // カードの例を「試してみる」に入れる
+  function loadExample(target) {
+    patternInput.value = target.re.source;
+    flags = {};
+    target.re.flags.split("").forEach(function (f) { flags[f] = true; });
+    renderFlags();
+    textInput.value = target.text;
+    replaceInput.value = "";
+    runTester();
+    document.getElementById("tester").scrollIntoView({ block: "start" });
+    patternInput.focus({ preventScroll: true });
+  }
+
+  renderFlags();
+  runTester();
+
+  // ---------- 記法のカード ----------
+  function buildCard(c) {
+    var card = el("article", "study-card");
+    card.id = "card-" + c.id;
+    var head = el("div", "card-head");
+    head.appendChild(el("h3", "", c.name));
+    if (c.read) head.appendChild(el("span", "tag", c.read));
+    card.appendChild(head);
+    card.appendChild(richEl("p", "", c.desc || ""));
+    var words = [c.name, c.read || "", (c.desc || "").replace(/`/g, "")];
+
+    if (Array.isArray(c.examples) && c.examples.length > 0) {
+      var sub = el("div", "sub-head");
+      sub.appendChild(el("p", "sub-title", "例"));
+      // 正規表現と文字列が読み取れる最初の例を、「試してみる」に入れられるようにする
+      var target = null;
+      c.examples.some(function (ex) { target = RGX.deriveTarget(ex[0]); return !!target; });
+      if (target) {
+        var btn = el("button", "try-btn", "試してみる ↑");
+        btn.type = "button";
+        btn.setAttribute("aria-label", "「" + c.name + "」の例を試してみる欄に入れる");
+        btn.addEventListener("click", function () { loadExample(target); });
+        sub.appendChild(btn);
+      }
+      card.appendChild(sub);
+      var pre = el("pre", "rx-block");
+      c.examples.forEach(function (ex, i) {
+        if (i > 0) pre.appendChild(document.createTextNode("\n\n"));
+        appendCode(pre, ex[0]);
+        if (ex[1]) { pre.appendChild(document.createTextNode("\n")); pre.appendChild(el("span", "cm", "// " + ex[1])); }
+        words.push(ex[0], ex[1] || "");
+      });
+      card.appendChild(pre);
+    }
+    if (Array.isArray(c.options) && c.options.length > 0) {
+      card.appendChild(el("p", "sub-title", "書き方"));
+      var dl = el("dl", "opt-list");
+      c.options.forEach(function (o) {
+        dl.appendChild(el("dt", "", o[0]));
+        dl.appendChild(el("dd", "", o[1]));
+        words.push(o[0], o[1]);
+      });
+      card.appendChild(dl);
+    }
+    if (Array.isArray(c.notes) && c.notes.length > 0) {
+      card.appendChild(el("p", "sub-title", "注意"));
+      var ul = el("ul", "note-list");
+      c.notes.forEach(function (n) {
+        ul.appendChild(richEl("li", "", n));
+        words.push(n.replace(/`/g, ""));
+      });
+      card.appendChild(ul);
+    }
+    return { el: card, text: words.join("\n").toLowerCase() };
+  }
+
+  RGX.UNITS.forEach(function (u) {
+    var c = RGX.contentOf(u.id);
+
+    var li = el("li");
+    li.appendChild(el("span", "no", u.no));
+    var a = el("a", "", u.name);
+    a.href = "#unit-" + u.id;
+    li.appendChild(a);
+    tocList.appendChild(li);
+
+    var sec = el("section", "grade-section");
+    sec.id = "unit-" + u.id;
+    var head = el("div", "grade-head");
+    var h2 = el("h2");
+    h2.appendChild(el("span", "no", u.no));
+    h2.appendChild(document.createTextNode(u.name));
+    head.appendChild(h2);
+    var dojo = el("a", "dojo-link", "この単元を道場で練習 →");
+    dojo.href = "index.html?unit=" + encodeURIComponent(u.id);
+    head.appendChild(dojo);
+    sec.appendChild(head);
+    var grid = el("div", "study-grid");
+    (c ? c.cards : []).forEach(function (cd) {
+      var built = buildCard(cd);
+      grid.appendChild(built.el);
+      entries.push({ el: built.el, text: built.text + "\n" + u.name.toLowerCase() });
+    });
+    sec.appendChild(grid);
+    sections.appendChild(sec);
+    sectionEls.push(sec);
+  });
+
+  // ---------- 絞り込み ----------
+  function applyFilter() {
+    var word = searchInput.value.trim().toLowerCase();
+    var hits = 0;
+    entries.forEach(function (e) {
+      var on = !word || e.text.indexOf(word) >= 0;
+      e.el.hidden = !on;
+      if (on) hits++;
+    });
+    sectionEls.forEach(function (sec) {
+      sec.hidden = !!word && !sec.querySelector(".study-card:not([hidden])");
+    });
+    toc.hidden = !!word;
+    noHit.hidden = hits > 0;
+    hitCount.textContent = hits + "件";
+  }
+  searchInput.addEventListener("input", function (e) {
+    if (e.isComposing) return;   // 日本語の変換中は、確定まで待つ
+    applyFilter();
+  });
+  searchInput.addEventListener("compositionend", applyFilter);
+  applyFilter();
+
+  // #card-dot などで開かれたとき、描き終えてからそのカードへ移動して目立たせる
+  function focusHash() {
+    var id = "";
+    try { id = decodeURIComponent(location.hash.slice(1)); } catch (e) { /* こわれたアンカーは無視 */ }
+    document.querySelectorAll(".is-target").forEach(function (c) { c.classList.remove("is-target"); });
+    if (!id) return;
+    var target = document.getElementById(id);
+    if (!target || !sections.contains(target)) return;
+    if (target.hidden || (target.closest(".grade-section") || target).hidden) {
+      searchInput.value = "";
+      applyFilter();
+    }
+    if (target.classList.contains("study-card")) target.classList.add("is-target");
+    target.scrollIntoView({ block: "start" });
+  }
+  window.addEventListener("hashchange", focusHash);
+  focusHash();
+  if (location.hash && document.fonts && document.fonts.ready) document.fonts.ready.then(focusHash);
+})();
+</script>
+</body>
+</html>

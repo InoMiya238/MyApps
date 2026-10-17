@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Gitコマンド帳</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 900px; gap: 24px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 56ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- ターミナル風の部品(index.html と同じ内容。変えるときは両方を直す) ---------- */
+  .term-block,
+  .term-input {
+    background: var(--term-bg);
+    border: 1px solid var(--term-border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--term-ink);
+    min-width: 0;
+  }
+  /* 上端の小さい丸3つ(タイトルバー風) */
+  .term-block::before,
+  .term-input::before {
+    content: "";
+    display: block;
+    width: 38px;
+    height: 22px;
+    margin: -6px 0 4px;
+    background: radial-gradient(circle at 5px 50%, var(--term-muted) 0 4px, transparent 4.5px) 0 0 / 14px 100% repeat-x;
+    opacity: 0.7;
+  }
+  .term-block {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .term-block .ln {
+    display: block;
+    padding-left: 2ch;
+    text-indent: -2ch;
+  }
+  .term-block .p,
+  .term-input .p {
+    color: var(--term-prompt);
+    user-select: none;
+  }
+  .term-block .c { color: var(--term-muted); }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    background: var(--surface-2);
+    color: var(--ink);
+    padding: 1px 5px;
+    border-radius: 5px;
+    overflow-wrap: anywhere;
+  }
+  /* 空白のない短いコード(-r など)は、- の後ろで改行しない */
+  code.nw { white-space: nowrap; }
+  .term-block .h { color: var(--term-hash); }
+  .term-block .add { color: var(--term-add); }
+  .term-block .del { color: var(--term-del); }
+  /* ---------- ターミナル風の部品 ここまで ---------- */
+
+  /* ---------- コミットの図(index.html と同じ内容。変えるときは両方を直す) ---------- */
+  .git-graph { display: block; margin: 0 0 16px; padding: 8px 8px 6px; background: var(--graph-bg); border: 1px solid var(--graph-border); border-radius: 12px; min-width: 0; }
+  .git-graph svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  .gg-caption { display: block; margin: 0 0 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--ink-faint); text-align: center; font-family: var(--font-body); }
+  .graph-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+  .graph-row .git-graph { flex: 1 1 240px; margin: 0; }
+  .gg-edge { fill: none; stroke: var(--graph-line); stroke-width: 2; }
+  .gg-edge.is-dim { stroke: var(--graph-dim); stroke-dasharray: 4 3; }
+  .gg-arrow path { fill: var(--graph-line); }
+  .gg-dot { fill: var(--graph-node); stroke: var(--graph-node-stroke); stroke-width: 2; }
+  .gg-id { font-family: var(--font-mono); font-size: 11px; font-weight: 700; fill: var(--graph-node-ink); text-anchor: middle; dominant-baseline: central; }
+  .gg-node.is-new .gg-dot { fill: var(--graph-new); stroke: var(--graph-new-stroke); stroke-width: 2.5; }
+  .gg-node.is-dim .gg-dot { stroke: var(--graph-dim); stroke-dasharray: 3 2; }
+  .gg-node.is-dim .gg-id { fill: var(--graph-dim-ink); }
+  .gg-pill { stroke-width: 1; }
+  .gg-ref-text { font-family: var(--font-mono); font-size: 11px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+  .gg-ref.is-branch .gg-pill { fill: var(--graph-branch-bg); stroke: var(--graph-branch-line); }
+  .gg-ref.is-branch .gg-ref-text { fill: var(--graph-branch-ink); }
+  .gg-ref.is-remote .gg-pill { fill: var(--graph-remote-bg); stroke: var(--graph-remote-line); }
+  .gg-ref.is-remote .gg-ref-text { fill: var(--graph-remote-ink); }
+  .gg-ref.is-tag .gg-pill { fill: var(--graph-tag-bg); stroke: var(--graph-tag-line); }
+  .gg-ref.is-tag .gg-ref-text { fill: var(--graph-tag-ink); }
+  .gg-ref.is-current .gg-pill { stroke: var(--graph-head-bg); stroke-width: 2; }
+  .gg-ref.is-current .gg-ref-text { font-weight: 700; }
+  .gg-ref.is-head .gg-pill { fill: var(--graph-head-bg); stroke: var(--graph-head-bg); }
+  .gg-ref.is-head .gg-ref-text { fill: var(--graph-head-ink); font-weight: 700; }
+  .gg-ref.is-detached .gg-pill { stroke: var(--graph-head-ink); stroke-dasharray: 3 2; }
+  /* ---------- コミットの図 ここまで ---------- */
+
+  /* カードの「図で見る」 */
+  .figure-set { display: flex; flex-direction: column; gap: 6px; }
+  .figure-set + .figure-set { margin-top: 10px; padding-top: 12px; border-top: 1px dashed var(--border); }
+  .figure-set .git-graph { margin: 0; }
+  .figure-cmd {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  /* 図の読み方 */
+  .graph-legend { scroll-margin-top: 16px; }
+  .graph-legend summary { cursor: pointer; list-style-position: inside; }
+  .graph-legend summary.toc-title { margin: 0; }
+  .graph-legend[open] summary.toc-title { margin-bottom: 12px; }
+  .legend-body { display: grid; grid-template-columns: minmax(0, 220px) 1fr; gap: 14px 22px; align-items: center; }
+  .legend-body .git-graph { margin: 0; }
+  @media (max-width: 560px) { .legend-body { grid-template-columns: 1fr; } }
+
+  /* ---------- Controls bar ---------- */
+  .controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 16px;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 20px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  /* 検索欄はターミナル風(上端の丸はつけない) */
+  .search-box {
+    flex: 1 1 320px;
+    min-width: 0;
+    padding: 8px 12px;
+  }
+  .search-box::before { display: none; }
+  .search-box:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .search-box label { display: flex; align-items: center; gap: 1ch; cursor: text; }
+  .search-box .p { flex: none; }
+  .search-box input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    outline: none;
+    padding: 2px 0;
+    color: var(--term-ink);
+    caret-color: var(--term-caret);
+    font: inherit;
+    font-size: 16px;
+  }
+  .search-box input::placeholder { color: var(--term-muted); opacity: 1; }
+  .search-box input::-webkit-search-cancel-button { filter: grayscale(1); }
+  .bar-side {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-left: auto;
+  }
+  .hit-count {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+  .quiz-link {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-radius: 9px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .quiz-link.small { padding: 8px 12px; font-size: 12.5px; }
+
+  /* ---------- TOC ---------- */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .toc[hidden] { display: none; }
+  .toc-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    margin: 0 0 10px;
+  }
+  .toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 24px;
+    font-size: 13.5px;
+  }
+  .toc li { min-width: 0; display: flex; gap: 8px; align-items: baseline; }
+  .toc li .no {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .toc a { color: var(--ink); text-decoration: none; font-weight: 600; overflow-wrap: anywhere; }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+
+  .no-hit {
+    margin: 0;
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 14px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+  }
+  .no-hit[hidden] { display: none; }
+
+  /* ---------- 単元の区切り ---------- */
+  .grade-section { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 16px; }
+  .grade-section[hidden] { display: none; }
+  .grade-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .grade-head h2 {
+    margin: 0;
+    min-width: 0;
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .grade-head h2 .no {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .grade-head .dojo-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .grade-head .dojo-link:hover { text-decoration: underline; }
+
+  /* ---------- コマンドのカード ---------- */
+  .study-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .study-card {
+    min-width: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-margin-top: 16px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .study-card[hidden] { display: none; }
+  .study-card.is-target { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 1px 2px var(--shadow); }
+  .card-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+  }
+  .study-card h3 {
+    margin: 0;
+    min-width: 0;
+    font-family: var(--font-mono);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--accent);
+    overflow-wrap: anywhere;
+  }
+  .study-card .tag {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--accent);
+    background: var(--surface-2);
+    padding: 3px 9px;
+    border-radius: 999px;
+    overflow-wrap: anywhere;
+  }
+  .study-card p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+  .sub-title {
+    margin: 4px 0 0;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+  }
+  .study-card .term-block { font-size: 13px; }
+  .opt-list {
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px 14px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .opt-list dt {
+    min-width: 0;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .opt-list dd {
+    margin: 0;
+    min-width: 0;
+    color: var(--ink-muted);
+    overflow-wrap: anywhere;
+  }
+
+  footer.cta {
+    text-align: center;
+    padding: 8px 0 0;
+  }
+  footer.cta p {
+    margin: 10px 0 0;
+    color: var(--ink-muted);
+    font-size: 13px;
+  }
+
+  @media (max-width: 700px) {
+    .study-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .controls-bar { padding: 14px 16px; }
+    .search-box { flex-basis: 100%; }
+    .bar-side { margin-left: 0; width: 100%; justify-content: space-between; }
+    .toc { padding: 16px; }
+    .toc ol { gap: 6px 14px; }
+    .study-card { padding: 16px; }
+    .term-block, .term-input { font-size: 13px; }
+    .study-card .term-block { font-size: 12.5px; }
+    .opt-list { grid-template-columns: 1fr; gap: 0; }
+    .opt-list dd { margin-bottom: 8px; }
+    .opt-list dd:last-child { margin-bottom: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">GIT COMMANDS</p>
+    <h1>Gitコマンド帳</h1>
+    <p class="tagline">道場の8単元で出てくるコマンドを、意味・よく使う例・オプション・コミットの図でまとめた早見帳です。</p>
+    <nav class="site-nav" aria-label="Git道場のページ">
+      <a href="index.html">道場</a>
+      <span aria-current="page">コマンド帳</span>
+    </nav>
+  </header>
+
+  <section class="controls-bar" aria-label="絞り込み">
+    <div class="term-input search-box">
+      <label>
+        <span class="p" aria-hidden="true">$ git grep</span>
+        <input type="search" id="searchInput" placeholder="コマンド・意味で検索" aria-label="コマンド名・意味で絞り込み(例: 取り消し)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
+      </label>
+    </div>
+    <div class="bar-side">
+      <span class="hit-count" id="hitCount" role="status" aria-live="polite"></span>
+      <a class="quiz-link" href="index.html">道場で練習する →</a>
+    </div>
+  </section>
+
+  <nav class="toc" id="toc" aria-label="目次">
+    <p class="toc-title">目次</p>
+    <ol id="tocList"></ol>
+  </nav>
+
+  <details class="toc graph-legend" id="legend" open>
+    <summary class="toc-title">図の読み方</summary>
+    <div class="legend-body">
+      <div id="legendGraph"></div>
+      <dl class="opt-list">
+        <dt>○ 丸</dt><dd>コミット。中の文字は、説明のための名前(本当はハッシュで区別する)</dd>
+        <dt>← 矢印</dt><dd>親のコミットを指す。右ほど新しい</dd>
+        <dt>名札の色</dt><dd>青 = ブランチ、紫 = リモート追跡ブランチ(origin/main など)、黄 = タグ、朱 = HEAD(太枠のブランチが今いるブランチ)。朱の丸は新しくできたコミット</dd>
+        <dt>点線</dt><dd>どのブランチからもたどれなくなったコミット(しばらくは reflog から戻せる)</dd>
+      </dl>
+    </div>
+  </details>
+
+  <p class="no-hit" id="noHit" hidden>見つかりませんでした。別のことばで試してください。</p>
+
+  <div id="sections" style="display: contents"></div>
+
+  <footer class="cta">
+    <a class="quiz-link" href="index.html">道場で練習する →</a>
+    <p>道場では、単元を選んで4択か入力で練習できます。コミットの図を読む問題もあります。正答率は単元ごとに残ります。</p>
+  </footer>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="data.js"></script>
+<script src="graph.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var tocList = document.getElementById("tocList");
+  var toc = document.getElementById("toc");
+  var sections = document.getElementById("sections");
+  var searchInput = document.getElementById("searchInput");
+  var hitCount = document.getElementById("hitCount");
+  var noHit = document.getElementById("noHit");
+  var legend = document.getElementById("legend");
+  document.getElementById("legendGraph").appendChild(GITD.renderGraph({
+    commits: GITD.chain("A B C"), refs: { main: "C", "origin/main": "B" }, head: "main", newIds: ["C"]
+  }));
+  var entries = [];   // { card 要素, section 要素, 検索用の文字 }
+  var sectionEls = [];
+
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function codeEl(text) { return el("code", /^\S{1,16}$/.test(text) ? "nw" : "", text); }
+  // `…` で囲んだところを <code> にする(それ以外は文字のまま)
+  function richEl(tag, className, s) {
+    var e = el(tag, className);
+    String(s).split("`").forEach(function (part, i) {
+      if (!part) return;
+      e.appendChild(i % 2 === 1 ? codeEl(part) : document.createTextNode(part));
+    });
+    return e;
+  }
+
+  function buildCard(c) {
+    var card = el("article", "study-card");
+    card.id = "cmd-" + c.id;
+    var head = el("div", "card-head");
+    head.appendChild(el("h3", "", c.name));
+    if (c.read) head.appendChild(el("span", "tag", c.read));
+    card.appendChild(head);
+    card.appendChild(richEl("p", "", c.desc || ""));
+    var words = [c.name, c.read || "", (c.desc || "").replace(/`/g, "")];
+
+    if (Array.isArray(c.examples) && c.examples.length > 0) {
+      card.appendChild(el("p", "sub-title", "よく使う例"));
+      var pre = el("pre", "term-block");
+      c.examples.forEach(function (ex) {
+        var ln = el("span", "ln");
+        var p = el("span", "p", "$ ");
+        p.setAttribute("aria-hidden", "true");
+        ln.appendChild(p);
+        ln.appendChild(document.createTextNode(ex[0]));
+        if (ex[1]) ln.appendChild(el("span", "c", "  # " + ex[1]));
+        pre.appendChild(ln);
+        words.push(ex[0], ex[1] || "");
+      });
+      card.appendChild(pre);
+    }
+    if (Array.isArray(c.options) && c.options.length > 0) {
+      card.appendChild(el("p", "sub-title", "オプション・書き方"));
+      var dl = el("dl", "opt-list");
+      c.options.forEach(function (o) {
+        dl.appendChild(el("dt", "", o[0]));
+        dl.appendChild(el("dd", "", o[1]));
+        words.push(o[0], o[1]);
+      });
+      card.appendChild(dl);
+    }
+    var figs = Array.isArray(c.figures) ? c.figures : (c.figures ? [c.figures] : []);
+    if (figs.length > 0) {
+      card.appendChild(el("p", "sub-title", "図で見る"));
+      figs.forEach(function (f) {
+        var set = el("div", "figure-set");
+        // 実行前と実行後は同じ縮尺で描く
+        var pair = GITD.renderGraphSet([f.before, f.after], { titles: [f.before.title || "実行前", f.after.title || "実行後"] });
+        set.appendChild(pair[0]);
+        set.appendChild(el("p", "figure-cmd", "↓ $ " + f.cmd));
+        set.appendChild(pair[1]);
+        card.appendChild(set);
+        words.push(f.cmd);
+      });
+    }
+    return { el: card, text: words.join("\n").toLowerCase() };
+  }
+
+  GITD.UNITS.forEach(function (u) {
+    var c = GITD.contentOf(u.id);
+
+    // 目次
+    var li = el("li");
+    li.appendChild(el("span", "no", u.no));
+    var a = el("a", "", u.name);
+    a.href = "#unit-" + u.id;
+    li.appendChild(a);
+    tocList.appendChild(li);
+
+    // 単元のまとまり
+    var sec = el("section", "grade-section");
+    sec.id = "unit-" + u.id;
+    var head = el("div", "grade-head");
+    var h2 = el("h2");
+    h2.appendChild(el("span", "no", u.no));
+    h2.appendChild(document.createTextNode(u.name));
+    head.appendChild(h2);
+    var dojo = el("a", "dojo-link", "この単元を道場で練習 →");
+    dojo.href = "index.html?unit=" + encodeURIComponent(u.id);
+    head.appendChild(dojo);
+    sec.appendChild(head);
+    var grid = el("div", "study-grid");
+    (c ? c.commands : []).forEach(function (cmd) {
+      var built = buildCard(cmd);
+      grid.appendChild(built.el);
+      entries.push({ el: built.el, sec: sec, text: built.text + "\n" + u.name.toLowerCase() });
+    });
+    sec.appendChild(grid);
+    sections.appendChild(sec);
+    sectionEls.push(sec);
+  });
+
+  // ---------- 絞り込み ----------
+  function applyFilter() {
+    var word = searchInput.value.trim().toLowerCase();
+    var hits = 0;
+    entries.forEach(function (e) {
+      var on = !word || e.text.indexOf(word) >= 0;
+      e.el.hidden = !on;
+      if (on) hits++;
+    });
+    sectionEls.forEach(function (sec) {
+      sec.hidden = !!word && !sec.querySelector(".study-card:not([hidden])");
+    });
+    toc.hidden = !!word;
+    legend.hidden = !!word;
+    noHit.hidden = hits > 0;
+    hitCount.textContent = hits + "件";
+  }
+  searchInput.addEventListener("input", function (e) {
+    if (e.isComposing) return;   // 日本語の変換中は、確定まで待つ
+    applyFilter();
+  });
+  searchInput.addEventListener("compositionend", applyFilter);
+  applyFilter();
+
+  // #cmd-ls などで開かれたとき、描き終えてからそのカードへ移動して目立たせる
+  function focusHash() {
+    var id = "";
+    try { id = decodeURIComponent(location.hash.slice(1)); } catch (e) { /* こわれたアンカーは無視 */ }
+    sections.querySelectorAll(".is-target").forEach(function (c) { c.classList.remove("is-target"); });
+    if (!id) return;
+    if (id === "legend") {
+      if (searchInput.value) { searchInput.value = ""; applyFilter(); }
+      legend.open = true;
+      legend.scrollIntoView({ block: "start" });
+      return;
+    }
+    var target = document.getElementById(id);
+    if (!target || !sections.contains(target)) return;
+    // 絞り込み中で隠れていたら、絞り込みを解く
+    if (target.hidden || (target.closest(".grade-section") || target).hidden) {
+      searchInput.value = "";
+      applyFilter();
+    }
+    if (target.classList.contains("study-card")) target.classList.add("is-target");
+    target.scrollIntoView({ block: "start" });
+  }
+  window.addEventListener("hashchange", focusHash);
+  focusHash();
+  // フォントが読みこまれると高さが変わるので、もう一度合わせる
+  if (location.hash && document.fonts && document.fonts.ready) document.fonts.ready.then(focusHash);
+})();
+</script>
+</body>
+</html>

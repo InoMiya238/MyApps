@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>復習プランナー</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 720px; gap: 22px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+  .card h2 .h2-sub {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--ink-muted);
+  }
+  .hint {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin: 10px 0 0;
+    line-height: 1.6;
+  }
+  .empty {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+  .empty strong { color: var(--ink); }
+  .dojo-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.86rem;
+  }
+  .dojo-links a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .dojo-links a:hover { text-decoration: underline; }
+
+  /* 教科の小さな札 */
+  .subj {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.74rem;
+    font-weight: 700;
+    line-height: 1.6;
+    white-space: nowrap;
+  }
+
+  /* 定着度の点(stage 0〜5 → 5つの点のうち stage 個をぬる) */
+  .dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    vertical-align: middle;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1.5px solid var(--accent);
+  }
+  .dot.on { background: var(--accent); }
+  .dots-wrap { display: inline-flex; align-items: center; gap: 6px; }
+  .stage-text {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+
+  /* ---------- 今日の復習 ---------- */
+  .due-list { list-style: none; margin: 0; padding: 0; }
+  .due-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .due-row:first-child { padding-top: 0; }
+  .due-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .due-main { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .due-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+  }
+  .due-name {
+    font-weight: 600;
+    font-size: 1rem;
+    overflow-wrap: anywhere;
+  }
+  .due-sub {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+  }
+  .late { color: var(--bad); font-weight: 600; }
+  .on-time { color: var(--accent); font-weight: 600; }
+  .solve-btn {
+    flex: none;
+    display: inline-block;
+    padding: 9px 16px;
+    border-radius: 10px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .solve-btn:hover { filter: brightness(1.08); }
+
+  /* ---------- これからの予定 ---------- */
+  .day-list { list-style: none; margin: 0; padding: 0; }
+  .day-row {
+    display: grid;
+    grid-template-columns: 6.6em 3.2em minmax(0, 1fr);
+    align-items: baseline;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+  .day-row:last-child { border-bottom: none; }
+  .day-date { font-family: var(--font-mono); font-size: 0.82rem; color: var(--ink-muted); white-space: nowrap; }
+  .day-count { font-family: var(--font-mono); font-weight: 600; text-align: right; white-space: nowrap; }
+  .day-row.zero .day-count, .day-row.zero .day-units { color: var(--ink-faint); }
+  .day-units { overflow-wrap: anywhere; line-height: 1.6; }
+
+  /* ---------- 定着状況 ---------- */
+  .subj-block { padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .subj-block:first-child { padding-top: 0; }
+  .subj-block:last-child { border-bottom: none; padding-bottom: 0; }
+  .subj-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin-bottom: 8px;
+  }
+  .subj-title { font-weight: 700; font-size: 0.98rem; }
+  .subj-nums { font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-muted); }
+  .stack-bar {
+    display: flex;
+    height: 10px;
+    border-radius: 999px;
+    gap: 2px;
+    overflow: hidden;
+    background: var(--surface-2);
+  }
+  .seg-done { background: var(--good); }
+  .seg-mid { background: var(--accent); opacity: 0.45; }
+  .seg-new { background: var(--ink-faint); opacity: 0.45; }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 14px;
+    margin: 8px 0 0;
+    font-size: 0.76rem;
+    color: var(--ink-muted);
+  }
+  .legend span::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    margin-right: 5px;
+    vertical-align: 0;
+  }
+  .legend .lg-done::before { background: var(--good); }
+  .legend .lg-mid::before { background: var(--accent); opacity: 0.45; }
+  .legend .lg-new::before { background: var(--ink-faint); opacity: 0.45; }
+
+  details.units { margin-top: 10px; }
+  details.units summary {
+    cursor: pointer;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .unit-list { list-style: none; margin: 8px 0 0; padding: 0; }
+  .unit-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 2px 12px;
+    padding: 7px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 0.86rem;
+  }
+  .unit-row:last-child { border-bottom: none; }
+  .unit-name { min-width: 0; overflow-wrap: anywhere; }
+  .unit-name .unit-meta { color: var(--ink-muted); font-size: 0.76rem; margin-left: 6px; }
+  .unit-state { display: flex; align-items: center; gap: 8px; }
+  .unit-next { font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-muted); white-space: nowrap; }
+
+  /* ---------- しくみ・記録 ---------- */
+  .rules { margin: 0; padding-left: 1.2em; font-size: 0.88rem; line-height: 1.75; color: var(--ink-muted); }
+  .rules strong { color: var(--ink); }
+  button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    padding: 11px 18px;
+  }
+  .clear-row { margin-top: 14px; }
+  .btn-danger {
+    background: var(--bad-soft);
+    color: var(--bad);
+    font-weight: 700;
+  }
+  .btn-danger:hover { filter: brightness(0.97); }
+  .solve-btn:focus-visible,
+  button:focus-visible,
+  summary:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 24px 12px 56px; }
+    .card { padding: 18px 16px; }
+    .day-row { grid-template-columns: 6.2em 2.8em minmax(0, 1fr); gap: 6px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">REVIEW</p>
+    <h1>復習プランナー</h1>
+    <p class="tagline">中学5教科・化学基礎・将棋・IT(Git・Linux・SQL・正規表現)の道場で解いた単元を、忘れかけた頃にもう一度出題します。道場で解くと、ここに自動で記録されます。</p>
+  </header>
+
+  <section class="card" aria-labelledby="todayHeading">
+    <h2 id="todayHeading">今日の復習 <span class="h2-sub" id="todayDate"></span></h2>
+    <div id="todayBody"></div>
+  </section>
+
+  <section class="card" aria-labelledby="upcomingHeading">
+    <h2 id="upcomingHeading">これからの予定 <span class="h2-sub">明日から7日間</span></h2>
+    <ul class="day-list" id="upcomingList"></ul>
+  </section>
+
+  <section class="card" aria-labelledby="masteryHeading">
+    <h2 id="masteryHeading">定着状況</h2>
+    <div id="masteryBody"></div>
+  </section>
+
+  <section class="card" aria-labelledby="rulesHeading">
+    <h2 id="rulesHeading">しくみ</h2>
+    <ul class="rules">
+      <li>道場で解くと、単元ごとに<strong>自動で記録</strong>されます。</li>
+      <li>復習日に解いて<strong>正答率80%以上</strong>なら、次の復習までの間隔が <strong>1→3→7→14→30→60日</strong> と延びます(定着度が1つ上がります)。</li>
+      <li><strong>正答率60%未満</strong>なら、定着度が0に戻り、<strong>翌日</strong>にもう一度出題します。60〜80%なら定着度はそのままです。</li>
+      <li>判定は<strong>1日3問以上</strong>解いたときに、その日の合計で1回だけ行います。復習日より前に80%以上とれても、定着度は上がりません。</li>
+      <li>定着度4以上を「定着」としています。</li>
+    </ul>
+    <p class="hint">記録はこの端末のブラウザーにだけ保存されます。道場の成績から、すでに解いたことのある単元を取り込みます(道場の成績は書き換えません)。</p>
+    <div class="clear-row">
+      <button type="button" class="btn-danger" id="clearBtn">復習の記録を消す</button>
+    </div>
+  </section>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="../../../shared/review.js"></script>
+<script src="../../math/junior-high-math/data.js"></script>
+<script src="../../japanese/junior-high-japanese/data.js"></script>
+<script src="../../english/junior-high-english/data.js"></script>
+<script src="../../science/junior-high-science/data.js"></script>
+<script src="../../science/chemistry-lab/data.js"></script>
+<script src="../../social/junior-high-social/data.js"></script>
+<script src="../../it/git-basics/data.js"></script>
+<script src="../../it/linux-basics/data.js"></script>
+<script src="../../it/sql-basics/data.js"></script>
+<script src="../../it/regex-basics/data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // ---------- 教科の定義 ----------
+  // ns: 道場の data.js が作るグローバル(読み込めなかったときは null。そのときも止めない)
+  function nsOf(name) { return typeof window[name] === "object" && window[name] ? window[name] : null; }
+  var SUBJECTS = [
+    { app: "math", label: "数学", ns: nsOf("JHM"), href: "../../math/junior-high-math/index.html" },
+    { app: "japanese", label: "国語", ns: nsOf("JHJ"), href: "../../japanese/junior-high-japanese/index.html" },
+    { app: "english", label: "英語", ns: nsOf("JHE"), href: "../../english/junior-high-english/index.html" },
+    { app: "science", label: "理科", ns: nsOf("JHS"), href: "../../science/junior-high-science/index.html" },
+    { app: "chemistry", label: "化学基礎", ns: nsOf("CHEM"), href: "../../science/chemistry-lab/index.html", dojo: "化学基礎道場" },
+    { app: "social", label: "社会", ns: nsOf("JHSO"), href: "../../social/junior-high-social/index.html" },
+    { app: "shogi", label: "将棋", ns: null, href: "../../shogi/shogi-dojo/index.html", dojo: "将棋道場" },
+    { app: "git", label: "Git", ns: nsOf("GITD"), href: "../../it/git-basics/index.html", dojo: "Git道場" },
+    { app: "linux", label: "Linux", ns: nsOf("LNX"), href: "../../it/linux-basics/index.html", dojo: "Linux道場" },
+    { app: "sql", label: "SQL", ns: nsOf("SQLD"), href: "../../it/sql-basics/index.html", dojo: "SQL道場" },
+    { app: "regex", label: "正規表現", ns: nsOf("RGX"), href: "../../it/regex-basics/index.html", dojo: "正規表現道場" }
+  ];
+  var SHOGI_CATS = [
+    { id: "castles", name: "囲い" },
+    { id: "openings", name: "戦法" },
+    { id: "tesuji", name: "手筋" },
+    { id: "terms", name: "用語" }
+  ];
+  var subjectOf = {};
+  SUBJECTS.forEach(function (s, i) { s.order = i; subjectOf[s.app] = s; });
+
+  // 単元の表示用の情報: { name, meta, order, href }
+  function unitInfo(app, unitId) {
+    var s = subjectOf[app];
+    if (app === "shogi") {
+      for (var i = 0; i < SHOGI_CATS.length; i++) {
+        if (SHOGI_CATS[i].id === unitId) {
+          return { name: SHOGI_CATS[i].name, meta: "", order: i, href: s.href + "?cat=" + encodeURIComponent(unitId), known: true };
+        }
+      }
+    } else if (s.ns && typeof s.ns.unit === "function") {
+      var u = s.ns.unit(unitId);
+      if (u) {
+        var g = typeof s.ns.grade === "function" ? s.ns.grade(u.grade) : null;
+        return {
+          name: u.name,
+          meta: (g ? g.short : "") + (u.area ? " · " + u.area : ""),
+          order: s.ns.UNITS.indexOf(u),
+          href: s.href + "?unit=" + encodeURIComponent(unitId),
+          known: true
+        };
+      }
+    }
+    // 道場から消えた単元など(表示しない)
+    return { name: unitId, meta: "", order: 9999, href: s.href, known: false };
+  }
+  function totalUnits(s) {
+    if (s.app === "shogi") return SHOGI_CATS.length;
+    return s.ns && Array.isArray(s.ns.UNITS) ? s.ns.UNITS.length : 0;
+  }
+
+  // ---------- 道場の成績から取り込む(読むだけ。道場のキーは書き換えない) ----------
+  function cleanNum(v) { return typeof v === "number" && isFinite(v) && v >= 0 ? v : 0; }
+  function importAll() {
+    SUBJECTS.forEach(function (s) {
+      try {
+        var ids = [];
+        if (s.app === "shogi") {
+          var raw = Store.load("shogiDojoStats", null);
+          var byCat = raw && typeof raw === "object" && raw.byCat && typeof raw.byCat === "object" ? raw.byCat : {};
+          SHOGI_CATS.forEach(function (c) {
+            if (byCat[c.id] && typeof byCat[c.id] === "object" && cleanNum(byCat[c.id].total) > 0) ids.push(c.id);
+          });
+        } else if (s.ns && typeof s.ns.loadStats === "function") {
+          var stats = s.ns.loadStats();
+          var byUnit = stats && stats.byUnit ? stats.byUnit : {};
+          Object.keys(byUnit).forEach(function (id) {
+            if (s.ns.unit(id) && byUnit[id] && cleanNum(byUnit[id].total) > 0) ids.push(id);
+          });
+        }
+        if (ids.length > 0) Review.importStats(s.app, ids);
+      } catch (e) { /* 取り込めなくても、ページは止めない */ }
+    });
+  }
+
+  // ---------- 表示の部品 ----------
+  var WEEK = ["日", "月", "火", "水", "木", "金", "土"];
+  function dateOf(ymd) { var p = ymd.split("-").map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+  function longDate(ymd) { var d = dateOf(ymd); return (d.getMonth() + 1) + "月" + d.getDate() + "日(" + WEEK[d.getDay()] + ")"; }
+  function shortDate(ymd) { var d = dateOf(ymd); return (d.getMonth() + 1) + "/" + d.getDate() + "(" + WEEK[d.getDay()] + ")"; }
+
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function dots(stage) {
+    var wrap = el("span", "dots");
+    wrap.setAttribute("role", "img");
+    wrap.setAttribute("aria-label", "定着度 " + stage + "(5段階)");
+    for (var i = 1; i <= Review.MAX_STAGE; i++) wrap.appendChild(el("span", "dot" + (i <= stage ? " on" : "")));
+    return wrap;
+  }
+  function stageView(stage) {
+    var f = document.createDocumentFragment();
+    f.appendChild(dots(stage));
+    var t = el("span", "stage-text", stage + "/" + Review.MAX_STAGE);
+    t.setAttribute("aria-hidden", "true");
+    f.appendChild(t);
+    return f;
+  }
+  function dojoLinks() {
+    var ul = el("ul", "dojo-links");
+    SUBJECTS.forEach(function (s) {
+      var li = el("li");
+      var a = el("a", "", s.dojo || s.label + "の道場");
+      a.href = s.href;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    return ul;
+  }
+
+  // ---------- 描画 ----------
+  function render() {
+    importAll();
+    var t = Review.today();
+    // 道場にない単元(名前がわからないもの)は出さない。記録は消さずに残す
+    var items = Review.list().filter(function (it) { return subjectOf[it.app]; });
+    items.forEach(function (it) {
+      it.info = unitInfo(it.app, it.unit);
+      it.subject = subjectOf[it.app];
+    });
+    items = items.filter(function (it) { return it.info.known; });
+    function byUnitOrder(a, b) {
+      return a.subject.order - b.subject.order || a.info.order - b.info.order || (a.unit < b.unit ? -1 : a.unit > b.unit ? 1 : 0);
+    }
+    renderToday(items, t, byUnitOrder);
+    renderUpcoming(items, t, byUnitOrder);
+    renderMastery(items, byUnitOrder);
+  }
+
+  function renderToday(items, t, byUnitOrder) {
+    document.getElementById("todayDate").textContent = longDate(t);
+    var body = document.getElementById("todayBody");
+    body.innerHTML = "";
+
+    if (items.length === 0) {
+      var p = el("p", "empty");
+      p.appendChild(el("strong", "", "まだ記録がありません。"));
+      p.appendChild(document.createTextNode("道場で問題を解くと、単元ごとに記録され、復習日がここに出ます。"));
+      body.appendChild(p);
+      body.appendChild(dojoLinks());
+      return;
+    }
+
+    var due = items.filter(function (it) { return it.due <= t; });
+    due.forEach(function (it) { it.late = Review.daysBetween(it.due, t); });
+    due.sort(function (a, b) { return b.late - a.late || byUnitOrder(a, b); });
+
+    if (due.length === 0) {
+      var next = null;
+      items.forEach(function (it) { if (!next || it.due < next) next = it.due; });
+      var n = items.filter(function (it) { return it.due === next; }).length;
+      var pe = el("p", "empty");
+      pe.appendChild(el("strong", "", "今日の復習はありません。"));
+      pe.appendChild(document.createTextNode("次の復習は " + longDate(next) + "(" + Review.daysBetween(t, next) + "日後)、" + n + "単元です。"));
+      body.appendChild(pe);
+      return;
+    }
+
+    var ul = el("ul", "due-list");
+    due.forEach(function (it) {
+      var li = el("li", "due-row");
+      var main = el("div", "due-main");
+      var meta = el("div", "due-meta");
+      meta.appendChild(el("span", "subj", it.subject.label));
+      if (it.info.meta) meta.appendChild(el("span", "", it.info.meta));
+      main.appendChild(meta);
+      main.appendChild(el("div", "due-name", it.info.name));
+      var sub = el("div", "due-sub");
+      sub.appendChild(it.late > 0 ? el("span", "late", it.late + "日遅れ") : el("span", "on-time", "今日"));
+      var st = el("span", "dots-wrap");
+      st.appendChild(stageView(it.stage));
+      sub.appendChild(st);
+      if (it.imported) sub.appendChild(el("span", "", "道場の成績から"));
+      else if (it.dayDate === t && it.dayTotal > 0 && it.dayTotal < Review.MIN_ANSWERS) {
+        sub.appendChild(el("span", "", "今日 " + it.dayTotal + "問(3問から判定)"));
+      }
+      main.appendChild(sub);
+      li.appendChild(main);
+      var a = el("a", "solve-btn", "解く");
+      a.href = it.info.href;
+      a.setAttribute("aria-label", it.subject.label + "「" + it.info.name + "」を解く");
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    body.appendChild(ul);
+    body.appendChild(el("p", "hint", "遅れている単元から順に並べています。1単元につき3問以上解くと判定されます(出題数は道場で選べます)。"));
+  }
+
+  function renderUpcoming(items, t, byUnitOrder) {
+    var ul = document.getElementById("upcomingList");
+    ul.innerHTML = "";
+    for (var i = 1; i <= 7; i++) {
+      var day = Review.addDays(t, i);
+      var list = items.filter(function (it) { return it.due === day; }).sort(byUnitOrder);
+      var li = el("li", "day-row" + (list.length === 0 ? " zero" : ""));
+      li.appendChild(el("span", "day-date", i === 1 ? "明日 " + shortDate(day) : shortDate(day)));
+      li.appendChild(el("span", "day-count", list.length + "件"));
+      li.appendChild(el("span", "day-units", list.length === 0 ? "—" : list.map(function (it) {
+        return it.info.name + "(" + it.subject.label + ")";
+      }).join("、")));
+      ul.appendChild(li);
+    }
+  }
+
+  function renderMastery(items, byUnitOrder) {
+    var body = document.getElementById("masteryBody");
+    body.innerHTML = "";
+    var any = false;
+    SUBJECTS.forEach(function (s) {
+      var list = items.filter(function (it) { return it.app === s.app; }).sort(byUnitOrder);
+      if (list.length === 0) return;
+      any = true;
+      var done = list.filter(function (it) { return it.stage >= 4; }).length;
+      var mid = list.filter(function (it) { return it.stage >= 1 && it.stage <= 3; }).length;
+      var fresh = list.length - done - mid;
+
+      var block = el("div", "subj-block");
+      var head = el("div", "subj-head");
+      head.appendChild(el("span", "subj-title", s.label));
+      var total = totalUnits(s);
+      head.appendChild(el("span", "subj-nums", "学習 " + list.length + (total ? "/" + total : "") + "単元 · 定着 " + done));
+      block.appendChild(head);
+
+      var bar = el("div", "stack-bar");
+      bar.setAttribute("role", "img");
+      bar.setAttribute("aria-label", "定着 " + done + "、練習中 " + mid + "、はじめ " + fresh);
+      [["seg-done", done], ["seg-mid", mid], ["seg-new", fresh]].forEach(function (p) {
+        if (p[1] === 0) return;
+        var seg = el("span", p[0]);
+        seg.style.width = (p[1] / list.length * 100) + "%";
+        bar.appendChild(seg);
+      });
+      block.appendChild(bar);
+
+      var legend = el("p", "legend");
+      legend.appendChild(el("span", "lg-done", "定着(4〜5) " + done));
+      legend.appendChild(el("span", "lg-mid", "練習中(1〜3) " + mid));
+      legend.appendChild(el("span", "lg-new", "はじめ(0) " + fresh));
+      block.appendChild(legend);
+
+      var det = el("details", "units");
+      det.appendChild(el("summary", "", "単元の一覧(" + list.length + ")"));
+      var ul = el("ul", "unit-list");
+      list.forEach(function (it) {
+        var li = el("li", "unit-row");
+        var name = el("span", "unit-name", it.info.name);
+        if (it.info.meta) name.appendChild(el("span", "unit-meta", it.info.meta));
+        li.appendChild(name);
+        var state = el("span", "unit-state");
+        state.appendChild(stageView(it.stage));
+        state.appendChild(el("span", "unit-next", "次回 " + shortDate(it.due)));
+        li.appendChild(state);
+        ul.appendChild(li);
+      });
+      det.appendChild(ul);
+      block.appendChild(det);
+      body.appendChild(block);
+    });
+    if (!any) body.appendChild(el("p", "empty", "まだ記録がありません。"));
+  }
+
+  // ---------- 記録を消す ----------
+  document.getElementById("clearBtn").addEventListener("click", function () {
+    if (!confirm("復習の予定と定着度の記録を消します。よろしいですか?\n(道場の成績は消えません。道場で解いたことのある単元は、今日の復習として登録し直されます)")) return;
+    Review.clear();
+    render();
+  });
+
+  // 道場から戻ったとき・日付が変わったあとに開き直したときに、最新にする
+  window.addEventListener("pageshow", function (e) { if (e.persisted) render(); });
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") render(); });
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+/* Git道場 の色。変数名は学習シリーズ共通(shared/base.css を参照)。
+   --term-* はターミナル風の部品(.term-block / .term-input)だけで使う。ライトでも暗い画面にする。
+   --graph-* はコミットの図(.git-graph)だけで使う。 */
+:root {
+  color-scheme: light;
+  --bg: #F3EEEA;
+  --surface: #FFFFFF;
+  --surface-2: #EAE2DB;
+  --border: #D9CCC2;
+  --ink: #241913;
+  --ink-muted: #574740;
+  --ink-faint: #6B5A50;
+  --accent: #B5461A;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #FCE9DF;
+  --good: #23663F;
+  --good-soft: #DCEFE2;
+  --bad: #A3233A;
+  --bad-soft: #F8E0E4;
+  --shadow: rgba(36, 25, 19, 0.10);
+  /* ターミナル風の部品 */
+  --term-bg: #1D1613;
+  --term-border: #3B2D26;
+  --term-ink: #F4E7DD;
+  --term-muted: #A8968A;
+  --term-prompt: #FF9A6C;
+  --term-caret: #FF9A6C;
+  --term-bad: #FF9B8A;
+  --term-hash: #E8C979;
+  --term-add: #8FE0A8;
+  --term-del: #FF8F86;
+  /* コミットの図 */
+  --graph-bg: #FAF6F3;
+  --graph-border: #E2D7CE;
+  --graph-line: #8C7B70;
+  --graph-node: #FFFFFF;
+  --graph-node-stroke: #5E4E44;
+  --graph-node-ink: #241913;
+  --graph-new: #FCE9DF;
+  --graph-new-stroke: #B5461A;
+  --graph-dim: #B9ACA3;
+  --graph-dim-ink: #6B5A50;
+  --graph-branch-bg: #E1ECF7;
+  --graph-branch-ink: #1D4F7A;
+  --graph-branch-line: #7EA6CC;
+  --graph-remote-bg: #ECE4F5;
+  --graph-remote-ink: #5A3A86;
+  --graph-remote-line: #A68CCB;
+  --graph-tag-bg: #F3EAD0;
+  --graph-tag-ink: #6B5210;
+  --graph-tag-line: #C3A85E;
+  --graph-head-bg: #B5461A;
+  --graph-head-ink: #FFFFFF;
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #120E0C;
+    --surface: #1A1512;
+    --surface-2: #251E1A;
+    --border: #3A2F29;
+    --ink: #F1E8E2;
+    --ink-muted: #BEAFA5;
+    --ink-faint: #9C8C82;
+    --accent: #F5845C;
+    --accent-ink: #2A0E04;
+    --accent-soft: #3A2116;
+    --good: #86CFA0;
+    --good-soft: #183024;
+    --bad: #F0909F;
+    --bad-soft: #3D1C23;
+    --shadow: rgba(0, 0, 0, 0.45);
+    --term-bg: #0A0706;
+    --term-border: #33271F;
+    --term-ink: #F0E2D7;
+    --term-muted: #9E8C80;
+    --term-prompt: #FF9A6C;
+    --term-caret: #FF9A6C;
+    --term-bad: #FF9B8A;
+    --term-hash: #E8C979;
+    --term-add: #8FE0A8;
+    --term-del: #FF8F86;
+    --graph-bg: #161210;
+    --graph-border: #2F2621;
+    --graph-line: #8A7A70;
+    --graph-node: #251E1A;
+    --graph-node-stroke: #C9B8AD;
+    --graph-node-ink: #F1E8E2;
+    --graph-new: #3A2116;
+    --graph-new-stroke: #F5845C;
+    --graph-dim: #5E5149;
+    --graph-dim-ink: #9C8C82;
+    --graph-branch-bg: #1B2C3D;
+    --graph-branch-ink: #9CC8F0;
+    --graph-branch-line: #3F6488;
+    --graph-remote-bg: #2A2140;
+    --graph-remote-ink: #C6B0EE;
+    --graph-remote-line: #5E4A8A;
+    --graph-tag-bg: #33290F;
+    --graph-tag-ink: #E8CB7A;
+    --graph-tag-line: #7A6428;
+    --graph-head-bg: #F5845C;
+    --graph-head-ink: #2A0E04;
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #120E0C;
+  --surface: #1A1512;
+  --surface-2: #251E1A;
+  --border: #3A2F29;
+  --ink: #F1E8E2;
+  --ink-muted: #BEAFA5;
+  --ink-faint: #9C8C82;
+  --accent: #F5845C;
+  --accent-ink: #2A0E04;
+  --accent-soft: #3A2116;
+  --good: #86CFA0;
+  --good-soft: #183024;
+  --bad: #F0909F;
+  --bad-soft: #3D1C23;
+  --shadow: rgba(0, 0, 0, 0.45);
+  --term-bg: #0A0706;
+  --term-border: #33271F;
+  --term-ink: #F0E2D7;
+  --term-muted: #9E8C80;
+  --term-prompt: #FF9A6C;
+  --term-caret: #FF9A6C;
+  --term-bad: #FF9B8A;
+  --term-hash: #E8C979;
+  --term-add: #8FE0A8;
+  --term-del: #FF8F86;
+  --graph-bg: #161210;
+  --graph-border: #2F2621;
+  --graph-line: #8A7A70;
+  --graph-node: #251E1A;
+  --graph-node-stroke: #C9B8AD;
+  --graph-node-ink: #F1E8E2;
+  --graph-new: #3A2116;
+  --graph-new-stroke: #F5845C;
+  --graph-dim: #5E5149;
+  --graph-dim-ink: #9C8C82;
+  --graph-branch-bg: #1B2C3D;
+  --graph-branch-ink: #9CC8F0;
+  --graph-branch-line: #3F6488;
+  --graph-remote-bg: #2A2140;
+  --graph-remote-ink: #C6B0EE;
+  --graph-remote-line: #5E4A8A;
+  --graph-tag-bg: #33290F;
+  --graph-tag-ink: #E8CB7A;
+  --graph-tag-line: #7A6428;
+  --graph-head-bg: #F5845C;
+  --graph-head-ink: #2A0E04;
+}

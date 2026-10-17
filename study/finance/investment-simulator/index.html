@@ -1,0 +1,1995 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>投資シミュレーション道場</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 960px; gap: 22px; }
+  [hidden] { display: none !important; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+  .notice {
+    margin: 16px auto 0;
+    max-width: 60ch;
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    font-size: 13px;
+    line-height: 1.7;
+    border-radius: 10px;
+    padding: 12px 14px;
+    text-align: left;
+  }
+
+  /* ---------- タブ ---------- */
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .tab:hover { border-color: var(--accent); color: var(--ink); }
+  .tab[aria-selected="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- パネル(左=設定、右=結果) ---------- */
+  .panel {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+  .panel[hidden] { display: none; }
+  .lead {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .settings {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    position: sticky;
+    top: 16px;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+  }
+  .main {
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+  }
+
+  /* ---------- カード ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .card[hidden] { display: none; }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 16px 0 8px;
+    color: var(--ink-muted);
+  }
+
+  /* ---------- 入力 ---------- */
+  select, input[type="number"] {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    padding: 5px 7px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  select { max-width: 100%; }
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex: none;
+    margin: 0;
+  }
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+    margin: 6px 0 0;
+  }
+  input:disabled, select:disabled { opacity: 0.45; cursor: not-allowed; }
+  .field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .field:last-child { border-bottom: none; }
+  .field.stack { flex-direction: column; align-items: stretch; gap: 4px; }
+  .field.stack .field-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .field-label {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.92rem;
+    min-width: 0;
+  }
+  .field-label label { cursor: pointer; }
+  .field-input {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+    flex: none;
+  }
+  .field-input input[type="number"] { width: 90px; text-align: right; }
+  .check-label { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.92rem; }
+  .val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .hint {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin: 2px 0 0;
+    line-height: 1.6;
+  }
+  .hint.warn { color: var(--bad); }
+  .field.is-off .field-label { color: var(--ink-faint); }
+
+  /* ---------- 用語の「?」 ---------- */
+  .term-btn {
+    flex: none;
+    position: relative;
+    width: 36px;
+    height: 36px;
+    margin: -6px -4px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .term-btn::before {
+    content: "";
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid var(--accent);
+    background: var(--surface);
+    box-sizing: border-box;
+  }
+  .term-btn span { position: relative; }
+  .term-btn[aria-expanded="true"]::before { background: var(--accent); }
+  .term-btn[aria-expanded="true"] span { color: var(--accent-ink); }
+  .term-note {
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.65;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin: 4px 0 8px;
+  }
+  .term-note b { font-weight: 700; margin-right: 4px; }
+  .term-note a { display: inline-block; margin-top: 2px; color: var(--accent); font-weight: 600; text-decoration: none; }
+  .term-note a:hover { text-decoration: underline; }
+
+  /* ---------- チップ・配分バー ---------- */
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 0 8px; }
+  .chip-btn {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 36px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .chip-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .alloc-bar {
+    display: flex;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--surface-2);
+    margin: 10px 0 4px;
+  }
+  .alloc-bar span { display: block; height: 100%; }
+  .alloc-bar .b-stock { background: var(--series-2); }
+  .alloc-bar .b-bond { background: var(--series-3); }
+  .alloc-bar .b-cash { background: var(--series-5); }
+  details.adv { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 8px; }
+  details.adv summary { cursor: pointer; font-size: 0.9rem; font-weight: 600; color: var(--accent); padding: 6px 0; }
+  .btn-small {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    min-height: 36px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .rule-desc { font-size: 13px; line-height: 1.7; color: var(--ink-muted); margin: 6px 0 2px; }
+  .rule-opts[hidden] { display: none; }
+
+  /* ---------- ボタン ---------- */
+  .btn-primary, .btn-secondary {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    padding: 12px 14px;
+    min-height: 44px;
+    font-weight: 700;
+  }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:disabled { opacity: 0.6; cursor: wait; }
+  .btn-secondary { background: var(--surface-2); color: var(--ink); border: 1px solid var(--border); }
+  .btn-row { display: flex; gap: 10px; }
+  .btn-row button { flex: 1; min-width: 0; }
+  .lbl-short { display: none; }
+
+  /* ---------- 操作バー ---------- */
+  .sim-actions {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 16px;
+  }
+  .sim-actions[hidden] { display: none; }
+  .seed-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 0.88rem;
+  }
+  .seed-row label { display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 0.85rem; }
+  .seed-row input { width: 90px; text-align: right; }
+
+  /* ---------- グラフ ---------- */
+  .chart-card h2 { margin-bottom: 6px; }
+  .readout {
+    margin: 0 0 6px;
+    min-height: 1.6em;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 260px;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .chart-wrap.hist { height: 150px; touch-action: auto; }
+  .chart-wrap svg { display: block; overflow: visible; }
+  .chart-wrap svg text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: var(--ink-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .grid-line { stroke: var(--chart-grid); stroke-width: 1; }
+  .ln { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .dash { stroke-dasharray: 4 4; }
+  .s1 { stroke: var(--series-1); }
+  .s2 { stroke: var(--series-2); }
+  .s3 { stroke: var(--series-3); }
+  .s4 { stroke: var(--series-4); }
+  .s5 { stroke: var(--series-5); }
+  .s-price { stroke: var(--ink-muted); }
+  .f1 { fill: var(--series-1); }
+  .f2 { fill: var(--series-2); }
+  .f3 { fill: var(--series-3); }
+  .f5 { fill: var(--series-5); }
+  .band { stroke: none; fill-opacity: var(--band-alpha); }
+  .area { stroke: none; fill-opacity: 0.4; }
+  .wait-band { fill: var(--surface-2); }
+  .mk-buy { fill: var(--good); }
+  .mk-sell { fill: var(--bad); }
+  .mk-reb { fill: var(--accent); }
+  .cursor-line { stroke: var(--ink-faint); stroke-width: 1; }
+  .zero-line { stroke: var(--ink-faint); stroke-width: 1; }
+  .tie-bar { fill: var(--ink-faint); }
+  .c-faint { color: var(--ink-faint); }
+
+  .legend {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .legend li { display: flex; align-items: center; gap: 6px; }
+  .sw { display: inline-block; width: 18px; height: 0; border-top: 2.5px solid currentColor; }
+  .sw.dashed { border-top-style: dashed; }
+  .sw.area { height: 10px; border: none; background: currentColor; opacity: 0.5; border-radius: 2px; }
+  .sw.glyph { width: auto; height: auto; border: none; font-size: 11px; line-height: 1; }
+  .sw.wait { width: 14px; height: 10px; border: 1px solid var(--border); background: var(--surface-2); }
+  .c1 { color: var(--series-1); }
+  .c2 { color: var(--series-2); }
+  .c3 { color: var(--series-3); }
+  .c4 { color: var(--series-4); }
+  .c5 { color: var(--series-5); }
+  .c-price { color: var(--ink-muted); }
+  .c-good { color: var(--good); }
+  .c-bad { color: var(--bad); }
+  .c-accent { color: var(--accent); }
+
+  /* ---------- 数値 ---------- */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .stat-box {
+    text-align: center;
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 12px 6px;
+    min-width: 0;
+  }
+  .stat-label { font-size: 11.5px; color: var(--ink-muted); line-height: 1.4; }
+  .stat-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-top: 4px;
+    overflow-wrap: anywhere;
+  }
+  .stat-sub {
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+  .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .pos { color: var(--good); }
+  .neg { color: var(--bad); }
+  .extra-line {
+    margin: 12px 0 0;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--surface-2);
+  }
+
+  /* 節目の表・比較表 */
+  .tbl { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.86rem; }
+  .tbl th, .tbl td { padding: 7px 6px; border-bottom: 1px solid var(--border); text-align: right; }
+  .tbl th { font-weight: 600; color: var(--ink-muted); font-size: 0.78rem; }
+  .tbl th:first-child, .tbl td:first-child { text-align: left; }
+  .tbl td { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  .ptable { display: flex; flex-direction: column; font-size: 0.88rem; }
+  .prow {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) repeat(3, minmax(0, 1fr));
+    gap: 4px 8px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .prow:last-child { border-bottom: none; }
+  .prow.head { font-size: 0.78rem; color: var(--ink-muted); font-weight: 600; padding-top: 0; }
+  .prow > span:not(.pname) { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .prow.head > span:not(.pname) { font-family: var(--font-body); }
+  .pname { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .pname .sw { flex: none; }
+  .mini-label { display: none; }
+
+  /* 範囲バー(1000回) */
+  .range-list { display: flex; flex-direction: column; gap: 14px; }
+  .range-head { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 0.86rem; margin-bottom: 4px; }
+  .range-head .num { font-size: 0.8rem; color: var(--ink-muted); margin-left: auto; text-align: right; }
+  .range-track { position: relative; height: 14px; background: var(--surface-2); border-radius: 7px; }
+  .range-bar { position: absolute; top: 3px; height: 8px; border-radius: 4px; background: currentColor; opacity: 0.55; }
+  .range-dot { position: absolute; top: 1px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: currentColor; border: 2px solid var(--surface); }
+  .range-zero { position: absolute; top: -3px; bottom: -3px; width: 0; border-left: 1.5px dashed var(--ink-faint); }
+  .range-sub { font-size: 0.78rem; color: var(--ink-faint); margin-top: 3px; }
+
+  /* 学びのポイント */
+  .auto-point {
+    margin: 0 0 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    font-weight: 600;
+  }
+  .auto-point.good { background: var(--good-soft); color: var(--good); }
+  .auto-point.bad { background: var(--bad-soft); color: var(--bad); }
+  .auto-point[hidden] { display: none; }
+  .points ul { margin: 0; padding-left: 1.2em; }
+  .points li { font-size: 0.9rem; line-height: 1.7; margin-bottom: 6px; color: var(--ink); }
+  .points li:last-child { margin-bottom: 0; }
+
+  /* ---------- フッター ---------- */
+  .page-foot {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    line-height: 1.8;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .page-foot a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .page-foot a:hover { text-decoration: underline; }
+
+  /* ---------- スマホ ---------- */
+  @media (max-width: 819px) {
+    .panel { grid-template-columns: minmax(0, 1fr); }
+    .lead, .settings, .main { grid-column: 1; grid-row: auto; }
+    .settings { position: static; max-height: none; overflow: visible; }
+    .tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tab { font-size: 13.5px; padding: 10px 8px; }
+    .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 480px) {
+    .card { padding: 18px 16px; }
+    .sim-actions { padding: 14px 14px; }
+    .lbl-long { display: none; }
+    .lbl-short { display: inline; }
+    .btn-row button { white-space: nowrap; }
+    .chart-wrap { height: 200px; }
+    select, input[type="number"] { font-size: 16px; padding: 7px 8px; }
+    .stat-num { font-size: 1.08rem; }
+    .prow { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .prow .pname { grid-column: 1 / -1; }
+    .prow.head { display: none; }
+    .mini-label { display: block; font-family: var(--font-body); font-size: 10.5px; color: var(--ink-faint); }
+    .tbl { font-size: 0.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">INVESTMENT SIMULATOR · 架空の相場で試す</p>
+    <h1>投資シミュレーション道場</h1>
+    <p class="tagline">乱数で作った架空の相場で、積立・複利・分散・売買ルールを試して、投資の基本を体験します。</p>
+    <nav class="site-nav" aria-label="投資シミュレーション道場のページ">
+      <span aria-current="page">シミュレーター</span>
+      <a href="reference.html">投資用語帳</a>
+    </nav>
+    <p class="notice">これは乱数で作った架空の相場による学習用のシミュレーションです。実際の値動きや将来の成果を示したり保証したりするものではなく、特定の商品や投資を勧めるものでもありません。税金・手数料・インフレは簡略化または省略しています。投資の判断はご自身の責任で行ってください。</p>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="シミュレーションの種類">
+    <button type="button" class="tab" role="tab" id="tab-dca" data-tab="dca" aria-controls="panel-dca" aria-selected="true">積立と一括</button>
+    <button type="button" class="tab" role="tab" id="tab-compound" data-tab="compound" aria-controls="panel-compound" aria-selected="false" tabindex="-1">複利と長期</button>
+    <button type="button" class="tab" role="tab" id="tab-diversify" data-tab="diversify" aria-controls="panel-diversify" aria-selected="false" tabindex="-1">分散投資</button>
+    <button type="button" class="tab" role="tab" id="tab-timing" data-tab="timing" aria-controls="panel-timing" aria-selected="false" tabindex="-1">売買ルール</button>
+  </div>
+
+  <!-- ==================== タブ1 積立と一括 ==================== -->
+  <section class="panel" id="panel-dca" role="tabpanel" aria-labelledby="tab-dca">
+    <p class="lead">同じ金額を「最初に全部」買うのと「毎月少しずつ」買うのとで、結果がどう変わるかを比べます。</p>
+
+    <div class="card settings">
+      <h2>設定</h2>
+      <div class="field">
+        <div class="field-label"><label for="dca-total">投資する総額</label><button type="button" class="term-btn" data-term="principal"><span>?</span></button></div>
+        <div class="field-input"><input type="number" id="dca-total" data-k="dca.total" min="1" max="10000" step="1" inputmode="numeric"> 万円</div>
+      </div>
+      <div class="field">
+        <div class="field-label"><label for="dca-years">期間</label><button type="button" class="term-btn" data-term="dollar-cost"><span>?</span></button></div>
+        <div class="field-input">
+          <select id="dca-years" data-k="dca.years">
+            <option value="1">1年</option><option value="3">3年</option><option value="5">5年</option>
+            <option value="10">10年</option><option value="20">20年</option><option value="30">30年</option>
+          </select>
+        </div>
+      </div>
+      <p class="hint" id="dca-monthly-hint"></p>
+      <div class="field stack">
+        <div class="field-top"><div class="field-label"><label for="dca-pattern">相場の型</label></div></div>
+        <select id="dca-pattern" data-k="dca.pattern">
+          <option value="random">ランダム</option>
+          <option value="v">V字(いったん下がって戻る)</option>
+          <option value="up">右肩上がり</option>
+          <option value="down">右肩下がり</option>
+        </select>
+      </div>
+      <div class="field" data-random-only>
+        <div class="field-label"><label for="dca-r">年率リターン</label><button type="button" class="term-btn" data-term="expected-return"><span>?</span></button></div>
+        <div class="field-input">
+          <select id="dca-r" data-k="dca.r">
+            <option value="0">0%</option><option value="3">3%</option><option value="6">6%</option><option value="9">9%</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" data-random-only>
+        <div class="field-label"><label for="dca-vol">値動きの大きさ</label><button type="button" class="term-btn" data-term="volatility"><span>?</span></button></div>
+        <div class="field-input">
+          <select id="dca-vol" data-k="dca.vol">
+            <option value="10">おだやか 10%</option><option value="18">ふつう 18%</option><option value="30">荒い 30%</option>
+          </select>
+        </div>
+      </div>
+      <p class="hint" id="dca-pattern-hint"></p>
+    </div>
+
+    <div class="main">
+      <div class="card chart-card">
+        <h2 class="term-host">相場(基準価額)<button type="button" class="term-btn" data-term="nav"><span>?</span></button></h2>
+        <p class="readout" id="dca-ro-a"></p>
+        <div class="chart-wrap" id="dca-chart-a"></div>
+        <ul class="legend" id="dca-lg-a"></ul>
+      </div>
+      <div class="card chart-card">
+        <h2 class="term-host">資産の評価額<button type="button" class="term-btn" data-term="market-value"><span>?</span></button></h2>
+        <p class="readout" id="dca-ro-b"></p>
+        <div class="chart-wrap" id="dca-chart-b"></div>
+        <ul class="legend" id="dca-lg-b"></ul>
+      </div>
+      <div class="sim-actions" data-tab="dca"></div>
+      <div class="card">
+        <h2 class="term-host">今回の結果<button type="button" class="term-btn" data-term="average-cost"><span>?</span></button></h2>
+        <div class="stat-grid" id="dca-stats"></div>
+        <p class="hint">※架空の相場での結果です。</p>
+      </div>
+      <div class="card" id="dca-mc" hidden>
+        <h2 class="term-host">1000回の結果<button type="button" class="term-btn" data-term="win-rate"><span>?</span></button></h2>
+        <div class="stat-grid" id="dca-mc-stats"></div>
+        <h3>一括 − 積立 の差の分布</h3>
+        <div class="chart-wrap hist" id="dca-hist"></div>
+        <ul class="legend">
+          <li><span class="sw area c1"></span>一括のほうが多い</li>
+          <li><span class="sw area c2"></span>積立のほうが多い</li>
+          <li><span class="sw area c-faint"></span>同じ結果 <span class="num" id="dca-ties">0</span>回</li>
+        </ul>
+        <p class="hint">※架空の相場での結果です。同じ設定で相場番号だけを変えて1000回試しています。</p>
+      </div>
+      <div class="card points">
+        <h2>学びのポイント</h2>
+        <p class="auto-point" id="dca-auto" hidden></p>
+        <ul>
+          <li>値上がりが続く相場では、最初に全部買った一括のほうが有利になりやすい。</li>
+          <li>積立は、高いときは少なく、安いときは多く買うので、平均取得単価は買った月の価格の平均より低くなる(高くはならない。ドルコスト平均法)。ただし、一括より得とは限らない。</li>
+          <li>積立は「悪いときの結果」をやわらげるが、いつも勝てる方法ではない。1000回試すと、どちらが何%勝つかがわかる。</li>
+          <li>まとまったお金がない人にとっては、毎月の積立がいちばん自然な始め方。</li>
+          <li>「V字」を選ぶと、下がってから戻る相場で積立が強いことを確かめられる。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== タブ2 複利と長期 ==================== -->
+  <section class="panel" id="panel-compound" role="tabpanel" aria-labelledby="tab-compound" hidden>
+    <p class="lead">毎月の積立が、複利で長い時間をかけてどう育つかを見ます。手数料や税金による差も確かめられます。</p>
+
+    <div class="card settings">
+      <h2>設定</h2>
+      <div class="field">
+        <div class="field-label"><label for="cp-initial">最初に入れる金額</label><button type="button" class="term-btn" data-term="principal"><span>?</span></button></div>
+        <div class="field-input"><input type="number" id="cp-initial" data-k="compound.initial" min="0" max="100000" step="1" inputmode="numeric"> 万円</div>
+      </div>
+      <div class="field">
+        <div class="field-label"><label for="cp-monthly">毎月の積立額</label></div>
+        <div class="field-input"><input type="number" id="cp-monthly" data-k="compound.monthly" min="0" max="100" step="0.5" inputmode="decimal"> 万円</div>
+      </div>
+      <div class="field stack">
+        <div class="field-top">
+          <div class="field-label"><label for="cp-r">年率リターン</label><button type="button" class="term-btn" data-term="annual-yield"><span>?</span></button></div>
+          <span class="val" data-show="compound.r"></span>
+        </div>
+        <input type="range" id="cp-r" data-k="compound.r" min="0" max="15" step="0.5">
+      </div>
+      <div class="field stack">
+        <div class="field-top">
+          <div class="field-label"><label for="cp-years">期間</label></div>
+          <span class="val" data-show="compound.years"></span>
+        </div>
+        <input type="range" id="cp-years" data-k="compound.years" min="1" max="50" step="1">
+      </div>
+      <div class="field">
+        <div class="field-label"><label for="cp-fee">手数料(信託報酬、年率)</label><button type="button" class="term-btn" data-term="trust-fee"><span>?</span></button></div>
+        <div class="field-input">
+          <select id="cp-fee" data-k="compound.fee">
+            <option value="0.1">0.1%</option><option value="0.5">0.5%</option><option value="1">1.0%</option>
+            <option value="1.5">1.5%</option><option value="2">2.0%</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label class="check-label"><input type="checkbox" id="cp-volon" data-k="compound.volOn"> 値動きをつける</label>
+        <button type="button" class="term-btn" data-term="median"><span>?</span></button>
+      </div>
+      <div class="field" id="cp-vol-field">
+        <div class="field-label"><label for="cp-vol">値動きの大きさ</label><button type="button" class="term-btn" data-term="volatility"><span>?</span></button></div>
+        <div class="field-input">
+          <select id="cp-vol" data-k="compound.vol">
+            <option value="10">おだやか 10%</option><option value="18">ふつう 18%</option><option value="30">荒い 30%</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label class="check-label"><input type="checkbox" id="cp-tax" data-k="compound.tax"> NISAと課税口座を比べる</label>
+        <button type="button" class="term-btn" data-term="nisa"><span>?</span></button>
+      </div>
+      <p class="hint warn" id="cp-nisa-hint" hidden></p>
+    </div>
+
+    <div class="main">
+      <div class="card chart-card">
+        <h2 class="term-host" id="cp-chart-title">複利の伸び<button type="button" class="term-btn" data-term="compound"><span>?</span></button></h2>
+        <p class="readout" id="cp-ro"></p>
+        <div class="chart-wrap" id="cp-chart"></div>
+        <ul class="legend" id="cp-lg"></ul>
+      </div>
+      <div class="sim-actions" data-tab="compound"></div>
+      <div class="card">
+        <h2>今回の結果</h2>
+        <div class="stat-grid" id="cp-stats"></div>
+        <p class="extra-line" id="cp-tax-line" hidden></p>
+        <table class="tbl" id="cp-table"></table>
+        <p class="hint">※架空の相場での結果です。</p>
+      </div>
+      <div class="card points">
+        <h2>学びのポイント</h2>
+        <ul>
+          <li>複利は「増えた分がさらに増える」こと。期間が長いほど、後半で大きく伸びる。</li>
+          <li>72の法則: 72 ÷ 年利(%)≒ お金が2倍になるまでの年数。5%なら約14年。</li>
+          <li>手数料の差は年 1% でも、20年、30年たつと大きな差になる。</li>
+          <li>値動きをつけると、同じ平均でも結果に幅が出て、真ん中の人の結果は計算より少し下になる。</li>
+          <li>新NISA(2024年から)では運用益に税金がかからない。以前の「つみたてNISA」は、いまの「つみたて投資枠」に引きつがれている。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== タブ3 分散投資 ==================== -->
+  <section class="panel" id="panel-diversify" role="tabpanel" aria-labelledby="tab-diversify" hidden>
+    <p class="lead">株・債券・現金の配分を変えて、同じ相場での増え方と下がり方を比べます。</p>
+
+    <div class="card settings">
+      <h2 class="term-host">資産配分<button type="button" class="term-btn" data-term="asset-allocation"><span>?</span></button></h2>
+      <div class="chips" id="dv-presets" role="group" aria-label="配分のプリセット">
+        <button type="button" class="chip-btn" data-s="100" data-b="0">攻め</button>
+        <button type="button" class="chip-btn" data-s="60" data-b="40">バランス</button>
+        <button type="button" class="chip-btn" data-s="20" data-b="60">守り</button>
+        <button type="button" class="chip-btn" data-s="0" data-b="0">現金だけ</button>
+      </div>
+      <div class="field stack">
+        <div class="field-top">
+          <div class="field-label"><label for="dv-stock">株式</label><button type="button" class="term-btn" data-term="stock"><span>?</span></button></div>
+          <span class="val" data-show="diversify.stock"></span>
+        </div>
+        <input type="range" id="dv-stock" data-k="diversify.stock" min="0" max="100" step="5">
+      </div>
+      <div class="field stack">
+        <div class="field-top">
+          <div class="field-label"><label for="dv-bond">債券</label><button type="button" class="term-btn" data-term="bond"><span>?</span></button></div>
+          <span class="val" data-show="diversify.bond"></span>
+        </div>
+        <input type="range" id="dv-bond" data-k="diversify.bond" min="0" max="100" step="5">
+      </div>
+      <div class="field">
+        <div class="field-label">現金(残り)<button type="button" class="term-btn" data-term="cash"><span>?</span></button></div>
+        <span class="val" id="dv-cash"></span>
+      </div>
+      <div class="alloc-bar" id="dv-bar" aria-hidden="true"><span class="b-stock"></span><span class="b-bond"></span><span class="b-cash"></span></div>
+      <ul class="legend">
+        <li><span class="sw area c2"></span>株式</li>
+        <li><span class="sw area c3"></span>債券</li>
+        <li><span class="sw area c5"></span>現金</li>
+      </ul>
+      <div class="field">
+        <div class="field-label"><label for="dv-initial">最初に入れる金額(一括)</label></div>
+        <div class="field-input"><input type="number" id="dv-initial" data-k="diversify.initial" min="1" max="100000" step="1" inputmode="numeric"> 万円</div>
+      </div>
+      <div class="field">
+        <div class="field-label"><label for="dv-years">期間</label></div>
+        <div class="field-input">
+          <select id="dv-years" data-k="diversify.years">
+            <option value="5">5年</option><option value="10">10年</option><option value="20">20年</option><option value="30">30年</option>
+          </select>
+        </div>
+      </div>
+      <p class="hint">この画面では最初の配分のまま放置します(リバランスなし)。</p>
+      <details class="adv">
+        <summary>資産の性格を変える(上級)</summary>
+        <p class="hint">ここの設定はこのタブの相場に使います。債券の性格と相関は「売買ルール」のリバランスでも使います。</p>
+        <div class="field">
+          <div class="field-label"><label for="as-sr">株式の年率リターン</label></div>
+          <div class="field-input"><input type="number" id="as-sr" data-k="assets.stockR" min="-10" max="20" step="0.5" inputmode="decimal"> %</div>
+        </div>
+        <div class="field">
+          <div class="field-label"><label for="as-ss">株式の値動き</label></div>
+          <div class="field-input"><input type="number" id="as-ss" data-k="assets.stockS" min="0" max="60" step="1" inputmode="decimal"> %</div>
+        </div>
+        <div class="field">
+          <div class="field-label"><label for="as-br">債券の年率リターン</label></div>
+          <div class="field-input"><input type="number" id="as-br" data-k="assets.bondR" min="-5" max="10" step="0.5" inputmode="decimal"> %</div>
+        </div>
+        <div class="field">
+          <div class="field-label"><label for="as-bs">債券の値動き</label></div>
+          <div class="field-input"><input type="number" id="as-bs" data-k="assets.bondS" min="0" max="30" step="1" inputmode="decimal"> %</div>
+        </div>
+        <div class="field">
+          <div class="field-label"><label for="as-cr">現金の年率</label></div>
+          <div class="field-input"><input type="number" id="as-cr" data-k="assets.cashR" min="-1" max="5" step="0.1" inputmode="decimal"> %</div>
+        </div>
+        <div class="field">
+          <div class="field-label"><label for="as-rho">株と債券の相関</label><button type="button" class="term-btn" data-term="correlation"><span>?</span></button></div>
+          <div class="field-input"><input type="number" id="as-rho" data-k="assets.rho" min="-1" max="1" step="0.1" inputmode="decimal"></div>
+        </div>
+        <button type="button" class="btn-small" id="as-reset">初期値に戻す</button>
+      </details>
+    </div>
+
+    <div class="main">
+      <div class="card chart-card">
+        <h2 class="term-host">同じ相場での評価額<button type="button" class="term-btn" data-term="diversification"><span>?</span></button></h2>
+        <p class="readout" id="dv-ro"></p>
+        <div class="chart-wrap" id="dv-chart"></div>
+        <ul class="legend" id="dv-lg"></ul>
+      </div>
+      <div class="sim-actions" data-tab="diversify"></div>
+      <div class="card">
+        <h2 class="term-host">今回の結果<button type="button" class="term-btn" data-term="max-drawdown"><span>?</span></button></h2>
+        <div class="ptable" id="dv-table"></div>
+        <p class="hint">※架空の相場での結果です。</p>
+      </div>
+      <div class="card" id="dv-mc" hidden>
+        <h2 class="term-host">1000回の結果<button type="button" class="term-btn" data-term="percentile"><span>?</span></button></h2>
+        <p class="hint" style="margin:0 0 12px">横棒は悪いとき(下位10%)〜よいとき(上位10%)、丸は中央値、破線は元本です。</p>
+        <div class="range-list" id="dv-ranges"></div>
+        <p class="hint">※架空の相場での結果です。</p>
+      </div>
+      <div class="card points">
+        <h2>学びのポイント</h2>
+        <ul>
+          <li>値動きの大きい資産(株)ほど、平均では増えやすいが、下がるときも大きい(リスクとリターンの関係)。</li>
+          <li>値動きのちがう資産を組み合わせると、全体の下がり方がおだやかになる。</li>
+          <li>現金は減らないように見えるが、物価が上がると実質の価値は減る(この画面ではインフレは省略)。</li>
+          <li>配分は「何%下がっても売らずにいられるか」で決めるのが基本。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== タブ4 売買ルール ==================== -->
+  <section class="panel" id="panel-timing" role="tabpanel" aria-labelledby="tab-timing" hidden>
+    <p class="lead">売り買いのルールを決めて、毎月買って放置する方法(基準)と比べます。</p>
+
+    <div class="card settings">
+      <h2>設定</h2>
+      <div class="field">
+        <div class="field-label"><label for="tm-monthly">毎月の積立</label></div>
+        <div class="field-input"><input type="number" id="tm-monthly" data-k="timing.monthly" min="0.5" max="100" step="0.5" inputmode="decimal"> 万円</div>
+      </div>
+      <div class="field">
+        <div class="field-label"><label for="tm-years">期間</label></div>
+        <div class="field-input">
+          <select id="tm-years" data-k="timing.years">
+            <option value="5">5年</option><option value="10">10年</option><option value="20">20年</option><option value="30">30年</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label"><label for="tm-r">年率リターン</label><button type="button" class="term-btn" data-term="expected-return"><span>?</span></button></div>
+        <div class="field-input">
+          <select id="tm-r" data-k="timing.r">
+            <option value="0">0%</option><option value="3">3%</option><option value="6">6%</option><option value="9">9%</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label"><label for="tm-vol">値動きの大きさ</label><button type="button" class="term-btn" data-term="volatility"><span>?</span></button></div>
+        <div class="field-input">
+          <select id="tm-vol" data-k="timing.vol">
+            <option value="10">おだやか 10%</option><option value="18">ふつう 18%</option><option value="30">荒い 30%</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label"><label for="tm-rule">ルール</label><button type="button" class="term-btn" id="tm-rule-term" data-term="buy-the-dip"><span>?</span></button></div>
+        <div class="field-input">
+          <select id="tm-rule" data-k="timing.rule">
+            <option value="dip">押し目買い</option><option value="takeprofit">利益確定</option>
+            <option value="stoploss">損切り</option><option value="rebalance">リバランス</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="rule-opts" data-rule="dip">
+        <p class="rule-desc">積立金は現金でためておき、価格が直近12か月の最高値から決めた割合だけ下がった月に、ためた現金で全部買います。</p>
+        <div class="field">
+          <div class="field-label"><label for="tm-dip">最高値からの下落</label></div>
+          <div class="field-input"><select id="tm-dip" data-k="timing.dip"><option value="5">5%</option><option value="10">10%</option><option value="20">20%</option><option value="30">30%</option></select></div>
+        </div>
+      </div>
+      <div class="rule-opts" data-rule="takeprofit" hidden>
+        <p class="rule-desc">毎月買い、価格が平均取得単価から決めた割合だけ上がったら全部売ります。売値から決めた割合だけ下がったら全部買い戻します。待つ間の積立は現金でためます。</p>
+        <div class="field">
+          <div class="field-label"><label for="tm-tp">売る: 平均取得単価から</label></div>
+          <div class="field-input"><select id="tm-tp" data-k="timing.tp"><option value="10">+10%</option><option value="20">+20%</option><option value="30">+30%</option><option value="50">+50%</option></select></div>
+        </div>
+        <div class="field">
+          <div class="field-label"><label for="tm-tpback">買い戻す: 売値から</label></div>
+          <div class="field-input"><select id="tm-tpback" data-k="timing.tpBack"><option value="5">−5%</option><option value="10">−10%</option><option value="20">−20%</option></select></div>
+        </div>
+      </div>
+      <div class="rule-opts" data-rule="stoploss" hidden>
+        <p class="rule-desc">毎月買い、価格が平均取得単価から決めた割合だけ下がったら全部売ります。売値から決めた割合だけ戻ったら全部買い戻します。待つ間の積立は現金でためます。</p>
+        <div class="field">
+          <div class="field-label"><label for="tm-sl">売る: 平均取得単価から</label></div>
+          <div class="field-input"><select id="tm-sl" data-k="timing.sl"><option value="10">−10%</option><option value="20">−20%</option><option value="30">−30%</option></select></div>
+        </div>
+        <div class="field">
+          <div class="field-label"><label for="tm-slback">買い戻す: 売値から</label></div>
+          <div class="field-input"><select id="tm-slback" data-k="timing.slBack"><option value="5">+5%</option><option value="10">+10%</option><option value="20">+20%</option></select></div>
+        </div>
+      </div>
+      <div class="rule-opts" data-rule="rebalance" hidden>
+        <p class="rule-desc">株式と債券に決めた割合で毎月積み立て、毎年12月末に元の配分へ戻します。基準は「同じ配分で積み立てて、戻さない」方法です。債券の性格は「分散投資」タブの上級設定を使います。</p>
+        <div class="field">
+          <div class="field-label"><label for="tm-ws">株式の割合</label></div>
+          <div class="field-input"><select id="tm-ws" data-k="timing.ws"><option value="20">20%</option><option value="30">30%</option><option value="40">40%</option><option value="50">50%</option><option value="60">60%</option><option value="70">70%</option><option value="80">80%</option></select></div>
+        </div>
+        <p class="hint" id="tm-ws-hint"></p>
+      </div>
+      <p class="hint">待つ間の現金に利息はつきません。</p>
+    </div>
+
+    <div class="main">
+      <div class="card chart-card">
+        <h2 class="term-host">相場と売買<button type="button" class="term-btn" data-term="market-timing"><span>?</span></button></h2>
+        <p class="readout" id="tm-ro-a"></p>
+        <div class="chart-wrap" id="tm-chart-a"></div>
+        <ul class="legend" id="tm-lg-a"></ul>
+      </div>
+      <div class="card chart-card">
+        <h2 class="term-host">資産の評価額<button type="button" class="term-btn" data-term="market-value"><span>?</span></button></h2>
+        <p class="readout" id="tm-ro-b"></p>
+        <div class="chart-wrap" id="tm-chart-b"></div>
+        <ul class="legend" id="tm-lg-b"></ul>
+      </div>
+      <div class="sim-actions" data-tab="timing"></div>
+      <div class="card">
+        <h2>今回の結果</h2>
+        <div class="stat-grid" id="tm-stats"></div>
+        <p class="hint">※架空の相場での結果です。</p>
+      </div>
+      <div class="card" id="tm-mc" hidden>
+        <h2 class="term-host">1000回の結果<button type="button" class="term-btn" data-term="win-rate"><span>?</span></button></h2>
+        <div class="stat-grid" id="tm-mc-stats"></div>
+        <h3>ルール − 基準 の差の分布</h3>
+        <div class="chart-wrap hist" id="tm-hist"></div>
+        <ul class="legend">
+          <li><span class="sw area c1"></span>ルールのほうが多い</li>
+          <li><span class="sw area c2"></span>基準のほうが多い</li>
+          <li><span class="sw area c-faint"></span>同じ結果(差 0) <span class="num" id="tm-ties">0</span>回</li>
+        </ul>
+        <p class="hint">※架空の相場での結果です。同じ設定で相場番号だけを変えて1000回試しています。</p>
+      </div>
+      <div class="card points">
+        <h2>学びのポイント</h2>
+        <ul>
+          <li data-rule-point="dip">押し目買い: 下がるのを待つ間、お金は増えない。上がり続ける相場では買いそびれる。</li>
+          <li data-rule-point="takeprofit">利益確定: 売ったあとに上がり続けると取り残される。</li>
+          <li data-rule-point="stoploss">損切り: 大きな下げを避けられることもあるが、戻りを取り逃しやすく、損を確定させてしまう。</li>
+          <li data-rule-point="rebalance">リバランス: 増えた資産を売り、減った資産を買うので、自然と「高く売って安く買う」形になる。いちばんの目的は、もうけを増やすことより、配分(リスク)を保つこと。</li>
+          <li>この架空の相場は「過去の動きから先が読めない」ように作ってある。実際の相場でも先読みは難しく、タイミングで勝ち続けるのはむずかしい。</li>
+          <li>実際には、売って利益が出ると課税口座では税金がかかる(ここでは省略)。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="page-foot">
+    学習用のシミュレーションです。実際の投資成果を保証しません。<br>
+    <a href="reference.html">投資用語帳 →</a>
+  </footer>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="terms.js"></script>
+<script src="sim.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var KEY = "investmentSimulatorSettings";
+  var TABS = ["dca", "compound", "diversify", "timing"];
+  var MAN = 10000;
+  var OKU = 100000000;
+  var svgNS = "http://www.w3.org/2000/svg";
+
+  // ---------- 設定の初期値と、受け付ける値 ----------
+  var DEFAULTS = {
+    tab: "dca",
+    dca: { total: 120, years: 10, pattern: "random", r: 6, vol: 18 },
+    compound: { initial: 0, monthly: 3, r: 5, years: 20, fee: 0.1, volOn: false, vol: 18, tax: false },
+    diversify: { stock: 60, bond: 30, initial: 100, years: 10 },
+    timing: { monthly: 3, years: 20, r: 6, vol: 18, rule: "dip", dip: 10, tp: 30, tpBack: 10, sl: 20, slBack: 10, ws: 50 },
+    assets: { stockR: 6, stockS: 18, bondR: 2, bondS: 5, cashR: 0.2, rho: 0.2 }
+  };
+  var VOLS = [10, 18, 30];
+  var SCHEMA = {
+    dca: {
+      total: { min: 1, max: 10000, step: 1 }, years: { opts: [1, 3, 5, 10, 20, 30] },
+      pattern: { opts: ["random", "v", "up", "down"] }, r: { opts: [0, 3, 6, 9] }, vol: { opts: VOLS }
+    },
+    compound: {
+      initial: { min: 0, max: 100000, step: 1 }, monthly: { min: 0, max: 100, step: 0.5 },
+      r: { min: 0, max: 15, step: 0.5 }, years: { min: 1, max: 50, step: 1 },
+      fee: { opts: [0.1, 0.5, 1, 1.5, 2] }, volOn: { bool: true }, vol: { opts: VOLS }, tax: { bool: true }
+    },
+    diversify: {
+      stock: { min: 0, max: 100, step: 5 }, bond: { min: 0, max: 100, step: 5 },
+      initial: { min: 1, max: 100000, step: 1 }, years: { opts: [5, 10, 20, 30] }
+    },
+    timing: {
+      monthly: { min: 0.5, max: 100, step: 0.5 }, years: { opts: [5, 10, 20, 30] },
+      r: { opts: [0, 3, 6, 9] }, vol: { opts: VOLS },
+      rule: { opts: ["dip", "takeprofit", "stoploss", "rebalance"] },
+      dip: { opts: [5, 10, 20, 30] }, tp: { opts: [10, 20, 30, 50] }, tpBack: { opts: [5, 10, 20] },
+      sl: { opts: [10, 20, 30] }, slBack: { opts: [5, 10, 20] }, ws: { opts: [20, 30, 40, 50, 60, 70, 80] }
+    },
+    assets: {
+      stockR: { min: -10, max: 20, step: 0.1 }, stockS: { min: 0, max: 60, step: 0.1 },
+      bondR: { min: -5, max: 10, step: 0.1 }, bondS: { min: 0, max: 30, step: 0.1 },
+      cashR: { min: -1, max: 5, step: 0.01 }, rho: { min: -1, max: 1, step: 0.01 }
+    }
+  };
+
+  function roundStep(v, step) { return Math.round(v / step) * step; }
+
+  // 1つの値を確かめる。だめなら undefined
+  function checkValue(rule, v) {
+    if (rule.bool) return typeof v === "boolean" ? v : undefined;
+    if (rule.opts) {
+      for (var i = 0; i < rule.opts.length; i++) {
+        if (String(rule.opts[i]) === String(v)) return rule.opts[i];
+      }
+      return undefined;
+    }
+    var n = typeof v === "number" ? v : parseFloat(v);
+    if (!isFinite(n)) return undefined;
+    n = Math.min(rule.max, Math.max(rule.min, n));
+    return Number(roundStep(n, rule.step).toFixed(4));
+  }
+
+  function sanitize(raw) {
+    var out = { tab: TABS.indexOf(raw && raw.tab) >= 0 ? raw.tab : DEFAULTS.tab };
+    Object.keys(SCHEMA).forEach(function (sec) {
+      out[sec] = {};
+      var src = raw && typeof raw[sec] === "object" && raw[sec] ? raw[sec] : {};
+      Object.keys(SCHEMA[sec]).forEach(function (k) {
+        var v = checkValue(SCHEMA[sec][k], src[k]);
+        out[sec][k] = v === undefined ? DEFAULTS[sec][k] : v;
+      });
+    });
+    if (out.diversify.stock + out.diversify.bond > 100) out.diversify.bond = 100 - out.diversify.stock;
+    return out;
+  }
+
+  var state = sanitize(Store.load(KEY, null));
+  function save() { Store.save(KEY, state); }
+
+  function newSeed(old) {
+    var s;
+    do { s = Math.floor(Math.random() * 99999) + 1; } while (s === old);
+    return s;
+  }
+  var seeds = {};
+  TABS.forEach(function (t) { seeds[t] = newSeed(); });
+  var mcShown = { dca: false, compound: false, diversify: false, timing: false };
+
+  function $(id) { return document.getElementById(id); }
+
+  // ---------- 表示の書き方 ----------
+  function fmtMan(yen) {
+    var a = Math.abs(yen);
+    var s;
+    if (a >= 1e10) s = Math.round(a / OKU).toLocaleString("ja-JP") + "億円";
+    else if (a >= 1e8 - 5e6) s = (a / OKU).toFixed(1) + "億円";   // 9,950万円以上は「1.0億円」
+    else if (a >= 1e6) s = Math.round(a / MAN).toLocaleString("ja-JP") + "万円";
+    else s = (a / MAN).toFixed(1) + "万円";
+    return (yen < 0 && s !== "0.0万円" ? "−" : "") + s;
+  }
+  function fmtSigned(yen) {
+    var s = fmtMan(Math.abs(yen));
+    if (s === "0.0万円") return "±0円";
+    return (yen > 0 ? "+" : "−") + s;
+  }
+  function signCls(v) { return v > 0 ? "pos" : v < 0 ? "neg" : ""; }
+  function fmtPct(x, signed) {
+    var s = (Math.abs(x) * 100).toFixed(1) + "%";
+    if (!signed) return (x < 0 ? "−" : "") + s;
+    if (s === "0.0%") return "0.0%";
+    return (x > 0 ? "+" : "−") + s;
+  }
+  function fmtYen(v) { return Math.round(v).toLocaleString("ja-JP") + "円"; }
+  // 目盛り用(「500万」「1.5万」「8,000」)
+  function fmtAxis(v) {
+    var a = Math.abs(v), s;
+    if (a >= OKU) {
+      var q = a / OKU;
+      s = (Math.abs(q - Math.round(q)) < 1e-9 ? Math.round(q).toLocaleString("ja-JP") : String(Number(q.toFixed(2)))) + "億";
+    } else if (a >= MAN) {
+      var n = a / MAN;
+      s = (Math.abs(n - Math.round(n)) < 1e-9 ? Math.round(n).toLocaleString("ja-JP") : String(Number(n.toFixed(2)))) + "万";
+    } else {
+      s = Math.round(a).toLocaleString("ja-JP");
+    }
+    return (v < 0 ? "−" : "") + s;
+  }
+  function fmtTime(t) {
+    if (t === 0) return "開始時";
+    var y = Math.floor(t / 12), m = t % 12;
+    if (y === 0) return m + "か月";
+    if (m === 0) return y + "年";
+    return y + "年" + m + "か月";
+  }
+  // 元本と比べた利益・損失(色と文字を両方つける)
+  function plHtml(value, principal) {
+    var d = value - principal;
+    if (Math.abs(d) < 500) return '<span>元本どおり</span>';
+    return '<span class="' + signCls(d) + '">' + fmtSigned(d) + (d > 0 ? " 利益" : " 損失") + "</span>";
+  }
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
+  }
+
+  function statBox(label, numHtml, subHtml, numCls) {
+    return '<div class="stat-box"><div class="stat-label">' + label + '</div>' +
+      '<div class="stat-num ' + (numCls || "") + '">' + numHtml + '</div>' +
+      (subHtml ? '<div class="stat-sub">' + subHtml + "</div>" : "") + "</div>";
+  }
+
+  function setLegend(ul, items) {
+    ul.innerHTML = items.map(function (it) {
+      var sw;
+      if (it.kind === "glyph") sw = '<span class="sw glyph ' + it.c + '">' + it.glyph + "</span>";
+      else if (it.kind === "wait") sw = '<span class="sw wait"></span>';
+      else sw = '<span class="sw ' + (it.kind || "") + " " + it.c + '"></span>';
+      return "<li>" + sw + esc(it.label) + "</li>";
+    }).join("");
+  }
+
+  // ---------- SVG のグラフ ----------
+  function svgEl(tag, attrs) {
+    var e = document.createElementNS(svgNS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  // 目盛りの文字の幅の見積もり(11px の等幅。漢字・記号は約1文字分)
+  function textWidth(str) {
+    var w = 0;
+    for (var i = 0; i < str.length; i++) w += str.charCodeAt(i) > 0x2000 ? 11 : 6.7;
+    return w;
+  }
+
+  function niceStep(raw) {
+    var p = Math.pow(10, Math.floor(Math.log10(raw)));
+    var f = raw / p;
+    var n = f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10;
+    return n * p;
+  }
+
+  var drawables = [];
+  var ro = typeof ResizeObserver === "function" ? new ResizeObserver(function (entries) {
+    entries.forEach(function (en) {
+      for (var i = 0; i < drawables.length; i++) if (drawables[i].wrap === en.target) drawables[i].draw();
+    });
+  }) : null;
+
+  // 線グラフ。cfg: { xMax, zeroBase, series, bands, markers, readout(t), snap, aria }
+  function LineChart(wrap, readoutEl) {
+    var self = this;
+    this.wrap = wrap;
+    this.readoutEl = readoutEl;
+    this.cfg = null;
+    this.geo = null;
+    drawables.push(this);
+    if (ro) ro.observe(wrap);
+    function move(e) {
+      if (!self.geo || !self.cfg) return;
+      var rect = wrap.getBoundingClientRect();
+      var g = self.geo;
+      var frac = (e.clientX - rect.left - g.l) / g.pw;
+      frac = Math.max(0, Math.min(1, frac));
+      var snap = self.cfg.snap || 1;
+      var t = Math.round(frac * self.cfg.xMax / snap) * snap;
+      t = Math.min(self.cfg.xMax, t);
+      self.showCursor(t);
+    }
+    wrap.addEventListener("pointermove", move);
+    wrap.addEventListener("pointerdown", move);
+    wrap.addEventListener("pointerleave", function () { self.hideCursor(); });
+    wrap.addEventListener("pointercancel", function () { self.hideCursor(); });
+  }
+  LineChart.prototype.render = function (cfg) {
+    this.cfg = cfg;
+    this.draw();
+    this.hideCursor();
+  };
+  LineChart.prototype.showCursor = function (t) {
+    if (!this.cursor) return;
+    var x = this.geo.x(t);
+    this.cursor.setAttribute("x1", x);
+    this.cursor.setAttribute("x2", x);
+    this.cursor.style.display = "";
+    this.readoutEl.textContent = this.cfg.readout(t);
+  };
+  LineChart.prototype.hideCursor = function () {
+    if (this.cursor) this.cursor.style.display = "none";
+    if (this.cfg) this.readoutEl.textContent = this.cfg.readout(this.cfg.xMax);
+  };
+  LineChart.prototype.draw = function () {
+    var cfg = this.cfg, wrap = this.wrap;
+    if (!cfg) return;
+    var W = wrap.clientWidth, H = wrap.clientHeight;
+    if (!W || !H) return;
+    var l = 46, r = 10, tp = 10, b = 24;
+    var pw = W - l - r, ph = H - tp - b;
+
+    // y の範囲
+    var lo = Infinity, hi = -Infinity;
+    function take(v) { if (isFinite(v)) { if (v < lo) lo = v; if (v > hi) hi = v; } }
+    cfg.series.forEach(function (s) {
+      if (s.type === "hline") take(s.y);
+      else if (s.ys) s.ys.forEach(take);
+      if (s.lo) s.lo.forEach(take);
+      if (s.hi) s.hi.forEach(take);
+    });
+    if (cfg.zeroBase) lo = Math.min(0, lo);
+    if (!isFinite(lo)) { lo = 0; hi = 1; }
+    if (hi - lo < 1e-9) { hi = lo + Math.max(1, Math.abs(lo) * 0.1); if (!cfg.zeroBase) lo -= Math.max(1, Math.abs(lo) * 0.1); }
+    var step = niceStep((hi - lo) / 4);
+    var y0 = Math.floor(lo / step) * step, y1 = Math.ceil(hi / step) * step;
+    if (cfg.zeroBase && y0 < 0 && lo >= 0) y0 = 0;
+    // 目盛りの文字の幅に合わせて左の余白を広げる(360px幅でも左で切れないように)
+    var ticks = [];
+    for (var tv = y0; tv <= y1 + step * 1e-6; tv += step) ticks.push(Math.abs(tv) < step * 1e-6 ? 0 : tv);
+    var labelW = 0;
+    ticks.forEach(function (tv) { labelW = Math.max(labelW, textWidth(fmtAxis(tv))); });
+    l = Math.max(46, Math.ceil(labelW) + 10);
+    pw = W - l - r;
+    var xMax = cfg.xMax;
+    function X(t) { return l + (t / xMax) * pw; }
+    function Y(v) { return tp + (1 - (v - y0) / (y1 - y0)) * ph; }
+    this.geo = { l: l, pw: pw, x: X };
+
+    var svg = svgEl("svg", { width: W, height: H, role: "img", "aria-label": cfg.aria || "" });
+
+    // 現金で待った期間の帯(いちばん下)
+    (cfg.bands || []).forEach(function (bd) {
+      svg.appendChild(svgEl("rect", { "class": "wait-band", x: X(bd.x0), y: tp, width: Math.max(1, X(bd.x1) - X(bd.x0)), height: ph }));
+    });
+
+    // y 目盛り
+    ticks.forEach(function (v) {
+      var yy = Y(v);
+      svg.appendChild(svgEl("line", { "class": "grid-line", x1: l, x2: W - r, y1: yy, y2: yy }));
+      var tx = svgEl("text", { x: l - 6, y: yy + 4, "text-anchor": "end" });
+      tx.textContent = fmtAxis(v);
+      svg.appendChild(tx);
+    });
+    // x 目盛り(年)
+    var years = xMax / 12;
+    var ys = pw < 400 ? 10 : 5;
+    while (ys > 1 && years / ys < 2) ys = ys === 10 ? 5 : ys === 5 ? 2 : 1;
+    for (var yr = 0; yr <= years + 1e-9; yr += ys) {
+      var xx = X(yr * 12);
+      var anchor = yr === 0 ? "start" : (Math.abs(yr - years) < 1e-9 ? "end" : "middle");
+      var t2 = svgEl("text", { x: xx, y: H - 6, "text-anchor": anchor });
+      t2.textContent = yr + "年";
+      svg.appendChild(t2);
+      svg.appendChild(svgEl("line", { "class": "grid-line", x1: xx, x2: xx, y1: tp + ph, y2: tp + ph + 4 }));
+    }
+
+    function pathOf(vals, stepX, stepped) {
+      var d = "";
+      for (var i = 0; i < vals.length; i++) {
+        var px = X(i * stepX).toFixed(1), py = Y(vals[i]).toFixed(1);
+        if (i === 0) d += "M" + px + " " + py;
+        else if (stepped) d += "H" + px + "V" + py;
+        else d += "L" + px + " " + py;
+      }
+      return d;
+    }
+    function areaOf(loV, hiV, stepX) {
+      var d = "";
+      for (var i = 0; i < hiV.length; i++) d += (i ? "L" : "M") + X(i * stepX).toFixed(1) + " " + Y(hiV[i]).toFixed(1);
+      for (var j = loV.length - 1; j >= 0; j--) d += "L" + X(j * stepX).toFixed(1) + " " + Y(loV[j]).toFixed(1);
+      return d + "Z";
+    }
+
+    cfg.series.forEach(function (s) {
+      var stepX = s.step || 1;
+      if (s.type === "band" || s.type === "area") {
+        svg.appendChild(svgEl("path", { "class": s.type + " " + s.cls, d: areaOf(s.lo, s.hi, stepX) }));
+      } else if (s.type === "hline") {
+        var hy = Y(s.y);
+        svg.appendChild(svgEl("line", { "class": "ln " + s.cls + (s.dash ? " dash" : ""), x1: l, x2: W - r, y1: hy, y2: hy, "stroke-width": s.w || 1.5 }));
+      } else {
+        svg.appendChild(svgEl("path", { "class": "ln " + s.cls + (s.dash ? " dash" : ""), d: pathOf(s.ys, stepX, s.stepped), "stroke-width": s.w || 2 }));
+      }
+    });
+
+    // 売買の印
+    (cfg.markers || []).forEach(function (m) {
+      var mx = X(m.x), my = Y(m.y), d;
+      if (m.kind === "buy") d = "M" + mx + " " + (my + 3) + "l-5 9h10z";
+      else if (m.kind === "sell") d = "M" + mx + " " + (my - 3) + "l-5 -9h10z";
+      else d = "M" + mx + " " + (my - 6) + "l5 6l-5 6l-5 -6z";
+      svg.appendChild(svgEl("path", { "class": "mk-" + m.kind, d: d }));
+    });
+
+    this.cursor = svgEl("line", { "class": "cursor-line", x1: 0, x2: 0, y1: tp, y2: tp + ph });
+    this.cursor.style.display = "none";
+    svg.appendChild(this.cursor);
+    wrap.replaceChildren(svg);
+  };
+
+  // ヒストグラム。cfg: { hist, aria }
+  function HistChart(wrap) {
+    this.wrap = wrap;
+    this.cfg = null;
+    drawables.push(this);
+    if (ro) ro.observe(wrap);
+  }
+  HistChart.prototype.render = function (cfg) { this.cfg = cfg; this.draw(); };
+  HistChart.prototype.draw = function () {
+    var cfg = this.cfg, wrap = this.wrap;
+    if (!cfg) return;
+    var W = wrap.clientWidth, H = wrap.clientHeight;
+    if (!W || !H) return;
+    var h = cfg.hist, l = 8, r = 8, tp = 8, b = 22;
+    var pw = W - l - r, ph = H - tp - b;
+    var maxC = Math.max.apply(null, h.counts) || 1;
+    function X(v) { return l + (v - h.lo) / (h.hi - h.lo) * pw; }
+    var svg = svgEl("svg", { width: W, height: H, role: "img", "aria-label": cfg.aria || "" });
+    svg.appendChild(svgEl("line", { "class": "grid-line", x1: l, x2: W - r, y1: tp + ph, y2: tp + ph }));
+    h.counts.forEach(function (c, i) {
+      if (!c) return;
+      var a = h.lo + i * h.width, mid = a + h.width / 2;
+      var bh = c / maxC * ph;
+      var x0 = X(a), x1 = X(a + h.width);
+      svg.appendChild(svgEl("rect", {
+        "class": mid >= 0 ? "f1" : "f2", x: x0 + 0.5, y: tp + ph - bh,
+        width: Math.max(1, x1 - x0 - 1), height: bh
+      }));
+    });
+    var zx = X(0);
+    svg.appendChild(svgEl("line", { "class": "zero-line", x1: zx, x2: zx, y1: tp - 4, y2: tp + ph + 4 }));
+    // 差がちょうど0(同じ結果)の回は、0の位置に中立色の細い棒で別に描く(高さは最大でグラフの高さまで)
+    if (h.zeros) {
+      var zh = Math.min(1, h.zeros / maxC) * ph;
+      svg.appendChild(svgEl("rect", { "class": "tie-bar", x: zx - 3, y: tp + ph - zh, width: 6, height: zh }));
+    }
+    function label(x, txt, anchor) {
+      var t = svgEl("text", { x: x, y: H - 5, "text-anchor": anchor });
+      t.textContent = txt;
+      svg.appendChild(t);
+    }
+    label(l, fmtSigned(h.lo), "start");
+    label(W - r, fmtSigned(h.hi), "end");
+    if (zx - l > 30 && W - r - zx > 30) label(zx, "0", "middle");
+    wrap.replaceChildren(svg);
+  };
+
+  // ---------- 1000回(計算中の表示) ----------
+  var mcRunning = {};
+  function runMc(tab) {
+    var box = document.querySelector('.sim-actions[data-tab="' + tab + '"]');
+    var btn = box && box.querySelector(".act-mc");
+    if (mcRunning[tab]) { mcRunning[tab] = "again"; return; }
+    mcRunning[tab] = true;
+    if (btn) { btn.disabled = true; btn.textContent = "計算中…"; }
+    requestAnimationFrame(function () {
+      setTimeout(function () {
+        try {
+          MC[tab]();
+          mcShown[tab] = true;
+        } finally {
+          if (btn) { btn.disabled = false; btn.textContent = "1000回試す"; }
+          var again = mcRunning[tab] === "again";
+          mcRunning[tab] = false;
+          if (again) runMc(tab);
+        }
+      }, 0);
+    });
+  }
+
+  // ==================== タブ1 積立と一括 ====================
+  var dcaA = new LineChart($("dca-chart-a"), $("dca-ro-a"));
+  var dcaB = new LineChart($("dca-chart-b"), $("dca-ro-b"));
+  var dcaHist = new HistChart($("dca-hist"));
+
+  function dcaOpts() {
+    var s = state.dca;
+    var random = s.pattern === "random";
+    return { total: s.total * MAN, months: s.years * 12, pattern: s.pattern, r: random ? s.r / 100 : 0, sigma: random ? s.vol / 100 : 0.10 };
+  }
+
+  function renderDca() {
+    var s = state.dca, o = dcaOpts();
+    var random = s.pattern === "random";
+    document.querySelectorAll("#panel-dca [data-random-only]").forEach(function (f) {
+      f.classList.toggle("is-off", !random);
+      f.querySelector("select").disabled = !random;
+    });
+    $("dca-monthly-hint").textContent = "積立は毎月 " + fmtMan(o.total / o.months) + " ずつ";
+    $("dca-pattern-hint").textContent = random ? "" : "型を選んだときは、年率リターンと値動きの大きさは使いません(値動き10%で型の形に沿って動きます)。";
+
+    var prices = Sim.genPrices({ months: o.months, r: o.r, sigma: o.sigma, pattern: o.pattern, seed: seeds.dca });
+    var res = Sim.simDca(o.total, o.months, prices);
+
+    dcaA.render({
+      xMax: o.months,
+      series: [
+        { type: "line", cls: "s-price", w: 1.5, ys: prices },
+        { type: "hline", cls: "s1", dash: true, w: 1.5, y: res.lumpPrice },
+        { type: "hline", cls: "s2", dash: true, w: 1.5, y: res.avgCost }
+      ],
+      readout: function (t) { return fmtTime(t) + " 基準価額 " + fmtYen(prices[t]); },
+      aria: "相場のグラフ。基準価額は10,000円から始まり、最後は" + fmtYen(prices[o.months]) + "。積立の平均取得単価は" + fmtYen(res.avgCost) + "。"
+    });
+    setLegend($("dca-lg-a"), [
+      { c: "c-price", label: "基準価額" },
+      { c: "c1", kind: "dashed", label: "一括の取得価格 " + fmtYen(res.lumpPrice) },
+      { c: "c2", kind: "dashed", label: "積立の平均取得単価 " + fmtYen(res.avgCost) }
+    ]);
+
+    dcaB.render({
+      xMax: o.months, zeroBase: true,
+      series: [
+        { type: "line", cls: "s5", dash: true, w: 1.5, ys: res.principalLump },
+        { type: "line", cls: "s5", dash: true, w: 1.5, ys: res.principalDca, stepped: true },
+        { type: "line", cls: "s2", w: 2, ys: res.dca },
+        { type: "line", cls: "s1", w: 2.5, ys: res.lump }
+      ],
+      readout: function (t) { return fmtTime(t) + " 一括 " + fmtMan(res.lump[t]) + " / 積立 " + fmtMan(res.dca[t]); },
+      aria: "資産の評価額のグラフ。最終額は一括 " + fmtMan(res.lumpFinal) + "、積立 " + fmtMan(res.dcaFinal) + "。"
+    });
+    setLegend($("dca-lg-b"), [
+      { c: "c1", label: "一括" },
+      { c: "c2", label: "積立(まだ買っていない分は現金)" },
+      { c: "c5", kind: "dashed", label: "投資した元本(一括は一直線、積立は階段)" }
+    ]);
+
+    var diff = res.lumpFinal - res.dcaFinal;
+    $("dca-stats").innerHTML =
+      statBox("一括の最終額", fmtMan(res.lumpFinal), plHtml(res.lumpFinal, o.total)) +
+      statBox("積立の最終額", fmtMan(res.dcaFinal), plHtml(res.dcaFinal, o.total)) +
+      statBox("差(一括 − 積立)", fmtSigned(diff), diff > 0 ? "一括が多い" : diff < 0 ? "積立が多い" : "同じ", signCls(diff)) +
+      statBox("積立の平均取得単価", fmtYen(res.avgCost), "期間中の平均価格 " + fmtYen(res.avgPrice));
+
+    var auto = $("dca-auto");
+    var best = Math.max(res.lumpFinal, res.dcaFinal);
+    var msg;
+    if (Math.abs(diff) < 5000) msg = "今回の相場では、一括と積立がほぼ同じ結果になりました。";
+    else msg = "今回の相場では" + (diff > 0 ? "一括" : "積立") + "のほうが " + fmtMan(Math.abs(diff)) + " 多くなりました。";
+    if (best < o.total) msg += "どちらも元本を下回りました(損失)。";
+    auto.textContent = msg;
+    auto.className = "auto-point " + (best >= o.total ? "good" : "bad");
+    auto.hidden = false;
+  }
+
+  function mcDcaRender() {
+    var o = dcaOpts();
+    var m = Sim.mcDca(o, seeds.dca);
+    var pct = function (c) { return (c / m.n * 100).toFixed(1) + "%"; };
+    $("dca-mc-stats").innerHTML =
+      statBox("一括の勝ち", m.lumpWins + "回", pct(m.lumpWins)) +
+      statBox("積立の勝ち", m.dcaWins + "回", pct(m.dcaWins)) +
+      statBox("差の中央値(一括 − 積立)", fmtSigned(m.diff.p50), "", signCls(m.diff.p50)) +
+      statBox("悪いとき(下位10%)の最終額", '<span class="c1">' + fmtMan(m.lump.p10) + '</span><br><span class="c2">' + fmtMan(m.dca.p10) + "</span>", "上: 一括 / 下: 積立");
+    $("dca-mc").hidden = false;
+    $("dca-ties").textContent = m.hist.zeros;
+    dcaHist.render({ hist: m.hist, aria: "一括と積立の差の分布。一括の勝ち" + m.lumpWins + "回、積立の勝ち" + m.dcaWins + "回。" });
+  }
+
+  // ==================== タブ2 複利と長期 ====================
+  var cpChart = new LineChart($("cp-chart"), $("cp-ro"));
+  var CP_BAND_SEED = 1;   // 帯は設定だけで決まる(相場番号に左右されない)
+  var cpBandCache = null;
+
+  function cpOpts() {
+    var s = state.compound;
+    return { initial: s.initial * MAN, monthly: s.monthly * MAN, r: s.r / 100, years: s.years, fee: s.fee / 100, sigma: s.vol / 100 };
+  }
+
+  function renderCompound() {
+    var s = state.compound, o = cpOpts();
+    $("cp-vol-field").hidden = !s.volOn;
+    var det = Sim.compoundDet(o);
+    var Y = o.years;
+    var actions = document.querySelector('.sim-actions[data-tab="compound"]');
+    actions.hidden = !s.volOn;
+    actions.querySelector(".act-mc").hidden = true;
+
+    // 新NISA の目安
+    var warn = [];
+    if (s.monthly > 10) warn.push("新NISAのつみたて投資枠は年120万円(月10万円)までです。");
+    if (det.principalFinal > 1800 * MAN) warn.push("新NISAの生涯の非課税枠は1800万円までです。");
+    $("cp-nisa-hint").textContent = warn.join(" ");
+    $("cp-nisa-hint").hidden = warn.length === 0;
+
+    var rows = [], milestone = [5, 10, 20, 30].filter(function (y) { return y <= Y; });
+    if (milestone.indexOf(Y) < 0) milestone.push(Y);
+    var finalForTax;
+
+    if (!s.volOn) {
+      var zeros = det.principal.map(function () { return 0; });
+      cpChart.render({
+        xMax: Y * 12, zeroBase: true, snap: 12,
+        series: [
+          { type: "area", cls: "f5", lo: zeros, hi: det.principal, step: 12 },
+          { type: "area", cls: "f1", lo: det.principal, hi: det.balance, step: 12 },
+          { type: "line", cls: "s2", dash: true, w: 2, ys: det.simple, step: 12 },
+          { type: "line", cls: "s1", w: 1.5, ys: det.balance, step: 12 }
+        ],
+        readout: function (t) {
+          var y = Math.round(t / 12);
+          return fmtTime(y * 12) + " 資産 " + fmtMan(det.balance[y]) + " / 元本 " + fmtMan(det.principal[y]) + " / 単利なら " + fmtMan(det.simple[y]);
+        },
+        aria: Y + "年後の資産は " + fmtMan(det.final) + "、元本は " + fmtMan(det.principalFinal) + "。"
+      });
+      setLegend($("cp-lg"), [
+        { c: "c5", kind: "area", label: "元本" },
+        { c: "c1", kind: "area", label: "運用益(複利)" },
+        { c: "c2", kind: "dashed", label: "単利だった場合" }
+      ]);
+      $("cp-stats").innerHTML =
+        statBox("最終資産", fmtMan(det.final), Y + "年後") +
+        statBox("元本", fmtMan(det.principalFinal), "入れたお金の合計") +
+        statBox("運用益", fmtSigned(det.gain), det.gain > 0 ? "利益" : det.gain < 0 ? "損失" : "", signCls(det.gain)) +
+        statBox("手数料で減った額", det.feeLoss > 0 ? "−" + fmtMan(det.feeLoss) : fmtMan(0), "手数料0%と比べて", det.feeLoss > 0 ? "neg" : "");
+      milestone.forEach(function (y) { rows.push({ y: y, p: det.principal[y], v: det.balance[y] }); });
+      finalForTax = det.final;
+    } else {
+      // 帯(1000本)は固定の番号で作る。「もう一度」で変わるのは1本の道筋だけ
+      var mcKey = JSON.stringify(o);
+      if (!cpBandCache || cpBandCache.key !== mcKey) cpBandCache = { key: mcKey, mc: Sim.mcCompound(o, CP_BAND_SEED) };
+      var mc = cpBandCache.mc;
+      var one = Sim.compoundPath(o, seeds.compound);
+      cpChart.render({
+        xMax: Y * 12, zeroBase: true, snap: 12,
+        series: [
+          { type: "band", cls: "f1", lo: mc.p10, hi: mc.p90, step: 12 },
+          { type: "line", cls: "s5", dash: true, w: 1.5, ys: det.principal, step: 12 },
+          { type: "line", cls: "s2", dash: true, w: 2, ys: det.balance, step: 12 },
+          { type: "line", cls: "s4", w: 1.5, ys: one, step: 12 },
+          { type: "line", cls: "s1", w: 2.5, ys: mc.p50, step: 12 }
+        ],
+        readout: function (t) {
+          var y = Math.round(t / 12);
+          return fmtTime(y * 12) + " 中央値 " + fmtMan(mc.p50[y]) + " / 悪いとき " + fmtMan(mc.p10[y]) + " / よいとき " + fmtMan(mc.p90[y]) + " / 今回の1本 " + fmtMan(one[y]);
+        },
+        aria: "1000回の結果の広がり。" + Y + "年後の中央値は " + fmtMan(mc.final.p50) + "、悪いとき " + fmtMan(mc.final.p10) + "、よいとき " + fmtMan(mc.final.p90) + "。"
+      });
+      setLegend($("cp-lg"), [
+        { c: "c1", kind: "area", label: "悪いとき〜よいとき(下位10%〜上位10%)" },
+        { c: "c1", label: "中央値" },
+        { c: "c2", kind: "dashed", label: "値動きなしの計算" },
+        { c: "c4", label: "今回の1本(相場番号 No." + seeds.compound + ")" },
+        { c: "c5", kind: "dashed", label: "元本" }
+      ]);
+      $("cp-stats").innerHTML =
+        statBox("中央値", fmtMan(mc.final.p50), plHtml(mc.final.p50, mc.principal)) +
+        statBox("悪いとき(下位10%)", fmtMan(mc.final.p10), plHtml(mc.final.p10, mc.principal)) +
+        statBox("よいとき(上位10%)", fmtMan(mc.final.p90), plHtml(mc.final.p90, mc.principal)) +
+        statBox("元本割れの確率", (mc.lossRate * 100).toFixed(1) + "%", "1000回のうち " + Math.round(mc.lossRate * mc.n) + "回", mc.lossRate > 0 ? "neg" : "");
+      milestone.forEach(function (y) { rows.push({ y: y, p: det.principal[y], v: mc.p50[y] }); });
+      finalForTax = mc.final.p50;
+    }
+
+    // 税の比較
+    var taxLine = $("cp-tax-line");
+    if (s.tax) {
+      var tx = Sim.afterTax(finalForTax, det.principalFinal);
+      taxLine.innerHTML = (s.volOn ? "中央値で比べると、" : "") +
+        "NISAなら <b class=\"num\">" + fmtMan(finalForTax) + "</b>(非課税)。" +
+        "課税口座なら <b class=\"num\">" + fmtMan(tx.net) + "</b>(税 <span class=\"num neg\">" + fmtMan(tx.tax) + "</span>)。" +
+        "<br><span class=\"hint\">課税口座は、最後に一度売って利益に20.315%の税金がかかる簡単な計算です。</span>";
+      // NISAの枠(年360万円 = つみたて投資枠120万円 + 成長投資枠240万円、生涯1800万円)を超えるとき
+      var over = [];
+      if (o.initial > 240 * MAN) over.push("最初の金額が成長投資枠の年240万円を超えています");
+      if (s.monthly > 10) over.push("月の積立がつみたて投資枠の月10万円(年120万円)を超えています");
+      if (o.initial + o.monthly * 12 > 360 * MAN) over.push("1年目に入れる金額が年間の枠360万円(つみたて120万円+成長240万円)を超えています");
+      if (det.principalFinal > 1800 * MAN) over.push("元本の合計が生涯の枠1800万円を超えています");
+      if (over.length) {
+        taxLine.innerHTML += "<br><span class=\"hint warn\">注意: " + over.join("。") +
+          "。この比較では、NISAの枠を超える分も非課税として簡略化しています。実際には、枠を超えた分は課税口座で運用することになります。</span>";
+      }
+      taxLine.hidden = false;
+    } else {
+      taxLine.hidden = true;
+    }
+
+    // 節目の表
+    var html = "<thead><tr><th>年</th><th>元本</th><th>" + (s.volOn ? "資産(中央値)" : "資産") + "</th><th>倍率</th></tr></thead><tbody>";
+    rows.forEach(function (rw) {
+      html += "<tr><td>" + rw.y + "年</td><td>" + fmtMan(rw.p) + "</td><td>" + fmtMan(rw.v) + "</td><td>" +
+        (rw.p > 0 ? (rw.v / rw.p).toFixed(2) + "倍" : "—") + "</td></tr>";
+    });
+    $("cp-table").innerHTML = html + "</tbody>";
+  }
+
+  // ==================== タブ3 分散投資 ====================
+  var dvChart = new LineChart($("dv-chart"), $("dv-ro"));
+  var PORT_CLS = ["1", "2", "3", "5"];
+
+  function assetsFrac() {
+    var a = state.assets;
+    return { stockR: a.stockR / 100, stockS: a.stockS / 100, bondR: a.bondR / 100, bondS: a.bondS / 100, cashR: a.cashR / 100, rho: a.rho };
+  }
+  function dvPortfolios() {
+    var s = state.diversify, c = 100 - s.stock - s.bond;
+    return [
+      { name: "あなたの配分", sub: "株" + s.stock + "・債" + s.bond + "・現金" + c, w: { s: s.stock / 100, b: s.bond / 100, c: c / 100 } },
+      { name: "株式100%", w: { s: 1, b: 0, c: 0 } },
+      { name: "債券100%", w: { s: 0, b: 1, c: 0 } },
+      { name: "現金100%", w: { s: 0, b: 0, c: 1 } }
+    ];
+  }
+
+  function renderDiversify() {
+    var s = state.diversify, c = 100 - s.stock - s.bond;
+    $("dv-bond").max = 100 - s.stock;
+    $("dv-bond").value = String(s.bond);
+    $("dv-cash").textContent = c + "%";
+    var bar = $("dv-bar").children;
+    bar[0].style.width = s.stock + "%";
+    bar[1].style.width = s.bond + "%";
+    bar[2].style.width = c + "%";
+    document.querySelectorAll("#dv-presets .chip-btn").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(+b.dataset.s === s.stock && +b.dataset.b === s.bond));
+    });
+
+    var months = s.years * 12, initial = s.initial * MAN;
+    var mk = Sim.genMarket({ months: months, assets: assetsFrac(), seed: seeds.diversify });
+    var ports = dvPortfolios();
+    var lines = ports.map(function (p) { return Sim.portfolio(p.w, mk, initial); });
+    var stats = lines.map(Sim.portfolioStats);
+
+    dvChart.render({
+      xMax: months,
+      series: [
+        { type: "line", cls: "s5", w: 2, ys: lines[3] },
+        { type: "line", cls: "s3", w: 2, ys: lines[2] },
+        { type: "line", cls: "s2", w: 2, ys: lines[1] },
+        { type: "line", cls: "s1", w: 2.5, ys: lines[0] }
+      ],
+      readout: function (t) {
+        return fmtTime(t) + " あなた " + fmtMan(lines[0][t]) + " / 株 " + fmtMan(lines[1][t]) + " / 債券 " + fmtMan(lines[2][t]) + " / 現金 " + fmtMan(lines[3][t]);
+      },
+      aria: "同じ相場での4つの配分の評価額。最終額は、あなたの配分 " + fmtMan(stats[0].final) + "、株式100% " + fmtMan(stats[1].final) + "、債券100% " + fmtMan(stats[2].final) + "、現金100% " + fmtMan(stats[3].final) + "。"
+    });
+    setLegend($("dv-lg"), ports.map(function (p, i) {
+      return { c: "c" + PORT_CLS[i], label: p.name + (p.sub ? "(" + p.sub + ")" : "") };
+    }));
+
+    var html = '<div class="prow head"><span class="pname">配分</span><span>最終額</span><span>最大下落率</span><span>最悪の1年</span></div>';
+    ports.forEach(function (p, i) {
+      var st = stats[i];
+      html += '<div class="prow"><span class="pname"><span class="sw c' + PORT_CLS[i] + '"></span><span>' + esc(p.name) +
+        (p.sub ? '<span class="stat-sub" style="display:block;margin:0">' + esc(p.sub) + "</span>" : "") + "</span></span>" +
+        '<span><span class="mini-label">最終額</span>' + fmtMan(st.final) + '<span class="stat-sub" style="display:block;margin:0">' + plHtml(st.final, initial) + "</span></span>" +
+        '<span class="' + (st.mdd > 0 ? "neg" : "") + '"><span class="mini-label">最大下落率</span>' + (st.mdd > 0 ? "−" : "") + (st.mdd * 100).toFixed(1) + "%</span>" +
+        '<span class="' + signCls(st.worst) + '"><span class="mini-label">最悪の1年</span>' + fmtPct(st.worst, true) + "</span></div>";
+    });
+    $("dv-table").innerHTML = html;
+  }
+
+  function mcDiversifyRender() {
+    var s = state.diversify, initial = s.initial * MAN;
+    var ports = dvPortfolios();
+    var res = Sim.mcDiversify(ports.map(function (p) { return p.w; }), { initial: initial, months: s.years * 12, assets: assetsFrac() }, seeds.diversify);
+    var lo = initial, hi = initial;
+    res.forEach(function (r) { lo = Math.min(lo, r.p10); hi = Math.max(hi, r.p90); });
+    var pad = (hi - lo) * 0.04 || 1;
+    lo -= pad; hi += pad;
+    function pos(v) { return ((v - lo) / (hi - lo) * 100).toFixed(2) + "%"; }
+    $("dv-ranges").innerHTML = res.map(function (r, i) {
+      var p = ports[i];
+      return '<div class="range-row">' +
+        '<div class="range-head"><span>' + esc(p.name) + (p.sub ? "(" + esc(p.sub) + ")" : "") + '</span><span class="num">' + fmtMan(r.p10) + " 〜 " + fmtMan(r.p90) + "</span></div>" +
+        '<div class="range-track c' + PORT_CLS[i] + '">' +
+        '<span class="range-bar" style="left:' + pos(r.p10) + ";width:calc(" + pos(r.p90) + " - " + pos(r.p10) + ')"></span>' +
+        '<span class="range-zero" style="left:' + pos(initial) + '"></span>' +
+        '<span class="range-dot" style="left:' + pos(r.p50) + '"></span></div>' +
+        '<div class="range-sub">中央値 <span class="num">' + fmtMan(r.p50) + "</span> / 元本割れ <span class=\"num " + (r.lossRate > 0 ? "neg" : "") + '">' + (r.lossRate * 100).toFixed(1) + "%</span></div>" +
+        "</div>";
+    }).join("");
+    $("dv-mc").hidden = false;
+  }
+
+  // ==================== タブ4 売買ルール ====================
+  var tmA = new LineChart($("tm-chart-a"), $("tm-ro-a"));
+  var tmB = new LineChart($("tm-chart-b"), $("tm-ro-b"));
+  var tmHist = new HistChart($("tm-hist"));
+  var RULE_TERM = { dip: "buy-the-dip", takeprofit: "take-profit", stoploss: "stop-loss", rebalance: "rebalance" };
+  var RULE_NAME = { dip: "押し目買い", takeprofit: "利益確定", stoploss: "損切り", rebalance: "リバランス" };
+
+  function tmOpts() {
+    var s = state.timing;
+    return {
+      months: s.years * 12, monthly: s.monthly * MAN, r: s.r / 100, sigma: s.vol / 100, rule: s.rule,
+      params: { dip: s.dip / 100, tp: s.tp / 100, tpBack: s.tpBack / 100, sl: s.sl / 100, slBack: s.slBack / 100 },
+      ws: s.ws / 100, assets: assetsFrac()
+    };
+  }
+
+  function renderTiming() {
+    var s = state.timing, o = tmOpts();
+    var isReb = s.rule === "rebalance";
+    document.querySelectorAll("#panel-timing .rule-opts").forEach(function (d) { d.hidden = d.dataset.rule !== s.rule; });
+    document.querySelectorAll("#panel-timing [data-rule-point]").forEach(function (li) { li.hidden = li.dataset.rulePoint !== s.rule; });
+    var tb = $("tm-rule-term");
+    if (tb.dataset.term !== RULE_TERM[s.rule]) { closeNote(tb); tb.dataset.term = RULE_TERM[s.rule]; }
+    $("tm-ws-hint").textContent = "債券 " + (100 - s.ws) + "%(債券は年率 " + state.assets.bondR + "%・値動き " + state.assets.bondS + "%)";
+
+    var res = Sim.runTiming(o, seeds.timing);
+    var prices = res.prices, N = o.months;
+    var rule = res.rule, base = res.base;
+
+    // 現金で待った期間を、続いた区間ごとにまとめる
+    var bands = [];
+    rule.waiting.forEach(function (t) {
+      var last = bands[bands.length - 1];
+      if (last && last.x1 === t) last.x1 = t + 1;
+      else bands.push({ x0: t, x1: t + 1 });
+    });
+    var markers = rule.events.map(function (e) { return { x: e.t, y: prices[e.t], kind: e.type }; });
+
+    var seriesA = [{ type: "line", cls: "s-price", w: 1.5, ys: prices }];
+    if (isReb) seriesA.push({ type: "line", cls: "s3", w: 1.5, ys: res.bond });
+    tmA.render({
+      xMax: N, series: seriesA, bands: bands, markers: markers,
+      readout: function (t) {
+        return fmtTime(t) + (isReb ? " 株式 " + fmtYen(prices[t]) + " / 債券 " + fmtYen(res.bond[t]) : " 基準価額 " + fmtYen(prices[t]));
+      },
+      aria: "相場のグラフ。" + RULE_NAME[s.rule] + "の売買は" + rule.trades + "回。"
+    });
+    var lgA = isReb
+      ? [{ c: "c-price", label: "株式の基準価額" }, { c: "c3", label: "債券の基準価額" }, { kind: "glyph", c: "c-accent", glyph: "◆", label: "リバランス(12月末)" }]
+      : [{ c: "c-price", label: "基準価額" }, { kind: "glyph", c: "c-good", glyph: "▲", label: "買い" }, { kind: "glyph", c: "c-bad", glyph: "▼", label: "売り" }, { kind: "wait", label: "現金で待った期間" }];
+    if (s.rule === "dip") lgA.splice(2, 1);
+    setLegend($("tm-lg-a"), lgA);
+
+    tmB.render({
+      xMax: N, zeroBase: true,
+      series: [
+        { type: "line", cls: "s5", dash: true, w: 1.5, ys: rule.principal },
+        { type: "line", cls: "s2", w: 2, ys: base.value },
+        { type: "line", cls: "s1", w: 2.5, ys: rule.value }
+      ],
+      readout: function (t) { return fmtTime(t) + " ルール " + fmtMan(rule.value[t]) + " / 基準 " + fmtMan(base.value[t]); },
+      aria: "資産の評価額のグラフ。最終額はルール " + fmtMan(rule.final) + "、基準 " + fmtMan(base.final) + "。"
+    });
+    setLegend($("tm-lg-b"), [
+      { c: "c1", label: "ルール(" + RULE_NAME[s.rule] + ")" },
+      { c: "c2", label: isReb ? "基準(同じ配分で戻さない)" : "基準(毎月買って放置)" },
+      { c: "c5", kind: "dashed", label: "元本" }
+    ]);
+
+    var principal = o.monthly * N, diff = rule.final - base.final;
+    var fourth = isReb
+      ? statBox("最大下落率", '<span class="neg">−' + (rule.mdd * 100).toFixed(1) + '%</span><br><span class="neg">−' + (base.mdd * 100).toFixed(1) + "%</span>", "上: ルール / 下: 基準(リバランス" + rule.trades + "回)")
+      : statBox("売買の回数", rule.trades + "回", "現金で待った期間 " + rule.waitMonths + "か月(" + (rule.waitMonths / N * 100).toFixed(1) + "%)");
+    $("tm-stats").innerHTML =
+      statBox("ルールの最終額", fmtMan(rule.final), plHtml(rule.final, principal)) +
+      statBox("基準の最終額", fmtMan(base.final), plHtml(base.final, principal)) +
+      statBox("差(ルール − 基準)", fmtSigned(diff), diff > 0 ? "ルールが多い" : diff < 0 ? "基準が多い" : "同じ", signCls(diff)) +
+      fourth;
+  }
+
+  function mcTimingRender() {
+    var m = Sim.mcTiming(tmOpts(), seeds.timing);
+    $("tm-mc-stats").innerHTML =
+      statBox("ルールが基準を上回った割合", (m.wins / m.n * 100).toFixed(1) + "%", "1000回のうち " + m.wins + "回") +
+      statBox("差の中央値", fmtSigned(m.diff.p50), "ルール − 基準", signCls(m.diff.p50)) +
+      statBox("悪いとき(下位10%)の差", fmtSigned(m.diff.p10), "", signCls(m.diff.p10)) +
+      statBox("よいとき(上位10%)の差", fmtSigned(m.diff.p90), "", signCls(m.diff.p90));
+    $("tm-mc").hidden = false;
+    $("tm-ties").textContent = m.hist.zeros;
+    tmHist.render({ hist: m.hist, aria: "ルールと基準の差の分布。ルールが上回ったのは1000回のうち" + m.wins + "回。" });
+  }
+
+  var RENDER = { dca: renderDca, compound: renderCompound, diversify: renderDiversify, timing: renderTiming };
+  var MC = { dca: mcDcaRender, compound: function () {}, diversify: mcDiversifyRender, timing: mcTimingRender };
+
+  function renderTab(tab) {
+    RENDER[tab]();
+    var input = document.querySelector('.sim-actions[data-tab="' + tab + '"] .seed-input');
+    if (input && document.activeElement !== input) input.value = seeds[tab];
+    if (mcShown[tab]) runMc(tab);
+  }
+
+  // ---------- 入力と設定の対応 ----------
+  function getK(k) { var p = k.split("."); return state[p[0]][p[1]]; }
+  function setK(k, v) { var p = k.split("."); state[p[0]][p[1]] = v; }
+  function ruleOf(k) { var p = k.split("."); return SCHEMA[p[0]][p[1]]; }
+  function showVal(k) {
+    var el = document.querySelector('[data-show="' + k + '"]');
+    if (!el) return;
+    var v = getK(k);
+    el.textContent = k === "compound.years" ? v + "年" : (k === "compound.r" ? v.toFixed(1) : v) + "%";
+  }
+  function syncInputs() {
+    document.querySelectorAll("[data-k]").forEach(function (el) {
+      var v = getK(el.dataset.k);
+      if (el.type === "checkbox") el.checked = !!v;
+      else el.value = String(v);
+      showVal(el.dataset.k);
+    });
+  }
+
+  var timers = {};
+  function schedule(tab) {
+    clearTimeout(timers[tab]);
+    timers[tab] = setTimeout(function () { renderTab(tab); }, 150);
+  }
+
+  // どのタブを描き直すか(資産の性格は分散投資と売買ルールに効く)
+  function tabsFor(k) {
+    var sec = k.split(".")[0];
+    return sec === "assets" ? ["diversify", "timing"] : [sec];
+  }
+
+  function onInput(el, final) {
+    var k = el.dataset.k, rule = ruleOf(k), v;
+    if (el.type === "checkbox") v = el.checked;
+    else {
+      v = checkValue(rule, el.value);
+      if (v === undefined) {
+        if (final) el.value = String(getK(k));
+        return;
+      }
+      // 入力途中の範囲外の値は、確定(change)まで反映しない
+      if (!rule.opts && el.type === "number" && !final && String(v) !== String(parseFloat(el.value))) return;
+    }
+    if (k === "diversify.stock" && state.diversify.bond > 100 - v) { state.diversify.bond = 100 - v; $("dv-bond").value = String(state.diversify.bond); showVal("diversify.bond"); }
+    if (k === "diversify.bond") v = Math.min(v, 100 - state.diversify.stock);
+    setK(k, v);
+    if (final && el.type !== "checkbox") el.value = String(v);
+    showVal(k);
+    save();
+    tabsFor(k).forEach(schedule);
+  }
+  document.querySelectorAll("[data-k]").forEach(function (el) {
+    el.addEventListener("input", function () { onInput(el, false); });
+    el.addEventListener("change", function () { onInput(el, true); });
+  });
+
+  document.querySelectorAll("#dv-presets .chip-btn").forEach(function (b) {
+    b.addEventListener("click", function () {
+      state.diversify.stock = +b.dataset.s;
+      state.diversify.bond = +b.dataset.b;
+      syncInputs();
+      save();
+      renderTab("diversify");
+    });
+  });
+  $("as-reset").addEventListener("click", function () {
+    state.assets = JSON.parse(JSON.stringify(DEFAULTS.assets));
+    syncInputs();
+    save();
+    renderTab("diversify");
+    schedule("timing");
+  });
+
+  // ---------- 操作バー(もう一度 / 1000回 / 相場番号) ----------
+  document.querySelectorAll(".sim-actions").forEach(function (box) {
+    var tab = box.dataset.tab;
+    box.innerHTML =
+      '<div class="btn-row"><button type="button" class="btn-secondary act-again"><span class="lbl-long">もう一度(別の相場)</span><span class="lbl-short">もう一度</span></button>' +
+      '<button type="button" class="btn-primary act-mc">1000回試す</button></div>' +
+      '<div class="seed-row"><label>相場番号 No.<input type="number" class="seed-input" min="1" max="99999" step="1" inputmode="numeric" aria-label="相場番号"></label>' +
+      '<button type="button" class="term-btn" data-term="seed"><span>?</span></button>' +
+      '<button type="button" class="btn-small act-seed">この番号で再現</button></div>' +
+      '<p class="hint">同じ番号なら同じ相場になります。友だちと同じ相場で比べたいときに。</p>';
+    var input = box.querySelector(".seed-input");
+    input.value = seeds[tab];
+    box.querySelector(".act-again").addEventListener("click", function () {
+      seeds[tab] = newSeed(seeds[tab]);
+      input.value = seeds[tab];
+      renderTab(tab);
+    });
+    box.querySelector(".act-mc").addEventListener("click", function () { runMc(tab); });
+    function apply() {
+      var n = parseInt(input.value, 10);
+      if (!isFinite(n)) { input.value = seeds[tab]; return; }
+      n = Math.min(99999, Math.max(1, n));
+      input.value = n;
+      seeds[tab] = n;
+      renderTab(tab);
+    }
+    box.querySelector(".act-seed").addEventListener("click", apply);
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); apply(); } });
+  });
+
+  // ---------- 用語の「?」 ----------
+  var TERM_BY_ID = {};
+  INVEST_TERMS.forEach(function (t) { TERM_BY_ID[t.id] = t; });
+  var noteCount = 0;
+
+  function hostOf(btn) { return btn.closest(".field, .term-host, .seed-row"); }
+  function closeNote(btn) {
+    var id = btn.getAttribute("aria-controls");
+    var note = id && document.getElementById(id);
+    if (note) note.remove();
+    btn.removeAttribute("aria-controls");
+    btn.setAttribute("aria-expanded", "false");
+  }
+  function setupTermBtn(btn) {
+    var t = TERM_BY_ID[btn.dataset.term];
+    btn.setAttribute("aria-expanded", "false");
+    btn.setAttribute("aria-label", "「" + (t ? t.name : "") + "」の説明");
+  }
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest(".term-btn");
+    if (!btn) return;
+    if (btn.getAttribute("aria-expanded") === "true") { closeNote(btn); return; }
+    var t = TERM_BY_ID[btn.dataset.term];
+    if (!t) return;
+    var host = hostOf(btn);
+    var note = document.createElement("div");
+    note.className = "term-note";
+    note.id = "term-note-" + (++noteCount);
+    note.innerHTML = "<b>" + esc(t.name) + "</b>" + esc(t.meaning) + '<br><a href="reference.html#' + encodeURIComponent(t.id) + '">用語帳で詳しく →</a>';
+    host.insertAdjacentElement("afterend", note);
+    btn.setAttribute("aria-controls", note.id);
+    btn.setAttribute("aria-expanded", "true");
+    btn.setAttribute("aria-label", "「" + t.name + "」の説明");
+  });
+  document.querySelectorAll(".term-btn").forEach(setupTermBtn);
+
+  // ---------- タブ ----------
+  var tabBtns = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  var rendered = {};
+  function selectTab(tab, focus) {
+    tabBtns.forEach(function (b) {
+      var on = b.dataset.tab === tab;
+      b.setAttribute("aria-selected", String(on));
+      b.tabIndex = on ? 0 : -1;
+      if (on && focus) b.focus();
+    });
+    TABS.forEach(function (t) { $("panel-" + t).hidden = t !== tab; });
+    state.tab = tab;
+    save();
+    if (location.hash !== "#" + tab) {
+      try { history.replaceState(null, "", "#" + tab); } catch (e) { /* file:// などで使えなくても続ける */ }
+    }
+    if (!rendered[tab]) { rendered[tab] = true; renderTab(tab); }
+  }
+  tabBtns.forEach(function (b, i) {
+    b.addEventListener("click", function () { selectTab(b.dataset.tab); });
+    b.addEventListener("keydown", function (e) {
+      var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (e.key === "Home") { selectTab(TABS[0], true); e.preventDefault(); return; }
+      if (e.key === "End") { selectTab(TABS[TABS.length - 1], true); e.preventDefault(); return; }
+      if (!d) return;
+      e.preventDefault();
+      selectTab(TABS[(i + d + TABS.length) % TABS.length], true);
+    });
+  });
+  function hashTab() {
+    var h = location.hash.slice(1);
+    return TABS.indexOf(h) >= 0 ? h : null;
+  }
+  window.addEventListener("hashchange", function () {
+    var h = hashTab();
+    if (h && h !== state.tab) selectTab(h);
+  });
+
+  // ---------- 開始 ----------
+  syncInputs();
+  selectTab(hashTab() || state.tab);
+  // ほかのタブは、開いたときに描く(切り替えた直後に空にならないよう、先に計算しておく)
+  setTimeout(function () {
+    TABS.forEach(function (t) { if (!rendered[t]) { rendered[t] = true; renderTab(t); } });
+  }, 50);
+})();
+</script>
+</body>
+</html>

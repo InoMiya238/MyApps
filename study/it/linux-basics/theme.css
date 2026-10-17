@@ -1,0 +1,84 @@
+/* Linux道場 の色。変数名は学習シリーズ共通(shared/base.css を参照)。
+   --term-* はターミナル風の部品(.term-block / .term-input)だけで使う。 */
+:root {
+  color-scheme: light;
+  --bg: #EDF0EF;
+  --surface: #FFFFFF;
+  --surface-2: #E2E7E5;
+  --border: #CDD5D2;
+  --ink: #17201C;
+  --ink-muted: #4A5752;
+  --ink-faint: #5F6C67;
+  --accent: #12733F;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #DDF1E4;
+  --good: #23663F;
+  --good-soft: #DCEFE2;
+  --bad: #A8372A;
+  --bad-soft: #F7E0DB;
+  --shadow: rgba(23, 32, 28, 0.10);
+  /* ターミナル風の部品。ライトでも暗い画面にする */
+  --term-bg: #16201B;
+  --term-border: #2A3A32;
+  --term-ink: #D6F5DF;
+  --term-muted: #8FA89A;
+  --term-prompt: #F2B84B;
+  --term-caret: #5FD98C;
+  --term-bad: #FF9B8A;
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0D1210;
+    --surface: #141B18;
+    --surface-2: #1C2622;
+    --border: #2B3833;
+    --ink: #E3ECE7;
+    --ink-muted: #A6B5AE;
+    --ink-faint: #84948C;
+    --accent: #5FD98C;
+    --accent-ink: #06200F;
+    --accent-soft: #173323;
+    --good: #86CFA0;
+    --good-soft: #183024;
+    --bad: #EE8E78;
+    --bad-soft: #3A221D;
+    --shadow: rgba(0, 0, 0, 0.45);
+    --term-bg: #070A09;
+    --term-border: #2F4038;
+    --term-ink: #CFF5DA;
+    --term-muted: #7F978A;
+    --term-prompt: #F2B84B;
+    --term-caret: #5FD98C;
+    --term-bad: #FF9B8A;
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0D1210;
+  --surface: #141B18;
+  --surface-2: #1C2622;
+  --border: #2B3833;
+  --ink: #E3ECE7;
+  --ink-muted: #A6B5AE;
+  --ink-faint: #84948C;
+  --accent: #5FD98C;
+  --accent-ink: #06200F;
+  --accent-soft: #173323;
+  --good: #86CFA0;
+  --good-soft: #183024;
+  --bad: #EE8E78;
+  --bad-soft: #3A221D;
+  --shadow: rgba(0, 0, 0, 0.45);
+  --term-bg: #070A09;
+  --term-border: #2F4038;
+  --term-ink: #CFF5DA;
+  --term-muted: #7F978A;
+  --term-prompt: #F2B84B;
+  --term-caret: #5FD98C;
+  --term-bad: #FF9B8A;
+}

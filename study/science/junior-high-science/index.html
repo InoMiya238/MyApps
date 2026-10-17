@@ -824,6 +824,7 @@
 </div>
 
 <script src="../../../shared/store.js"></script>
+<script src="../../../shared/review.js"></script>
 <script src="data.js"></script>
 <script src="data-g1.js"></script>
 <script src="data-g2.js"></script>
@@ -1193,6 +1194,7 @@
     if (isCorrect) stats.byUnit[q.unitId].correct++;
     if (session.streak > stats.bestStreak) stats.bestStreak = session.streak;
     JHS.saveStats(stats);
+    if (typeof Review !== "undefined") Review.record("science", q.unitId, isCorrect);   // 復習プランナーの記録
   }
 
   function onAnswer(chosen) {

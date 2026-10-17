@@ -15,6 +15,19 @@
 
   /* ---------- Hero ---------- */
   .tagline { max-width: 46ch; }
+
+  /* index.html?cat=<分野> で開いたときの注記 */
+  .preselect-note {
+    margin: 0 0 16px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 0.86rem;
+    line-height: 1.6;
+  }
+  .preselect-note[hidden] { display: none; }
   body.is-quiz .hero .tagline { display: none; }
 
   .site-nav {
@@ -439,6 +452,8 @@
 
   <!-- ============ 設定 ============ -->
   <div id="setup-screen">
+    <p class="preselect-note" id="preselectNote" role="status" hidden></p>
+
     <div class="card">
       <h2>出題分野</h2>
       <div class="cat-grid" id="catGrid">
@@ -534,6 +549,7 @@
 </div>
 
 <script src="../../../shared/store.js"></script>
+<script src="../../../shared/review.js"></script>
 <script src="data.js"></script>
 <script src="board.js"></script>
 <script>
@@ -606,6 +622,22 @@
   var stats = loadStats();
   var settings = loadSettings();
   var session = null;
+
+  // index.html?cat=<分野> で開いたとき: その分野だけを選ぶ(保存は、開始を押すまで上書きしない)
+  var preselectNote = document.getElementById("preselectNote");
+  var preselected = false;
+  (function () {
+    var wanted = null;
+    try { wanted = new URLSearchParams(location.search).get("cat"); } catch (e) { wanted = null; }
+    if (!wanted || CATS.indexOf(wanted) < 0) return;
+    settings.cats = [wanted];
+    preselected = true;
+    preselectNote.textContent = "「" + CAT_INFO[wanted].label + "」だけを選びました。";
+    preselectNote.hidden = false;
+  })();
+  function saveSettings() {
+    if (!preselected) Store.save(SETTINGS_KEY, settings);
+  }
 
   function pct(correct, total) { return total > 0 ? Math.round((correct / total) * 100) + "%" : "–"; }
 
@@ -709,14 +741,15 @@
       settings.cats.forEach(function (c) { chosen[c] = true; });
       chosen[cat] = e.target.checked;
       settings.cats = CATS.filter(function (c) { return chosen[c]; });
-      Store.save(SETTINGS_KEY, settings);
+      preselectNote.hidden = true;
+      saveSettings();
       renderSetup();
     });
   });
   countSelect.addEventListener("change", function () {
     var n = Number(countSelect.value);
     settings.count = COUNTS.indexOf(n) >= 0 ? n : 10;
-    Store.save(SETTINGS_KEY, settings);
+    saveSettings();
   });
   document.getElementById("resetBtn").addEventListener("click", function () {
     if (!confirm("これまでの成績をすべて消します。よろしいですか?")) return;
@@ -795,6 +828,11 @@
     if (settings.cats.length === 0) return;
     var questions = buildQuestions(settings.cats, settings.count);
     if (questions.length === 0) return;
+    if (preselected) {
+      preselected = false;
+      Store.save(SETTINGS_KEY, settings);
+      preselectNote.hidden = true;
+    }
     session = { questions: questions, index: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, results: [] };
     showScreen("quiz");
     renderQuestion();
@@ -861,6 +899,7 @@
     }
     if (session.streak > stats.bestStreak) stats.bestStreak = session.streak;
     Store.save(STATS_KEY, stats);
+    if (typeof Review !== "undefined") Review.record("shogi", q.cat, isCorrect);   // 復習プランナーの記録
   }
 
   function onAnswer(chosen) {

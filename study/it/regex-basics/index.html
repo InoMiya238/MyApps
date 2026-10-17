@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>正規表現道場</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 720px; gap: 22px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+  body.is-quiz .hero .tagline,
+  body.is-quiz .rx-motd { display: none; }
+
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  /* ---------- 正規表現・マッチ表示の部品(reference.html と同じ内容。変えるときは両方を直す) ---------- */
+  .rx-block,
+  .rx-input {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--code-ink);
+    min-width: 0;
+  }
+  .rx-block {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .rx-block .kw { color: var(--code-kw); font-weight: 600; }
+  .rx-block .dl { color: var(--code-kw); }
+  .rx-block .fn { color: var(--code-fn); }
+  .rx-block .str { color: var(--code-str); }
+  .rx-block .num { color: var(--code-num); }
+  .rx-block .esc { color: var(--code-esc); }
+  .rx-block .cls { color: var(--code-cls); }
+  .rx-block .grp { color: var(--code-grp); font-weight: 600; }
+  .rx-block .qnt { color: var(--code-qnt); font-weight: 600; }
+  .rx-block .cm { color: var(--code-muted); }
+  .rx-block .blank {
+    color: var(--code-blank);
+    background: var(--code-blank-bg);
+    border-radius: 4px;
+    padding: 0 3px;
+    font-weight: 700;
+  }
+  .rx-block .filled {
+    color: var(--code-blank);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .rx-block .filled span { color: inherit; }
+  /* 明るい地の上の正規表現(選択肢など)は、記号だけを色で示す */
+  .rx-inline { font-family: var(--font-mono); }
+  .rx-inline .kw, .rx-inline .dl, .rx-inline .esc, .rx-inline .cls,
+  .rx-inline .grp, .rx-inline .qnt { color: var(--accent); font-weight: 700; }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    background: var(--surface-2);
+    color: var(--ink);
+    padding: 1px 5px;
+    border-radius: 5px;
+    overflow-wrap: anywhere;
+  }
+  code.nw { white-space: nowrap; }
+  /* 文字列の表示: 前後の " と、タブ・改行の印は薄く出す */
+  .q-mark, .ctl { color: var(--ink-faint); font-weight: 400; }
+  .rx-block .q-mark, .rx-block .ctl { color: var(--code-muted); }
+  .str-chip {
+    display: inline-block;
+    max-width: 100%;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--surface-2);
+    color: var(--ink);
+    padding: 1px 7px;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  /* マッチした箇所。となりあうマッチは色を変える。長さ0のマッチは細い縦線 */
+  .mk {
+    background: var(--mark-a);
+    color: var(--mark-ink);
+    border-radius: 3px;
+    box-shadow: inset 0 -2px 0 var(--mark-line);
+  }
+  .mk.alt { background: var(--mark-b); }
+  .mk-zero {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    margin: 0 1px;
+    vertical-align: -0.15em;
+    background: var(--mark-zero);
+    border-radius: 1px;
+  }
+  .hl-rows { display: flex; flex-direction: column; gap: 4px; }
+  .hl-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 2px 12px;
+  }
+  .hl-text { min-width: 0; overflow-wrap: anywhere; }
+  .hl-note { flex: none; font-family: var(--font-body); font-size: 12px; color: var(--code-muted); }
+  .hl-note.ok { color: var(--code-good); }
+  .hl-note.ng { color: var(--code-bad); font-weight: 600; }
+  /* ---------- 正規表現・マッチ表示の部品 ここまで ---------- */
+
+  .rx-motd {
+    align-self: center;
+    width: 100%;
+    max-width: 300px;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  /* 穴埋めの入力欄 */
+  .rx-input:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .rx-input .input-line {
+    display: flex;
+    align-items: center;
+    gap: 1ch;
+    cursor: text;
+  }
+  .rx-input .p { flex: none; color: var(--code-blank); font-weight: 700; user-select: none; }
+  .rx-input input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    outline: none;
+    padding: 2px 0;
+    color: var(--code-ink);
+    caret-color: var(--code-caret);
+    font: inherit;
+    font-size: 16px;
+  }
+  .rx-input input::placeholder { color: var(--code-muted); opacity: 1; }
+  .rx-input.good { border-color: var(--good); }
+  .rx-input.bad { border-color: var(--bad); }
+  .rx-input.good:focus-within { outline-color: var(--good); }
+  .rx-input.bad:focus-within { outline-color: var(--bad); }
+  .input-mark { flex: none; font-weight: 700; }
+  .rx-input.good .input-mark { color: var(--code-good); }
+  .rx-input.bad .input-mark { color: var(--code-bad); }
+  .rx-input[hidden] { display: none; }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h3 {
+    margin: 20px 0 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+  }
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .hint {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin: 10px 0 0;
+    line-height: 1.6;
+  }
+  button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    padding: 12px 20px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    width: 100%;
+    font-weight: 700;
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-secondary {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .btn-row button { flex: 1; }
+  .btn-row[hidden] { display: none; }
+  button:focus-visible,
+  a:focus-visible,
+  .cat-check:focus-within {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- 設定 ---------- */
+  #setup-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .preselect-note {
+    margin: 0;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 0.86rem;
+    line-height: 1.6;
+  }
+  .preselect-note[hidden] { display: none; }
+
+  .mode-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .mode-tab {
+    min-width: 0;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2px 8px;
+    padding: 8px 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.15s ease;
+  }
+  .mode-tab:hover { border-color: var(--accent); color: var(--ink); }
+  .mode-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .unit-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .tool-btn {
+    min-height: 40px;
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--ink-muted);
+    border-radius: 9px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .tool-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+
+  .unit-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .cat-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 56px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+  .cat-check.checked {
+    border-color: var(--accent);
+    color: var(--ink);
+    background: var(--accent-soft);
+  }
+  .cat-check input { flex: none; }
+  .cat-check input:focus-visible { outline: none; }
+  .unit-no {
+    flex: none;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .unit-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .unit-name { min-width: 0; overflow-wrap: anywhere; line-height: 1.4; }
+  .unit-keys {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-faint);
+    overflow-wrap: anywhere;
+    line-height: 1.4;
+  }
+  .weak-tag {
+    flex: none;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--bad);
+    background: var(--bad-soft);
+    border: 1px solid var(--bad);
+    border-radius: 999px;
+    padding: 3px 7px;
+  }
+  .unit-stat {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-faint);
+    line-height: 1.35;
+  }
+  .unit-stat .tries { font-size: 10.5px; }
+
+  .start-bar { display: flex; flex-direction: column; gap: 8px; }
+  .error-msg {
+    color: var(--bad);
+    font-size: 0.85rem;
+    margin: 0;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  /* ---------- 設定: これまでの成績 ---------- */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .stat-box {
+    text-align: center;
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 14px 8px;
+    min-width: 0;
+  }
+  .stat-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    margin-top: 3px;
+  }
+  .cat-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .cat-row {
+    display: grid;
+    grid-template-columns: 96px 1fr 44px;
+    align-items: center;
+    gap: 10px;
+  }
+  .cat-row-label {
+    min-width: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    overflow-wrap: anywhere;
+  }
+  .cat-row-label .no {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--accent);
+    margin-right: 5px;
+  }
+  .cat-row-track {
+    height: 7px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .cat-row-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+  .cat-row-pct {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-faint);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .weak-list { font-size: 0.88rem; }
+  .weak-empty {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    line-height: 1.6;
+  }
+  .weak-practice { width: 100%; margin-top: 12px; font-size: 0.92rem; font-weight: 600; }
+  .weak-practice[hidden] { display: none; }
+  .reset-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+  }
+  .reset-btn {
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--ink-muted);
+    border-radius: 9px;
+    padding: 9px 14px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- 出題 ---------- */
+  #quiz-screen { display: none; }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--ink-muted);
+  }
+  .progress-bar {
+    height: 6px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    overflow: hidden;
+    margin: 6px 0 18px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.25s ease;
+  }
+  .problem-type-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .question {
+    margin: 0 0 14px;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 15.5px;
+    font-weight: 600;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+  .question.long { text-align: left; }
+  .q-code { margin: 0 0 14px; font-size: 15px; }
+  .q-code[hidden] { display: none; }
+  .q-extra { display: flex; flex-direction: column; gap: 12px; margin: 0 0 16px; }
+  .q-extra:empty { display: none; }
+  .q-part-title {
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+  }
+  /* 正規表現が満たす条件 */
+  .test-list {
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px 12px;
+    align-items: baseline;
+    font-size: 13px;
+  }
+  .test-list dt { color: var(--ink-muted); font-weight: 600; white-space: nowrap; }
+  .test-list dd { margin: 0; min-width: 0; display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: baseline; }
+  .test-list .arrow { color: var(--ink-faint); }
+
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .choices[hidden] { display: none; }
+  .choice-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 52px;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.45;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .choice-key {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    border-radius: 7px;
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .choice-body { flex: 1; min-width: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+  .choice-btn.is-regex { font-weight: 500; }
+  .choice-btn.is-text {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  /* 正誤の印は、番号の真下に重ねて出す(答えたあとに並びが動かない) */
+  .choice-mark {
+    position: absolute;
+    left: 12px;
+    top: calc(50% + 13px);
+    width: 24px;
+    text-align: center;
+    white-space: nowrap;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent); }
+  .choice-btn:disabled { cursor: not-allowed; }
+  .choice-btn.correct { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+  .choice-btn.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+  .choice-btn.correct .rx-inline span, .choice-btn.wrong .rx-inline span,
+  .choice-btn.correct .q-mark, .choice-btn.wrong .q-mark { color: inherit; }
+
+  .feedback {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    display: none;
+    scroll-margin: 16px;
+    overflow-wrap: anywhere;
+  }
+  .feedback.good { display: block; background: var(--good-soft); color: var(--good); }
+  .feedback.bad { display: block; background: var(--bad-soft); color: var(--bad); }
+  .feedback .answer-line { font-weight: 700; }
+  .feedback .typed-line,
+  .feedback .alt-line {
+    margin-top: 4px;
+    font-size: 0.86rem;
+    color: var(--ink-muted);
+  }
+  .feedback .done-code,
+  .feedback .match-view { margin-top: 10px; }
+  .feedback .rx-block { font-size: 13px; }
+  .feedback .match-view .q-part-title { color: var(--ink-muted); }
+  .feedback .explanation {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    color: var(--ink);
+    font-weight: 400;
+    font-size: 0.85rem;
+    line-height: 1.75;
+  }
+  .feedback .ref-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .feedback .ref-link:hover { text-decoration: underline; }
+  .next-row { margin-top: 16px; display: none; }
+  .next-row.show { display: block; }
+  .quit-link {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 6px;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  /* ---------- 結果 ---------- */
+  #result-screen { display: none; }
+  .result-head { text-align: center; padding: 4px 4px 14px; }
+  .result-head .label { color: var(--ink-muted); font-size: 14px; }
+  .result-head .score {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 700;
+    margin: 6px 0;
+  }
+  .result-head .score span { font-size: 24px; color: var(--ink-faint); }
+  .unit-result, .miss-list { font-size: 0.88rem; }
+  .miss-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .miss-item:last-child { border-bottom: none; }
+  .miss-item a { color: var(--accent); font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .miss-item a:hover { text-decoration: underline; }
+  .miss-item .name { font-weight: 600; }
+  .miss-item .no {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    margin-right: 6px;
+  }
+  .miss-item .detail { color: var(--ink-muted); font-size: 0.82rem; }
+  .miss-item .given { color: var(--bad); }
+  .miss-item .correct { color: var(--good); font-weight: 600; }
+  .miss-item .rate {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .miss-item .spacer { margin-left: auto; }
+  .miss-q {
+    flex: 1 1 100%;
+    min-width: 0;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+  .miss-q .miss-code { display: block; width: fit-content; max-width: 100%; margin-top: 4px; font-size: 0.82rem; white-space: pre-wrap; }
+  .miss-item .detail.answer-pair { flex: 1 1 100%; min-width: 0; line-height: 1.9; overflow-wrap: anywhere; }
+  .answer-pair .pair-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 4px 8px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mode-tab, .cat-check, .cat-row-fill, .progress-fill, .choice-btn { transition: none; }
+  }
+
+  /* ---------- スマホ表示の調整 ---------- */
+  @media (max-width: 480px) {
+    .card { padding: 18px 16px; }
+    .stat-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stat-num { font-size: 1.2rem; }
+    .stat-label { font-size: 10.5px; letter-spacing: 0; }
+    .unit-list { grid-template-columns: 1fr; }
+    .cat-check { padding: 10px 10px; gap: 7px; }
+    .mode-tab { font-size: 13.5px; }
+    .cat-row { grid-template-columns: 1fr 44px; gap: 4px 10px; }
+    .cat-row-label { grid-column: 1 / -1; }
+    .start-bar { position: sticky; bottom: 12px; z-index: 5; }
+    .start-bar .btn-primary { box-shadow: 0 6px 18px var(--shadow), 0 0 0 3px var(--bg); }
+    .start-bar .error-msg {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 7px 10px;
+    }
+    .rx-block, .rx-input { font-size: 13px; padding: 10px 12px; }
+    .q-code { font-size: 14px; }
+    .choice-btn { padding: 8px 10px; gap: 8px; font-size: 14px; }
+    .choice-mark { left: 10px; }
+    .test-list { grid-template-columns: 1fr; gap: 2px; }
+    .test-list dd { margin-bottom: 6px; }
+    .result-head .score { font-size: 42px; }
+    .btn-row button { font-size: 0.86rem; padding: 12px 6px; }
+    .feedback { padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">REGEX BASICS · 全8単元</p>
+    <h1>正規表現道場</h1>
+    <p class="tagline">文字クラス・くり返し・グループ・置換・先読みまで、正規表現の基本を4択と穴埋めで身につけます。JavaScriptの正規表現で説明します。</p>
+    <nav class="site-nav" aria-label="正規表現道場のページ">
+      <span aria-current="page">道場</span>
+      <a href="reference.html">記法帳</a>
+    </nav>
+  </header>
+  <pre class="rx-block rx-motd" id="motd" aria-hidden="true"></pre>
+
+  <!-- ============ 設定 ============ -->
+  <div id="setup-screen">
+    <p class="preselect-note" id="preselectNote" role="status" hidden></p>
+
+    <div class="card">
+      <h2 id="modeHeading">出題形式</h2>
+      <div class="mode-tabs" id="modeTabs" role="radiogroup" aria-labelledby="modeHeading">
+        <button type="button" class="mode-tab" role="radio" data-mode="choice">4択</button>
+        <button type="button" class="mode-tab" role="radio" data-mode="input">穴埋め入力</button>
+      </div>
+      <p class="hint" id="modeHint"></p>
+    </div>
+
+    <div class="card">
+      <h2 id="unitHeading">単元を選ぶ</h2>
+      <div class="unit-tools">
+        <button type="button" class="tool-btn" id="selectAllBtn">すべて選ぶ</button>
+        <button type="button" class="tool-btn" id="clearAllBtn">すべてはずす</button>
+      </div>
+      <div class="unit-list" id="unitList" role="group" aria-labelledby="unitHeading"></div>
+      <p class="hint">右の数字は、これまでの正答率と挑戦回数です。5問以上答えて70%未満の単元に「苦手」がつきます。</p>
+    </div>
+
+    <div class="start-bar">
+      <p class="error-msg" id="setupError" role="status">単元を1つ以上選んでください。</p>
+      <button type="button" class="btn-primary" id="startBtn">始める</button>
+    </div>
+
+    <div class="card" id="statsCard">
+      <h2>これまでの成績</h2>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num" id="statTotal">0</div><div class="stat-label">回答数</div></div>
+        <div class="stat-box"><div class="stat-num" id="statAccuracy">–</div><div class="stat-label">正答率</div></div>
+        <div class="stat-box"><div class="stat-num" id="statUnits">0/8</div><div class="stat-label">挑戦した単元</div></div>
+      </div>
+
+      <h3>単元ごとの正答率</h3>
+      <div class="cat-bars" id="unitBars"></div>
+
+      <h3>苦手な単元</h3>
+      <div class="weak-list" id="weakList"></div>
+      <button type="button" class="btn-secondary weak-practice" id="weakBtn" hidden>苦手な単元だけ練習する</button>
+
+      <div class="reset-row">
+        <button type="button" class="reset-btn" id="resetBtn">成績をリセット</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 出題 ============ -->
+  <div id="quiz-screen">
+    <div class="card">
+      <div class="progress-row">
+        <span id="progressText">問題 1 / 10</span>
+        <span id="scoreText">正解 0 ・ 連続 0</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+      <div class="problem-type-label" id="unitLabel"></div>
+      <p class="question" id="questionText"></p>
+      <pre class="rx-block q-code" id="questionCode" hidden></pre>
+      <div class="q-extra" id="questionExtra"></div>
+
+      <div class="choices" id="choices"></div>
+
+      <div class="rx-input" id="rxInput" hidden>
+        <label class="input-line">
+          <span class="p" aria-hidden="true">____ =</span>
+          <input type="text" id="answerInput" aria-label="空欄に入るものを入力" placeholder="空欄に入るもの" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="send" maxlength="80">
+          <span class="input-mark" id="inputMark" aria-hidden="true"></span>
+        </label>
+      </div>
+      <div class="btn-row" id="inputBtns" hidden>
+        <button type="button" class="btn-secondary" id="giveUpBtn">わからない</button>
+        <button type="button" class="btn-primary" id="runBtn">答える ⏎</button>
+      </div>
+
+      <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+      <div class="next-row" id="nextRow">
+        <button type="button" class="btn-primary" id="nextBtn">次の問題 →</button>
+      </div>
+      <button type="button" class="quit-link" id="quitBtn">中断して結果を見る</button>
+    </div>
+  </div>
+
+  <!-- ============ 結果 ============ -->
+  <div id="result-screen">
+    <div class="card">
+      <div class="result-head">
+        <div class="label">稽古終了</div>
+        <div class="score" id="resultScore">0<span> / 0</span></div>
+        <div class="label" id="resultRate">正答率 –</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num" id="resCorrect">0</div><div class="stat-label">正解数</div></div>
+        <div class="stat-box"><div class="stat-num" id="resAccuracy">–</div><div class="stat-label">正答率</div></div>
+        <div class="stat-box"><div class="stat-num" id="resStreak">0</div><div class="stat-label">最大連続正解</div></div>
+      </div>
+
+      <h3>単元ごとの結果</h3>
+      <div class="unit-result" id="unitResult"></div>
+
+      <h3>間違えた問題</h3>
+      <div class="miss-list" id="missList"></div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-secondary" id="backBtn">単元を選び直す</button>
+        <button type="button" class="btn-primary" id="retryBtn">同じ設定でもう一度</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="../../../shared/review.js"></script>
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var MODE_NAMES = { choice: "4択", input: "穴埋め" };
+  var MODE_HINTS = {
+    choice: "4つの選択肢から正しいものを選びます。キーボードの 1〜4 でも答えられます。",
+    input: "コードの空欄(____)に入るものを打って答えます。正規表現の空欄は、入れた形を実際に動かして判定するので、別の正しい書き方でも正解になります。大文字と小文字は区別します。¥ は \\ として扱います。Enter で答え、もう一度 Enter で次へ進みます。"
+  };
+
+  var setupScreen = document.getElementById("setup-screen");
+  var quizScreen = document.getElementById("quiz-screen");
+  var resultScreen = document.getElementById("result-screen");
+  var preselectNote = document.getElementById("preselectNote");
+  var modeTabs = document.getElementById("modeTabs");
+  var modeHint = document.getElementById("modeHint");
+  var unitList = document.getElementById("unitList");
+  var startBtn = document.getElementById("startBtn");
+  var setupError = document.getElementById("setupError");
+  var weakBtn = document.getElementById("weakBtn");
+  var questionText = document.getElementById("questionText");
+  var questionCode = document.getElementById("questionCode");
+  var questionExtra = document.getElementById("questionExtra");
+  var choicesEl = document.getElementById("choices");
+  var rxInput = document.getElementById("rxInput");
+  var answerInput = document.getElementById("answerInput");
+  var inputMark = document.getElementById("inputMark");
+  var inputBtns = document.getElementById("inputBtns");
+  var feedbackEl = document.getElementById("feedback");
+  var nextRow = document.getElementById("nextRow");
+  var nextBtn = document.getElementById("nextBtn");
+
+  // ---------- 状態 ----------
+  var stats = RGX.loadStats();
+  var selected = {};       // 選んでいる単元(ID → true)
+  var mode = "choice";
+  var session = null;
+
+  function selectedIds() {
+    return RGX.UNITS.filter(function (u) { return selected[u.id] && RGX.isReady(u.id, mode); }).map(function (u) { return u.id; });
+  }
+
+  // 保存済みの設定 → なければ全単元を選ぶ。?unit=<ID> で開いたときは、その単元だけを選ぶ
+  (function initSelection() {
+    var saved = RGX.loadSettings(), restored = false;
+    if (saved) {
+      mode = saved.mode;
+      saved.units.forEach(function (id) { selected[id] = true; restored = true; });
+    }
+    if (!restored) RGX.UNITS.forEach(function (u) { selected[u.id] = true; });
+    var wanted = null;
+    try { wanted = new URLSearchParams(location.search).get("unit"); } catch (e) { wanted = null; }
+    var u = wanted ? RGX.unit(wanted) : null;
+    if (u) {
+      selected = {};
+      selected[u.id] = true;
+      preselectNote.textContent = "「" + u.no + " " + u.name + "」だけを選びました。";
+      preselectNote.hidden = false;
+    }
+  })();
+
+  function pct(correct, total) { return total > 0 ? Math.round((correct / total) * 100) + "%" : "–"; }
+  function recOf(id) { return stats.byUnit[id] || { total: 0, correct: 0, sessions: 0 }; }
+
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function codeEl(text) { return el("code", /^\S{1,16}$/.test(text) ? "nw" : "", text); }
+  // `…` で囲んだところを <code> にする(それ以外は文字のまま)
+  function richEl(tag, className, s) {
+    var e = el(tag, className);
+    String(s).split("`").forEach(function (part, i) {
+      if (!part) return;
+      e.appendChild(i % 2 === 1 ? codeEl(part) : document.createTextNode(part));
+    });
+    return e;
+  }
+
+  // ---------- 正規表現・マッチ表示の部品 ----------
+  // コードを色分けして parent に足す
+  function appendCode(parent, code) {
+    RGX.tokenize(code).forEach(function (tk) {
+      if (!tk.t) { parent.appendChild(document.createTextNode(tk.s)); return; }
+      var s = el("span", tk.t, tk.s);
+      if (tk.t === "blank") s.setAttribute("aria-label", "空欄");
+      parent.appendChild(s);
+    });
+  }
+  function fillCodeBlock(pre, code) {
+    pre.innerHTML = "";
+    appendCode(pre, code);
+  }
+  // 空欄に答えを入れたコード(入れたところを目立たせる)
+  function filledCodeBlock(code, answer) {
+    var pre = el("pre", "rx-block");
+    String(code).split(RGX.BLANK).forEach(function (part, i) {
+      if (i > 0) pre.appendChild(el("span", "filled", answer));
+      appendCode(pre, part);
+    });
+    return pre;
+  }
+  function rxInlineEl(code) {
+    var s = el("span", "rx-inline");
+    appendCode(s, code);
+    return s;
+  }
+  // 文字を足す。タブと改行は印にして見えるようにする(位置はずらさない)
+  function appendVisible(parent, s) {
+    String(s).split(/([\t\n\r])/).forEach(function (part) {
+      if (!part) return;
+      if (part === "\t") parent.appendChild(el("span", "ctl", "⇥"));
+      else if (part === "\n") parent.appendChild(el("span", "ctl", "↵"));
+      else if (part === "\r") parent.appendChild(el("span", "ctl", "␍"));
+      else parent.appendChild(document.createTextNode(part));
+    });
+  }
+  // "文字列"(前後の " は薄く)。matches があれば、マッチしたところに色をつける
+  function strEl(text, matches, className) {
+    var e = el("span", className || "");
+    e.appendChild(el("span", "q-mark", "\""));
+    var pos = 0;
+    (matches || []).forEach(function (m, i) {
+      if (m.index < pos) return;
+      appendVisible(e, text.slice(pos, m.index));
+      if (m.end === m.index) {
+        var z = el("span", "mk-zero");
+        z.title = "長さ0のマッチ";
+        e.appendChild(z);
+      } else {
+        var mk = el("span", "mk" + (i % 2 === 1 ? " alt" : ""));
+        appendVisible(mk, text.slice(m.index, m.end));
+        e.appendChild(mk);
+      }
+      pos = m.end;
+    });
+    appendVisible(e, text.slice(pos));
+    e.appendChild(el("span", "q-mark", "\""));
+    if (text === "") e.title = "空の文字列";
+    return e;
+  }
+  function chipEl(text) { return strEl(text, null, "str-chip"); }
+  function literalOf(re) { return "/" + re.source + "/" + re.flags; }
+  // マッチの様子: 見出しと、1行ずつの [文字列, 説明, ok/ng]
+  function matchViewEl(title, re, rows) {
+    var box = el("div", "match-view");
+    var t = el("p", "q-part-title", title + " ");
+    t.appendChild(rxInlineEl(literalOf(re)));
+    box.appendChild(t);
+    var pre = el("div", "rx-block hl-rows");
+    rows.forEach(function (r) {
+      var row = el("div", "hl-row");
+      row.appendChild(strEl(r.text, RGX.findMatches(re, r.text), "hl-text"));
+      if (r.note) row.appendChild(el("span", "hl-note" + (r.state ? " " + r.state : ""), r.note));
+      pre.appendChild(row);
+    });
+    box.appendChild(pre);
+    return box;
+  }
+  // tests の各条件を re で確かめた行
+  function testRows(tests, re) {
+    var r = new RegExp(re.source, re.flags.replace(/[gy]/g, ""));
+    var rows = [];
+    (tests.match || []).forEach(function (s) {
+      var ok = r.test(s);
+      rows.push({ text: s, note: ok ? "マッチする ✓" : "マッチしない ✗", state: ok ? "ok" : "ng" });
+    });
+    (tests.noMatch || []).forEach(function (s) {
+      var ok = !r.test(s);
+      rows.push({ text: s, note: ok ? "マッチしない ✓" : "マッチしてしまう ✗", state: ok ? "ok" : "ng" });
+    });
+    (tests.first || []).forEach(function (p) {
+      var m = r.exec(p[0]), got = m ? m[0] : null, ok = got === p[1];
+      rows.push({ text: p[0], note: (got === null ? "マッチしない" : "最初のマッチ " + RGX.formatValue(got)) + (ok ? " ✓" : " ✗"), state: ok ? "ok" : "ng" });
+    });
+    return rows;
+  }
+  // 問題の下に出す「条件」(tests)
+  function testListEl(tests) {
+    var dl = el("dl", "test-list");
+    function add(label, items) {
+      if (!items || items.length === 0) return;
+      dl.appendChild(el("dt", "", label));
+      var dd = el("dd");
+      items.forEach(function (x) { dd.appendChild(x); });
+      dl.appendChild(dd);
+    }
+    add("マッチする", (tests.match || []).map(chipEl));
+    add("マッチしない", (tests.noMatch || []).map(chipEl));
+    (tests.first || []).forEach(function (p, i) {
+      var span = el("span");
+      span.appendChild(chipEl(p[0]));
+      span.appendChild(el("span", "arrow", " → "));
+      span.appendChild(p[1] === null ? el("span", "", "マッチしない") : chipEl(p[1]));
+      add(i === 0 ? "最初のマッチ" : "", [span]);
+    });
+    return dl;
+  }
+  // 答えの表示
+  function answerEl(kind, text) {
+    if (kind === "text") return el("span", "", "「" + text + "」");
+    if (kind === "str") return strEl(text, null, "str-chip");
+    if (kind === "regex") { var c = el("code"); c.appendChild(rxInlineEl(text)); return c; }
+    return codeEl(text);
+  }
+
+  fillCodeBlock(document.getElementById("motd"), "/^(毎日の)?稽古$/u");
+
+  function cardLink(refId, text, className) {
+    var a = el("a", className || "", text);
+    a.href = "reference.html#card-" + refId;
+    a.target = "_blank";
+    a.rel = "noopener";
+    return a;
+  }
+  function unitLink(unitId, text) {
+    var a = el("a", "", text);
+    a.href = "reference.html#unit-" + unitId;
+    a.target = "_blank";
+    a.rel = "noopener";
+    return a;
+  }
+
+  // ---------- 画面の切り替え ----------
+  function showScreen(name) {
+    setupScreen.style.display = name === "setup" ? "flex" : "none";
+    quizScreen.style.display = name === "quiz" ? "block" : "none";
+    resultScreen.style.display = name === "result" ? "block" : "none";
+    document.body.classList.toggle("is-quiz", name === "quiz");
+  }
+
+  // ---------- 設定画面 ----------
+  var tabs = Array.prototype.slice.call(modeTabs.querySelectorAll(".mode-tab"));
+  function renderModeTabs() {
+    tabs.forEach(function (t) {
+      var on = t.dataset.mode === mode;
+      t.classList.toggle("active", on);
+      t.setAttribute("aria-checked", on ? "true" : "false");
+      t.tabIndex = on ? 0 : -1;
+    });
+    modeHint.textContent = MODE_HINTS[mode];
+  }
+  function setMode(m, focus) {
+    if (RGX.MODES.indexOf(m) < 0) return;
+    mode = m;
+    renderModeTabs();
+    renderStartBar();
+    if (focus) modeTabs.querySelector('[data-mode="' + m + '"]').focus();
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener("click", function () { setMode(t.dataset.mode, false); });
+    t.addEventListener("keydown", function (e) {
+      var d = 0;
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") d = 1;
+      else if (e.key === "ArrowLeft" || e.key === "ArrowUp") d = -1;
+      if (!d) return;
+      e.preventDefault();
+      setMode(tabs[(i + d + tabs.length) % tabs.length].dataset.mode, true);
+    });
+  });
+
+  function renderUnitList() {
+    unitList.innerHTML = "";
+    RGX.UNITS.forEach(function (u) {
+      var on = !!selected[u.id], rec = recOf(u.id);
+      var label = el("label", "cat-check" + (on ? " checked" : ""));
+      label.dataset.unit = u.id;
+      var input = el("input");
+      input.type = "checkbox";
+      input.checked = on;
+      label.appendChild(input);
+      label.appendChild(el("span", "unit-no", u.no));
+      var text = el("span", "unit-text");
+      text.appendChild(el("span", "unit-name", u.name));
+      text.appendChild(el("span", "unit-keys", u.keys));
+      label.appendChild(text);
+      if (RGX.isWeak(rec)) label.appendChild(el("span", "weak-tag", "苦手"));
+      var st = el("span", "unit-stat");
+      st.appendChild(el("span", "", pct(rec.correct, rec.total)));
+      st.appendChild(el("span", "tries", rec.sessions + "回"));
+      st.setAttribute("aria-label", (rec.total > 0 ? "正答率 " + pct(rec.correct, rec.total) : "まだ回答なし") + "、挑戦 " + rec.sessions + "回");
+      label.appendChild(st);
+      input.addEventListener("change", function () {
+        if (input.checked) selected[u.id] = true; else delete selected[u.id];
+        renderSetup();
+        var again = unitList.querySelector('[data-unit="' + u.id + '"] input');
+        if (again) again.focus();
+      });
+      unitList.appendChild(label);
+    });
+  }
+
+  function renderStartBar() {
+    var ids = selectedIds(), n = ids.length;
+    // 出題できる問題が10問に足りないとき(穴埋めで1単元など)は、その数を出す
+    var avail = ids.reduce(function (sum, id) { return sum + RGX.poolOf(id, mode).length; }, 0);
+    startBtn.disabled = n === 0;
+    startBtn.textContent = n === 0 ? "始める" : "始める(" + n + "単元・" + MODE_NAMES[mode] + "・" + Math.min(RGX.COUNT, avail) + "問)";
+    setupError.classList.toggle("show", n === 0);
+  }
+
+  function weakUnits() {
+    var list = [];
+    RGX.UNITS.forEach(function (u) {
+      var rec = recOf(u.id);
+      if (RGX.isWeak(rec)) list.push({ unit: u, rec: rec, rate: rec.correct / rec.total });
+    });
+    list.sort(function (a, b) { return a.rate - b.rate || b.rec.total - a.rec.total; });
+    return list;
+  }
+
+  function renderStats() {
+    var total = 0, correct = 0, tried = 0;
+    RGX.UNITS.forEach(function (u) {
+      var r = recOf(u.id);
+      total += r.total; correct += r.correct;
+      if (r.total > 0) tried++;
+    });
+    document.getElementById("statTotal").textContent = total;
+    document.getElementById("statAccuracy").textContent = pct(correct, total);
+    document.getElementById("statUnits").textContent = tried + "/" + RGX.UNITS.length;
+
+    var bars = document.getElementById("unitBars");
+    bars.innerHTML = "";
+    RGX.UNITS.forEach(function (u) {
+      var r = recOf(u.id);
+      var row = el("div", "cat-row");
+      var lab = el("span", "cat-row-label");
+      lab.appendChild(el("span", "no", u.no));
+      lab.appendChild(document.createTextNode(u.short));
+      row.appendChild(lab);
+      var track = el("div", "cat-row-track");
+      var fill = el("div", "cat-row-fill");
+      fill.style.width = (r.total > 0 ? Math.round((r.correct / r.total) * 100) : 0) + "%";
+      track.appendChild(fill);
+      row.appendChild(track);
+      row.appendChild(el("span", "cat-row-pct", pct(r.correct, r.total)));
+      bars.appendChild(row);
+    });
+
+    var weak = weakUnits();
+    var list = document.getElementById("weakList");
+    list.innerHTML = "";
+    if (weak.length === 0) {
+      list.appendChild(el("p", "weak-empty", "まだ苦手な単元はありません(5問以上答えた単元から判定します)。"));
+    } else {
+      weak.forEach(function (w) {
+        var row = el("div", "miss-item");
+        var left = el("span");
+        left.appendChild(el("span", "no", w.unit.no));
+        left.appendChild(el("span", "name", w.unit.name));
+        row.appendChild(left);
+        row.appendChild(el("span", "rate spacer", w.rec.correct + "/" + w.rec.total + " (" + pct(w.rec.correct, w.rec.total) + ")"));
+        row.appendChild(unitLink(w.unit.id, "記法帳を読む"));
+        list.appendChild(row);
+      });
+    }
+    weakBtn.hidden = weak.length === 0;
+  }
+
+  function renderSetup() {
+    renderModeTabs();
+    renderUnitList();
+    renderStartBar();
+    renderStats();
+  }
+
+  document.getElementById("selectAllBtn").addEventListener("click", function () {
+    RGX.UNITS.forEach(function (u) { selected[u.id] = true; });
+    renderSetup();
+  });
+  document.getElementById("clearAllBtn").addEventListener("click", function () {
+    selected = {};
+    renderSetup();
+  });
+  weakBtn.addEventListener("click", function () {
+    var ids = weakUnits().map(function (w) { return w.unit.id; });
+    if (ids.length === 0) return;
+    selected = {};
+    ids.forEach(function (id) { selected[id] = true; });
+    startQuiz();
+  });
+  document.getElementById("resetBtn").addEventListener("click", function () {
+    if (!confirm("これまでの成績をすべて消します。よろしいですか?")) return;
+    RGX.clearStats();
+    stats = RGX.emptyStats();
+    renderSetup();
+  });
+
+  // ---------- 出題画面 ----------
+  function startQuiz() {
+    var ids = selectedIds();
+    if (ids.length === 0) return;
+    var questions = RGX.buildQuiz(ids, mode, RGX.COUNT);
+    if (questions.length === 0) return;
+    // 始めるときに、形式と単元を保存する
+    RGX.saveSettings({ mode: mode, units: ids });
+    preselectNote.hidden = true;
+    session = { mode: mode, questions: questions, index: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, results: [], counted: false };
+    showScreen("quiz");
+    renderQuestion();
+    window.scrollTo(0, 0);
+  }
+
+  function updateProgress() {
+    var total = session.questions.length;
+    document.getElementById("progressText").textContent = "問題 " + (session.index + 1) + " / " + total;
+    document.getElementById("scoreText").textContent = "正解 " + session.correct + " ・ 連続 " + session.streak;
+    document.getElementById("progressFill").style.width = Math.round((session.results.length / total) * 100) + "%";
+  }
+
+  function renderQuestion() {
+    var q = session.questions[session.index];
+    var u = RGX.unit(q.unitId);
+    session.answered = false;
+    updateProgress();
+
+    document.getElementById("unitLabel").textContent = u.no + " · " + u.name;
+    var qEl = richEl("p", "question", q.q);
+    qEl.id = "questionText";
+    questionText.replaceWith(qEl);
+    questionText = qEl;
+    questionText.classList.toggle("long", questionText.textContent.length > 38);
+    questionCode.hidden = !q.code;
+    if (q.code) fillCodeBlock(questionCode, q.code); else questionCode.innerHTML = "";
+
+    // 正規表現が満たす条件
+    questionExtra.innerHTML = "";
+    if (q.source.tests) {
+      var tb = el("div");
+      tb.appendChild(el("p", "q-part-title", "条件"));
+      tb.appendChild(testListEl(q.source.tests));
+      questionExtra.appendChild(tb);
+    }
+
+    choicesEl.innerHTML = "";
+    var isInput = session.mode === "input";
+    choicesEl.hidden = isInput;
+    rxInput.hidden = !isInput;
+    inputBtns.hidden = !isInput;
+    if (isInput) {
+      rxInput.className = "rx-input";
+      answerInput.value = "";
+      answerInput.readOnly = false;
+      inputMark.textContent = "";
+      answerInput.focus({ preventScroll: true });
+    } else {
+      q.choices.forEach(function (c, i) {
+        var btn = el("button", "choice-btn is-" + q.kind);
+        btn.type = "button";
+        var key = el("span", "choice-key", String(i + 1));
+        key.setAttribute("aria-hidden", "true");
+        btn.appendChild(key);
+        var body = el("span", "choice-body");
+        if (q.kind === "str") body.appendChild(strEl(c));
+        else if (q.kind === "regex") body.appendChild(rxInlineEl(c));
+        else body.appendChild(document.createTextNode(c));
+        btn.appendChild(body);
+        btn.addEventListener("click", function () { onChoice(i); });
+        choicesEl.appendChild(btn);
+      });
+    }
+
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = "";
+    nextRow.classList.remove("show");
+    nextBtn.textContent = session.index + 1 >= session.questions.length ? "結果を見る" : "次の問題 →";
+  }
+
+  function recordAnswer(q, isCorrect) {
+    if (!stats.byUnit[q.unitId]) stats.byUnit[q.unitId] = { total: 0, correct: 0, sessions: 0 };
+    stats.byUnit[q.unitId].total++;
+    if (isCorrect) stats.byUnit[q.unitId].correct++;
+    if (session.streak > stats.bestStreak) stats.bestStreak = session.streak;
+    RGX.saveStats(stats);
+    if (typeof Review !== "undefined") Review.record("regex", q.unitId, isCorrect);   // 復習プランナーの記録
+  }
+
+  // 解いたあとに見せる「マッチの様子」。given = 選んだ選択肢 / 入力(わからない のときは null)
+  function matchViewFor(q, given) {
+    var src = q.source;
+    try {
+      if (q.kind === "str") {
+        var re = RGX.regexOf(src, null);
+        if (!re) return null;
+        return matchViewEl("マッチの様子", re, q.choices.map(function (c) {
+          var hit = RGX.findMatches(re, c).length > 0;
+          return { text: c, note: hit ? "マッチする" : "マッチしない" };
+        }));
+      }
+      if (src.tests) {
+        // 選んだ(入れた)ものが読めればそれで、読めなければ正解で確かめる
+        var mine = given !== null && given !== q.canonical ? RGX.regexOf(src, RGX.normalize(given)) : null;
+        var re2 = mine || RGX.regexOf(src, q.canonical);
+        if (!re2) return null;
+        var who = mine ? (session.mode === "input" ? "あなたの正規表現" : "選んだ正規表現") : "正解の正規表現";
+        return matchViewEl(who + " で確かめた結果", re2, testRows(src.tests, re2));
+      }
+      if (src.run && q.code) {
+        var target = RGX.deriveTarget(RGX.hasBlank(src) ? RGX.fillBlank(q.code, q.canonical) : q.code);
+        if (!target) return null;
+        var g = target.re.flags.indexOf("g") >= 0;
+        return matchViewEl(g ? "マッチした箇所(g: すべて)" : "マッチした箇所(最初の1つ)", target.re, [{ text: target.text }]);
+      }
+    } catch (e) {
+      return null;
+    }
+    return null;
+  }
+
+  // 入力が条件を満たさなかった理由(最初の1つ)
+  function failText(f) {
+    if (f.type === "match") return RGX.formatValue(f.s) + " にマッチしません。";
+    if (f.type === "noMatch") return RGX.formatValue(f.s) + " にもマッチしてしまいます。";
+    return RGX.formatValue(f.s) + " の最初のマッチが " + RGX.formatValue(f.got) + " になります(正しくは " + RGX.formatValue(f.want) + ")。";
+  }
+
+  // 回答の共通処理。given = 選んだ選択肢 / 入力した文字(わからない のときは null)、res = 入力の判定結果
+  function finishAnswer(q, isCorrect, given, res) {
+    session.answered = true;
+    if (isCorrect) {
+      session.correct++;
+      session.streak++;
+      if (session.streak > session.bestStreak) session.bestStreak = session.streak;
+    } else {
+      session.streak = 0;
+    }
+    session.results.push({ q: q, given: given, isCorrect: isCorrect });
+    recordAnswer(q, isCorrect);
+
+    feedbackEl.innerHTML = "";
+    var line = el("div", "answer-line");
+    if (isCorrect) {
+      line.textContent = "正解!";
+    } else {
+      line.appendChild(document.createTextNode("不正解 — 正解は "));
+      // 4択で正解の選択肢に印がついている正規表現は、ここでくり返さない
+      if (session.mode === "choice" && q.kind === "regex") line.appendChild(document.createTextNode("「正解」の印がついた選択肢です"));
+      else line.appendChild(answerEl(q.kind, q.canonical));
+    }
+    feedbackEl.appendChild(line);
+    if (session.mode === "input") {
+      if (!isCorrect) {
+        var typed = el("div", "typed-line", "あなたの入力: ");
+        typed.appendChild(given === null ? document.createTextNode("(わからない)") : codeEl(given));
+        if (res && res.error) typed.appendChild(document.createTextNode(" — 正規表現として読めません(" + res.error + ")"));
+        else if (res && res.fails.length > 0) typed.appendChild(document.createTextNode(" — " + failText(res.fails[0])));
+        feedbackEl.appendChild(typed);
+      } else if (RGX.normalize(given) !== RGX.normalize(q.canonical)) {
+        var alt = el("div", "alt-line", "この書き方でも正解です。よく使う形は ");
+        alt.appendChild(codeEl(q.canonical));
+        feedbackEl.appendChild(alt);
+      }
+    }
+    // 穴埋めの問題は、完成したコードを見せる
+    if (q.kind === "code" && RGX.hasBlank(q.source)) {
+      var done = el("div", "done-code");
+      done.appendChild(filledCodeBlock(q.code, q.canonical));
+      feedbackEl.appendChild(done);
+    }
+    var view = matchViewFor(q, given);
+    if (view) feedbackEl.appendChild(view);
+    feedbackEl.appendChild(richEl("div", "explanation", q.explain));
+    var c = q.ref ? RGX.card(q.ref) : null;
+    if (c) feedbackEl.appendChild(cardLink(q.ref, "記法帳で「" + c.name + "」を見る →", "ref-link"));
+    feedbackEl.className = "feedback " + (isCorrect ? "good" : "bad");
+
+    nextRow.classList.add("show");
+    updateProgress();
+  }
+
+  function onChoice(chosen) {
+    if (!session || session.answered || session.mode !== "choice") return;
+    var q = session.questions[session.index];
+    if (chosen < 0 || chosen >= q.choices.length) return;
+    var isCorrect = chosen === q.answer;
+    // 色だけでなく、文字でも正誤を示す
+    choicesEl.querySelectorAll(".choice-btn").forEach(function (btn, i) {
+      btn.disabled = true;
+      if (i === q.answer) {
+        btn.classList.add("correct");
+        btn.appendChild(el("span", "choice-mark", "正解"));
+      } else if (i === chosen) {
+        btn.classList.add("wrong");
+        btn.appendChild(el("span", "choice-mark", "×"));
+      }
+    });
+    finishAnswer(q, isCorrect, q.choices[chosen], null);
+    nextBtn.focus({ preventScroll: true });
+    feedbackEl.scrollIntoView({ block: "nearest" });
+  }
+
+  function onInput(giveUp) {
+    if (!session || session.answered || session.mode !== "input") return;
+    var q = session.questions[session.index];
+    var typed = answerInput.value;
+    if (!giveUp && !typed.trim()) { answerInput.focus(); return; }
+    var res = giveUp ? null : RGX.judge(q.source, typed);
+    var isCorrect = !!res && res.ok;
+    answerInput.readOnly = true;
+    rxInput.classList.add(isCorrect ? "good" : "bad");
+    inputMark.textContent = isCorrect ? "✓" : "✗";
+    inputBtns.hidden = true;
+    finishAnswer(q, isCorrect, giveUp ? null : RGX.normalize(typed), res);
+    // 入力欄にフォーカスを残し、もう一度 Enter で次へ進めるようにする
+    answerInput.focus({ preventScroll: true });
+    feedbackEl.scrollIntoView({ block: "nearest" });
+  }
+
+  answerInput.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" || e.isComposing || e.keyCode === 229) return;
+    e.preventDefault();
+    if (!session) return;
+    if (session.answered) goNext(); else onInput(false);
+  });
+  answerInput.addEventListener("focus", function () {
+    if (!session || session.answered) return;
+    rxInput.scrollIntoView({ block: "center" });
+  });
+  document.getElementById("runBtn").addEventListener("click", function () { onInput(false); });
+  document.getElementById("giveUpBtn").addEventListener("click", function () { onInput(true); });
+
+  function goNext() {
+    if (!session || !session.answered) return;
+    session.index++;
+    if (session.index >= session.questions.length) {
+      showResult();
+    } else {
+      renderQuestion();
+      quizScreen.scrollIntoView({ block: "start" });
+    }
+  }
+  nextBtn.addEventListener("click", goNext);
+  document.getElementById("quitBtn").addEventListener("click", showResult);
+
+  // 4択: 数字キー 1〜4 で答え、Enter で次へ(入力欄の Enter は入力欄が受け持つ)
+  document.addEventListener("keydown", function (e) {
+    if (!session || quizScreen.style.display !== "block") return;
+    if (e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+    var t = e.target;
+    if (t && t.tagName === "INPUT") return;
+    if (session.mode === "choice" && !session.answered && /^[1-4]$/.test(e.key)) {
+      e.preventDefault();
+      onChoice(Number(e.key) - 1);
+    } else if (session.answered && e.key === "Enter") {
+      if (t && (t.tagName === "BUTTON" || t.tagName === "A")) return;   // ボタンの上では、ブラウザの動きにまかせる
+      e.preventDefault();
+      goNext();
+    }
+  });
+
+  // ---------- 結果画面 ----------
+  function showResult() {
+    if (!session) return;
+    var results = session.results;
+    var total = results.length;
+    var correct = results.filter(function (r) { return r.isCorrect; }).length;
+
+    // 挑戦回数: このセッションで出た(答えた)単元に1回ずつ足す。同じセッションで二重に数えない
+    if (!session.counted) {
+      session.counted = true;
+      var seen = {};
+      results.forEach(function (r) { seen[r.q.unitId] = true; });
+      Object.keys(seen).forEach(function (id) {
+        if (!stats.byUnit[id]) stats.byUnit[id] = { total: 0, correct: 0, sessions: 0 };
+        stats.byUnit[id].sessions++;
+      });
+      if (total > 0) RGX.saveStats(stats);
+    }
+
+    var score = document.getElementById("resultScore");
+    score.textContent = correct;
+    score.appendChild(el("span", "", " / " + total));
+    document.getElementById("resultRate").textContent = "正答率 " + pct(correct, total) + "(" + MODE_NAMES[session.mode] + ")";
+    document.getElementById("resCorrect").textContent = correct;
+    document.getElementById("resAccuracy").textContent = pct(correct, total);
+    document.getElementById("resStreak").textContent = session.bestStreak;
+
+    var unitBox = document.getElementById("unitResult");
+    unitBox.innerHTML = "";
+    var per = {};
+    results.forEach(function (r) {
+      if (!per[r.q.unitId]) per[r.q.unitId] = { total: 0, correct: 0 };
+      per[r.q.unitId].total++;
+      if (r.isCorrect) per[r.q.unitId].correct++;
+    });
+    RGX.UNITS.forEach(function (u) {
+      if (!per[u.id]) return;
+      var row = el("div", "miss-item");
+      var left = el("span");
+      left.appendChild(el("span", "no", u.no));
+      left.appendChild(el("span", "name", u.name));
+      row.appendChild(left);
+      row.appendChild(el("span", "rate spacer", per[u.id].correct + "/" + per[u.id].total));
+      row.appendChild(unitLink(u.id, "記法帳で見る →"));
+      unitBox.appendChild(row);
+    });
+    if (total === 0) unitBox.appendChild(el("p", "weak-empty", "まだ1問も答えていません。"));
+
+    var list = document.getElementById("missList");
+    list.innerHTML = "";
+    var misses = results.filter(function (r) { return !r.isCorrect; });
+    if (total === 0) {
+      list.appendChild(el("p", "weak-empty", "まだ1問も答えていません。"));
+    } else if (misses.length === 0) {
+      list.appendChild(el("p", "weak-empty", "間違えた問題はありませんでした。"));
+    } else {
+      misses.forEach(function (r) {
+        var q = r.q;
+        var row = el("div", "miss-item");
+        var mq = richEl("div", "miss-q", q.q);
+        if (q.code) {
+          var sc = el("code", "miss-code");
+          appendCode(sc, q.code);
+          sc.className = "miss-code rx-inline";
+          mq.appendChild(sc);
+        }
+        row.appendChild(mq);
+        var pair = el("div", "detail answer-pair");
+        var p1 = el("div", "pair-row");
+        p1.appendChild(document.createTextNode(session.mode === "input" ? "あなたの入力" : "選んだ答え"));
+        var given = el("span", "given");
+        if (r.given === null) given.textContent = "(わからない)";
+        else given.appendChild(session.mode === "input" ? codeEl(r.given) : answerEl(q.kind, r.given));
+        p1.appendChild(given);
+        pair.appendChild(p1);
+        var p2 = el("div", "pair-row");
+        p2.appendChild(document.createTextNode("正解"));
+        var right = el("span", "correct");
+        right.appendChild(answerEl(q.kind, q.canonical));
+        p2.appendChild(right);
+        pair.appendChild(p2);
+        row.appendChild(pair);
+        var c = q.ref ? RGX.card(q.ref) : null;
+        if (c) row.appendChild(cardLink(q.ref, "記法帳「" + c.name + "」→"));
+        list.appendChild(row);
+      });
+    }
+    showScreen("result");
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById("backBtn").addEventListener("click", function () {
+    session = null;
+    renderSetup();
+    showScreen("setup");
+    window.scrollTo(0, 0);
+  });
+  document.getElementById("retryBtn").addEventListener("click", startQuiz);
+  startBtn.addEventListener("click", startQuiz);
+
+  renderSetup();
+  showScreen("setup");
+})();
+</script>
+</body>
+</html>

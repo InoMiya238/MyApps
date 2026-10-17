@@ -1,0 +1,84 @@
+/* 投資シミュレーション道場 の色。変数名は学習シリーズ共通(shared/base.css を参照)。
+   --chart-grid --band-alpha --series-1〜5 はこのアプリのグラフ用。 */
+:root {
+  color-scheme: light;
+  --bg: #F3F2EC;
+  --surface: #FFFFFF;
+  --surface-2: #E8E7DE;
+  --border: #D6D4C8;
+  --ink: #1C1F2A;
+  --ink-muted: #4F5566;
+  --ink-faint: #6B7080;
+  --accent: #2C4A9A;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E2E7F5;
+  --good: #1E6B4E;
+  --good-soft: #DCEFE5;
+  --bad: #B03A2E;
+  --bad-soft: #F6E0DC;
+  --shadow: rgba(28, 31, 42, 0.10);
+  /* グラフ */
+  --chart-grid: #E4E2D8;
+  --band-alpha: 0.18;
+  --series-1: #2C4A9A;  /* 主役: 一括 / あなたの配分 / ルール / 運用益 */
+  --series-2: #B06A00;  /* 比較: 積立 / 基準 / 株式 / 単利 */
+  --series-3: #138078;  /* 債券 */
+  --series-4: #9A3F7A;  /* 予備 */
+  --series-5: #8A8F9C;  /* 現金 / 元本 */
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #12141B;
+    --surface: #1A1D26;
+    --surface-2: #232734;
+    --border: #333949;
+    --ink: #E8EAF0;
+    --ink-muted: #B0B6C6;
+    --ink-faint: #8C93A5;
+    --accent: #8FA8F0;
+    --accent-ink: #10183A;
+    --accent-soft: #222B47;
+    --good: #6CCB9E;
+    --good-soft: #17302A;
+    --bad: #EE8B7C;
+    --bad-soft: #3A2220;
+    --shadow: rgba(0, 0, 0, 0.4);
+    --chart-grid: #2A2F3D;
+    --band-alpha: 0.28;
+    --series-1: #8FA8F0;
+    --series-2: #E3A74A;
+    --series-3: #4FC1B6;
+    --series-4: #D78BC0;
+    --series-5: #8C93A5;
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定(上と同じ値) */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #12141B;
+  --surface: #1A1D26;
+  --surface-2: #232734;
+  --border: #333949;
+  --ink: #E8EAF0;
+  --ink-muted: #B0B6C6;
+  --ink-faint: #8C93A5;
+  --accent: #8FA8F0;
+  --accent-ink: #10183A;
+  --accent-soft: #222B47;
+  --good: #6CCB9E;
+  --good-soft: #17302A;
+  --bad: #EE8B7C;
+  --bad-soft: #3A2220;
+  --shadow: rgba(0, 0, 0, 0.4);
+  --chart-grid: #2A2F3D;
+  --band-alpha: 0.28;
+  --series-1: #8FA8F0;
+  --series-2: #E3A74A;
+  --series-3: #4FC1B6;
+  --series-4: #D78BC0;
+  --series-5: #8C93A5;
+}

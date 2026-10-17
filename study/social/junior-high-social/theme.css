@@ -1,0 +1,61 @@
+/* 中学社会道場 の色(うぐいす色)。変数名は学習シリーズ共通(shared/base.css を参照)。 */
+:root {
+  color-scheme: light;
+  --bg: #F3F3E6;
+  --surface: #FFFFFF;
+  --surface-2: #E8E8D3;
+  --border: #D4D4B8;
+  --ink: #21230F;
+  --ink-muted: #52553A;
+  --ink-faint: #62654A;
+  --accent: #5C6410;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #EEF0CC;
+  --good: #17695A;
+  --good-soft: #DBF0EA;
+  --bad: #A33B28;
+  --bad-soft: #F6E1DC;
+  --shadow: rgba(33, 35, 15, 0.10);
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #13140D;
+    --surface: #1B1C13;
+    --surface-2: #27291B;
+    --border: #3D3F2A;
+    --ink: #EEEFE0;
+    --ink-muted: #BBBDA3;
+    --ink-faint: #9EA086;
+    --accent: #C6CD6E;
+    --accent-ink: #23260A;
+    --accent-soft: #30331A;
+    --good: #7FCBB4;
+    --good-soft: #1B312C;
+    --bad: #F09A8C;
+    --bad-soft: #3A1F1B;
+    --shadow: rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #13140D;
+  --surface: #1B1C13;
+  --surface-2: #27291B;
+  --border: #3D3F2A;
+  --ink: #EEEFE0;
+  --ink-muted: #BBBDA3;
+  --ink-faint: #9EA086;
+  --accent: #C6CD6E;
+  --accent-ink: #23260A;
+  --accent-soft: #30331A;
+  --good: #7FCBB4;
+  --good-soft: #1B312C;
+  --bad: #F09A8C;
+  --bad-soft: #3A1F1B;
+  --shadow: rgba(0, 0, 0, 0.4);
+}

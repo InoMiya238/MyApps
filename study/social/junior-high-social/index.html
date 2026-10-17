@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>中学社会道場</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 720px; gap: 22px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+  body.is-quiz .hero .tagline { display: none; }
+
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h3 {
+    margin: 20px 0 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+  }
+  select {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    padding: 5px 7px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.95rem;
+  }
+  .hint {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin: 10px 0 0;
+    line-height: 1.6;
+  }
+  button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    padding: 12px 20px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    width: 100%;
+    font-weight: 700;
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-secondary {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .btn-row button { flex: 1; }
+  button:focus-visible,
+  select:focus-visible,
+  a:focus-visible,
+  .cat-check:focus-within {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- 設定 ---------- */
+  #setup-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .preselect-note {
+    margin: 0;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 0.86rem;
+    line-height: 1.6;
+  }
+  .preselect-note[hidden] { display: none; }
+
+  /* 学年タブ(単元のある学年が2つ以上のときだけ出す) */
+  .grade-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .grade-tabs[hidden] { display: none; }
+  .grade-tab {
+    min-width: 0;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2px 8px;
+    padding: 8px 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.15s ease;
+  }
+  .grade-tab:hover { border-color: var(--accent); color: var(--ink); }
+  .grade-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .grade-tab .count {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+    opacity: 0.8;
+  }
+
+  .unit-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .tool-btn {
+    min-height: 40px;
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--ink-muted);
+    border-radius: 9px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .tool-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .tool-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .unit-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  /* 分野の小見出し */
+  .unit-area {
+    grid-column: 1 / -1;
+    margin: 8px 0 0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+  }
+  .unit-area:first-child { margin-top: 0; }
+  .cat-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 48px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+  .cat-check.checked {
+    border-color: var(--accent);
+    color: var(--ink);
+    background: var(--accent-soft);
+  }
+  .cat-check.disabled { cursor: not-allowed; color: var(--ink-faint); }
+  .cat-check.disabled input { cursor: not-allowed; }
+  .cat-check input { flex: none; }
+  .cat-check input:focus-visible { outline: none; }
+  .cat-check .unit-name { min-width: 0; overflow-wrap: anywhere; }
+  .weak-tag {
+    flex: none;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--bad);
+    background: var(--bad-soft);
+    border: 1px solid var(--bad);
+    border-radius: 999px;
+    padding: 3px 7px;
+  }
+  .cat-rate {
+    flex: none;
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-faint);
+  }
+
+  /* 開始ボタン */
+  .start-bar { display: flex; flex-direction: column; gap: 8px; }
+  .error-msg {
+    color: var(--bad);
+    font-size: 0.85rem;
+    margin: 0;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  /* ---------- 設定: これまでの成績 ---------- */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .stat-box {
+    text-align: center;
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 14px 8px;
+    min-width: 0;
+  }
+  .stat-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    margin-top: 3px;
+  }
+  .cat-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .cat-row {
+    display: grid;
+    grid-template-columns: 44px 1fr 44px;
+    align-items: center;
+    gap: 10px;
+  }
+  .cat-row-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-muted);
+  }
+  .cat-row-track {
+    height: 7px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .cat-row-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+  .cat-row-pct {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-faint);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .weak-list { font-size: 0.88rem; }
+  .weak-empty {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    line-height: 1.6;
+  }
+  .weak-more { margin: 8px 0 0; font-size: 0.82rem; color: var(--ink-muted); }
+  .weak-practice { width: 100%; margin-top: 12px; font-size: 0.92rem; font-weight: 600; }
+  .weak-practice[hidden] { display: none; }
+  .reset-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+  }
+  .reset-btn {
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--ink-muted);
+    border-radius: 9px;
+    padding: 9px 14px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- 出題 ---------- */
+  #quiz-screen { display: none; }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--ink-muted);
+  }
+  .progress-bar {
+    height: 6px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    overflow: hidden;
+    margin: 6px 0 18px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.25s ease;
+  }
+  .problem-type-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .question {
+    margin: 0 0 14px;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 15.5px;
+    font-weight: 600;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+  .question.long { text-align: left; }
+  .q-material { margin: 0 0 18px; min-width: 0; }
+  .q-material[hidden] { display: none; }
+
+  /* 選択肢は1列が基本。短い語(地名、用語)の問題だけ2列にする */
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .choices.grid { grid-template-columns: 1fr 1fr; }
+  .choice-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 60px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .choices.grid .choice-btn { font-size: 17px; line-height: 1.4; text-align: center; }
+  .choice-key {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    border-radius: 7px;
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .choice-body { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  /* 2列のときは折り返さない(はみ出したら、ページが1列に戻す) */
+  .choices.grid .choice-body { white-space: nowrap; overflow: hidden; }
+  /* 正誤の印は、番号の真下に重ねて出す(選択肢の文字の場所をとらないので、答えたあとに並びが動かない) */
+  .choice-mark {
+    position: absolute;
+    left: 12px;
+    top: calc(50% + 13px);
+    width: 24px;
+    text-align: center;
+    white-space: nowrap;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent); }
+  .choice-btn:disabled { cursor: not-allowed; }
+  .choice-btn.correct { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+  .choice-btn.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+
+  .feedback {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    display: none;
+    scroll-margin: 16px;
+  }
+  .feedback.good { display: block; background: var(--good-soft); color: var(--good); }
+  .feedback.bad { display: block; background: var(--bad-soft); color: var(--bad); }
+  .feedback .answer-line { font-weight: 700; overflow-wrap: anywhere; }
+  .feedback .explanation {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    color: var(--ink);
+    font-weight: 400;
+    font-size: 0.85rem;
+    line-height: 1.8;
+  }
+  .feedback .step + .step { margin-top: 4px; }
+  .feedback .ref-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .feedback .ref-link:hover { text-decoration: underline; }
+  .next-row { margin-top: 16px; display: none; }
+  .next-row.show { display: block; }
+  .quit-link {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 6px;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  /* ---------- 結果 ---------- */
+  #result-screen { display: none; }
+  .result-head { text-align: center; padding: 4px 4px 14px; }
+  .result-head .label { color: var(--ink-muted); font-size: 14px; }
+  .result-head .score {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 700;
+    margin: 6px 0;
+  }
+  .result-head .score span { font-size: 24px; color: var(--ink-faint); }
+  .unit-result, .miss-list { font-size: 0.88rem; }
+  .miss-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .miss-item:last-child { border-bottom: none; }
+  .miss-item a { color: var(--accent); font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .miss-item a:hover { text-decoration: underline; }
+  .miss-item .name { font-weight: 600; }
+  .miss-item .detail { color: var(--ink-muted); font-size: 0.82rem; }
+  .miss-item .given { color: var(--bad); }
+  .miss-item .correct { color: var(--good); font-weight: 600; }
+  .miss-item .rate {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .miss-item .spacer { margin-left: auto; }
+  .miss-q {
+    flex: 1 1 100%;
+    min-width: 0;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+  .miss-item .detail.answer-pair { flex: 1 1 100%; min-width: 0; overflow-wrap: anywhere; line-height: 1.9; }
+
+  /* ===== 社会の表示部品 ここから(reference.html と同じ内容。変えるときは両方を直す) ===== */
+  .steps { display: flex; flex-direction: column; gap: 3px; }
+  .step { min-width: 0; overflow-wrap: anywhere; }
+  .rule { color: var(--accent); font-weight: 700; }
+
+  /* ふりがな */
+  rt { font-family: var(--font-body); font-size: 0.5em; font-weight: 400; color: var(--ink-muted); user-select: none; }
+  .question:has(ruby), .choice-body:has(ruby), .points li:has(ruby), .step:has(ruby) { line-height: 2.1; }
+
+  /* 表。幅がせまいとき、.stack の表は1行を1枚のカードに組みかえる(表を入れた場所の幅で決まる) */
+  .tbl-wrap { position: relative; min-width: 0; container-type: inline-size; text-align: left; font-weight: 400; }
+  .soc-table { width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.5; color: var(--ink); }
+  .soc-table th, .soc-table td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  .soc-table th { background: var(--surface-2); font-weight: 600; }
+  .soc-table th[scope="row"] { min-width: 5.4em; overflow-wrap: break-word; }
+  .soc-table.compact th[scope="row"] { min-width: 3.3em; }
+  .soc-table:not(.stack) thead th { min-width: 4.6em; }
+  .soc-table.compact thead th { min-width: 3.3em; }
+  .soc-table caption { font-size: 12px; color: var(--ink-faint); text-align: left; padding-bottom: 6px; }
+  .soc-table.compact { font-size: 12.5px; }
+  .soc-table.compact th, .soc-table.compact td { padding: 5px 6px; }
+  /* surface-2 や色つきの面の上では、見出しの面を --surface にして沈まないようにする */
+  .example .soc-table th, .feedback .soc-table th { background: var(--surface); }
+  @container (max-width: 480px) {
+    .soc-table.stack, .soc-table.stack tbody { display: block; }
+    .soc-table.stack caption { display: block; }
+    .soc-table.stack thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .soc-table.stack tr { display: block; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+    .soc-table.stack tr:last-child { margin-bottom: 0; }
+    .soc-table.stack th[scope="row"] { display: block; border: 0; font-size: 13.5px; font-weight: 700; }
+    .soc-table.stack td { display: grid; grid-template-columns: 6.5em 1fr; gap: 8px; border: 0; border-top: 1px solid var(--border); }
+    .soc-table.stack td::before { content: attr(data-label); font-size: 12px; color: var(--ink-muted); }
+  }
+  .miss-q .tbl-wrap { margin-top: 6px; }
+
+  /* 図の枠 */
+  .soc-fig { margin: 0; padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; min-width: 0; }
+  .soc-fig svg { display: block; width: 100%; max-width: 340px; height: auto; margin: 0 auto; }
+  .soc-fig svg.is-small { max-width: 260px; }
+  .soc-fig figcaption { margin-top: 8px; font-size: 12px; line-height: 1.6; color: var(--ink-muted); text-align: left; font-weight: 400; }
+  /* 小さい図を並べる(広い所では2列、せまい所では1列) */
+  .fig-set { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr)); gap: 10px 12px; }
+  .q-figure { margin: 0 0 18px; min-width: 0; }
+  .q-figure[hidden] { display: none; }
+  .soc-defs { pointer-events: none; }
+
+  /* 図の中の文字 */
+  .soc-svg text { font-family: var(--font-body); }
+  .fig-label { font-size: 13px; fill: var(--ink); }
+  .fig-small { font-size: 12px; fill: var(--ink-muted); }
+  .fig-title { font-size: 13px; font-weight: 700; fill: var(--ink); }
+  .soc-svg .fig-num { font-family: var(--font-mono); font-size: 12px; fill: var(--ink-muted); }
+  .fig-halo { paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+  .fig-key { stroke: var(--accent); stroke-width: 1.5; fill: var(--surface); }
+  .fig-key.on { stroke-width: 3; fill: var(--accent-soft); }
+  .fig-key-t { font-size: 14px; font-weight: 700; fill: var(--ink); text-anchor: middle; dominant-baseline: central; }
+
+  /* 図の線と面 */
+  .fig-shape { stroke: var(--ink); stroke-width: 2; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .fig-line { stroke: var(--accent); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .fig-line-2 { stroke: var(--ink); stroke-width: 2; fill: none; stroke-dasharray: 5 4; }
+  .fig-dash { stroke: var(--ink-muted); stroke-width: 1.5; fill: none; stroke-dasharray: 4 4; }
+  .fig-thin { stroke: var(--ink-muted); stroke-width: 1; fill: none; }
+  .fig-axis { stroke: var(--ink-muted); stroke-width: 1.5; fill: none; }
+  .fig-grid { stroke: var(--ink-faint); stroke-width: 1; stroke-opacity: .45; fill: none; }
+  .fig-force { stroke: var(--accent); stroke-width: 3; fill: none; stroke-linecap: round; }
+  .fig-fill { fill: var(--accent-soft); }
+  .fig-fill-2 { fill: var(--surface-2); }
+  .fig-fill-0 { fill: var(--surface); }
+  .fig-fill-3 { fill: var(--accent); fill-opacity: .22; }
+  .fig-bar { fill: var(--ink-faint); fill-opacity: .35; stroke: var(--ink-muted); stroke-width: 1; }
+  .fig-point { fill: var(--accent); }
+  .fig-solid { fill: var(--ink); }
+  .fig-dot { fill: var(--ink-muted); }
+  .pat-s { stroke: var(--ink-muted); stroke-width: 1; fill: none; }
+  .pat-f { fill: var(--ink-muted); }
+  .arrow-ink { fill: var(--ink); }
+  .arrow-accent { fill: var(--accent); }
+
+  /* 間違えた問題の中の図 */
+  .miss-fig { flex: 1 1 100%; min-width: 0; margin-top: 6px; }
+  .miss-fig summary { font-size: .82rem; color: var(--accent); font-weight: 600; cursor: pointer; min-height: 32px; display: flex; align-items: center; }
+  .miss-fig summary::before { content: "▸"; margin-right: 6px; }
+  .miss-fig[open] summary::before { content: "▾"; }
+  .miss-fig summary::-webkit-details-marker { display: none; }
+  .miss-fig summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* ===== 社会の表示部品 ここまで ===== */
+
+  /* ---------- スマホ表示の調整 ---------- */
+  @media (max-width: 480px) {
+    .card { padding: 18px 16px; }
+    .stat-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stat-num { font-size: 1.2rem; }
+    .stat-label { font-size: 10.5px; letter-spacing: 0; }
+    select { font-size: 16px; padding: 7px 8px; }
+    .unit-list { grid-template-columns: 1fr; }
+    .cat-check { padding: 10px 10px; gap: 7px; }
+    .grade-tab { font-size: 13.5px; }
+    .start-bar { position: sticky; bottom: 12px; z-index: 5; }
+    .start-bar .btn-primary { box-shadow: 0 6px 18px var(--shadow), 0 0 0 3px var(--bg); }
+    .start-bar .error-msg {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 7px 10px;
+    }
+    .result-head .score { font-size: 42px; }
+    .btn-row button { font-size: 0.86rem; padding: 12px 6px; }
+    .feedback { padding: 12px 14px; }
+    .choices.grid .choice-btn { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow" id="eyebrow">JUNIOR HIGH SOCIAL STUDIES · 中1 全15単元</p>
+    <h1>中学社会道場</h1>
+    <p class="tagline" id="tagline">中1の15単元を、4択クイズで学び直します。単元ごとの正答率が残るので、苦手がわかります。</p>
+    <nav class="site-nav" aria-label="中学社会道場のページ">
+      <span aria-current="page">クイズ道場</span>
+      <a href="reference.html">要点帳</a>
+    </nav>
+  </header>
+
+  <!-- ============ 設定 ============ -->
+  <div id="setup-screen">
+    <p class="preselect-note" id="preselectNote" role="status" hidden></p>
+
+    <div class="card">
+      <h2 id="unitHeading">単元を選ぶ</h2>
+      <div class="grade-tabs" id="gradeTabs" role="group" aria-label="学年" hidden></div>
+      <div class="unit-tools">
+        <button type="button" class="tool-btn" id="selectGradeBtn">すべて選ぶ</button>
+        <button type="button" class="tool-btn" id="clearAllBtn">すべてはずす</button>
+      </div>
+      <div class="unit-list" id="unitList" role="group" aria-labelledby="unitHeading"></div>
+      <p class="hint">右の数字はこれまでの正答率です。5問以上答えて70%未満の単元に「苦手」がつきます。<span id="gradeNote"></span></p>
+    </div>
+
+    <div class="card">
+      <h2>出題数</h2>
+      <div class="field">
+        <label for="countSelect">1回のクイズで出す問題の数</label>
+        <select id="countSelect">
+          <option value="5">5問</option>
+          <option value="10" selected>10問</option>
+          <option value="20">20問</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="start-bar">
+      <p class="error-msg" id="setupError" role="status">単元を1つ以上選んでください。</p>
+      <button type="button" class="btn-primary" id="startBtn">クイズを始める</button>
+    </div>
+
+    <div class="card" id="statsCard">
+      <h2>これまでの成績</h2>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num" id="statTotal">0</div><div class="stat-label">回答数</div></div>
+        <div class="stat-box"><div class="stat-num" id="statAccuracy">–</div><div class="stat-label">正答率</div></div>
+        <div class="stat-box"><div class="stat-num" id="statUnits">0/15</div><div class="stat-label">取り組んだ単元</div></div>
+      </div>
+
+      <h3>分野ごとの正答率</h3>
+      <div class="cat-bars" id="areaBars"></div>
+
+      <h3>苦手な単元</h3>
+      <div class="weak-list" id="weakList"></div>
+      <button type="button" class="btn-secondary weak-practice" id="weakBtn" hidden>苦手な単元だけ練習する</button>
+
+      <div class="reset-row">
+        <button type="button" class="reset-btn" id="resetBtn">成績をリセット</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 出題 ============ -->
+  <div id="quiz-screen">
+    <div class="card">
+      <div class="progress-row">
+        <span id="progressText">問題 1 / 10</span>
+        <span id="scoreText">正解 0 ・ 連続 0</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+      <div class="problem-type-label" id="unitLabel"></div>
+      <p class="question" id="questionText"></p>
+      <div class="q-figure" id="questionFigure" hidden></div>
+      <div class="q-material" id="questionMaterial" hidden></div>
+
+      <div class="choices" id="choices"></div>
+
+      <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+      <div class="next-row" id="nextRow">
+        <button type="button" class="btn-primary" id="nextBtn">次の問題 →</button>
+      </div>
+      <button type="button" class="quit-link" id="quitBtn">中断して結果を見る</button>
+    </div>
+  </div>
+
+  <!-- ============ 結果 ============ -->
+  <div id="result-screen">
+    <div class="card">
+      <div class="result-head">
+        <div class="label">クイズ終了</div>
+        <div class="score" id="resultScore">0<span> / 0</span></div>
+        <div class="label" id="resultRate">正答率 –</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num" id="resCorrect">0</div><div class="stat-label">正解数</div></div>
+        <div class="stat-box"><div class="stat-num" id="resAccuracy">–</div><div class="stat-label">正答率</div></div>
+        <div class="stat-box"><div class="stat-num" id="resStreak">0</div><div class="stat-label">最大連続正解</div></div>
+      </div>
+
+      <h3>単元ごとの結果</h3>
+      <div class="unit-result" id="unitResult"></div>
+
+      <h3>間違えた問題</h3>
+      <div class="miss-list" id="missList"></div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-secondary" id="backBtn">単元を選び直す</button>
+        <button type="button" class="btn-primary" id="retryBtn">同じ設定でもう一度</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="../../../shared/review.js"></script>
+<script src="data.js"></script>
+<script src="data-g1.js"></script>
+<script src="data-g1-2.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // 図の共通定義(模様・矢じり)を、ページの先頭に1回だけ入れる
+  document.body.insertAdjacentHTML("afterbegin", JHSO.defs());
+
+  var setupScreen = document.getElementById("setup-screen");
+  var quizScreen = document.getElementById("quiz-screen");
+  var resultScreen = document.getElementById("result-screen");
+  var preselectNote = document.getElementById("preselectNote");
+  var gradeTabs = document.getElementById("gradeTabs");
+  var unitList = document.getElementById("unitList");
+  var selectGradeBtn = document.getElementById("selectGradeBtn");
+  var countSelect = document.getElementById("countSelect");
+  var startBtn = document.getElementById("startBtn");
+  var setupError = document.getElementById("setupError");
+  var weakBtn = document.getElementById("weakBtn");
+  var questionText = document.getElementById("questionText");
+  var questionFigure = document.getElementById("questionFigure");
+  var questionMaterial = document.getElementById("questionMaterial");
+  var choicesEl = document.getElementById("choices");
+  var feedbackEl = document.getElementById("feedback");
+  var nextRow = document.getElementById("nextRow");
+  var nextBtn = document.getElementById("nextBtn");
+
+  // ---------- 状態 ----------
+  var stats = JHSO.loadStats();
+  var selected = {};       // 選んでいる単元(ID → true)。学年タブを切り替えても残る
+  var grades = JHSO.activeGrades();   // 単元のある学年。1つだけなら学年タブを出さない
+  var currentGrade = grades.length > 0 ? grades[0].id : "g1";
+  var count = 10;
+  var session = null;
+
+  function readyUnits(gradeId) {
+    return JHSO.UNITS.filter(function (u) { return (!gradeId || u.grade === gradeId) && JHSO.isReady(u.id); });
+  }
+  function selectedIds() {
+    return JHSO.UNITS.filter(function (u) { return selected[u.id] && JHSO.isReady(u.id); }).map(function (u) { return u.id; });
+  }
+
+  // 見出しの学年と単元数は、データから作る(学年を足したときに直し忘れないように)
+  (function initHero() {
+    if (grades.length === 0) return;
+    var span = grades.length === 1 ? grades[0].short : grades[0].short + "〜" + grades[grades.length - 1].short;
+    var n = JHSO.UNITS.length;
+    document.getElementById("eyebrow").textContent = "JUNIOR HIGH SOCIAL STUDIES · " + span + " 全" + n + "単元";
+    document.getElementById("tagline").textContent = span + "の" + n + "単元を、4択クイズで学び直します。単元ごとの正答率が残るので、苦手がわかります。";
+    if (grades.length === 1) {
+      selectGradeBtn.textContent = "すべて選ぶ";
+      document.getElementById("gradeNote").textContent = "いまは" + span + "の" + n + "単元(地理・歴史)です。中2・中3はあとから追加します。";
+    } else {
+      selectGradeBtn.textContent = "この学年をすべて選ぶ";
+    }
+  })();
+
+  // 保存済みの設定 → なければ、中身のある最初の学年を全部選ぶ
+  // (保存された単元が空・不正で1つも選べないときも、はじめて開いたときと同じ選択に戻す。出題数は保存の値を使う)
+  (function initSelection() {
+    var saved = JHSO.loadSettings(), restored = false;
+    if (saved) {
+      count = saved.count;
+      saved.units.forEach(function (id) { if (JHSO.isReady(id)) { selected[id] = true; restored = true; } });
+      if (restored) currentGrade = saved.grade;
+    }
+    if (!restored) {
+      for (var i = 0; i < JHSO.GRADES.length; i++) {
+        var list = readyUnits(JHSO.GRADES[i].id);
+        if (list.length > 0) {
+          list.forEach(function (u) { selected[u.id] = true; });
+          currentGrade = JHSO.GRADES[i].id;
+          break;
+        }
+      }
+    }
+    // index.html?unit=<ID> で開いたとき: その単元だけを選ぶ(保存は、開始を押すまで上書きしない)
+    var wanted = null;
+    try { wanted = new URLSearchParams(location.search).get("unit"); } catch (e) { wanted = null; }
+    var u = wanted ? JHSO.unit(wanted) : null;
+    if (u && JHSO.isReady(u.id)) {
+      selected = {};
+      selected[u.id] = true;
+      currentGrade = u.grade;
+      preselectNote.textContent = "「" + u.name + "」だけを選びました。";
+      preselectNote.hidden = false;
+    }
+  })();
+
+  function pct(correct, total) { return total > 0 ? Math.round((correct / total) * 100) + "%" : "–"; }
+  function recOf(id) { return stats.byUnit[id] || { total: 0, correct: 0 }; }
+
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  // データファイルのHTML(作者が書いた表やふりがな)を入れる
+  function htmlEl(tag, className, html) {
+    var e = el(tag, className);
+    e.innerHTML = html;
+    return e;
+  }
+  function refLink(unitId, text, className, newTab) {
+    var a = el("a", className || "", text);
+    a.href = "reference.html#" + unitId;
+    if (newTab) { a.target = "_blank"; a.rel = "noopener"; }
+    return a;
+  }
+  // 「中1 · 文法」のような、単元の補足
+  function unitMeta(u) { return JHSO.grade(u.grade).short + " · " + u.area; }
+
+  // ---------- 画面の切り替え ----------
+  function showScreen(name) {
+    setupScreen.style.display = name === "setup" ? "flex" : "none";
+    quizScreen.style.display = name === "quiz" ? "block" : "none";
+    resultScreen.style.display = name === "result" ? "block" : "none";
+    document.body.classList.toggle("is-quiz", name === "quiz");
+  }
+
+  // ---------- 設定画面 ----------
+  function renderTabs() {
+    gradeTabs.hidden = grades.length < 2;
+    gradeTabs.innerHTML = "";
+    if (grades.length < 2) return;
+    grades.forEach(function (g) {
+      var units = JHSO.unitsOf(g.id);
+      var n = units.filter(function (u) { return selected[u.id] && JHSO.isReady(u.id); }).length;
+      var btn = el("button", "grade-tab" + (g.id === currentGrade ? " active" : ""));
+      btn.type = "button";
+      btn.setAttribute("aria-pressed", g.id === currentGrade ? "true" : "false");
+      btn.setAttribute("aria-label", g.short + "(" + units.length + "単元のうち" + n + "単元を選択中)");
+      btn.appendChild(el("span", "", g.short));
+      btn.appendChild(el("span", "count", n + "/" + units.length));
+      btn.addEventListener("click", function () {
+        currentGrade = g.id;
+        renderSetup();
+        var now = gradeTabs.querySelector(".grade-tab.active");
+        if (now) now.focus();
+      });
+      gradeTabs.appendChild(btn);
+    });
+  }
+
+  function renderUnitList() {
+    unitList.innerHTML = "";
+    var units = JHSO.unitsOf(currentGrade);
+    JHSO.AREAS.forEach(function (area) {
+      var inArea = units.filter(function (u) { return u.area === area; });
+      if (inArea.length === 0) return;
+      unitList.appendChild(el("p", "unit-area", area));
+      inArea.forEach(function (u) {
+        var ready = JHSO.isReady(u.id), on = ready && !!selected[u.id], rec = recOf(u.id);
+        var label = el("label", "cat-check" + (on ? " checked" : "") + (ready ? "" : " disabled"));
+        var input = el("input");
+        input.type = "checkbox";
+        input.checked = on;
+        input.disabled = !ready;
+        label.appendChild(input);
+        label.appendChild(el("span", "unit-name", u.name));
+        if (ready && JHSO.isWeak(rec)) label.appendChild(el("span", "weak-tag", "苦手"));
+        var rate = el("span", "cat-rate", ready ? pct(rec.correct, rec.total) : "準備中");
+        if (ready) rate.setAttribute("aria-label", rec.total > 0 ? "正答率 " + pct(rec.correct, rec.total) : "まだ回答なし");
+        label.appendChild(rate);
+        input.addEventListener("change", function () {
+          if (input.checked) selected[u.id] = true; else delete selected[u.id];
+          renderSetup();
+          // 描き直したあとも、同じチェックボックスにフォーカスを残す
+          var again = unitList.querySelector('[data-unit="' + u.id + '"] input');
+          if (again) again.focus();
+        });
+        label.dataset.unit = u.id;
+        unitList.appendChild(label);
+      });
+    });
+    selectGradeBtn.disabled = readyUnits(currentGrade).length === 0;
+  }
+
+  function renderStartBar() {
+    var n = selectedIds().length;
+    startBtn.disabled = n === 0;
+    startBtn.textContent = n === 0 ? "クイズを始める" : "クイズを始める(" + n + "単元・" + count + "問)";
+    setupError.classList.toggle("show", n === 0);
+  }
+
+  function weakUnits() {
+    var list = [];
+    JHSO.UNITS.forEach(function (u) {
+      var rec = recOf(u.id);
+      if (JHSO.isWeak(rec)) list.push({ unit: u, rec: rec, rate: rec.correct / rec.total });
+    });
+    list.sort(function (a, b) { return a.rate - b.rate || b.rec.total - a.rec.total; });
+    return list;
+  }
+
+  function renderStats() {
+    var total = 0, correct = 0, tried = 0;
+    JHSO.UNITS.forEach(function (u) {
+      var r = recOf(u.id);
+      total += r.total; correct += r.correct;
+      if (r.total > 0) tried++;
+    });
+    document.getElementById("statTotal").textContent = total;
+    document.getElementById("statAccuracy").textContent = pct(correct, total);
+    document.getElementById("statUnits").textContent = tried + "/" + JHSO.UNITS.length;
+
+    // 分野ごとの正答率(全学年を合わせる)
+    var bars = document.getElementById("areaBars");
+    bars.innerHTML = "";
+    JHSO.AREAS.forEach(function (area) {
+      var t = 0, c = 0;
+      JHSO.UNITS.forEach(function (u) {
+        if (u.area !== area) return;
+        var r = recOf(u.id); t += r.total; c += r.correct;
+      });
+      var row = el("div", "cat-row");
+      row.appendChild(el("span", "cat-row-label", area));
+      var track = el("div", "cat-row-track");
+      var fill = el("div", "cat-row-fill");
+      fill.style.width = (t > 0 ? Math.round((c / t) * 100) : 0) + "%";
+      track.appendChild(fill);
+      row.appendChild(track);
+      row.appendChild(el("span", "cat-row-pct", pct(c, t)));
+      bars.appendChild(row);
+    });
+
+    var weak = weakUnits();
+    var list = document.getElementById("weakList");
+    list.innerHTML = "";
+    if (weak.length === 0) {
+      list.appendChild(el("p", "weak-empty", "まだ苦手な単元はありません(5問以上答えた単元から判定します)。"));
+    } else {
+      weak.slice(0, 5).forEach(function (w) {
+        var row = el("div", "miss-item");
+        var left = el("span");
+        left.appendChild(el("span", "name", w.unit.name));
+        left.appendChild(el("span", "detail", "(" + unitMeta(w.unit) + ")"));
+        row.appendChild(left);
+        row.appendChild(el("span", "rate spacer", w.rec.correct + "/" + w.rec.total + " (" + pct(w.rec.correct, w.rec.total) + ")"));
+        row.appendChild(refLink(w.unit.id, "要点を読む"));
+        list.appendChild(row);
+      });
+      // 「苦手な単元だけ練習する」は苦手の全単元を出すので、一覧に出していない分の数を知らせる
+      if (weak.length > 5) list.appendChild(el("p", "weak-more", "ほか" + (weak.length - 5) + "単元"));
+    }
+    weakBtn.hidden = !weak.some(function (w) { return JHSO.isReady(w.unit.id); });
+  }
+
+  function renderSetup() {
+    renderTabs();
+    renderUnitList();
+    countSelect.value = String(count);
+    renderStartBar();
+    renderStats();
+  }
+
+  selectGradeBtn.addEventListener("click", function () {
+    readyUnits(currentGrade).forEach(function (u) { selected[u.id] = true; });
+    renderSetup();
+  });
+  document.getElementById("clearAllBtn").addEventListener("click", function () {
+    selected = {};
+    renderSetup();
+  });
+  countSelect.addEventListener("change", function () {
+    var n = Number(countSelect.value);
+    count = JHSO.COUNTS.indexOf(n) >= 0 ? n : 10;
+    renderStartBar();
+  });
+  weakBtn.addEventListener("click", function () {
+    var ids = weakUnits().map(function (w) { return w.unit.id; }).filter(JHSO.isReady);
+    if (ids.length === 0) return;
+    selected = {};
+    ids.forEach(function (id) { selected[id] = true; });
+    startQuiz();
+  });
+  document.getElementById("resetBtn").addEventListener("click", function () {
+    if (!confirm("これまでの成績をすべて消します。よろしいですか?")) return;
+    JHSO.clearStats();
+    stats = JHSO.emptyStats();
+    renderSetup();
+  });
+
+  // ---------- 出題画面 ----------
+  function startQuiz() {
+    var ids = selectedIds();
+    if (ids.length === 0) return;
+    var questions = JHSO.buildQuiz(ids, count);
+    if (questions.length === 0) return;
+    // 開始したときに、選択と出題数を保存する
+    JHSO.saveSettings({ units: ids, count: count, grade: currentGrade });
+    preselectNote.hidden = true;
+    session = { questions: questions, index: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, results: [] };
+    showScreen("quiz");
+    renderQuestion();
+    window.scrollTo(0, 0);
+  }
+
+  function updateProgress() {
+    var total = session.questions.length;
+    document.getElementById("progressText").textContent = "問題 " + (session.index + 1) + " / " + total;
+    document.getElementById("scoreText").textContent = "正解 " + session.correct + " ・ 連続 " + session.streak;
+    document.getElementById("progressFill").style.width = Math.round((session.results.length / total) * 100) + "%";
+  }
+
+  // 2列の選択肢がボタンからはみ出すときは、1列に戻す
+  function fitChoices() {
+    if (!session || quizScreen.style.display === "none") return;
+    var q = session.questions[session.index];
+    choicesEl.classList.toggle("grid", q.choiceLayout === "grid");
+    if (q.choiceLayout !== "grid") return;
+    var bodies = choicesEl.querySelectorAll(".choice-body");
+    for (var i = 0; i < bodies.length; i++) {
+      if (bodies[i].scrollWidth > bodies[i].clientWidth + 1) { choicesEl.classList.remove("grid"); return; }
+    }
+  }
+
+  function renderQuestion() {
+    var q = session.questions[session.index];
+    var u = JHSO.unit(q.unitId);
+    session.answered = false;
+    updateProgress();
+
+    document.getElementById("unitLabel").textContent = unitMeta(u) + " · " + u.name;
+    questionText.innerHTML = q.text;
+    questionText.classList.toggle("long", questionText.textContent.length > 38);
+    questionFigure.hidden = !q.figure;
+    questionFigure.innerHTML = q.figure || "";
+    questionMaterial.hidden = !q.material;
+    questionMaterial.innerHTML = q.material || "";
+
+    choicesEl.innerHTML = "";
+    q.choices.forEach(function (c, i) {
+      var btn = el("button", "choice-btn");
+      btn.type = "button";
+      var key = el("span", "choice-key", String(i + 1));
+      key.setAttribute("aria-hidden", "true");
+      btn.appendChild(key);
+      btn.appendChild(htmlEl("span", "choice-body", c));
+      btn.addEventListener("click", function () { onAnswer(i); });
+      choicesEl.appendChild(btn);
+    });
+    fitChoices();
+
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = "";
+    nextRow.classList.remove("show");
+    nextBtn.textContent = session.index + 1 >= session.questions.length ? "結果を見る" : "次の問題 →";
+  }
+
+  function recordAnswer(q, isCorrect) {
+    if (!stats.byUnit[q.unitId]) stats.byUnit[q.unitId] = { total: 0, correct: 0 };
+    stats.byUnit[q.unitId].total++;
+    if (isCorrect) stats.byUnit[q.unitId].correct++;
+    if (session.streak > stats.bestStreak) stats.bestStreak = session.streak;
+    JHSO.saveStats(stats);
+    if (typeof Review !== "undefined") Review.record("social", q.unitId, isCorrect);   // 復習プランナーの記録
+  }
+
+  function onAnswer(chosen) {
+    if (!session || session.answered) return;
+    var q = session.questions[session.index];
+    if (chosen < 0 || chosen >= q.choices.length) return;
+    session.answered = true;
+    var isCorrect = chosen === q.answer;
+    var u = JHSO.unit(q.unitId);
+
+    if (isCorrect) {
+      session.correct++;
+      session.streak++;
+      if (session.streak > session.bestStreak) session.bestStreak = session.streak;
+    } else {
+      session.streak = 0;
+    }
+    session.results.push({ q: q, chosen: chosen, isCorrect: isCorrect });
+    recordAnswer(q, isCorrect);
+
+    // 色だけでなく、文字でも正誤を示す
+    choicesEl.querySelectorAll(".choice-btn").forEach(function (btn, i) {
+      btn.disabled = true;
+      if (i === q.answer) {
+        btn.classList.add("correct");
+        btn.appendChild(el("span", "choice-mark", "正解"));
+      } else if (i === chosen) {
+        btn.classList.add("wrong");
+        btn.appendChild(el("span", "choice-mark", "×"));
+      }
+    });
+
+    feedbackEl.innerHTML = "";
+    var line = el("div", "answer-line");
+    if (isCorrect) {
+      line.textContent = "正解!";
+    } else {
+      line.appendChild(document.createTextNode("不正解 — 正解は "));
+      line.appendChild(htmlEl("span", "", q.choices[q.answer]));
+    }
+    feedbackEl.appendChild(line);
+    feedbackEl.appendChild(htmlEl("div", "explanation", JHSO.steps(q.explain)));
+    feedbackEl.appendChild(refLink(u.id, "要点帳で「" + u.name + "」を見る →", "ref-link", true));
+    feedbackEl.className = "feedback " + (isCorrect ? "good" : "bad");
+
+    nextRow.classList.add("show");
+    updateProgress();
+    nextBtn.focus({ preventScroll: true });
+    feedbackEl.scrollIntoView({ block: "nearest" });
+  }
+
+  function goNext() {
+    if (!session || !session.answered) return;
+    session.index++;
+    if (session.index >= session.questions.length) {
+      showResult();
+    } else {
+      renderQuestion();
+      quizScreen.scrollIntoView({ block: "start" });
+    }
+  }
+  nextBtn.addEventListener("click", goNext);
+  document.getElementById("quitBtn").addEventListener("click", showResult);
+
+  // 数字キー 1〜4 で答え、Enter で次へ
+  document.addEventListener("keydown", function (e) {
+    if (!session || quizScreen.style.display !== "block") return;
+    if (e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+    if (!session.answered && /^[1-4]$/.test(e.key)) {
+      e.preventDefault();
+      onAnswer(Number(e.key) - 1);
+    } else if (session.answered && e.key === "Enter") {
+      var t = e.target;
+      if (t && (t.tagName === "BUTTON" || t.tagName === "A")) return;   // ボタンの上では、ブラウザの動きにまかせる
+      e.preventDefault();
+      goNext();
+    }
+  });
+  // フォントが読みこまれると幅が変わるので、はみ出しを見直す
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitChoices);
+  window.addEventListener("resize", fitChoices);
+
+  // ---------- 結果画面 ----------
+  function showResult() {
+    if (!session) return;
+    var results = session.results;
+    var total = results.length;
+    var correct = results.filter(function (r) { return r.isCorrect; }).length;
+
+    var score = document.getElementById("resultScore");
+    score.textContent = correct;
+    score.appendChild(el("span", "", " / " + total));
+    document.getElementById("resultRate").textContent = "正答率 " + pct(correct, total);
+    document.getElementById("resCorrect").textContent = correct;
+    document.getElementById("resAccuracy").textContent = pct(correct, total);
+    document.getElementById("resStreak").textContent = session.bestStreak;
+
+    var unitBox = document.getElementById("unitResult");
+    unitBox.innerHTML = "";
+    var per = {};
+    results.forEach(function (r) {
+      if (!per[r.q.unitId]) per[r.q.unitId] = { total: 0, correct: 0 };
+      per[r.q.unitId].total++;
+      if (r.isCorrect) per[r.q.unitId].correct++;
+    });
+    JHSO.UNITS.forEach(function (u) {
+      if (!per[u.id]) return;
+      var row = el("div", "miss-item");
+      var left = el("span");
+      left.appendChild(el("span", "name", u.name));
+      left.appendChild(el("span", "detail", "(" + unitMeta(u) + ")"));
+      row.appendChild(left);
+      row.appendChild(el("span", "rate spacer", per[u.id].correct + "/" + per[u.id].total));
+      row.appendChild(refLink(u.id, "要点帳で見る →", "", true));
+      unitBox.appendChild(row);
+    });
+    if (total === 0) unitBox.appendChild(el("p", "weak-empty", "まだ1問も答えていません。"));
+
+    var list = document.getElementById("missList");
+    list.innerHTML = "";
+    var misses = results.filter(function (r) { return !r.isCorrect; });
+    if (total === 0) {
+      list.appendChild(el("p", "weak-empty", "まだ1問も答えていません。"));
+    } else if (misses.length === 0) {
+      list.appendChild(el("p", "weak-empty", "誤答はありませんでした。"));
+    } else {
+      misses.forEach(function (r) {
+        var q = r.q;
+        var row = el("div", "miss-item");
+        // 問いの文と、教材(表など)を出す。図は、開いたときに原寸で見られるようにする
+        row.appendChild(htmlEl("div", "miss-q", q.text + (q.material || "")));
+        if (q.figure) {
+          var det = el("details", "miss-fig");
+          det.appendChild(el("summary", "", "図を見る"));
+          det.appendChild(htmlEl("div", "", q.figure));
+          row.appendChild(det);
+        }
+        var pair = el("div", "detail answer-pair");
+        pair.appendChild(document.createTextNode("選んだ答え "));
+        pair.appendChild(htmlEl("span", "given", q.choices[r.chosen]));
+        pair.appendChild(document.createTextNode(" / 正解 "));
+        pair.appendChild(htmlEl("span", "correct", q.choices[q.answer]));
+        row.appendChild(pair);
+        list.appendChild(row);
+      });
+    }
+    showScreen("result");
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById("backBtn").addEventListener("click", function () {
+    session = null;
+    renderSetup();
+    showScreen("setup");
+    window.scrollTo(0, 0);
+  });
+  document.getElementById("retryBtn").addEventListener("click", startQuiz);
+  startBtn.addEventListener("click", startQuiz);
+
+  renderSetup();
+  showScreen("setup");
+})();
+</script>
+</body>
+</html>

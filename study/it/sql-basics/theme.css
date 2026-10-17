@@ -1,0 +1,108 @@
+/* SQL道場 の色。変数名は学習シリーズ共通(shared/base.css を参照)。
+   --code-* はSQLのコード表示(.sql-block / .sql-input)だけで使う。ライトでも暗い画面にする。
+   --tbl-* は題材の表・結果の表(.data-table)で使う。 */
+:root {
+  color-scheme: light;
+  --bg: #EDF0F7;
+  --surface: #FFFFFF;
+  --surface-2: #E2E7F3;
+  --border: #CAD2E4;
+  --ink: #151B2E;
+  --ink-muted: #465069;
+  --ink-faint: #5A6482;
+  --accent: #3043B0;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E0E5FA;
+  --good: #1F6B45;
+  --good-soft: #DCEFE4;
+  --bad: #A8372A;
+  --bad-soft: #F7E0DB;
+  --shadow: rgba(21, 27, 46, 0.10);
+  --code-bg: #141A33;
+  --code-border: #29325A;
+  --code-ink: #DCE3FF;
+  --code-muted: #8E98C2;
+  --code-kw: #8FB0FF;
+  --code-fn: #C9A7FF;
+  --code-str: #F2C27A;
+  --code-num: #9EDFB3;
+  --code-blank: #FFD166;
+  --code-blank-bg: #3A3420;
+  --code-caret: #8FB0FF;
+  --code-bad: #FF9B8A;
+  --tbl-head: #E7EBF6;
+  --tbl-line: #D5DCEC;
+  --tbl-null: #7A84A3;
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0C1020;
+    --surface: #131932;
+    --surface-2: #1B2242;
+    --border: #2A3358;
+    --ink: #E2E7F7;
+    --ink-muted: #A7B0CF;
+    --ink-faint: #8891B4;
+    --accent: #8FA8FF;
+    --accent-ink: #0B1030;
+    --accent-soft: #1E2752;
+    --good: #86CFA0;
+    --good-soft: #183024;
+    --bad: #EE8E78;
+    --bad-soft: #3A221D;
+    --shadow: rgba(0, 0, 0, 0.45);
+    --code-bg: #080B18;
+    --code-border: #2C3560;
+    --code-ink: #D6DEFF;
+    --code-muted: #8590BC;
+    --code-kw: #8FB0FF;
+    --code-fn: #C9A7FF;
+    --code-str: #F2C27A;
+    --code-num: #9EDFB3;
+    --code-blank: #FFD166;
+    --code-blank-bg: #3A3420;
+    --code-caret: #8FB0FF;
+    --code-bad: #FF9B8A;
+    --tbl-head: #1F2749;
+    --tbl-line: #2E3862;
+    --tbl-null: #7F89B0;
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0C1020;
+  --surface: #131932;
+  --surface-2: #1B2242;
+  --border: #2A3358;
+  --ink: #E2E7F7;
+  --ink-muted: #A7B0CF;
+  --ink-faint: #8891B4;
+  --accent: #8FA8FF;
+  --accent-ink: #0B1030;
+  --accent-soft: #1E2752;
+  --good: #86CFA0;
+  --good-soft: #183024;
+  --bad: #EE8E78;
+  --bad-soft: #3A221D;
+  --shadow: rgba(0, 0, 0, 0.45);
+  --code-bg: #080B18;
+  --code-border: #2C3560;
+  --code-ink: #D6DEFF;
+  --code-muted: #8590BC;
+  --code-kw: #8FB0FF;
+  --code-fn: #C9A7FF;
+  --code-str: #F2C27A;
+  --code-num: #9EDFB3;
+  --code-blank: #FFD166;
+  --code-blank-bg: #3A3420;
+  --code-caret: #8FB0FF;
+  --code-bad: #FF9B8A;
+  --tbl-head: #1F2749;
+  --tbl-line: #2E3862;
+  --tbl-null: #7F89B0;
+}
