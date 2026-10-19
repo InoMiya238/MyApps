@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>1手詰め | 将棋道場</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 720px; gap: 22px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+  button { font-family: var(--font-body); cursor: pointer; }
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- 問題の選択 ---------- */
+  .pick-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .pick-head h2 { margin: 0; }
+  .solved-count {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-muted);
+  }
+  .solved-count b { color: var(--good); font-size: 1.15rem; }
+  .q-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+    gap: 6px;
+  }
+  .q-btn {
+    position: relative;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .q-btn:hover { border-color: var(--accent); color: var(--ink); }
+  .q-btn.is-solved { background: var(--good-soft); border-color: var(--good); color: var(--good); }
+  .q-btn.is-missed::after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--bad);
+  }
+  .q-btn.is-current { box-shadow: 0 0 0 2px var(--accent); color: var(--ink); }
+  .pick-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    margin-top: 14px;
+  }
+  .legend {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: 12.5px;
+    color: var(--ink-muted);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .lg-solved {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    border: 1px solid var(--good);
+    background: var(--good-soft);
+  }
+  .lg-missed { width: 8px; height: 8px; border-radius: 50%; background: var(--bad); }
+  .btn-ghost {
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: none;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .btn-ghost:hover:not(:disabled) { border-color: var(--accent); }
+  .btn-ghost:disabled { color: var(--ink-faint); cursor: default; }
+
+  /* ---------- 出題 ---------- */
+  .q-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin-bottom: 4px;
+  }
+  .q-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+  .chip {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .q-status {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-faint);
+  }
+  .q-status.is-solved { color: var(--good); }
+  .turn {
+    margin: 0 0 14px;
+    font-size: 14.5px;
+    color: var(--ink-muted);
+  }
+  .turn b { color: var(--ink); }
+
+  .hand-line {
+    margin: 0 auto;
+    max-width: 440px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-muted);
+  }
+  .hand-line b { color: var(--ink); font-weight: 600; }
+  .hand-gote { margin-bottom: 6px; }
+
+  /* 盤。駒の形・色・フォントは board.js とそろえる */
+  .tb {
+    position: relative;
+    max-width: 440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 18px;
+    grid-template-rows: 18px auto;
+  }
+  .tb-files {
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    align-items: center;
+    padding: 0 2.5px;
+  }
+  .tb-files span, .tb-ranks span {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .tb-files span { font-family: var(--font-mono); font-weight: 600; }
+  .tb-ranks {
+    grid-column: 2;
+    grid-row: 2;
+    display: grid;
+    grid-template-rows: repeat(9, minmax(0, 1fr));
+    align-items: center;
+    padding: 2.5px 0;
+  }
+  .tb-grid {
+    grid-column: 1;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    grid-template-rows: repeat(9, minmax(0, 1fr));
+    aspect-ratio: 360 / 396;
+    background: var(--board);
+    border: 2.5px solid var(--board-line);
+  }
+  .cell {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-right: 1px solid var(--board-line);
+    border-bottom: 1px solid var(--board-line);
+    border-radius: 0;
+    background: transparent;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .cell svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .cell.is-last { background: var(--board-mark); }
+  .cell.is-selected { box-shadow: inset 0 0 0 3px var(--accent); }
+  .cell.is-aim { box-shadow: inset 0 0 0 3px var(--board-aim); }
+  .cell:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+  .cell .star {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--board-line);
+    transform: translate(-50%, 50%);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .cell .dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 32%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.85;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .cell.has-piece .dot {
+    left: auto;
+    top: auto;
+    right: 3px;
+    bottom: 3px;
+    width: 30%;
+    transform: none;
+    opacity: 1;
+    box-shadow: 0 0 0 1.5px var(--board);
+  }
+
+  /* 成る・成らないのダイアログ(盤の上に重ねる) */
+  .promo {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background: var(--shadow);
+  }
+  .promo[hidden] { display: none; }
+  .promo-box {
+    width: min(100%, 280px);
+    padding: 16px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: 0 6px 24px var(--shadow);
+    text-align: center;
+  }
+  .promo-box p { margin: 0 0 12px; font-weight: 600; }
+  .promo-btns { display: flex; gap: 8px; }
+  .promo-btns button {
+    flex: 1;
+    min-height: 48px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .promo-btns .promo-yes { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .promo-cancel {
+    margin-top: 10px;
+    padding: 6px 10px;
+    border: none;
+    background: none;
+    color: var(--ink-faint);
+    font-size: 13px;
+    text-decoration: underline;
+  }
+
+  /* 先手の持ち駒 */
+  .hand-sente {
+    max-width: 440px;
+    margin: 8px auto 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+  .hand-sente .hand-label { font-size: 13px; color: var(--ink-muted); margin-right: auto; }
+  .hand-none { font-size: 13px; color: var(--ink); font-weight: 600; }
+  .hand-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    min-width: 48px;
+    min-height: 48px;
+    padding: 4px 8px 4px 4px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  .hand-btn svg { width: 30px; height: 33px; flex: none; }
+  .hand-btn .count { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--ink-muted); }
+  .hand-btn:hover:not(:disabled) { border-color: var(--accent); }
+  .hand-btn.is-selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); background: var(--accent-soft); }
+  .hand-btn:disabled { opacity: 0.55; cursor: default; }
+
+  .guide {
+    margin: 12px 0 0;
+    min-height: 1.6em;
+    text-align: center;
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+
+  .feedback {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    scroll-margin: 16px;
+  }
+  .feedback[hidden] { display: none; }
+  .feedback.good { background: var(--good-soft); color: var(--good); }
+  .feedback.bad { background: var(--bad-soft); color: var(--bad); }
+  .feedback.info { background: var(--accent-soft); color: var(--accent); }
+  .feedback .fb-title { margin: 0; font-weight: 700; font-size: 1.05rem; }
+  .feedback .fb-move { margin: 2px 0 0; font-weight: 600; }
+  .feedback ul { margin: 8px 0 0; padding-left: 1.2em; color: var(--ink); }
+  .feedback .fb-explain {
+    margin: 10px 0 0;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    color: var(--ink);
+    font-size: 0.88rem;
+    line-height: 1.75;
+  }
+  .hint-box {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px dashed var(--border);
+    background: var(--surface-2);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+  .hint-box[hidden] { display: none; }
+  .hint-box b { color: var(--accent); margin-right: 6px; }
+
+  .actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .btn-sub {
+    min-height: 46px;
+    padding: 10px 6px;
+    border: none;
+    border-radius: 10px;
+    background: var(--surface-2);
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .btn-sub:disabled { opacity: 0.5; cursor: default; }
+  .btn-primary {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    min-height: 48px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  /* ---------- ルール ---------- */
+  .rules {
+    margin: 0;
+    padding-left: 1.2em;
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: var(--ink-muted);
+  }
+  .rules b { color: var(--ink); }
+  .save-note { margin: 10px 0 0; font-size: 12px; line-height: 1.6; color: var(--ink-faint); }
+  .reset-row { display: flex; justify-content: flex-end; margin-top: 12px; }
+  .reset-btn {
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--ink-muted);
+    border-radius: 9px;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- スマホ表示の調整 ---------- */
+  @media (max-width: 480px) {
+    .card { padding: 18px 14px; }
+    .card.play { padding: 16px 10px; }
+    .card.play .q-head, .card.play .turn, .card.play .guide { padding: 0 4px; }
+    .tb { grid-template-columns: minmax(0, 1fr) 15px; }
+    .tb-files span, .tb-ranks span { font-size: 11px; }
+    .btn-sub { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">SHOGI · 囲い・戦法・手筋・詰将棋</p>
+    <h1>1手詰め</h1>
+    <p class="tagline">盤の駒を実際に動かして、1手で後手の玉を詰ませる練習です。</p>
+    <nav class="site-nav" aria-label="将棋道場のページ">
+      <a href="index.html">クイズ道場</a>
+      <a href="castles.html">囲い図鑑</a>
+      <a href="openings.html">戦法帳</a>
+      <a href="tesuji.html">手筋帳</a>
+      <a href="glossary.html">用語帳</a>
+      <span aria-current="page">詰将棋</span>
+    </nav>
+  </header>
+
+  <section class="card" aria-labelledby="pickHeading">
+    <div class="pick-head">
+      <h2 id="pickHeading">問題を選ぶ</h2>
+      <span class="solved-count" id="solvedCount" aria-live="polite"></span>
+    </div>
+    <div class="q-grid" id="qGrid" role="group" aria-label="問題の番号"></div>
+    <div class="pick-foot">
+      <p class="legend">
+        <span><span class="lg-solved" aria-hidden="true"></span>解けた</span>
+        <span><span class="lg-missed" aria-hidden="true"></span>間違えたことがある</span>
+      </p>
+      <button type="button" class="btn-ghost" id="nextUnsolvedBtn">次の未解決の問題 →</button>
+    </div>
+  </section>
+
+  <section class="card play" aria-labelledby="qTitle">
+    <div class="q-head">
+      <h2 class="q-title" id="qTitle">第1問</h2>
+      <span class="chip" id="qTheme"></span>
+      <span class="q-status" id="qStatus"></span>
+    </div>
+    <p class="turn"><b>▲先手番</b>・1手で詰ませよう</p>
+
+    <p class="hand-line hand-gote">△後手 持ち駒 <b>残りすべて</b></p>
+    <div class="tb" id="board">
+      <div class="tb-files" aria-hidden="true"></div>
+      <span aria-hidden="true"></span>
+      <div class="tb-grid" id="boardGrid" role="grid" aria-label="将棋盤"></div>
+      <div class="tb-ranks" aria-hidden="true"></div>
+      <div class="promo" id="promo" hidden role="dialog" aria-modal="true" aria-labelledby="promoText">
+        <div class="promo-box">
+          <p id="promoText">成りますか?</p>
+          <div class="promo-btns">
+            <button type="button" class="promo-yes" id="promoYes">成る</button>
+            <button type="button" id="promoNo">成らない</button>
+          </div>
+          <button type="button" class="promo-cancel" id="promoCancel">やめる</button>
+        </div>
+      </div>
+    </div>
+    <div class="hand-sente" id="senteHand"></div>
+    <p class="guide" id="guide" aria-live="polite"></p>
+
+    <div class="feedback" id="feedback" role="status" aria-live="polite" hidden></div>
+    <div class="hint-box" id="hintBox" hidden></div>
+
+    <div class="actions">
+      <button type="button" class="btn-sub" id="resetBtn">やり直す</button>
+      <button type="button" class="btn-sub" id="hintBtn">ヒント</button>
+      <button type="button" class="btn-sub" id="answerBtn">答えを見る</button>
+    </div>
+    <button type="button" class="btn-primary" id="nextBtn">次の問題 →</button>
+  </section>
+
+  <section class="card" aria-labelledby="rulesHeading">
+    <h2 id="rulesHeading">ルール</h2>
+    <ul class="rules">
+      <li>先手(下側)が1手指して、後手の玉を<b>詰み</b>にします。</li>
+      <li>後手の持ち駒は<b>残りすべて</b>です(盤上と先手の持ち駒にない駒は、全部後手が持っています)。離れた王手には合駒ができます。</li>
+      <li>詰みになる手なら正解です。<b>答えが2つ以上ある問題はありません</b>(成っても成らなくても詰む問題は、どちらも正解)。</li>
+      <li>持ち駒の歩を打って詰ます<b>打ち歩詰め</b>は反則です。盤上の歩を突いて詰ますのは反則ではありません。</li>
+      <li>動かす駒をタップすると、行けるマスに点が出ます。持ち駒は、盤の下のボタンから選びます。キーボードでは矢印キーでマスを移り、Enter で選べます。</li>
+    </ul>
+    <p class="save-note">記録はこの端末のブラウザーにだけ保存されます。各問題の最初の1手は、復習プランナーにも記録されます。</p>
+    <div class="reset-row">
+      <button type="button" class="reset-btn" id="clearBtn">記録をリセット</button>
+    </div>
+  </section>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="../../../shared/review.js"></script>
+<script src="tsume-data.js"></script>
+<script>
+// ==TSUME ENGINE START==
+// 1手詰めの判定エンジン(画面に依存しない。検査スクリプトでも同じコードを jsc で動かす)。
+// 局面: { board: [81](null または { s: 0先手|1後手, t: "金" など }), hand: [{先手の持ち駒}, {後手の持ち駒}] }
+// マスの番号: (段 - 1) * 9 + (筋 - 1)。手: { side, from(打つときは -1), to, piece, promote, drop }
+var TsumeEngine = (function () {
+  "use strict";
+
+  var SENTE = 0, GOTE = 1;
+  var KANJI = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+  var PROMOTE = { "歩": "と", "香": "杏", "桂": "圭", "銀": "全", "角": "馬", "飛": "龍" };
+  var BASE = { "と": "歩", "杏": "香", "圭": "桂", "全": "銀", "馬": "角", "龍": "飛" };
+  var NAME = { "杏": "成香", "圭": "成桂", "全": "成銀" };
+  var TOTAL = { "飛": 2, "角": 2, "金": 4, "銀": 4, "桂": 4, "香": 4, "歩": 18 };
+  var HAND_ORDER = ["飛", "角", "金", "銀", "桂", "香", "歩"];
+  var KING8 = [[0, -1], [1, -1], [-1, -1], [1, 0], [-1, 0], [0, 1], [1, 1], [-1, 1]];
+  var GOLD = [[0, -1], [1, -1], [-1, -1], [1, 0], [-1, 0], [0, 1]];
+  var DIAG = [[1, -1], [-1, -1], [1, 1], [-1, 1]];
+  var ORTH = [[0, -1], [0, 1], [1, 0], [-1, 0]];
+  // 先手から見た動き。[筋の差, 段の差](段の差が負 = 前)。後手は段の差を反転する
+  var MOVES = {
+    "歩": { step: [[0, -1]] },
+    "香": { slide: [[0, -1]] },
+    "桂": { step: [[1, -2], [-1, -2]] },
+    "銀": { step: [[0, -1], [1, -1], [-1, -1], [1, 1], [-1, 1]] },
+    "金": { step: GOLD }, "と": { step: GOLD }, "杏": { step: GOLD }, "圭": { step: GOLD }, "全": { step: GOLD },
+    "角": { slide: DIAG },
+    "飛": { slide: ORTH },
+    "馬": { slide: DIAG, step: ORTH },
+    "龍": { slide: ORTH, step: DIAG },
+    "玉": { step: KING8 }
+  };
+
+  function idx(f, r) { return (r - 1) * 9 + (f - 1); }
+  function fileOf(i) { return i % 9 + 1; }
+  function rankOf(i) { return Math.floor(i / 9) + 1; }
+  function onBoard(f, r) { return f >= 1 && f <= 9 && r >= 1 && r <= 9; }
+  function sqName(i) { return fileOf(i) + KANJI[rankOf(i)]; }
+  function pieceName(t) { return NAME[t] || t; }
+  function baseOf(t) { return BASE[t] || t; }
+
+  // ---------- 局面を作る ----------
+  // "22金 13歩" → [{ sq, t }]。書式がおかしいものは errors に入れる
+  function parsePieces(str, errors) {
+    var out = [];
+    String(str || "").split(/\s+/).filter(Boolean).forEach(function (tok) {
+      var f = Number(tok.charAt(0)), r = Number(tok.charAt(1)), t = tok.slice(2);
+      if (tok.length !== 3 || !onBoard(f, r) || !MOVES[t]) { if (errors) errors.push("書式: " + tok); return; }
+      out.push({ sq: idx(f, r), t: t });
+    });
+    return out;
+  }
+  // "金 歩2" → { 金: 1, 歩: 2 }
+  function parseHand(str, errors) {
+    var h = {};
+    String(str || "").split(/\s+/).filter(Boolean).forEach(function (tok) {
+      var t = tok.charAt(0), n = tok.length > 1 ? Number(tok.slice(1)) : 1;
+      if (!TOTAL[t] || !(n >= 1)) { if (errors) errors.push("持ち駒の書式: " + tok); return; }
+      h[t] = (h[t] || 0) + n;
+    });
+    return h;
+  }
+  // 問題 { sente, gote, hand } から局面を作る。後手の持ち駒は残りすべて
+  function setup(problem, errors) {
+    errors = errors || [];
+    var board = [], i;
+    for (i = 0; i < 81; i++) board.push(null);
+    [[problem.sente, SENTE], [problem.gote, GOTE]].forEach(function (pair) {
+      parsePieces(pair[0], errors).forEach(function (p) {
+        if (board[p.sq]) errors.push("同じマスに2つの駒: " + sqName(p.sq));
+        board[p.sq] = { s: pair[1], t: p.t };
+      });
+    });
+    var senteHand = parseHand(problem.hand, errors);
+    var used = {};
+    board.forEach(function (p) { if (p && p.t !== "玉") used[baseOf(p.t)] = (used[baseOf(p.t)] || 0) + 1; });
+    Object.keys(senteHand).forEach(function (t) { used[t] = (used[t] || 0) + senteHand[t]; });
+    var goteHand = {};
+    HAND_ORDER.forEach(function (t) {
+      var n = TOTAL[t] - (used[t] || 0);
+      if (n < 0) errors.push(t + "が多すぎる");
+      if (n > 0) goteHand[t] = n;
+    });
+    return { board: board, hand: [senteHand, goteHand] };
+  }
+
+  // ---------- 利き ----------
+  // from の駒が利いているマス(自分の駒がいるマスも含む)
+  function reach(board, from) {
+    var p = board[from], sgn = p.s === SENTE ? 1 : -1;
+    var f = fileOf(from), r = rankOf(from), out = [], m = MOVES[p.t];
+    (m.step || []).forEach(function (d) {
+      var nf = f + d[0], nr = r + d[1] * sgn;
+      if (onBoard(nf, nr)) out.push(idx(nf, nr));
+    });
+    (m.slide || []).forEach(function (d) {
+      var nf = f + d[0], nr = r + d[1] * sgn;
+      while (onBoard(nf, nr)) {
+        out.push(idx(nf, nr));
+        if (board[idx(nf, nr)]) break;
+        nf += d[0]; nr += d[1] * sgn;
+      }
+    });
+    return out;
+  }
+  // sq に by 側の駒が利いている、その駒のマスの一覧
+  function attackers(board, sq, by) {
+    var out = [];
+    for (var i = 0; i < 81; i++) {
+      var p = board[i];
+      if (p && p.s === by && reach(board, i).indexOf(sq) >= 0) out.push(i);
+    }
+    return out;
+  }
+  function isAttacked(board, sq, by) {
+    for (var i = 0; i < 81; i++) {
+      var p = board[i];
+      if (p && p.s === by && reach(board, i).indexOf(sq) >= 0) return true;
+    }
+    return false;
+  }
+  function kingSq(board, side) {
+    for (var i = 0; i < 81; i++) if (board[i] && board[i].s === side && board[i].t === "玉") return i;
+    return -1;
+  }
+  function inCheck(pos, side) {
+    var k = kingSq(pos.board, side);
+    return k >= 0 && isAttacked(pos.board, k, 1 - side);
+  }
+
+  // ---------- 指し手 ----------
+  // 行き所のない駒: 歩・香は最奥の1段、桂は奥の2段
+  function deadEnd(t, side, rank) {
+    var n = (t === "歩" || t === "香") ? 1 : t === "桂" ? 2 : 0;
+    var rel = side === SENTE ? rank : 10 - rank;
+    return rel <= n;
+  }
+  function inZone(side, rank) { return side === SENTE ? rank <= 3 : rank >= 7; }
+  function canPromote(t, side, from, to) {
+    return from >= 0 && !!PROMOTE[t] && (inZone(side, rankOf(from)) || inZone(side, rankOf(to)));
+  }
+  function hasPawnOnFile(board, side, file) {
+    for (var r = 1; r <= 9; r++) {
+      var p = board[idx(file, r)];
+      if (p && p.s === side && p.t === "歩") return true;
+    }
+    return false;
+  }
+  // 王手放置・打ち歩詰め以外のルールを守った手
+  function pseudoMoves(pos, side) {
+    var board = pos.board, moves = [], i;
+    for (i = 0; i < 81; i++) {
+      var p = board[i];
+      if (!p || p.s !== side) continue;
+      reach(board, i).forEach(function (to) {
+        if (board[to] && board[to].s === side) return;
+        if (canPromote(p.t, side, i, to)) moves.push({ side: side, from: i, to: to, piece: p.t, promote: true, drop: false });
+        if (!deadEnd(p.t, side, rankOf(to))) moves.push({ side: side, from: i, to: to, piece: p.t, promote: false, drop: false });
+      });
+    }
+    HAND_ORDER.forEach(function (t) {
+      if (!(pos.hand[side][t] > 0)) return;
+      for (var to = 0; to < 81; to++) {
+        if (board[to] || deadEnd(t, side, rankOf(to))) continue;
+        if (t === "歩" && hasPawnOnFile(board, side, fileOf(to))) continue;   // 二歩
+        moves.push({ side: side, from: -1, to: to, piece: t, promote: false, drop: true });
+      }
+    });
+    return moves;
+  }
+  function applyMove(pos, mv) {
+    var board = pos.board.slice();
+    var hand = [Object.assign({}, pos.hand[0]), Object.assign({}, pos.hand[1])];
+    var side = mv.side;
+    if (mv.drop) {
+      hand[side][mv.piece]--;
+      if (!hand[side][mv.piece]) delete hand[side][mv.piece];
+      board[mv.to] = { s: side, t: mv.piece };
+    } else {
+      var cap = board[mv.to];
+      if (cap) { var b = baseOf(cap.t); if (b !== "玉") hand[side][b] = (hand[side][b] || 0) + 1; }
+      board[mv.to] = { s: side, t: mv.promote ? PROMOTE[mv.piece] : mv.piece };
+      board[mv.from] = null;
+    }
+    return { board: board, hand: hand };
+  }
+  function isUchifu(pos, mv) {
+    return mv.drop && mv.piece === "歩" && isMated(applyMove(pos, mv), 1 - mv.side, false);
+  }
+  // 合法手。checkUchifu が false なら、打ち歩詰めの歩も含める(画面で「反則」と判定するため)
+  function legalMoves(pos, side, checkUchifu) {
+    return pseudoMoves(pos, side).filter(function (mv) {
+      var after = applyMove(pos, mv);
+      if (inCheck(after, side)) return false;
+      if (checkUchifu !== false && isUchifu(pos, mv)) return false;
+      return true;
+    });
+  }
+  // 1つでも合法手があるか(早く打ち切る)
+  function hasLegalMove(pos, side, checkUchifu) {
+    var list = pseudoMoves(pos, side);
+    for (var i = 0; i < list.length; i++) {
+      var after = applyMove(pos, list[i]);
+      if (inCheck(after, side)) continue;
+      if (checkUchifu !== false && isUchifu(pos, list[i])) continue;
+      return true;
+    }
+    return false;
+  }
+  // side の玉が詰んでいるか
+  function isMated(pos, side, checkUchifu) {
+    return inCheck(pos, side) && !hasLegalMove(pos, side, checkUchifu);
+  }
+
+  // ---------- 判定 ----------
+  // 先手の手 mv(legalMoves(pos, SENTE, false) の1つ)を判定する
+  // kind: "mate" | "uchifuzume" | "nocheck" | "escape"(escape は逃れ方の一覧つき)
+  function judge(pos, mv) {
+    var after = applyMove(pos, mv);
+    var res = { after: after, kind: "" };
+    if (!inCheck(after, GOTE)) { res.kind = "nocheck"; return res; }
+    var replies = legalMoves(after, GOTE, true);
+    if (replies.length === 0) {
+      res.kind = mv.drop && mv.piece === "歩" ? "uchifuzume" : "mate";
+      return res;
+    }
+    res.kind = "escape";
+    res.replies = replies;
+    var checkers = attackers(after.board, kingSq(after.board, GOTE), SENTE);
+    var kingTo = [], captures = [], blocks = [];
+    replies.forEach(function (r) {
+      var target = after.board[r.to];
+      if (target && target.s === SENTE && checkers.indexOf(r.to) >= 0) {
+        var label = notate(after, r, mv.to);
+        if (captures.indexOf(label) < 0) captures.push(label);
+      } else if (r.piece === "玉") {
+        if (kingTo.indexOf(r.to) < 0) kingTo.push(r.to);
+      } else if (blocks.indexOf(r.to) < 0) {
+        blocks.push(r.to);
+      }
+    });
+    res.checkers = checkers;
+    res.kingTo = kingTo.sort(function (a, b) { return a - b; });
+    res.captures = captures;
+    res.blocks = blocks.sort(function (a, b) { return a - b; });
+    return res;
+  }
+  // 判定を、画面に出す文にする
+  function reasonText(res) {
+    if (res.kind === "nocheck") return ["王手になっていません。"];
+    if (res.kind === "uchifuzume") return ["打ち歩詰めは反則です。持ち駒の歩を打って詰ませてはいけません。"];
+    if (res.kind !== "escape") return [];
+    var out = [];
+    if (res.kingTo.length) out.push("玉が" + res.kingTo.map(sqName).join("・") + "へ逃げられます。");
+    if (res.captures.length) out.push(res.captures.join("・") + "で取られます。");
+    if (res.blocks.length) out.push(res.blocks.map(sqName).join("・") + "に合駒ができます。");
+    return out;
+  }
+
+  // ---------- 棋譜の表記 ----------
+  function rightness(side, sq) { return side === SENTE ? -fileOf(sq) : fileOf(sq); }
+  function motionOf(side, from, to) {
+    var d = side === SENTE ? rankOf(from) - rankOf(to) : rankOf(to) - rankOf(from);
+    return d > 0 ? "上" : d < 0 ? "引" : "寄";
+  }
+  // 同じ種類の駒が2枚以上 to に行けるときの「右」「左」「上」「寄」「引」「直」
+  function disambig(pos, mv) {
+    var side = mv.side, seen = {};
+    var cands = legalMoves(pos, side, false).filter(function (m) {
+      if (m.drop || m.to !== mv.to || m.piece !== mv.piece || seen[m.from]) return false;
+      seen[m.from] = true;
+      return true;
+    }).map(function (m) { return m.from; });
+    if (cands.length <= 1) return "";
+    var motion = motionOf(side, mv.from, mv.to);
+    var same = cands.filter(function (c) { return motionOf(side, c, mv.to) === motion; });
+    if (same.length === 1) return motion;
+    var dragon = mv.piece === "龍" || mv.piece === "馬";
+    function straight(c) { return fileOf(c) === fileOf(mv.to) && motionOf(side, c, mv.to) === "上"; }
+    if (!dragon && straight(mv.from) && same.filter(straight).length === 1) return "直";
+    function lr(list) {
+      var me = rightness(side, mv.from);
+      var vals = list.map(function (c) { return rightness(side, c); });
+      var max = Math.max.apply(null, vals), min = Math.min.apply(null, vals);
+      var nMax = vals.filter(function (v) { return v === max; }).length;
+      var nMin = vals.filter(function (v) { return v === min; }).length;
+      if (me === max && nMax === 1) return "右";
+      if (me === min && nMin === 1) return "左";
+      return "";
+    }
+    var side2 = lr(same);
+    if (!side2) return motion;
+    return lr(cands) === side2 ? side2 : side2 + motion;
+  }
+  // 手を「▲2二金打」のような表記にする。prevTo は直前の手の行き先(「同」に使う)
+  function notate(pos, mv, prevTo) {
+    var s = (mv.side === SENTE ? "▲" : "△") + (mv.to === prevTo ? "同" : sqName(mv.to)) + pieceName(mv.piece);
+    if (mv.drop) return s + "打";
+    s += disambig(pos, mv);
+    if (mv.promote) s += "成";
+    else if (canPromote(mv.piece, mv.side, mv.from, mv.to)) s += "不成";
+    return s;
+  }
+
+  // ---------- 問題の検査用 ----------
+  // 詰みになる先手の手の一覧(打ち歩詰めは含めない)
+  function matingMoves(pos) {
+    return legalMoves(pos, SENTE, false).filter(function (mv) {
+      return judge(pos, mv).kind === "mate";
+    });
+  }
+  // 局面のルール違反の一覧(空なら合法)
+  function validate(problem) {
+    var errors = [];
+    var pos = setup(problem, errors);
+    var kings = [0, 0];
+    pos.board.forEach(function (p, i) {
+      if (!p) return;
+      if (p.t === "玉") kings[p.s]++;
+      if (deadEnd(p.t, p.s, rankOf(i))) errors.push("行き所のない駒: " + sqName(i) + p.t);
+    });
+    if (kings[GOTE] !== 1) errors.push("後手の玉が1枚でない");
+    if (kings[SENTE] > 1) errors.push("先手の玉が2枚以上");
+    for (var f = 1; f <= 9; f++) {
+      [SENTE, GOTE].forEach(function (side) {
+        var n = 0;
+        for (var r = 1; r <= 9; r++) { var p = pos.board[idx(f, r)]; if (p && p.s === side && p.t === "歩") n++; }
+        if (n > 1) errors.push("二歩: " + f + "筋");
+      });
+    }
+    if (kings[GOTE] === 1 && inCheck(pos, GOTE)) errors.push("後手玉に王手がかかっている");
+    return { errors: errors, pos: pos };
+  }
+  // 手を探す(指定した表記と同じ表記の手)
+  function findMove(pos, text) {
+    var list = legalMoves(pos, SENTE, false);
+    for (var i = 0; i < list.length; i++) if (notate(pos, list[i]) === text) return list[i];
+    return null;
+  }
+
+  return {
+    SENTE: SENTE, GOTE: GOTE, KANJI: KANJI, HAND_ORDER: HAND_ORDER, PROMOTE: PROMOTE,
+    idx: idx, fileOf: fileOf, rankOf: rankOf, sqName: sqName, pieceName: pieceName,
+    setup: setup, validate: validate, reach: reach, attackers: attackers, inCheck: inCheck, kingSq: kingSq,
+    legalMoves: legalMoves, applyMove: applyMove, canPromote: canPromote, deadEnd: deadEnd,
+    judge: judge, reasonText: reasonText, notate: notate, matingMoves: matingMoves, findMove: findMove,
+    isMated: isMated
+  };
+})();
+// ==TSUME ENGINE END==
+</script>
+<script>
+(function () {
+  "use strict";
+
+  var E = TsumeEngine;
+  var SENTE = E.SENTE, GOTE = E.GOTE;
+  var STATS_KEY = "shogiDojoTsume";
+  var REVIEW_APP = "shogi";
+  var UNIT_ID = TSUME_DATA.unit.id;
+  var PROBLEMS = TSUME_DATA.problems;
+  var PIECE_FONT = '"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif';
+  var PIECE_SHAPE = [[0, -20], [13, -15], [16, 19], [-16, 19], [-13, -15]];
+  var PROMOTED = "と杏圭全馬龍";
+  var KANJI_COUNT = ["", "", "二", "三", "四", "五", "六", "七", "八", "九", "十",
+    "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八"];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var gridEl = $("boardGrid"), boardEl = $("board"), handEl = $("senteHand");
+  var feedbackEl = $("feedback"), hintBox = $("hintBox"), guideEl = $("guide");
+  var promoEl = $("promo");
+
+  // ---------- 保存データ ----------
+  // { items: { t01: { solved: bool, first: "ok"|"ng"|"", tries: 回数, missed: bool } } }
+  function num(v) { return typeof v === "number" && isFinite(v) && v >= 0 ? Math.floor(v) : 0; }
+  function loadStats() {
+    var raw = Store.load(STATS_KEY, null);
+    var s = { items: {} };
+    if (!raw || typeof raw !== "object" || !raw.items || typeof raw.items !== "object") return s;
+    PROBLEMS.forEach(function (p) {
+      var r = raw.items[p.id];
+      if (!r || typeof r !== "object") return;
+      s.items[p.id] = {
+        solved: r.solved === true,
+        first: r.first === "ok" || r.first === "ng" ? r.first : "",
+        tries: num(r.tries),
+        missed: r.missed === true
+      };
+    });
+    return s;
+  }
+  function saveStats() { Store.save(STATS_KEY, stats); }
+  function itemOf(id) {
+    if (!stats.items[id]) stats.items[id] = { solved: false, first: "", tries: 0, missed: false };
+    return stats.items[id];
+  }
+  var stats = loadStats();
+
+  // ---------- 状態 ----------
+  var cur = null;   // { index, problem, start, pos, legal, selected, done, lastMove, recorded, revealed, aims }
+  var focusSq = E.idx(5, 5);
+  var reviewed = {};   // このページを開いてから復習プランナーに記録した問題(同じ問題は1回だけ記録する)
+  function recordReview(correct) {
+    if (reviewed[cur.problem.id]) return;
+    reviewed[cur.problem.id] = true;
+    try { Review.record(REVIEW_APP, UNIT_ID, correct); } catch (e) { /* 記録できなくても止めない */ }
+  }
+
+  function firstUnsolved(from) {
+    for (var k = 0; k < PROBLEMS.length; k++) {
+      var i = (from + k) % PROBLEMS.length;
+      var it = stats.items[PROBLEMS[i].id];
+      if (!it || !it.solved) return i;
+    }
+    return -1;
+  }
+
+  // ---------- 駒の絵(board.js と同じ形・色) ----------
+  function pieceSvg(t, isGote, viewBox) {
+    var ch = isGote && t === "玉" ? "王" : t;
+    var ink = PROMOTED.indexOf(t) >= 0 ? "var(--piece-promoted)" : "var(--piece-ink)";
+    var pts = PIECE_SHAPE.map(function (d) { return d[0] + "," + d[1]; }).join(" ");
+    var g = '<polygon points="' + pts + '" fill="var(--piece)" stroke="var(--piece-edge)" stroke-width="1" stroke-linejoin="round"/>' +
+      '<text x="0" y="3" font-size="24" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="' + ink +
+      '" style="font-family:' + PIECE_FONT.replace(/"/g, "&quot;") + '">' + ch + '</text>';
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + (viewBox || "-20 -22 40 44") + '" aria-hidden="true">' +
+      (isGote ? '<g transform="rotate(180)">' + g + '</g>' : g) + '</svg>';
+  }
+
+  // ---------- 盤を作る(マスは button。矢印キーで移動) ----------
+  (function buildBoard() {
+    var files = boardEl.querySelector(".tb-files"), ranks = boardEl.querySelector(".tb-ranks");
+    var f, r;
+    for (f = 9; f >= 1; f--) { var s = document.createElement("span"); s.textContent = f; files.appendChild(s); }
+    for (r = 1; r <= 9; r++) { var k = document.createElement("span"); k.textContent = E.KANJI[r]; ranks.appendChild(k); }
+    for (r = 1; r <= 9; r++) {
+      var row = document.createElement("div");
+      row.setAttribute("role", "row");
+      row.style.display = "contents";
+      for (f = 9; f >= 1; f--) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "cell";
+        b.setAttribute("role", "gridcell");
+        b.dataset.sq = String(E.idx(f, r));
+        b.tabIndex = -1;
+        row.appendChild(b);
+      }
+      gridEl.appendChild(row);
+    }
+  })();
+  var cells = {};
+  gridEl.querySelectorAll(".cell").forEach(function (b) { cells[b.dataset.sq] = b; });
+  // 盤の外枠に接する辺には、マスの線を引かない
+  Object.keys(cells).forEach(function (k) {
+    var sq = Number(k), f = E.fileOf(sq), r = E.rankOf(sq), b = cells[k];
+    b.style.borderRightWidth = f === 1 ? "0" : "1px";
+    b.style.borderBottomWidth = r === 9 ? "0" : "1px";
+  });
+  var STAR = {};
+  [[6, 3], [3, 3], [6, 6], [3, 6]].forEach(function (p) { STAR[E.idx(p[0], p[1])] = true; });
+
+  function sqLabel(sq) { return E.sqName(sq); }
+  function pieceLabel(p) {
+    if (!p) return "空き";
+    return (p.s === SENTE ? "先手の" : "後手の") + (p.s === GOTE && p.t === "玉" ? "玉" : E.pieceName(p.t));
+  }
+
+  // ---------- 描画 ----------
+  function destinations() {
+    if (!cur || !cur.selected) return {};
+    var d = {};
+    cur.legal.forEach(function (m) {
+      if (cur.selected.drop ? (m.drop && m.piece === cur.selected.piece) : (!m.drop && m.from === cur.selected.sq)) d[m.to] = true;
+    });
+    return d;
+  }
+  function renderBoard() {
+    var dest = destinations();
+    var board = cur.pos.board;
+    Object.keys(cells).forEach(function (k) {
+      var sq = Number(k), b = cells[k], p = board[sq];
+      var html = p ? pieceSvg(p.t, p.s === GOTE) : "";
+      if (STAR[sq]) html += '<span class="star"></span>';
+      if (dest[sq]) html += '<span class="dot"></span>';
+      b.innerHTML = html;
+      b.classList.toggle("has-piece", !!p);
+      b.classList.toggle("is-last", !!cur.lastMove && cur.lastMove.to === sq);
+      b.classList.toggle("is-selected", !!cur.selected && !cur.selected.drop && cur.selected.sq === sq);
+      b.classList.toggle("is-aim", cur.aims.indexOf(sq) >= 0);
+      var label = sqLabel(sq) + " " + pieceLabel(p);
+      if (dest[sq]) label += "(ここへ指せます)";
+      if (cur.selected && !cur.selected.drop && cur.selected.sq === sq) label += "(選択中)";
+      b.setAttribute("aria-label", label);
+      b.tabIndex = sq === focusSq ? 0 : -1;
+    });
+  }
+  function renderHand() {
+    var h = cur.pos.hand[SENTE];
+    var html = '<span class="hand-label">▲先手 持ち駒</span>';
+    var any = false;
+    E.HAND_ORDER.forEach(function (t) {
+      var n = h[t] || 0;
+      if (!n) return;
+      any = true;
+      var sel = cur.selected && cur.selected.drop && cur.selected.piece === t;
+      html += '<button type="button" class="hand-btn' + (sel ? " is-selected" : "") + '" data-piece="' + t + '"' +
+        (cur.done ? " disabled" : "") + ' aria-pressed="' + (sel ? "true" : "false") + '" aria-label="持ち駒の' + t + (n > 1 ? " " + n + "枚" : "") + '">' +
+        pieceSvg(t, false) + (n > 1 ? '<span class="count">' + KANJI_COUNT[n] + '</span>' : "") + '</button>';
+    });
+    if (!any) html += '<span class="hand-none">なし</span>';
+    handEl.innerHTML = html;
+  }
+  function renderGuide() {
+    var text = "";
+    if (cur.done) text = "";
+    else if (!cur.selected) text = "動かす駒か、持ち駒を選んでください。";
+    else if (cur.selected.drop) text = "持ち駒の" + cur.selected.piece + "を打つマスを選んでください。";
+    else text = sqLabel(cur.selected.sq) + "の" + E.pieceName(cur.pos.board[cur.selected.sq].t) + "を動かすマスを選んでください。";
+    guideEl.textContent = text;
+  }
+  function renderPicker() {
+    var solved = 0;
+    var html = "";
+    PROBLEMS.forEach(function (p, i) {
+      var it = stats.items[p.id] || {};
+      if (it.solved) solved++;
+      var cls = "q-btn" + (it.solved ? " is-solved" : "") + (it.missed ? " is-missed" : "") + (cur && cur.index === i ? " is-current" : "");
+      var label = "第" + (i + 1) + "問 " + p.theme + (it.solved ? "、解けた" : "") + (it.missed ? "、間違えたことがある" : "");
+      html += '<button type="button" class="' + cls + '" data-index="' + i + '" aria-label="' + label + '"' +
+        (cur && cur.index === i ? ' aria-current="true"' : "") + '>' + (i + 1) + '</button>';
+    });
+    $("qGrid").innerHTML = html;
+    $("solvedCount").innerHTML = "解いた数 <b>" + solved + "</b> / " + PROBLEMS.length;
+    var next = firstUnsolved(cur.index + 1);
+    var btn = $("nextUnsolvedBtn");
+    btn.disabled = next < 0 || next === cur.index;
+    btn.textContent = next < 0 ? "全問解けました" : next === cur.index ? "未解決はこの問題だけ" : "次の未解決の問題 →";
+  }
+  function renderHead() {
+    var p = cur.problem, it = stats.items[p.id] || {};
+    $("qTitle").textContent = "第" + (cur.index + 1) + "問";
+    $("qTheme").textContent = p.theme;
+    var st = $("qStatus");
+    st.textContent = it.solved ? "解けた問題" : it.tries > 0 ? "挑戦 " + it.tries + "回" : "";
+    st.classList.toggle("is-solved", !!it.solved);
+    $("answerBtn").disabled = cur.revealed;
+  }
+  function render() {
+    renderBoard();
+    renderHand();
+    renderGuide();
+    renderHead();
+    renderPicker();
+  }
+
+  // ---------- 問題を開く ----------
+  function openProblem(index) {
+    var p = PROBLEMS[index];
+    var start = E.setup(p);
+    cur = {
+      index: index, problem: p, start: start, pos: start,
+      legal: E.legalMoves(start, SENTE, false),
+      selected: null, done: false, lastMove: null, recorded: false, revealed: false, aims: []
+    };
+    closePromo();
+    feedbackEl.hidden = true;
+    feedbackEl.innerHTML = "";
+    hintBox.hidden = true;
+    $("hintBtn").textContent = "ヒント";
+    render();
+  }
+  function resetPosition() {
+    cur.pos = cur.start;
+    cur.legal = E.legalMoves(cur.start, SENTE, false);
+    cur.selected = null;
+    cur.done = false;
+    cur.lastMove = null;
+    cur.aims = [];
+    closePromo();
+    feedbackEl.hidden = true;
+    feedbackEl.innerHTML = "";
+    render();
+  }
+
+  // ---------- 操作 ----------
+  function select(sel) {
+    cur.selected = sel;
+    renderBoard();
+    renderHand();
+    renderGuide();
+  }
+  function onCell(sq) {
+    focusSq = sq;
+    if (!cur || cur.done || !promoEl.hidden) { renderBoard(); return; }
+    var dest = destinations();
+    if (cur.selected && dest[sq]) { tryMove(sq); return; }
+    var p = cur.pos.board[sq];
+    if (p && p.s === SENTE) {
+      if (cur.selected && !cur.selected.drop && cur.selected.sq === sq) select(null);
+      else select({ drop: false, sq: sq });
+      return;
+    }
+    select(null);
+  }
+  function onHand(piece) {
+    if (!cur || cur.done) return;
+    if (cur.selected && cur.selected.drop && cur.selected.piece === piece) select(null);
+    else select({ drop: true, piece: piece });
+  }
+  function tryMove(to) {
+    var sel = cur.selected;
+    var list = cur.legal.filter(function (m) {
+      return m.to === to && (sel.drop ? (m.drop && m.piece === sel.piece) : (!m.drop && m.from === sel.sq));
+    });
+    if (list.length === 0) return;
+    if (list.length === 1) { play(list[0]); return; }
+    // 成る・成らないの両方がある
+    openPromo(list);
+  }
+  var promoChoices = null, promoReturn = null;
+  function openPromo(list) {
+    promoChoices = list;
+    promoReturn = document.activeElement;
+    var m = list[0];
+    $("promoText").textContent = E.sqName(m.to) + "で" + E.pieceName(m.piece) + "を成りますか?";
+    promoEl.hidden = false;
+    $("promoYes").focus();
+  }
+  function closePromo() {
+    promoEl.hidden = true;
+    promoChoices = null;
+  }
+  function choosePromo(promote) {
+    if (!promoChoices) return;
+    var m = promoChoices.filter(function (x) { return x.promote === promote; })[0];
+    closePromo();
+    if (m) play(m);
+  }
+  $("promoYes").addEventListener("click", function () { choosePromo(true); });
+  $("promoNo").addEventListener("click", function () { choosePromo(false); });
+  $("promoCancel").addEventListener("click", function () {
+    closePromo();
+    if (promoReturn && promoReturn.focus) promoReturn.focus();
+  });
+  promoEl.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { e.preventDefault(); $("promoCancel").click(); }
+  });
+
+  // 指した手を盤に反映して判定する
+  function play(mv, byAnswer) {
+    var res = E.judge(cur.start, mv);
+    var text = E.notate(cur.start, mv);
+    cur.pos = res.after;
+    cur.lastMove = mv;
+    cur.selected = null;
+    cur.done = true;
+    focusSq = mv.to;
+    var correct = res.kind === "mate";
+    cur.aims = correct ? [E.kingSq(res.after.board, GOTE)] : res.kind === "escape" ? res.kingTo.concat(res.blocks) : [];
+    record(correct);
+    showResult(res, text, correct, byAnswer);
+    render();
+  }
+  function record(correct) {
+    var it = itemOf(cur.problem.id);
+    if (!cur.revealed) {
+      it.tries++;
+      if (!it.first) it.first = correct ? "ok" : "ng";
+      if (correct) it.solved = true; else it.missed = true;
+    }
+    saveStats();
+    // 復習プランナー: この問題を開いてからの最初の1手だけを記録する(やり直し・答えを見たあとは記録しない)
+    if (!cur.recorded && !cur.revealed) {
+      cur.recorded = true;
+      recordReview(correct);
+    }
+  }
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function showResult(res, moveText, correct, byAnswer) {
+    feedbackEl.innerHTML = "";
+    if (byAnswer) {
+      feedbackEl.className = "feedback info";
+      feedbackEl.appendChild(el("p", "fb-title", "答え: " + cur.problem.answer));
+      feedbackEl.appendChild(el("p", "fb-explain", cur.problem.explain));
+    } else if (correct) {
+      feedbackEl.className = "feedback good";
+      feedbackEl.appendChild(el("p", "fb-title", "詰み! 正解"));
+      feedbackEl.appendChild(el("p", "fb-move", "あなたの手: " + moveText + (cur.revealed ? "(答えを見たあとなので、解けた問題には数えません)" : "")));
+      feedbackEl.appendChild(el("p", "fb-explain", cur.problem.explain));
+    } else {
+      feedbackEl.className = "feedback bad";
+      feedbackEl.appendChild(el("p", "fb-title", res.kind === "uchifuzume" ? "反則(打ち歩詰め)" : "不正解"));
+      feedbackEl.appendChild(el("p", "fb-move", "あなたの手: " + moveText));
+      var ul = el("ul");
+      E.reasonText(res).forEach(function (t) { ul.appendChild(el("li", "", t)); });
+      feedbackEl.appendChild(ul);
+      var tail = el("p", "fb-explain", "「やり直す」で最初の局面に戻せます。赤い枠は、玉の逃げ道や合駒のできるマスです。");
+      if (!cur.aims.length) tail.textContent = "「やり直す」で最初の局面に戻せます。";
+      feedbackEl.appendChild(tail);
+    }
+    feedbackEl.hidden = false;
+  }
+
+  // 盤のクリックとキーボード
+  gridEl.addEventListener("click", function (e) {
+    var b = e.target.closest(".cell");
+    if (b) onCell(Number(b.dataset.sq));
+  });
+  gridEl.addEventListener("keydown", function (e) {
+    var b = e.target.closest(".cell");
+    if (!b) return;
+    var sq = Number(b.dataset.sq), f = E.fileOf(sq), r = E.rankOf(sq);
+    var moves = { ArrowLeft: [1, 0], ArrowRight: [-1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+    var d = moves[e.key];
+    if (!d) return;
+    e.preventDefault();
+    var nf = Math.min(9, Math.max(1, f + d[0])), nr = Math.min(9, Math.max(1, r + d[1]));
+    focusSq = E.idx(nf, nr);
+    Object.keys(cells).forEach(function (k) { cells[k].tabIndex = Number(k) === focusSq ? 0 : -1; });
+    cells[focusSq].focus();
+  });
+  handEl.addEventListener("click", function (e) {
+    var b = e.target.closest(".hand-btn");
+    if (b && !b.disabled) onHand(b.dataset.piece);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && promoEl.hidden && cur && cur.selected) select(null);
+  });
+
+  // ---------- ボタン ----------
+  $("resetBtn").addEventListener("click", function () { resetPosition(); });
+  $("hintBtn").addEventListener("click", function () {
+    if (hintBox.hidden) {
+      hintBox.innerHTML = "";
+      hintBox.appendChild(el("b", "", "ヒント"));
+      hintBox.appendChild(document.createTextNode(cur.problem.hint));
+      hintBox.hidden = false;
+      $("hintBtn").textContent = "ヒントを隠す";
+    } else {
+      hintBox.hidden = true;
+      $("hintBtn").textContent = "ヒント";
+    }
+  });
+  $("answerBtn").addEventListener("click", function () {
+    var mv = E.findMove(cur.start, cur.problem.answer);
+    if (!mv) return;
+    // まだこの問題で1手も指していなければ、不正解として1回記録する。解き終えた問題を見返すだけなら記録しない
+    var it = itemOf(cur.problem.id);
+    if (!cur.recorded && !it.solved) {
+      cur.recorded = true;
+      it.tries++;
+      if (!it.first) it.first = "ng";
+      it.missed = true;
+      saveStats();
+      recordReview(false);
+    }
+    cur.revealed = true;
+    cur.pos = cur.start;
+    play(mv, true);
+  });
+  $("nextBtn").addEventListener("click", function () {
+    openProblem((cur.index + 1) % PROBLEMS.length);
+    $("qTitle").scrollIntoView({ block: "nearest" });
+  });
+  $("nextUnsolvedBtn").addEventListener("click", function () {
+    var i = firstUnsolved(cur.index + 1);
+    if (i >= 0) openProblem(i);
+  });
+  $("qGrid").addEventListener("click", function (e) {
+    var b = e.target.closest(".q-btn");
+    if (b) openProblem(Number(b.dataset.index));
+  });
+  $("clearBtn").addEventListener("click", function () {
+    if (!confirm("1手詰めの記録(解けた問題・挑戦回数)をすべて消します。よろしいですか?\n(復習プランナーの記録は消えません)")) return;
+    Store.remove(STATS_KEY);
+    stats = { items: {} };
+    render();
+  });
+
+  // ---------- はじめに開く問題 ----------
+  // tsume.html?unit=tsume1(復習プランナーから)でも、ふつうに開いても、最初の未解決の問題から始める
+  var startIndex = firstUnsolved(0);
+  openProblem(startIndex < 0 ? 0 : startIndex);
+})();
+</script>
+</body>
+</html>
