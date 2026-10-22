@@ -15,6 +15,7 @@
 
   /* ---------- Hero ---------- */
   .tagline { max-width: 56ch; }
+  .eyebrow { word-break: keep-all; }   /* 「全28単元」を途中で折り返さない */
   .site-nav {
     margin: 14px 0 0;
     display: flex;
@@ -433,7 +434,7 @@
 <div class="app">
   <a class="back-link" href="../../../index.html">← ページ一覧</a>
   <header class="hero">
-    <p class="eyebrow" id="eyebrow">JUNIOR HIGH JAPANESE · 中1 全10単元</p>
+    <p class="eyebrow" id="eyebrow">JUNIOR HIGH JAPANESE · 中1〜中3 全28単元</p>
     <h1>中学国語の要点帳</h1>
     <p class="tagline">単元ごとの要点と例題をまとめた早見帳です。読んだらその単元のクイズへ進めます。</p>
     <nav class="site-nav" aria-label="中学国語道場のページ">
@@ -463,6 +464,8 @@
 <script src="../../../shared/store.js"></script>
 <script src="data.js"></script>
 <script src="data-g1.js"></script>
+<script src="data-g2.js"></script>
+<script src="data-g3.js"></script>
 <script>
 (function () {
   "use strict";

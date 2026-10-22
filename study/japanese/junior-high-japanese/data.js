@@ -1,6 +1,6 @@
 // 中学国語道場: 学年・分野・単元の定義と、学年別ファイル(data-g1.js など)が中身を登録するための入れ物。
 // 例文・古文・漢文などの表示部品を組み立てる関数も、このファイルに置く。
-// 読み込む順番: shared/store.js → data.js → data-g1.js
+// 読み込む順番: shared/store.js → data.js → data-g1.js → data-g2.js → data-g3.js
 //
 // ■ 学年を足すとき(中2・中3)
 //   1. 下の GRADES に学年を、UNITS に単元を足す(ID は "g2-…")。
@@ -44,7 +44,9 @@ var JHJ = (function () {
   var COUNTS = [5, 10, 20];
 
   var GRADES = [
-    { id: "g1", short: "中1", name: "中学1年" }
+    { id: "g1", short: "中1", name: "中学1年" },
+    { id: "g2", short: "中2", name: "中学2年" },
+    { id: "g3", short: "中3", name: "中学3年" }
   ];
 
   // 分野。設定画面の小見出し、要点帳の目次、成績の「分野ごとの正答率」は、この順に並ぶ
@@ -63,7 +65,27 @@ var JHJ = (function () {
     { id: "g1-kanji-origins-readings", grade: "g1", area: "漢字", name: "漢字の成り立ちと音訓" },
     { id: "g1-compounds-vocabulary", grade: "g1", area: "語句", name: "熟語と語句", sub: "熟語の構成・類義語・対義語・多義語" },
     { id: "g1-classical-japanese", grade: "g1", area: "古典", name: "古文の基礎", sub: "歴史的仮名遣い・古語・竹取物語", wide: true },
-    { id: "g1-classical-chinese", grade: "g1", area: "古典", name: "漢文の基礎", sub: "返り点・故事成語", wide: true }
+    { id: "g1-classical-chinese", grade: "g1", area: "古典", name: "漢文の基礎", sub: "返り点・故事成語", wide: true },
+
+    { id: "g2-verb-conjugation", grade: "g2", area: "文法", name: "動詞の活用", sub: "活用の種類・活用形" },
+    { id: "g2-adjective-conjugation", grade: "g2", area: "文法", name: "形容詞・形容動詞の活用" },
+    { id: "g2-particles", grade: "g2", area: "文法", name: "助詞", sub: "格助詞・接続助詞・副助詞・終助詞" },
+    { id: "g2-auxiliary-verbs", grade: "g2", area: "文法", name: "助動詞", sub: "おもな助動詞の意味" },
+    { id: "g2-homophones", grade: "g2", area: "漢字", name: "同音異義語・同訓異字" },
+    { id: "g2-honorifics", grade: "g2", area: "語句", name: "敬語", sub: "尊敬語・謙譲語・丁寧語" },
+    { id: "g2-idioms-proverbs", grade: "g2", area: "語句", name: "慣用句・ことわざ" },
+    { id: "g2-makura-tsurezure", grade: "g2", area: "古典", name: "枕草子・徒然草", sub: "随筆の古典", wide: true },
+    { id: "g2-heike", grade: "g2", area: "古典", name: "平家物語", sub: "軍記物語・無常観・対句", wide: true },
+    { id: "g2-kanshi", grade: "g2", area: "古典", name: "漢詩", sub: "絶句・律詩・押韻・対句", wide: true },
+
+    { id: "g3-word-identification", grade: "g3", area: "文法", name: "まぎらわしい語の識別", sub: "「ない」「の」「に」「だ」など" },
+    { id: "g3-auxiliary-meanings", grade: "g3", area: "文法", name: "助動詞・助詞の意味の識別", sub: "「れる・られる」「ようだ」「そうだ」など" },
+    { id: "g3-four-character-idioms", grade: "g3", area: "漢字", name: "三字熟語・四字熟語" },
+    { id: "g3-word-origins", grade: "g3", area: "語句", name: "和語・漢語・外来語" },
+    { id: "g3-rhetoric", grade: "g3", area: "語句", name: "表現技法", sub: "比喩・倒置・体言止め・対句・季語・切れ字" },
+    { id: "g3-waka", grade: "g3", area: "古典", name: "和歌", sub: "万葉集・古今和歌集・新古今和歌集", wide: true },
+    { id: "g3-okunohosomichi", grade: "g3", area: "古典", name: "おくのほそ道", sub: "松尾芭蕉・紀行文と俳句", wide: true },
+    { id: "g3-analects", grade: "g3", area: "古典", name: "論語", sub: "孔子の言葉・書き下し文", wide: true }
   ];
 
   var byId = {};

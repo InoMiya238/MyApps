@@ -15,6 +15,7 @@
 
   /* ---------- Hero ---------- */
   .tagline { max-width: 46ch; }
+  .eyebrow { word-break: keep-all; }   /* 「全28単元」を途中で折り返さない */
   body.is-quiz .hero .tagline { display: none; }
 
   .site-nav {
@@ -695,9 +696,9 @@
 <div class="app">
   <a class="back-link" href="../../../index.html">← ページ一覧</a>
   <header class="hero">
-    <p class="eyebrow" id="eyebrow">JUNIOR HIGH JAPANESE · 中1 全10単元</p>
+    <p class="eyebrow" id="eyebrow">JUNIOR HIGH JAPANESE · 中1〜中3 全28単元</p>
     <h1>中学国語道場</h1>
-    <p class="tagline" id="tagline">中1の10単元を、4択クイズで学び直します。単元ごとの正答率が残るので、苦手がわかります。</p>
+    <p class="tagline" id="tagline">中1〜中3の28単元を、4択クイズで学び直します。単元ごとの正答率が残るので、苦手がわかります。</p>
     <nav class="site-nav" aria-label="中学国語道場のページ">
       <span aria-current="page">クイズ道場</span>
       <a href="reference.html">要点帳</a>
@@ -812,6 +813,8 @@
 <script src="../../../shared/review.js"></script>
 <script src="data.js"></script>
 <script src="data-g1.js"></script>
+<script src="data-g2.js"></script>
+<script src="data-g3.js"></script>
 <script>
 (function () {
   "use strict";

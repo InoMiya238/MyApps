@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>オーダー図鑑</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  body { padding-bottom: 72px; }
+
+  .app { max-width: 780px; gap: 24px; }
+
+  header.top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .title-block h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 28px;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .title-block p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 14px;
+    max-width: 46ch;
+    line-height: 1.6;
+  }
+
+  nav.top-nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px var(--shadow);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  nav.top-nav a:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--shadow);
+  }
+
+  .intro {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--ink-muted);
+  }
+
+  .intro b { color: var(--ink); }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .tab:hover { border-color: var(--accent); color: var(--ink); }
+
+  .tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .tab .unit {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    opacity: 0.75;
+  }
+
+  .scale-overview {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 10px 4px;
+    overflow-x: auto;
+  }
+
+  .scale-dot {
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-faint);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .scale-dot:hover { border-color: var(--accent); color: var(--accent); }
+
+  .timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-left: 26px;
+  }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--border), var(--accent), var(--border));
+    opacity: 0.6;
+  }
+
+  .item {
+    position: relative;
+    padding: 14px 0;
+    scroll-margin-top: 20px;
+  }
+
+  .item::before {
+    content: "";
+    position: absolute;
+    left: -26px;
+    top: 22px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 1.5px var(--accent);
+  }
+
+  .item-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px var(--shadow);
+  }
+
+  .item-emoji {
+    flex: 0 0 auto;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+
+  .item-body { flex: 1 1 auto; min-width: 0; }
+
+  .item-name {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 2px;
+  }
+
+  .item-note {
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .item-vals {
+    flex: 0 0 auto;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+  }
+
+  .item-exp {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--accent);
+    background: var(--good-soft);
+    padding: 3px 9px;
+    border-radius: 8px;
+  }
+
+  .item-value {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
+
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-faint);
+    padding-top: 8px;
+  }
+
+  @media (max-width: 480px) {
+    .item-note { display: none; }
+    .item-card { padding: 12px; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="top">
+    <div class="title-block">
+      <h1>オーダー図鑑</h1>
+      <p>いろいろなモノの大きさ・重さ・時間・数を、10のべき乗(桁)のスケールで並べて眺めながら「桁の感覚」を身につけるページです。</p>
+    </div>
+    <nav class="top-nav"><a href="quiz.html">クイズに挑戦 →</a></nav>
+  </header>
+
+  <div class="intro">
+    <b>オーダー(桁)</b>とは、数の大きさを 10 の何乗かでざっくり捉えたものです。例えば身長 1.7m は <b>10⁰</b> m、地球の半径 6.4×10⁶ m は <b>10⁶</b> m のオーダーと言います。下のタブでジャンルを選び、小さいものから大きいものへスクロールして眺めてみましょう。
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="scale-overview" id="scaleOverview"></div>
+  <div class="timeline" id="timeline"></div>
+
+  <footer>オーダー図鑑 — 数値は代表的な概算値です</footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+  const tabsEl = document.getElementById("tabs");
+  const overviewEl = document.getElementById("scaleOverview");
+  const timelineEl = document.getElementById("timeline");
+  const categories = Object.keys(OOM_DATA);
+  let current = categories[0];
+
+  function render() {
+    tabsEl.innerHTML = categories
+      .map((key) => {
+        const cat = OOM_DATA[key];
+        const active = key === current ? "active" : "";
+        return `<button class="tab ${active}" data-cat="${key}">${cat.icon} ${cat.label}</button>`;
+      })
+      .join("");
+
+    const cat = OOM_DATA[current];
+    const items = [...cat.items].sort((a, b) => a.exp - b.exp);
+
+    overviewEl.innerHTML = items
+      .map((it) => `<div class="scale-dot" data-target="item-${current}-${it.exp}" title="${it.name}">${formatExp(it.exp)}</div>`)
+      .join("");
+
+    timelineEl.innerHTML = items
+      .map(
+        (it) => `
+      <div class="item" id="item-${current}-${it.exp}">
+        <div class="item-card">
+          <div class="item-emoji">${it.emoji}</div>
+          <div class="item-body">
+            <p class="item-name">${it.name}</p>
+            <p class="item-note">${it.note}</p>
+          </div>
+          <div class="item-vals">
+            <span class="item-exp">${formatExp(it.exp)}</span>
+            <span class="item-value">${it.valueText}</span>
+          </div>
+        </div>
+      </div>`
+      )
+      .join("");
+
+    tabsEl.querySelectorAll(".tab").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        current = btn.dataset.cat;
+        render();
+      });
+    });
+
+    overviewEl.querySelectorAll(".scale-dot").forEach((dot) => {
+      dot.addEventListener("click", () => {
+        document.getElementById(dot.dataset.target)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
+  }
+
+  render();
+</script>
+</body>
+</html>
