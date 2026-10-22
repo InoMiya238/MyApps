@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>世界地図帳 | 世界地図道場</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 820px; gap: 20px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] { color: var(--ink); font-weight: 600; border-bottom: 2px solid var(--accent); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .card h2 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; margin: 0 0 12px; }
+  button { font-family: var(--font-body); cursor: pointer; }
+  button:focus-visible, a:focus-visible, input:focus-visible, .wmap-stage:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .hint { font-size: 0.78rem; color: var(--ink-faint); margin: 8px 0 0; line-height: 1.6; }
+
+  /* ---------- 州タブ ---------- */
+  .region-tabs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: 8px;
+  }
+  .region-tab {
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    transition: all 0.15s ease;
+  }
+  .region-tab:hover { border-color: var(--accent); color: var(--ink); }
+  .region-tab[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .region-tab .count { font-family: var(--font-mono); font-size: 11px; opacity: 0.8; font-weight: 500; }
+
+  .map-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .map-head h2 { margin: 0; }
+  .quiz-link {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-radius: 9px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .quiz-link[hidden] { display: none; }
+  .pick-empty { margin: 12px 0 0; font-size: 0.85rem; color: var(--ink-faint); }
+  .pick-empty[hidden] { display: none; }
+  #pickCard { scroll-margin: 12px; }
+
+  /* ---------- 検索 ---------- */
+  .search-box {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 16px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  .search-box::placeholder { color: var(--ink-faint); }
+  .search-result { margin-top: 10px; }
+  .search-result:empty { display: none; }
+  .search-none { margin: 0; font-size: 0.85rem; color: var(--ink-faint); }
+
+  /* ---------- 国の一覧 ---------- */
+  .list-head { margin: 18px 0 8px; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 10px; }
+  .list-head:first-child { margin-top: 0; }
+  .list-head h3 { margin: 0; font-size: 0.95rem; font-weight: 700; }
+  .list-head a { font-size: 0.82rem; font-weight: 600; color: var(--accent); text-decoration: none; }
+  .list-head a:hover { text-decoration: underline; }
+  .country-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 6px;
+  }
+  .country-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 48px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    text-align: left;
+    font-size: 14px;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .country-item:hover { border-color: var(--accent); }
+  .country-item[aria-current="true"] { border-color: var(--accent); background: var(--accent-soft); }
+  .country-item .flag-img { width: 36px; flex: none; }
+  .ci-text { display: flex; flex-direction: column; min-width: 0; }
+  .ci-name { font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+  .ci-cap { font-size: 12px; color: var(--ink-muted); overflow-wrap: anywhere; }
+
+  .flag-img {
+    display: block;
+    aspect-ratio: 4 / 3;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px var(--border);
+    background: var(--surface-2);
+  }
+
+  /* ---------- 出典 ---------- */
+  .credits { font-size: 12px; color: var(--ink-faint); line-height: 1.7; text-align: center; }
+  .credits p { margin: 0; }
+  .credits a { color: var(--ink-muted); }
+
+  /* ---------- 国のカード(index.html と同じ内容。変えるときは両方を直す) ---------- */
+  .country-card {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 12px 14px;
+    align-items: start;
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+  .country-card .flag-img { width: 96px; }
+  .cc-body { min-width: 0; }
+  .cc-name { font-size: 1.1rem; font-weight: 700; overflow-wrap: anywhere; }
+  .cc-official { font-size: 0.8rem; color: var(--ink-muted); overflow-wrap: anywhere; }
+  .cc-facts { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 8px 0 0; }
+  .cc-facts dt { color: var(--ink-faint); font-size: 0.8rem; }
+  .cc-facts dd { margin: 0; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+  .cc-note { grid-column: 1 / -1; margin: 0; font-size: 0.84rem; color: var(--ink-muted); }
+  .cc-note:empty { display: none; }
+  .cc-links { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+  .cc-links a { color: var(--accent); font-weight: 600; font-size: 0.85rem; text-decoration: none; }
+  .cc-links a:hover { text-decoration: underline; }
+  @media (max-width: 400px) {
+    .country-card { grid-template-columns: 72px 1fr; }
+    .country-card .flag-img { width: 72px; }
+  }
+
+  /* ===== 地図の表示部品 ここから(index.html と同じ内容。変えるときは両方を直す) ===== */
+  .wmap { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .wmap-stage {
+    position: relative;
+    width: 100%;
+    height: 240px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--map-sea);
+    touch-action: none;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wmap.dragging .wmap-stage { cursor: grabbing; }
+  .wmap-svg { display: block; width: 100%; height: 100%; }
+  .wmap-sea { fill: var(--map-sea); }
+  .wmap-o { fill: var(--map-other); stroke: var(--map-stroke); stroke-width: 0.4px; vector-effect: non-scaling-stroke; pointer-events: none; }
+  .wmap-c { fill: var(--map-land); stroke: var(--map-stroke); stroke-width: 0.6px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+  .wmap-c.dim { fill-opacity: 0.5; }
+  .wmap-m { fill: var(--map-land); stroke: var(--map-marker); stroke-width: 1.2px; vector-effect: non-scaling-stroke; pointer-events: none; }
+  .wmap-m.dim { opacity: 0.55; }
+  .wmap.tappable .wmap-c { cursor: pointer; }
+  .wmap.tappable.dragging .wmap-c { cursor: grabbing; }
+  @media (hover: hover) {
+    .wmap.tappable .wmap-c:hover { fill: var(--map-land-hover); fill-opacity: 1; }
+  }
+  .wmap .is-target { fill: var(--map-target); fill-opacity: 1; opacity: 1; }
+  .wmap .is-pick { fill: var(--map-pick); fill-opacity: 1; opacity: 1; }
+  .wmap .is-good { fill: var(--map-good); fill-opacity: 1; opacity: 1; }
+  .wmap .is-bad { fill: var(--map-bad); fill-opacity: 1; opacity: 1; }
+  .wmap.tappable .is-target:hover, .wmap.tappable .is-pick:hover { fill: var(--map-pick); }
+  .wmap-ring { fill: none; stroke-width: 2.5px; vector-effect: non-scaling-stroke; pointer-events: none; }
+  .wmap-ring.target { stroke: var(--map-target); }
+  .wmap-ring.pick { stroke: var(--map-pick); }
+  .wmap-ring.good { stroke: var(--map-good); }
+  .wmap-ring.bad { stroke: var(--map-bad); }
+  .wmap-msg {
+    margin: 0;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .wmap-msg[hidden] { display: none; }
+  .wmap-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .wmap-shortcuts { display: contents; }
+  .wmap-btn {
+    min-width: 44px;
+    min-height: 40px;
+    padding: 6px 10px;
+    border-radius: 9px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .wmap-btn.wide { font-size: 13px; font-weight: 600; }
+  .wmap-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .wmap-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  /* ===== 地図の表示部品 ここまで ===== */
+
+  @media (max-width: 400px) {
+    body { padding: 22px 12px 48px; }
+    .card { padding: 16px 14px; }
+    .region-tabs { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .region-tab { font-size: 13px; }
+    .country-list { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">WORLD ATLAS · 6州 197か国</p>
+    <h1>世界地図帳</h1>
+    <p class="tagline">州ごとの地図で、国の位置・国旗・首都を調べられます。国をタップすると、その国のカードが出ます。</p>
+    <nav class="site-nav" aria-label="世界地図道場のページ">
+      <a href="index.html">クイズ道場</a>
+      <span aria-current="page">世界地図帳</span>
+    </nav>
+  </header>
+
+  <div class="region-tabs" id="regionTabs" role="group" aria-label="表示する州"></div>
+
+  <section class="card" aria-labelledby="mapTitle">
+    <div class="map-head">
+      <h2 id="mapTitle">世界全体</h2>
+      <a class="quiz-link" id="quizLink" href="index.html" hidden>この州をクイズで練習 →</a>
+    </div>
+    <div id="atlasMap"></div>
+    <p class="hint">国や円(小さな国)をタップすると、カードが出ます。+ − ボタン・ピンチ・Ctrl+ホイールで拡大、ドラッグで移動できます。</p>
+    <div id="pickCard" aria-live="polite"></div>
+    <p class="pick-empty" id="pickEmpty">まだ国を選んでいません。</p>
+  </section>
+
+  <section class="card" aria-labelledby="searchTitle">
+    <h2 id="searchTitle"><label for="searchBox">国名・首都で探す</label></h2>
+    <input class="search-box" id="searchBox" type="search" placeholder="例: フランス、ぱり、キャンベラ" autocomplete="off">
+    <div class="search-result" id="searchResult"></div>
+  </section>
+
+  <section class="card" aria-labelledby="listTitle">
+    <h2 id="listTitle">国の一覧(五十音順)</h2>
+    <div id="countryLists"></div>
+  </section>
+
+  <footer class="credits">
+    <p>地図: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a>(パブリックドメイン)を簡略化して使用</p>
+    <p>国旗: <a href="https://github.com/lipis/flag-icons" target="_blank" rel="noopener">flag-icons</a> 7.6.0(MIT License・<a href="flags/LICENSE">ライセンス文</a>)</p>
+  </footer>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="map.js"></script>
+<script src="countries.js"></script>
+<script src="data.js"></script>
+<script src="mapview.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var GEO = WMAP_GEO;
+  var WORLD = [0, 0, 1000, 500];
+  var tabsEl = document.getElementById("regionTabs");
+  var mapTitle = document.getElementById("mapTitle");
+  var quizLink = document.getElementById("quizLink");
+  var pickCard = document.getElementById("pickCard");
+  var pickEmpty = document.getElementById("pickEmpty");
+  var searchBox = document.getElementById("searchBox");
+  var searchResult = document.getElementById("searchResult");
+  var listsEl = document.getElementById("countryLists");
+
+  var current = "all";    // "all" か州ID
+  var picked = null;
+
+  var mapView = WMapView.create(document.getElementById("atlasMap"), { label: "世界地図帳の地図", onTap: function (k) { select(k, false); } });
+  mapView.setTappable(true);
+
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function flagImg(key, alt) {
+    var img = el("img", "flag-img");
+    img.src = WMAP.flagSrc(key);
+    img.alt = alt || "";
+    img.loading = "lazy";
+    img.decoding = "async";
+    return img;
+  }
+  function quizHref(unitId) { return "index.html?unit=" + encodeURIComponent(unitId); }
+
+  // ---------- 州タブ ----------
+  function renderTabs() {
+    tabsEl.innerHTML = "";
+    [{ id: "all", short: "全体", n: WMAP.COUNTRIES.length }].concat(WMAP.UNITS.map(function (u) {
+      return { id: u.id, short: u.short, n: WMAP.countriesOf(u.id).length };
+    })).forEach(function (t) {
+      var b = el("button", "region-tab");
+      b.type = "button";
+      b.setAttribute("aria-pressed", t.id === current ? "true" : "false");
+      b.appendChild(el("span", "", t.short));
+      b.appendChild(el("span", "count", t.n + "か国"));
+      b.addEventListener("click", function () { setRegion(t.id, true); });
+      tabsEl.appendChild(b);
+    });
+  }
+
+  function setRegion(id, keepPick) {
+    current = id === "all" || WMAP.unit(id) ? id : "all";
+    var u = WMAP.unit(current);
+    mapTitle.textContent = u ? u.name : "世界全体";
+    quizLink.hidden = !u;
+    if (u) quizLink.href = quizHref(u.id);
+    // 拡大ボタンは州の地図だけに出す(全体図では日付変更線の東の国が範囲から外れるため。範囲は data.js の ZOOMS)
+    var shortcuts = u ? WMAP.zoomsOf(u.id) : [];
+    mapView.setView(u ? GEO.regions[u.id] : WORLD, { focus: u ? u.id : null, shortcuts: shortcuts });
+    renderTabs();
+    renderLists();
+    if (keepPick && picked) {
+      mapView.mark(picked, "pick");
+    } else if (!keepPick) {
+      picked = null;
+    }
+    renderCard();
+  }
+
+  // ---------- 国を選ぶ ----------
+  // fromList: 一覧や検索から選んだとき(地図をその国に合わせ、地図までスクロールする)
+  function select(key, fromList) {
+    var c = WMAP.country(key);
+    if (!c) return;
+    // 一覧から、いま表示していない州の国を選んだときは、その州に切り替える
+    if (fromList && current !== "all" && current !== c.region) setRegion(c.region, false);
+    picked = key;
+    mapView.clearMarks();
+    mapView.mark(key, "pick");
+    if (fromList) {
+      mapView.reveal(key);
+      if (GEO.countries[key].small) mapView.zoomTo(key);
+    }
+    renderCard();
+    markList();
+    if (fromList) document.getElementById("atlasMap").scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+
+  function renderCard() {
+    pickCard.innerHTML = "";
+    var c = picked ? WMAP.country(picked) : null;
+    pickEmpty.hidden = !!c;
+    if (!c) return;
+    var card = el("div", "country-card");
+    card.appendChild(flagImg(c.key, c.name + "の国旗"));
+    var body = el("div", "cc-body");
+    body.appendChild(el("div", "cc-name", c.name));
+    if (c.official && c.official !== c.name) body.appendChild(el("div", "cc-official", c.official));
+    var dl = el("dl", "cc-facts");
+    dl.appendChild(el("dt", "", "首都"));
+    dl.appendChild(el("dd", "", c.capital));
+    dl.appendChild(el("dt", "", "州"));
+    dl.appendChild(el("dd", "", WMAP.unit(c.region).name));
+    body.appendChild(dl);
+    card.appendChild(body);
+    card.appendChild(el("p", "cc-note", c.note || ""));
+    var links = el("div", "cc-links");
+    var zoom = el("a", "", "地図で拡大");
+    zoom.href = "#atlasMap";
+    zoom.addEventListener("click", function (e) { e.preventDefault(); mapView.zoomTo(c.key); });
+    links.appendChild(zoom);
+    var q = el("a", "", WMAP.unit(c.region).name + "をクイズで練習 →");
+    q.href = quizHref(c.region);
+    links.appendChild(q);
+    card.appendChild(links);
+    pickCard.appendChild(card);
+  }
+
+  // ---------- 一覧と検索 ----------
+  function itemButton(c) {
+    var b = el("button", "country-item");
+    b.type = "button";
+    b.dataset.key = c.key;
+    b.appendChild(flagImg(c.key));
+    var t = el("span", "ci-text");
+    t.appendChild(el("span", "ci-name", c.name));
+    t.appendChild(el("span", "ci-cap", "首都 " + c.capital));
+    b.appendChild(t);
+    b.addEventListener("click", function () { select(c.key, true); });
+    return b;
+  }
+  function renderLists() {
+    listsEl.innerHTML = "";
+    var units = current === "all" ? WMAP.UNITS : [WMAP.unit(current)];
+    units.forEach(function (u) {
+      var head = el("div", "list-head");
+      head.appendChild(el("h3", "", u.name + "(" + WMAP.countriesOf(u.id).length + "か国)"));
+      var a = el("a", "", "この州をクイズで練習 →");
+      a.href = quizHref(u.id);
+      head.appendChild(a);
+      listsEl.appendChild(head);
+      var grid = el("div", "country-list");
+      WMAP.countriesOf(u.id).forEach(function (c) { grid.appendChild(itemButton(c)); });
+      listsEl.appendChild(grid);
+    });
+    markList();
+  }
+  function markList() {
+    document.querySelectorAll(".country-item").forEach(function (b) {
+      if (b.dataset.key === picked) b.setAttribute("aria-current", "true"); else b.removeAttribute("aria-current");
+    });
+  }
+  function renderSearch() {
+    searchResult.innerHTML = "";
+    var q = searchBox.value.trim();
+    if (!q) return;
+    var hits = WMAP.search(q);
+    if (hits.length === 0) {
+      searchResult.appendChild(el("p", "search-none", "「" + q + "」に当てはまる国はありません。"));
+      return;
+    }
+    var grid = el("div", "country-list");
+    hits.slice(0, 30).forEach(function (c) { grid.appendChild(itemButton(c)); });
+    searchResult.appendChild(grid);
+    if (hits.length > 30) searchResult.appendChild(el("p", "search-none", "ほか" + (hits.length - 30) + "か国。もう少し文字を足してください。"));
+    markList();
+  }
+  searchBox.addEventListener("input", renderSearch);
+
+  // ---------- はじめに開いたとき ----------
+  // atlas.html?country=<国キー> → その国の州を開いて選ぶ / atlas.html?region=<州ID> → その州を開く
+  var params = null;
+  try { params = new URLSearchParams(location.search); } catch (e) { params = null; }
+  var wantCountry = params ? WMAP.country(params.get("country")) : null;
+  var wantRegion = params ? params.get("region") : null;
+  if (wantCountry) {
+    setRegion(wantCountry.region, false);
+    select(wantCountry.key, false);
+    mapView.reveal(wantCountry.key);
+    if (GEO.countries[wantCountry.key].small) mapView.zoomTo(wantCountry.key);
+  } else {
+    setRegion(WMAP.unit(wantRegion) ? wantRegion : "all", false);
+  }
+})();
+</script>
+</body>
+</html>

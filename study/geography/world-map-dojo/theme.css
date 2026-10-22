@@ -1,0 +1,98 @@
+/* 世界地図道場 の色(古地図の真鍮色)。変数名は学習シリーズ共通(shared/base.css を参照)。
+   地図の色(--map-*)は、このアプリだけの変数。index.html と atlas.html の地図が使う。
+   --map-sea 海 / --map-land 陸(対象の国) / --map-land-hover 指をのせた国 / --map-stroke 国境線
+   --map-other 対象外の陸地(灰色) / --map-marker 小さな国の円の線
+   --map-target 出題の国(①) / --map-pick 地図帳で選んだ国 / --map-good 正解の国 / --map-bad 間違えてタップした国 */
+:root {
+  color-scheme: light;
+  --bg: #F4F0E4;
+  --surface: #FFFFFF;
+  --surface-2: #EAE3CF;
+  --border: #D8CDAF;
+  --ink: #26221A;
+  --ink-muted: #5A5240;
+  --ink-faint: #6E6650;
+  --accent: #7A5F0A;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #F3EBCB;
+  --good: #1D6B47;
+  --good-soft: #DCEFE3;
+  --bad: #A8372A;
+  --bad-soft: #F6E0DB;
+  --shadow: rgba(38, 34, 26, 0.10);
+
+  --map-sea: #CFE1E6;
+  --map-land: #E4E2C4;
+  --map-land-hover: #D3CE9C;
+  --map-stroke: #8E8A6E;
+  --map-other: #C9C7BF;
+  --map-marker: #5A5240;
+  --map-target: #E0A21B;
+  --map-pick: #E0A21B;
+  --map-good: #2E9A63;
+  --map-bad: #D2503C;
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #14130E;
+    --surface: #1D1B14;
+    --surface-2: #29261B;
+    --border: #3E3A29;
+    --ink: #F0ECDD;
+    --ink-muted: #BDB69C;
+    --ink-faint: #A19A80;
+    --accent: #E2C055;
+    --accent-ink: #241C02;
+    --accent-soft: #352D12;
+    --good: #7FCFA2;
+    --good-soft: #1A3226;
+    --bad: #F2998A;
+    --bad-soft: #3B201B;
+    --shadow: rgba(0, 0, 0, 0.4);
+
+    --map-sea: #142630;
+    --map-land: #3D4232;
+    --map-land-hover: #59604A;
+    --map-stroke: #1E2219;
+    --map-other: #373833;
+    --map-marker: #CFC8AE;
+    --map-target: #F2C230;
+    --map-pick: #F2C230;
+    --map-good: #4FC283;
+    --map-bad: #EE6E58;
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #14130E;
+  --surface: #1D1B14;
+  --surface-2: #29261B;
+  --border: #3E3A29;
+  --ink: #F0ECDD;
+  --ink-muted: #BDB69C;
+  --ink-faint: #A19A80;
+  --accent: #E2C055;
+  --accent-ink: #241C02;
+  --accent-soft: #352D12;
+  --good: #7FCFA2;
+  --good-soft: #1A3226;
+  --bad: #F2998A;
+  --bad-soft: #3B201B;
+  --shadow: rgba(0, 0, 0, 0.4);
+
+  --map-sea: #142630;
+  --map-land: #3D4232;
+  --map-land-hover: #59604A;
+  --map-stroke: #1E2219;
+  --map-other: #373833;
+  --map-marker: #CFC8AE;
+  --map-target: #F2C230;
+  --map-pick: #F2C230;
+  --map-good: #4FC283;
+  --map-bad: #EE6E58;
+}

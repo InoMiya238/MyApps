@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>世界地図道場</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 720px; gap: 22px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+  body.is-quiz .hero .tagline { display: none; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] { color: var(--ink); font-weight: 600; border-bottom: 2px solid var(--accent); }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+  .card h3 {
+    margin: 20px 0 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+  }
+  select {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    padding: 5px 7px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+  .field { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 0.95rem; }
+  .hint { font-size: 0.78rem; color: var(--ink-faint); margin: 10px 0 0; line-height: 1.6; }
+  button { font-family: var(--font-body); cursor: pointer; border: none; border-radius: 10px; font-size: 1rem; padding: 12px 20px; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); width: 100%; font-weight: 700; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary { background: var(--surface-2); color: var(--ink); }
+  .btn-row { display: flex; gap: 10px; margin-top: 18px; }
+  .btn-row button { flex: 1; }
+  button:focus-visible, select:focus-visible, a:focus-visible, .cat-check:focus-within, .wmap-stage:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- 設定 ---------- */
+  #setup-screen { display: flex; flex-direction: column; gap: 16px; }
+  .preselect-note {
+    margin: 0;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 0.86rem;
+    line-height: 1.6;
+  }
+  .preselect-note[hidden] { display: none; }
+  .unit-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .tool-btn {
+    min-height: 40px;
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--ink-muted);
+    border-radius: 9px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .tool-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .unit-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .type-list { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  .cat-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 48px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+  .cat-check.checked { border-color: var(--accent); color: var(--ink); background: var(--accent-soft); }
+  .cat-check input { flex: none; }
+  .cat-check input:focus-visible { outline: none; }
+  .cat-check .unit-name { min-width: 0; overflow-wrap: anywhere; }
+  .type-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .type-desc { font-size: 12px; font-weight: 400; color: var(--ink-muted); line-height: 1.5; }
+  .weak-tag {
+    flex: none;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--bad);
+    background: var(--bad-soft);
+    border: 1px solid var(--bad);
+    border-radius: 999px;
+    padding: 3px 7px;
+  }
+  .cat-rate {
+    flex: none;
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-faint);
+  }
+  .start-bar { display: flex; flex-direction: column; gap: 8px; }
+  .error-msg { color: var(--bad); font-size: 0.85rem; margin: 0; display: none; }
+  .error-msg.show { display: block; }
+  #missedMsg { margin-top: 8px; line-height: 1.6; }
+
+  /* ---------- 成績 ---------- */
+  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 6px; }
+  .stat-box { text-align: center; background: var(--surface-2); border-radius: 12px; padding: 14px 8px; min-width: 0; }
+  .stat-num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: 11px; letter-spacing: 0.05em; color: var(--ink-faint); margin-top: 3px; }
+  .cat-bars { display: flex; flex-direction: column; gap: 9px; }
+  .cat-row { display: grid; grid-template-columns: 78px 1fr 44px; align-items: center; gap: 10px; }
+  .cat-row-label { font-size: 13px; font-weight: 600; color: var(--ink-muted); white-space: nowrap; }
+  .cat-row-track { height: 7px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+  .cat-row-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s ease; }
+  .cat-row-pct { font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); text-align: right; font-variant-numeric: tabular-nums; }
+  .weak-list { font-size: 0.88rem; }
+  .weak-empty { margin: 0; font-size: 0.82rem; color: var(--ink-faint); line-height: 1.6; }
+  .weak-practice { width: 100%; margin-top: 12px; font-size: 0.92rem; font-weight: 600; }
+  .weak-practice[hidden] { display: none; }
+  .reset-row { display: flex; justify-content: flex-end; margin-top: 18px; }
+  .reset-btn {
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--ink-muted);
+    border-radius: 9px;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- 出題 ---------- */
+  #quiz-screen { display: none; }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--ink-muted);
+  }
+  .progress-bar { height: 6px; border-radius: 4px; background: var(--surface-2); overflow: hidden; margin: 6px 0 18px; }
+  .progress-fill { height: 100%; background: var(--accent); transition: width 0.25s ease; }
+  .problem-type-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .question {
+    margin: 0 0 14px;
+    text-align: center;
+    font-size: 15.5px;
+    font-weight: 600;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+  .question .big { font-size: 1.3em; color: var(--accent); }
+  .q-sub { margin: -8px 0 12px; text-align: center; font-size: 12.5px; color: var(--ink-muted); line-height: 1.6; }
+  .q-sub[hidden] { display: none; }
+  .q-flag { display: flex; justify-content: center; margin: 0 0 18px; }
+  .q-flag[hidden] { display: none; }
+  .q-flag img { width: min(240px, 70%); }
+  .q-map { margin: 0 0 16px; }
+  .q-map[hidden] { display: none; }
+  .flag-img {
+    display: block;
+    aspect-ratio: 4 / 3;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px var(--border);
+    background: var(--surface-2);
+  }
+
+  .choices { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .choices.grid { grid-template-columns: 1fr 1fr; }
+  .choices.flags { grid-template-columns: 1fr 1fr; }
+  .choice-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 60px;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    text-align: left;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .choices.grid .choice-btn { font-size: 16px; line-height: 1.4; text-align: center; }
+  .choice-key {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    border-radius: 7px;
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .choice-body { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .choices.grid .choice-body { white-space: nowrap; overflow: hidden; }
+  .choice-mark {
+    position: absolute;
+    left: 12px;
+    top: calc(50% + 13px);
+    width: 24px;
+    text-align: center;
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  /* 国旗の選択肢: 番号は左上、正誤の印はその下 */
+  .choices.flags .choice-btn { flex-direction: column; align-items: stretch; gap: 6px; padding: 10px 10px 10px 42px; }
+  .choices.flags .choice-key { position: absolute; left: 10px; top: 10px; }
+  .choices.flags .choice-mark { left: 10px; top: 42px; }
+  .choices.flags .flag-img { width: 100%; }
+  .flag-caption { font-size: 13px; line-height: 1.4; text-align: center; overflow-wrap: anywhere; }
+  .flag-caption:empty { display: none; }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent); }
+  .choice-btn:disabled { cursor: not-allowed; }
+  .choice-btn.correct { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+  .choice-btn.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+  .tap-row { display: flex; justify-content: center; }
+  .tap-row[hidden] { display: none; }
+  .tap-row .tool-btn { min-width: 160px; }
+
+  .feedback {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    display: none;
+    scroll-margin: 16px;
+  }
+  .feedback.good { display: block; background: var(--good-soft); color: var(--good); }
+  .feedback.bad { display: block; background: var(--bad-soft); color: var(--bad); }
+  .feedback .answer-line { font-weight: 700; overflow-wrap: anywhere; }
+  .next-row { margin-top: 16px; display: none; }
+  .next-row.show { display: block; }
+  .quit-link {
+    display: block;
+    width: 100%;
+    background: none;
+    padding: 6px;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    text-decoration: underline;
+  }
+
+  /* ---------- 国のカード(解説。atlas.html と同じ内容。変えるときは両方を直す) ---------- */
+  .country-card {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 12px 14px;
+    align-items: start;
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+  .country-card .flag-img { width: 96px; }
+  .cc-body { min-width: 0; }
+  .cc-name { font-size: 1.1rem; font-weight: 700; overflow-wrap: anywhere; }
+  .cc-official { font-size: 0.8rem; color: var(--ink-muted); overflow-wrap: anywhere; }
+  .cc-facts { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 8px 0 0; }
+  .cc-facts dt { color: var(--ink-faint); font-size: 0.8rem; }
+  .cc-facts dd { margin: 0; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+  .cc-note { grid-column: 1 / -1; margin: 0; font-size: 0.84rem; color: var(--ink-muted); }
+  .cc-note:empty { display: none; }
+  .cc-links { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+  .cc-links a { color: var(--accent); font-weight: 600; font-size: 0.85rem; text-decoration: none; }
+  .cc-links a:hover { text-decoration: underline; }
+  @media (max-width: 400px) {
+    .country-card { grid-template-columns: 72px 1fr; }
+    .country-card .flag-img { width: 72px; }
+  }
+
+  /* ---------- 結果 ---------- */
+  #result-screen { display: none; }
+  .result-head { text-align: center; padding: 4px 4px 14px; }
+  .result-head .label { color: var(--ink-muted); font-size: 14px; }
+  .result-head .score { font-family: var(--font-display); font-size: 48px; font-weight: 700; margin: 6px 0; }
+  .result-head .score span { font-size: 24px; color: var(--ink-faint); }
+  .unit-result, .miss-list { font-size: 0.88rem; }
+  .miss-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .miss-item:last-child { border-bottom: none; }
+  .miss-item a { color: var(--accent); font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .miss-item a:hover { text-decoration: underline; }
+  .miss-item .name { font-weight: 600; }
+  .miss-item .detail { color: var(--ink-muted); font-size: 0.82rem; }
+  .miss-item .given { color: var(--bad); }
+  .miss-item .correct { color: var(--good); font-weight: 600; }
+  .miss-item .rate { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 12px; color: var(--ink-muted); }
+  .miss-item .spacer { margin-left: auto; }
+  .miss-who { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .miss-who .flag-img { width: 28px; flex: none; }
+  .miss-item .answer-pair { flex: 1 1 100%; min-width: 0; overflow-wrap: anywhere; line-height: 1.7; }
+  .miss-who .name { overflow-wrap: anywhere; }
+
+  /* ---------- 出典 ---------- */
+  .credits { font-size: 12px; color: var(--ink-faint); line-height: 1.7; text-align: center; }
+  .credits p { margin: 0; }
+  .credits a { color: var(--ink-muted); }
+
+  /* ===== 地図の表示部品 ここから(atlas.html と同じ内容。変えるときは両方を直す) ===== */
+  .wmap { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .wmap-stage {
+    position: relative;
+    width: 100%;
+    height: 240px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--map-sea);
+    touch-action: none;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wmap.dragging .wmap-stage { cursor: grabbing; }
+  .wmap-svg { display: block; width: 100%; height: 100%; }
+  .wmap-sea { fill: var(--map-sea); }
+  .wmap-o { fill: var(--map-other); stroke: var(--map-stroke); stroke-width: 0.4px; vector-effect: non-scaling-stroke; pointer-events: none; }
+  .wmap-c { fill: var(--map-land); stroke: var(--map-stroke); stroke-width: 0.6px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+  .wmap-c.dim { fill-opacity: 0.5; }
+  .wmap-m { fill: var(--map-land); stroke: var(--map-marker); stroke-width: 1.2px; vector-effect: non-scaling-stroke; pointer-events: none; }
+  .wmap-m.dim { opacity: 0.55; }
+  .wmap.tappable .wmap-c { cursor: pointer; }
+  .wmap.tappable.dragging .wmap-c { cursor: grabbing; }
+  @media (hover: hover) {
+    .wmap.tappable .wmap-c:hover { fill: var(--map-land-hover); fill-opacity: 1; }
+  }
+  .wmap .is-target { fill: var(--map-target); fill-opacity: 1; opacity: 1; }
+  .wmap .is-pick { fill: var(--map-pick); fill-opacity: 1; opacity: 1; }
+  .wmap .is-good { fill: var(--map-good); fill-opacity: 1; opacity: 1; }
+  .wmap .is-bad { fill: var(--map-bad); fill-opacity: 1; opacity: 1; }
+  .wmap.tappable .is-target:hover, .wmap.tappable .is-pick:hover { fill: var(--map-pick); }
+  .wmap-ring { fill: none; stroke-width: 2.5px; vector-effect: non-scaling-stroke; pointer-events: none; }
+  .wmap-ring.target { stroke: var(--map-target); }
+  .wmap-ring.pick { stroke: var(--map-pick); }
+  .wmap-ring.good { stroke: var(--map-good); }
+  .wmap-ring.bad { stroke: var(--map-bad); }
+  .wmap-msg {
+    margin: 0;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .wmap-msg[hidden] { display: none; }
+  .wmap-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .wmap-shortcuts { display: contents; }
+  .wmap-btn {
+    min-width: 44px;
+    min-height: 40px;
+    padding: 6px 10px;
+    border-radius: 9px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .wmap-btn.wide { font-size: 13px; font-weight: 600; }
+  .wmap-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .wmap-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  /* ===== 地図の表示部品 ここまで ===== */
+
+  @media (max-width: 400px) {
+    body { padding: 22px 12px 48px; }
+    .card { padding: 16px 14px; }
+    .unit-list { grid-template-columns: 1fr; }
+    .cat-row { grid-template-columns: 70px 1fr 40px; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">WORLD MAP DOJO · 6州 197か国</p>
+    <h1>世界地図道場</h1>
+    <p class="tagline">世界の国の位置・国旗・首都を、地図と4択で覚えます。州ごとの正答率と、間違えた国が残ります。</p>
+    <nav class="site-nav" aria-label="世界地図道場のページ">
+      <span aria-current="page">クイズ道場</span>
+      <a href="atlas.html">世界地図帳</a>
+    </nav>
+  </header>
+
+  <!-- ============ 設定 ============ -->
+  <div id="setup-screen">
+    <p class="preselect-note" id="preselectNote" role="status" hidden></p>
+
+    <div class="card">
+      <h2 id="unitHeading">州を選ぶ</h2>
+      <div class="unit-tools">
+        <button type="button" class="tool-btn" id="selectAllUnits">すべて選ぶ</button>
+        <button type="button" class="tool-btn" id="clearAllUnits">すべてはずす</button>
+      </div>
+      <div class="unit-list" id="unitList" role="group" aria-labelledby="unitHeading"></div>
+      <p class="hint">右の数字はこれまでの正答率です。5問以上答えて70%未満の州に「苦手」がつきます。</p>
+    </div>
+
+    <div class="card">
+      <h2 id="typeHeading">出題の種類</h2>
+      <div class="unit-tools">
+        <button type="button" class="tool-btn" id="selectAllTypes">すべて選ぶ</button>
+      </div>
+      <div class="type-list" id="typeList" role="group" aria-labelledby="typeHeading"></div>
+      <p class="hint">首都の問題(⑤⑥)には、首都の扱いに注意が必要な国(エルサレムを首都とするイスラエルなど)は出しません。</p>
+    </div>
+
+    <div class="card">
+      <h2>出題数</h2>
+      <div class="field">
+        <label for="countSelect">1回のクイズで出す問題の数</label>
+        <select id="countSelect">
+          <option value="5">5問</option>
+          <option value="10" selected>10問</option>
+          <option value="20">20問</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="start-bar">
+      <p class="error-msg" id="setupError" role="status"></p>
+      <button type="button" class="btn-primary" id="startBtn">クイズを始める</button>
+    </div>
+
+    <div class="card" id="statsCard">
+      <h2>これまでの成績</h2>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num" id="statTotal">0</div><div class="stat-label">回答数</div></div>
+        <div class="stat-box"><div class="stat-num" id="statAccuracy">–</div><div class="stat-label">正答率</div></div>
+        <div class="stat-box"><div class="stat-num" id="statUnits">0/6</div><div class="stat-label">取り組んだ州</div></div>
+      </div>
+
+      <h3>州ごとの正答率</h3>
+      <div class="cat-bars" id="unitBars"></div>
+
+      <h3>苦手な州</h3>
+      <div class="weak-list" id="weakList"></div>
+      <button type="button" class="btn-secondary weak-practice" id="weakBtn" hidden>苦手な州だけ練習する</button>
+
+      <h3>間違えた回数の多い国</h3>
+      <div class="weak-list" id="missedList"></div>
+      <button type="button" class="btn-secondary weak-practice" id="missedBtn" hidden>間違えた国を練習する</button>
+      <p class="error-msg" id="missedMsg" role="status"></p>
+
+      <div class="reset-row">
+        <button type="button" class="reset-btn" id="resetBtn">成績をリセット</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 出題 ============ -->
+  <div id="quiz-screen">
+    <div class="card">
+      <div class="progress-row">
+        <span id="progressText">問題 1 / 10</span>
+        <span id="scoreText">正解 0 ・ 連続 0</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+      <div class="problem-type-label" id="typeLabel"></div>
+      <p class="question" id="questionText"></p>
+      <p class="q-sub" id="questionSub" hidden></p>
+      <div class="q-flag" id="questionFlag" hidden></div>
+      <div class="q-map" id="questionMap" hidden></div>
+
+      <div class="choices" id="choices"></div>
+      <div class="tap-row" id="tapRow" hidden>
+        <button type="button" class="tool-btn" id="giveUpBtn">わからない(答えを見る)</button>
+      </div>
+
+      <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+      <div class="next-row" id="nextRow">
+        <button type="button" class="btn-primary" id="nextBtn">次の問題 →</button>
+      </div>
+      <button type="button" class="quit-link" id="quitBtn">中断して結果を見る</button>
+    </div>
+  </div>
+
+  <!-- ============ 結果 ============ -->
+  <div id="result-screen">
+    <div class="card">
+      <div class="result-head">
+        <div class="label">クイズ終了</div>
+        <div class="score" id="resultScore">0<span> / 0</span></div>
+        <div class="label" id="resultRate">正答率 –</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num" id="resCorrect">0</div><div class="stat-label">正解数</div></div>
+        <div class="stat-box"><div class="stat-num" id="resAccuracy">–</div><div class="stat-label">正答率</div></div>
+        <div class="stat-box"><div class="stat-num" id="resStreak">0</div><div class="stat-label">最大連続正解</div></div>
+      </div>
+
+      <h3>州ごとの結果</h3>
+      <div class="unit-result" id="unitResult"></div>
+
+      <h3>間違えた問題</h3>
+      <div class="miss-list" id="missList"></div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-secondary" id="backBtn">設定に戻る</button>
+        <button type="button" class="btn-primary" id="retryBtn">同じ設定でもう一度</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="credits">
+    <p>地図: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a>(パブリックドメイン)を簡略化して使用</p>
+    <p>国旗: <a href="https://github.com/lipis/flag-icons" target="_blank" rel="noopener">flag-icons</a> 7.6.0(MIT License・<a href="flags/LICENSE">ライセンス文</a>)</p>
+  </footer>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="../../../shared/review.js"></script>
+<script src="map.js"></script>
+<script src="countries.js"></script>
+<script src="data.js"></script>
+<script src="mapview.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var GEO = WMAP_GEO;
+  var setupScreen = document.getElementById("setup-screen");
+  var quizScreen = document.getElementById("quiz-screen");
+  var resultScreen = document.getElementById("result-screen");
+  var preselectNote = document.getElementById("preselectNote");
+  var unitList = document.getElementById("unitList");
+  var typeList = document.getElementById("typeList");
+  var countSelect = document.getElementById("countSelect");
+  var startBtn = document.getElementById("startBtn");
+  var setupError = document.getElementById("setupError");
+  var weakBtn = document.getElementById("weakBtn");
+  var missedBtn = document.getElementById("missedBtn");
+  var missedMsg = document.getElementById("missedMsg");
+  var questionText = document.getElementById("questionText");
+  var questionSub = document.getElementById("questionSub");
+  var questionFlag = document.getElementById("questionFlag");
+  var questionMap = document.getElementById("questionMap");
+  var choicesEl = document.getElementById("choices");
+  var tapRow = document.getElementById("tapRow");
+  var feedbackEl = document.getElementById("feedback");
+  var nextRow = document.getElementById("nextRow");
+  var nextBtn = document.getElementById("nextBtn");
+
+  // ---------- 状態 ----------
+  var stats = WMAP.loadStats();
+  var selUnits = {}, selTypes = {};
+  var count = 10;
+  var session = null;
+  var lastOpts = null;   // 「同じ設定でもう一度」で使う
+
+  // 小さな国が多い地域を拡大するボタン(範囲は data.js の ZOOMS)
+  function shortcutsOf(unitId) { return WMAP.zoomsOf(unitId); }
+
+  var mapView = WMapView.create(questionMap, { label: "出題の地図", onTap: onTapCountry });
+
+  function unitIds() { return WMAP.UNITS.filter(function (u) { return selUnits[u.id]; }).map(function (u) { return u.id; }); }
+  function typeIds() { return WMAP.TYPES.filter(function (t) { return selTypes[t.id]; }).map(function (t) { return t.id; }); }
+
+  // 保存済みの設定 → なければ、すべての州と種類を選ぶ
+  (function initSelection() {
+    var saved = WMAP.loadSettings();
+    if (saved) {
+      count = saved.count;
+      saved.units.forEach(function (id) { selUnits[id] = true; });
+      saved.types.forEach(function (id) { selTypes[id] = true; });
+    }
+    if (unitIds().length === 0) WMAP.UNITS.forEach(function (u) { selUnits[u.id] = true; });
+    if (typeIds().length === 0) WMAP.TYPES.forEach(function (t) { selTypes[t.id] = true; });
+    // index.html?unit=<州ID> で開いたとき: その州だけを選ぶ(保存は、開始を押すまで上書きしない)
+    var wanted = null;
+    try { wanted = new URLSearchParams(location.search).get("unit"); } catch (e) { wanted = null; }
+    var u = wanted ? WMAP.unit(wanted) : null;
+    if (u) {
+      selUnits = {};
+      selUnits[u.id] = true;
+      preselectNote.textContent = "「" + u.name + "」だけを選びました。";
+      preselectNote.hidden = false;
+    }
+  })();
+
+  function pct(correct, total) { return total > 0 ? Math.round((correct / total) * 100) + "%" : "–"; }
+  function recOf(id) { return stats.byUnit[id] || { total: 0, correct: 0 }; }
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function flagImg(key, alt) {
+    var img = el("img", "flag-img");
+    img.src = WMAP.flagSrc(key);
+    img.alt = alt || "";
+    img.decoding = "async";
+    return img;
+  }
+  function atlasLink(key, text) {
+    var a = el("a", "", text);
+    a.href = "atlas.html?country=" + encodeURIComponent(key);
+    a.target = "_blank";
+    a.rel = "noopener";
+    return a;
+  }
+
+  // ---------- 画面の切り替え ----------
+  function showScreen(name) {
+    setupScreen.style.display = name === "setup" ? "flex" : "none";
+    quizScreen.style.display = name === "quiz" ? "block" : "none";
+    resultScreen.style.display = name === "result" ? "block" : "none";
+    document.body.classList.toggle("is-quiz", name === "quiz");
+  }
+
+  // ---------- 設定画面 ----------
+  function checkItem(on, onChange, dataKey) {
+    var label = el("label", "cat-check" + (on ? " checked" : ""));
+    var input = el("input");
+    input.type = "checkbox";
+    input.checked = on;
+    input.addEventListener("change", function () { onChange(input.checked); });
+    label.appendChild(input);
+    label.dataset.key = dataKey;
+    return label;
+  }
+  function refocus(box, key) {
+    var again = box.querySelector('[data-key="' + key + '"] input');
+    if (again) again.focus();
+  }
+  function renderUnitList() {
+    unitList.innerHTML = "";
+    WMAP.UNITS.forEach(function (u) {
+      var rec = recOf(u.id);
+      var label = checkItem(!!selUnits[u.id], function (on) {
+        if (on) selUnits[u.id] = true; else delete selUnits[u.id];
+        renderSetup();
+        refocus(unitList, u.id);
+      }, u.id);
+      label.appendChild(el("span", "unit-name", u.name));
+      if (WMAP.isWeak(rec)) label.appendChild(el("span", "weak-tag", "苦手"));
+      var rate = el("span", "cat-rate", pct(rec.correct, rec.total));
+      rate.setAttribute("aria-label", rec.total > 0 ? "正答率 " + pct(rec.correct, rec.total) : "まだ回答なし");
+      label.appendChild(rate);
+      unitList.appendChild(label);
+    });
+  }
+  function renderTypeList() {
+    typeList.innerHTML = "";
+    WMAP.TYPES.forEach(function (t) {
+      var label = checkItem(!!selTypes[t.id], function (on) {
+        if (on) selTypes[t.id] = true; else delete selTypes[t.id];
+        renderSetup();
+        refocus(typeList, t.id);
+      }, t.id);
+      var box = el("span", "type-text");
+      box.appendChild(el("span", "unit-name", t.no + " " + t.name));
+      box.appendChild(el("span", "type-desc", t.desc));
+      label.appendChild(box);
+      typeList.appendChild(label);
+    });
+  }
+  function renderStartBar() {
+    var nu = unitIds().length, nt = typeIds().length;
+    startBtn.disabled = nu === 0 || nt === 0;
+    startBtn.textContent = startBtn.disabled ? "クイズを始める" : "クイズを始める(" + nu + "州・" + nt + "種類・" + count + "問)";
+    var msg = nu === 0 && nt === 0 ? "州と出題の種類を1つ以上選んでください。" : nu === 0 ? "州を1つ以上選んでください。" : nt === 0 ? "出題の種類を1つ以上選んでください。" : "";
+    setupError.textContent = msg;
+    setupError.classList.toggle("show", !!msg);
+  }
+  function weakUnits() {
+    var list = [];
+    WMAP.UNITS.forEach(function (u) {
+      var rec = recOf(u.id);
+      if (WMAP.isWeak(rec)) list.push({ unit: u, rec: rec, rate: rec.correct / rec.total });
+    });
+    list.sort(function (a, b) { return a.rate - b.rate || b.rec.total - a.rec.total; });
+    return list;
+  }
+  function renderStats() {
+    var total = 0, correct = 0, tried = 0;
+    WMAP.UNITS.forEach(function (u) {
+      var r = recOf(u.id);
+      total += r.total; correct += r.correct;
+      if (r.total > 0) tried++;
+    });
+    document.getElementById("statTotal").textContent = total;
+    document.getElementById("statAccuracy").textContent = pct(correct, total);
+    document.getElementById("statUnits").textContent = tried + "/" + WMAP.UNITS.length;
+
+    var bars = document.getElementById("unitBars");
+    bars.innerHTML = "";
+    WMAP.UNITS.forEach(function (u) {
+      var r = recOf(u.id);
+      var row = el("div", "cat-row");
+      row.appendChild(el("span", "cat-row-label", u.short));
+      var track = el("div", "cat-row-track");
+      var fill = el("div", "cat-row-fill");
+      fill.style.width = (r.total > 0 ? Math.round((r.correct / r.total) * 100) : 0) + "%";
+      track.appendChild(fill);
+      row.appendChild(track);
+      row.appendChild(el("span", "cat-row-pct", pct(r.correct, r.total)));
+      bars.appendChild(row);
+    });
+
+    var weak = weakUnits();
+    var list = document.getElementById("weakList");
+    list.innerHTML = "";
+    if (weak.length === 0) {
+      list.appendChild(el("p", "weak-empty", "まだ苦手な州はありません(5問以上答えた州から判定します)。"));
+    } else {
+      weak.forEach(function (w) {
+        var row = el("div", "miss-item");
+        row.appendChild(el("span", "name", w.unit.name));
+        row.appendChild(el("span", "rate spacer", w.rec.correct + "/" + w.rec.total + " (" + pct(w.rec.correct, w.rec.total) + ")"));
+        var a = el("a", "", "地図帳で見る");
+        a.href = "atlas.html?region=" + w.unit.id;
+        row.appendChild(a);
+        list.appendChild(row);
+      });
+    }
+    weakBtn.hidden = weak.length === 0;
+
+    var missed = WMAP.missedCountries(stats);
+    var mlist = document.getElementById("missedList");
+    mlist.innerHTML = "";
+    if (missed.length === 0) {
+      mlist.appendChild(el("p", "weak-empty", "まだ間違えた国はありません。"));
+    } else {
+      missed.slice(0, 10).forEach(function (m) {
+        var row = el("div", "miss-item");
+        var who = el("span", "miss-who");
+        who.appendChild(flagImg(m.country.key));
+        who.appendChild(el("span", "name", m.country.name));
+        row.appendChild(who);
+        row.appendChild(el("span", "rate spacer", "×" + m.wrong + "回(" + m.rec.correct + "/" + m.rec.total + ")"));
+        row.appendChild(atlasLink(m.country.key, "地図帳"));
+        mlist.appendChild(row);
+      });
+      if (missed.length > 10) mlist.appendChild(el("p", "weak-empty", "ほか" + (missed.length - 10) + "か国"));
+    }
+    missedBtn.hidden = missed.length === 0;
+    missedMsg.textContent = "";
+    missedMsg.classList.remove("show");
+  }
+  function renderSetup() {
+    renderUnitList();
+    renderTypeList();
+    countSelect.value = String(count);
+    renderStartBar();
+    renderStats();
+  }
+
+  document.getElementById("selectAllUnits").addEventListener("click", function () {
+    WMAP.UNITS.forEach(function (u) { selUnits[u.id] = true; });
+    renderSetup();
+  });
+  document.getElementById("clearAllUnits").addEventListener("click", function () { selUnits = {}; renderSetup(); });
+  document.getElementById("selectAllTypes").addEventListener("click", function () {
+    WMAP.TYPES.forEach(function (t) { selTypes[t.id] = true; });
+    renderSetup();
+  });
+  countSelect.addEventListener("change", function () {
+    var n = Number(countSelect.value);
+    count = WMAP.COUNTS.indexOf(n) >= 0 ? n : 10;
+    renderStartBar();
+  });
+  weakBtn.addEventListener("click", function () {
+    var ids = weakUnits().map(function (w) { return w.unit.id; });
+    if (ids.length === 0) return;
+    selUnits = {};
+    ids.forEach(function (id) { selUnits[id] = true; });
+    startQuiz();
+  });
+  missedBtn.addEventListener("click", function () {
+    var keys = WMAP.missedCountries(stats).slice(0, 20).map(function (m) { return m.country.key; });
+    if (keys.length === 0) return;
+    var types = typeIds();
+    if (types.length === 0) types = WMAP.TYPES.map(function (t) { return t.id; });
+    // 選んでいる種類で出せる国がない(首都の問題だけを選び、間違えた国が首都の問題に出さない国だけ)ときは、理由を伝える
+    var ok = keys.filter(function (k) { return types.some(function (t) { return WMAP.typeOk(t, WMAP.country(k)); }); });
+    if (ok.length === 0) {
+      var names = keys.slice(0, 3).map(function (k) { return WMAP.country(k).name; }).join("・");
+      missedMsg.textContent = "間違えた国(" + names + (keys.length > 3 ? "など" : "") + ")は、首都の扱いに注意が必要なため首都の問題(⑤⑥)には出しません。出題の種類で①〜④のどれかも選んでください。";
+      missedMsg.classList.add("show");
+      return;
+    }
+    missedMsg.textContent = "";
+    missedMsg.classList.remove("show");
+    startWith({ keys: ok, types: types, count: count });
+  });
+  document.getElementById("resetBtn").addEventListener("click", function () {
+    if (!confirm("これまでの成績をすべて消します。よろしいですか?")) return;
+    WMAP.clearStats();
+    stats = WMAP.emptyStats();
+    renderSetup();
+  });
+
+  // ---------- 出題画面 ----------
+  function startQuiz() {
+    var units = unitIds(), types = typeIds();
+    if (units.length === 0 || types.length === 0) return;
+    WMAP.saveSettings({ units: units, types: types, count: count });
+    startWith({ units: units, types: types, count: count });
+  }
+  function startWith(opts) {
+    var questions = WMAP.buildQuiz(opts, stats);
+    if (questions.length === 0) return;
+    lastOpts = opts;
+    preselectNote.hidden = true;
+    session = { questions: questions, index: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, results: [] };
+    showScreen("quiz");
+    renderQuestion();
+    window.scrollTo(0, 0);
+  }
+
+  function updateProgress() {
+    var total = session.questions.length;
+    document.getElementById("progressText").textContent = "問題 " + (session.index + 1) + " / " + total;
+    document.getElementById("scoreText").textContent = "正解 " + session.correct + " ・ 連続 " + session.streak;
+    document.getElementById("progressFill").style.width = Math.round((session.results.length / total) * 100) + "%";
+  }
+
+  // 2列の選択肢がボタンからはみ出すときは、1列に戻す
+  function fitChoices() {
+    if (!session || quizScreen.style.display === "none") return;
+    if (!choicesEl.classList.contains("text-grid")) return;
+    choicesEl.classList.add("grid");
+    var bodies = choicesEl.querySelectorAll(".choice-body");
+    for (var i = 0; i < bodies.length; i++) {
+      if (bodies[i].scrollWidth > bodies[i].clientWidth + 1) { choicesEl.classList.remove("grid"); return; }
+    }
+  }
+
+  // 小さな国を①で出すとき、その国が入る拡大の範囲(いくつも当てはまるときは、いちばんせまい範囲)
+  function subregionOf(key) {
+    var g = GEO.countries[key], c = WMAP.country(key), best = null;
+    WMAP.zoomsOf(c.region).forEach(function (z) {
+      var r = z.rect, p = r[0] + r[2] > 1000 && g.alt ? g.alt : g;
+      if (p.cx < r[0] || p.cx > r[0] + r[2] || p.cy < r[1] || p.cy > r[1] + r[3]) return;
+      if (!best || r[2] * r[3] < best[2] * best[3]) best = r;
+    });
+    return best;
+  }
+  function showMap(q, tappable) {
+    var c = WMAP.country(q.key);
+    questionMap.hidden = false;
+    mapView.clearMarks();
+    mapView.setView(GEO.regions[c.region], { focus: c.region, shortcuts: shortcutsOf(c.region) });
+    mapView.setTappable(tappable);
+  }
+
+  function renderQuestion() {
+    var q = session.questions[session.index];
+    var c = WMAP.country(q.key), u = WMAP.unit(q.unitId), t = WMAP.type(q.type);
+    session.answered = false;
+    updateProgress();
+
+    document.getElementById("typeLabel").textContent = t.no + " " + t.name + " · " + u.name;
+    questionText.innerHTML = "";
+    questionSub.hidden = true;
+    questionFlag.hidden = true;
+    questionFlag.innerHTML = "";
+    questionMap.hidden = true;
+    tapRow.hidden = true;
+    mapView.setTappable(false);
+
+    function big(s) { return el("span", "big", s); }
+    function line(parts) { parts.forEach(function (p) { questionText.appendChild(typeof p === "string" ? document.createTextNode(p) : p); }); }
+
+    if (q.type === "map-name") {
+      line(["色のついた国はどこ?"]);
+      showMap(q, false);
+      mapView.mark(q.key, "target");
+      if (GEO.countries[q.key].small) {
+        var sub = subregionOf(q.key);
+        if (sub) mapView.fitRect(sub);
+        questionSub.textContent = "小さな国なので、円の枠で示しています。";
+        questionSub.hidden = false;
+      }
+    } else if (q.type === "map-tap") {
+      line(["「", big(c.name), "」を地図の上でタップしてください。"]);
+      questionSub.textContent = "小さな国は円を押します。+ − ボタンやピンチで拡大、ドラッグで移動できます。";
+      questionSub.hidden = false;
+      showMap(q, true);
+      tapRow.hidden = false;
+    } else if (q.type === "flag-name") {
+      line(["この国旗の国はどこ?"]);
+      questionFlag.appendChild(flagImg(q.key, "出題の国旗"));
+      questionFlag.hidden = false;
+    } else if (q.type === "name-flag") {
+      line(["「", big(c.name), "」の国旗はどれ?"]);
+    } else if (q.type === "name-capital") {
+      line(["「", big(c.name), "」の首都はどこ?"]);
+    } else if (q.type === "capital-name") {
+      line(["首都が「", big(c.capital), "」の国はどこ?"]);
+    }
+
+    choicesEl.innerHTML = "";
+    choicesEl.className = "choices" + (q.type === "name-flag" ? " flags" : q.choices.length ? " text-grid grid" : "");
+    q.choices.forEach(function (ch, i) {
+      var btn = el("button", "choice-btn");
+      btn.type = "button";
+      var key = el("span", "choice-key", String(i + 1));
+      key.setAttribute("aria-hidden", "true");
+      btn.appendChild(key);
+      if (q.type === "name-flag") {
+        btn.setAttribute("aria-label", "選択肢 " + (i + 1));
+        btn.appendChild(flagImg(ch.key));
+        btn.appendChild(el("span", "flag-caption", ""));
+      } else {
+        btn.appendChild(el("span", "choice-body", ch.label));
+      }
+      btn.addEventListener("click", function () { answerChoice(i); });
+      choicesEl.appendChild(btn);
+    });
+    fitChoices();
+
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = "";
+    nextRow.classList.remove("show");
+    nextBtn.textContent = session.index + 1 >= session.questions.length ? "結果を見る" : "次の問題 →";
+  }
+
+  function recordAnswer(q, isCorrect) {
+    WMAP.addAnswer(stats, q, isCorrect, session.streak);
+    if (typeof Review !== "undefined") Review.record("worldmap", q.unitId, isCorrect);   // 復習プランナーの記録
+  }
+
+  // 正誤を数えて、解説カードを出す。chosenKey: 選んだ国(わからないときは null)
+  function finish(q, isCorrect, chosenKey, extra) {
+    session.answered = true;
+    if (isCorrect) {
+      session.correct++;
+      session.streak++;
+      if (session.streak > session.bestStreak) session.bestStreak = session.streak;
+    } else {
+      session.streak = 0;
+    }
+    session.results.push({ q: q, chosenKey: chosenKey, isCorrect: isCorrect });
+    recordAnswer(q, isCorrect);
+
+    var c = WMAP.country(q.key);
+    feedbackEl.innerHTML = "";
+    var lineEl = el("div", "answer-line");
+    if (isCorrect) lineEl.textContent = "正解!";
+    else lineEl.textContent = "不正解 — 正解は " + (q.type === "name-capital" ? c.capital + "(" + c.name + ")" : c.name) + (extra || "");
+    feedbackEl.appendChild(lineEl);
+    feedbackEl.appendChild(countryCard(c));
+    feedbackEl.className = "feedback " + (isCorrect ? "good" : "bad");
+    nextRow.classList.add("show");
+    updateProgress();
+    nextBtn.focus({ preventScroll: true });
+    feedbackEl.scrollIntoView({ block: "nearest" });
+  }
+
+  function answerChoice(chosen) {
+    if (!session || session.answered) return;
+    var q = session.questions[session.index];
+    if (q.type === "map-tap" || chosen < 0 || chosen >= q.choices.length) return;
+    var isCorrect = chosen === q.answer;
+    // 色だけでなく、文字でも正誤を示す。国旗の選択肢には国名を出す
+    choicesEl.querySelectorAll(".choice-btn").forEach(function (btn, i) {
+      btn.disabled = true;
+      if (q.type === "name-flag") btn.querySelector(".flag-caption").textContent = WMAP.country(q.choices[i].key).name;
+      if (i === q.answer) {
+        btn.classList.add("correct");
+        btn.appendChild(el("span", "choice-mark", "正解"));
+      } else if (i === chosen) {
+        btn.classList.add("wrong");
+        btn.appendChild(el("span", "choice-mark", "×"));
+      }
+    });
+    if (q.type === "map-name") {
+      // 不正解なら、選んだ国を赤で示す(②と同じ)。出題の国は正解の色(緑)にする
+      mapView.clearMarks();
+      if (!isCorrect) mapView.mark(q.choices[chosen].key, "bad");
+      mapView.mark(q.key, "good");
+      if (!isCorrect) mapView.reveal(q.choices[chosen].key, { keepIfVisible: true });
+    }
+    finish(q, isCorrect, q.choices[chosen].key);
+  }
+
+  function onTapCountry(key) {
+    if (!session || session.answered) return;
+    var q = session.questions[session.index];
+    if (q.type !== "map-tap") return;
+    answerTap(q, key);
+  }
+  function answerTap(q, key) {
+    var isCorrect = key === q.key;
+    mapView.setTappable(false);
+    tapRow.hidden = true;
+    mapView.clearMarks();
+    if (key && !isCorrect) mapView.mark(key, "bad");
+    mapView.mark(q.key, "good");
+    mapView.reveal(q.key);
+    // 正解の国が小さくて見えにくいときは、まわりの国も入る程度に拡大する
+    if (mapView.pxSize(q.key) < 24) mapView.zoomTo(q.key);
+    var extra = "";
+    if (!isCorrect) {
+      var tapped = key ? WMAP.country(key) : null;
+      extra = (tapped ? "(タップしたのは " + tapped.name + ")" : "") + "。正解の国を緑で示しました。";
+    }
+    finish(q, isCorrect, key);
+    if (!isCorrect) feedbackEl.firstChild.textContent = "不正解 — 正解は " + WMAP.country(q.key).name + extra;
+  }
+  document.getElementById("giveUpBtn").addEventListener("click", function () {
+    if (!session || session.answered) return;
+    var q = session.questions[session.index];
+    if (q.type === "map-tap") answerTap(q, null);
+  });
+
+  // 国のカード(解説と地図帳で同じ形)
+  function countryCard(c) {
+    var card = el("div", "country-card");
+    card.appendChild(flagImg(c.key, c.name + "の国旗"));
+    var body = el("div", "cc-body");
+    body.appendChild(el("div", "cc-name", c.name));
+    if (c.official && c.official !== c.name) body.appendChild(el("div", "cc-official", c.official));
+    var dl = el("dl", "cc-facts");
+    dl.appendChild(el("dt", "", "首都"));
+    dl.appendChild(el("dd", "", c.capital));
+    dl.appendChild(el("dt", "", "州"));
+    dl.appendChild(el("dd", "", WMAP.unit(c.region).name));
+    body.appendChild(dl);
+    card.appendChild(body);
+    card.appendChild(el("p", "cc-note", c.note || ""));
+    var links = el("div", "cc-links");
+    links.appendChild(atlasLink(c.key, "地図帳で見る →"));
+    card.appendChild(links);
+    return card;
+  }
+
+  function goNext() {
+    if (!session || !session.answered) return;
+    session.index++;
+    if (session.index >= session.questions.length) {
+      showResult();
+    } else {
+      renderQuestion();
+      quizScreen.scrollIntoView({ block: "start" });
+    }
+  }
+  nextBtn.addEventListener("click", goNext);
+  document.getElementById("quitBtn").addEventListener("click", showResult);
+
+  // 数字キー 1〜4 で答え、Enter で次へ
+  document.addEventListener("keydown", function (e) {
+    if (!session || quizScreen.style.display !== "block") return;
+    if (e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+    if (!session.answered && /^[1-4]$/.test(e.key)) {
+      e.preventDefault();
+      answerChoice(Number(e.key) - 1);
+    } else if (session.answered && e.key === "Enter") {
+      var t = e.target;
+      if (t && (t.tagName === "BUTTON" || t.tagName === "A")) return;   // ボタンの上では、ブラウザの動きにまかせる
+      e.preventDefault();
+      goNext();
+    }
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitChoices);
+  window.addEventListener("resize", fitChoices);
+  if (window.ResizeObserver) {
+    var lastQuizWidth = 0;
+    new ResizeObserver(function (entries) {
+      var w = Math.round(entries[0].contentRect.width);
+      if (w !== lastQuizWidth) { lastQuizWidth = w; fitChoices(); }
+    }).observe(quizScreen);
+  }
+
+  // ---------- 結果画面 ----------
+  // 間違えた問題の一覧に出す「選んだ答え」の文字
+  function answerText(q, key) {
+    if (!key) return "わからない";
+    var c = WMAP.country(key);
+    if (!c) return "–";
+    if (q.type === "name-capital") return c.capital;
+    if (q.type === "name-flag") return c.name + "の国旗";
+    return c.name;
+  }
+  function promptText(q) {
+    var c = WMAP.country(q.key);
+    switch (q.type) {
+      case "map-name": return "地図で色のついた国";
+      case "map-tap": return "「" + c.name + "」を地図でタップ";
+      case "flag-name": return "国旗を見て国名";
+      case "name-flag": return "「" + c.name + "」の国旗";
+      case "name-capital": return "「" + c.name + "」の首都";
+      case "capital-name": return "首都が「" + c.capital + "」の国";
+    }
+    return "";
+  }
+  function showResult() {
+    if (!session) return;
+    var results = session.results;
+    var total = results.length;
+    var correct = results.filter(function (r) { return r.isCorrect; }).length;
+
+    var score = document.getElementById("resultScore");
+    score.textContent = correct;
+    score.appendChild(el("span", "", " / " + total));
+    document.getElementById("resultRate").textContent = "正答率 " + pct(correct, total);
+    document.getElementById("resCorrect").textContent = correct;
+    document.getElementById("resAccuracy").textContent = pct(correct, total);
+    document.getElementById("resStreak").textContent = session.bestStreak;
+
+    var unitBox = document.getElementById("unitResult");
+    unitBox.innerHTML = "";
+    var per = {};
+    results.forEach(function (r) {
+      if (!per[r.q.unitId]) per[r.q.unitId] = { total: 0, correct: 0 };
+      per[r.q.unitId].total++;
+      if (r.isCorrect) per[r.q.unitId].correct++;
+    });
+    WMAP.UNITS.forEach(function (u) {
+      if (!per[u.id]) return;
+      var row = el("div", "miss-item");
+      row.appendChild(el("span", "name", u.name));
+      row.appendChild(el("span", "rate spacer", per[u.id].correct + "/" + per[u.id].total));
+      var a = el("a", "", "地図帳で見る →");
+      a.href = "atlas.html?region=" + u.id;
+      a.target = "_blank"; a.rel = "noopener";
+      row.appendChild(a);
+      unitBox.appendChild(row);
+    });
+    if (total === 0) unitBox.appendChild(el("p", "weak-empty", "まだ1問も答えていません。"));
+
+    var list = document.getElementById("missList");
+    list.innerHTML = "";
+    var misses = results.filter(function (r) { return !r.isCorrect; });
+    if (total === 0) {
+      list.appendChild(el("p", "weak-empty", "まだ1問も答えていません。"));
+    } else if (misses.length === 0) {
+      list.appendChild(el("p", "weak-empty", "誤答はありませんでした。"));
+    } else {
+      misses.forEach(function (r) {
+        var q = r.q, c = WMAP.country(q.key), t = WMAP.type(q.type);
+        var row = el("div", "miss-item");
+        var who = el("span", "miss-who");
+        who.appendChild(flagImg(c.key, c.name + "の国旗"));
+        who.appendChild(el("span", "name", c.name));
+        row.appendChild(who);
+        var link = atlasLink(c.key, "地図帳で見る");
+        link.classList.add("spacer");
+        row.appendChild(link);
+        row.appendChild(el("div", "detail answer-pair", t.no + " " + promptText(q)));
+        var pair = el("div", "detail answer-pair");
+        pair.appendChild(document.createTextNode("選んだ答え "));
+        pair.appendChild(el("span", "given", answerText(q, r.chosenKey)));
+        pair.appendChild(document.createTextNode(" / 正解 "));
+        pair.appendChild(el("span", "correct", answerText(q, q.key)));
+        row.appendChild(pair);
+        list.appendChild(row);
+      });
+    }
+    showScreen("result");
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById("backBtn").addEventListener("click", function () {
+    session = null;
+    renderSetup();
+    showScreen("setup");
+    window.scrollTo(0, 0);
+  });
+  document.getElementById("retryBtn").addEventListener("click", function () { if (lastOpts) startWith(lastOpts); });
+  startBtn.addEventListener("click", startQuiz);
+
+  renderSetup();
+  showScreen("setup");
+})();
+</script>
+</body>
+</html>
