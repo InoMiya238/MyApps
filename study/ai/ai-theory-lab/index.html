@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI理論道場 | AI理論ラボ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 720px; gap: 22px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+  body.is-quiz .hero .tagline { display: none; }
+
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h3 {
+    margin: 20px 0 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+  }
+  select {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    padding: 5px 7px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.95rem;
+  }
+  .hint {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin: 10px 0 0;
+    line-height: 1.6;
+  }
+  button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    padding: 12px 20px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    width: 100%;
+    font-weight: 700;
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-secondary {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .btn-row button { flex: 1; }
+  button:focus-visible,
+  select:focus-visible,
+  a:focus-visible,
+  .cat-check:focus-within {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- 設定 ---------- */
+  #setup-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .preselect-note {
+    margin: 0;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 0.86rem;
+    line-height: 1.6;
+  }
+  .preselect-note[hidden] { display: none; }
+
+  .unit-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .tool-btn {
+    min-height: 40px;
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--ink-muted);
+    border-radius: 9px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .tool-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .tool-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .unit-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  /* 分野の小見出し */
+  .unit-area {
+    grid-column: 1 / -1;
+    margin: 8px 0 0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+  }
+  .unit-area:first-child { margin-top: 0; }
+  .cat-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 48px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+  .cat-check.checked {
+    border-color: var(--accent);
+    color: var(--ink);
+    background: var(--accent-soft);
+  }
+  .cat-check.disabled { cursor: not-allowed; color: var(--ink-faint); }
+  .cat-check.disabled input { cursor: not-allowed; }
+  .cat-check input { flex: none; }
+  .cat-check input:focus-visible { outline: none; }
+  .cat-check .unit-name { min-width: 0; overflow-wrap: anywhere; }
+  .weak-tag {
+    flex: none;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--bad);
+    background: var(--bad-soft);
+    border: 1px solid var(--bad);
+    border-radius: 999px;
+    padding: 3px 7px;
+  }
+  .cat-rate {
+    flex: none;
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-faint);
+  }
+
+  /* 開始ボタン */
+  .start-bar { display: flex; flex-direction: column; gap: 8px; }
+  .error-msg {
+    color: var(--bad);
+    font-size: 0.85rem;
+    margin: 0;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  /* ---------- 設定: これまでの成績 ---------- */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .stat-box {
+    text-align: center;
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 14px 8px;
+    min-width: 0;
+  }
+  .stat-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    margin-top: 3px;
+  }
+  .cat-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .cat-row {
+    display: grid;
+    grid-template-columns: 5.5em 1fr 44px;
+    align-items: center;
+    gap: 10px;
+  }
+  .cat-row-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-muted);
+  }
+  .cat-row-track {
+    height: 7px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .cat-row-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+  .cat-row-pct {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-faint);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .weak-list { font-size: 0.88rem; }
+  .weak-empty {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    line-height: 1.6;
+  }
+  .weak-more { margin: 8px 0 0; font-size: 0.82rem; color: var(--ink-muted); }
+  .weak-practice { width: 100%; margin-top: 12px; font-size: 0.92rem; font-weight: 600; }
+  .weak-practice[hidden] { display: none; }
+  .reset-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+  }
+  .reset-btn {
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--ink-muted);
+    border-radius: 9px;
+    padding: 9px 14px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- 出題 ---------- */
+  #quiz-screen { display: none; }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--ink-muted);
+  }
+  .progress-bar {
+    height: 6px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    overflow: hidden;
+    margin: 6px 0 18px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.25s ease;
+  }
+  .problem-type-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .question {
+    margin: 0 0 14px;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 15.5px;
+    font-weight: 600;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+  .question.long { text-align: left; }
+  .q-material { margin: 0 0 18px; min-width: 0; }
+  .q-material[hidden] { display: none; }
+
+  /* 選択肢は1列が基本。短い語や単位つきの数値の問題だけ2列にする */
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .choices.grid { grid-template-columns: 1fr 1fr; }
+  .choice-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 60px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .choices.grid .choice-btn { font-size: 17px; line-height: 1.4; text-align: center; }
+  .choice-key {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    border-radius: 7px;
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .choice-body { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  /* 2列のときは折り返さない(はみ出したら、ページが1列に戻す) */
+  .choices.grid .choice-body { white-space: nowrap; overflow: hidden; }
+  /* 正誤の印は、番号の真下に重ねて出す(選択肢の文字の場所をとらないので、答えたあとに並びが動かない) */
+  .choice-mark {
+    position: absolute;
+    left: 12px;
+    top: calc(50% + 13px);
+    width: 24px;
+    text-align: center;
+    white-space: nowrap;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent); }
+  .choice-btn:disabled { cursor: not-allowed; }
+  .choice-btn.correct { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+  .choice-btn.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+
+  .feedback {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    display: none;
+    scroll-margin: 16px;
+  }
+  .feedback.good { display: block; background: var(--good-soft); color: var(--good); }
+  .feedback.bad { display: block; background: var(--bad-soft); color: var(--bad); }
+  .feedback .answer-line { font-weight: 700; overflow-wrap: anywhere; }
+  .feedback .explanation {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    color: var(--ink);
+    font-weight: 400;
+    font-size: 0.85rem;
+    line-height: 1.8;
+  }
+  .feedback .step + .step { margin-top: 4px; }
+  .feedback .ref-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .feedback .ref-link:hover { text-decoration: underline; }
+  .feedback .ref-row { display: flex; flex-wrap: wrap; gap: 0 18px; }
+  .next-row { margin-top: 16px; display: none; }
+  .next-row.show { display: block; }
+  .quit-link {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 6px;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  /* ---------- 結果 ---------- */
+  #result-screen { display: none; }
+  .result-head { text-align: center; padding: 4px 4px 14px; }
+  .result-head .label { color: var(--ink-muted); font-size: 14px; }
+  .result-head .score {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 700;
+    margin: 6px 0;
+  }
+  .result-head .score span { font-size: 24px; color: var(--ink-faint); }
+  .unit-result, .miss-list { font-size: 0.88rem; }
+  .miss-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .miss-item:last-child { border-bottom: none; }
+  .miss-item a { color: var(--accent); font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .miss-item a:hover { text-decoration: underline; }
+  .miss-item .name { font-weight: 600; }
+  .miss-item .detail { color: var(--ink-muted); font-size: 0.82rem; }
+  .miss-item .chosen { color: var(--bad); }
+  .miss-item .correct { color: var(--good); font-weight: 600; }
+  .miss-item .rate {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .miss-item .spacer { margin-left: auto; }
+  .miss-q {
+    flex: 1 1 100%;
+    min-width: 0;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+  .miss-item .detail.answer-pair { flex: 1 1 100%; min-width: 0; overflow-wrap: anywhere; line-height: 1.9; }
+
+
+  /* ===== 式と表の表示部品 ===== */
+  .var { font-family: var(--font-display); font-style: italic; }
+  .steps { display: flex; flex-direction: column; gap: 3px; }
+  .step { min-width: 0; overflow-wrap: anywhere; }
+  .rule { color: var(--accent); font-weight: 700; }
+  .question sub, .question sup, .q-material sub, .q-material sup, .feedback sub, .feedback sup, .choice-body sub, .choice-body sup, .miss-q sub, .miss-q sup { font-size: .7em; line-height: 0; position: relative; vertical-align: baseline; }
+  .question sub, .q-material sub, .feedback sub, .choice-body sub, .miss-q sub { top: .32em; }
+  .question sup, .q-material sup, .feedback sup, .choice-body sup, .miss-q sup { top: -.45em; }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; font-size: 0.82em; line-height: 1.15; margin: 0 0.12em; }
+  .frac .num { padding: 0 0.25em 0.08em; }
+  .frac .den { padding: 0.08em 0.25em 0; border-top: 0.09em solid currentColor; align-self: stretch; text-align: center; }
+  .given { display: grid; grid-template-columns: auto auto; justify-content: center; gap: 4px 14px; margin: 0; padding: 10px 14px; background: var(--surface-2); border-radius: 10px; font-size: 14.5px; color: var(--ink); }
+  .given dt { color: var(--ink-muted); }
+  .given dd { margin: 0; font-weight: 600; text-align: right; }
+  .formula { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 10px; padding: 10px 12px; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 10px; font-size: 15px; font-weight: 600; color: var(--ink); }
+  .q-material > .steps { padding: 10px 14px; background: var(--surface-2); border-radius: 10px; font-size: 14.5px; line-height: 1.7; }
+  .miss-q .given, .miss-q .q-table-wrap, .miss-q .cm, .miss-q .mat-row, .miss-q > .steps { margin-top: 6px; }
+
+  /* 小さな表(データの値など)。はみ出すときは表の中だけ横に動かす */
+  .q-table-wrap { max-width: 100%; overflow-x: auto; }
+  .q-table { margin: 0 auto; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .q-table th, .q-table td { padding: 6px 12px; border: 1px solid var(--border); text-align: center; white-space: nowrap; }
+  .q-table th { background: var(--surface-2); color: var(--ink-muted); font-weight: 600; }
+  .q-table td { font-family: var(--font-mono); background: var(--surface); }
+
+  /* 数の並び(畳み込みのフィルタなど) */
+  .mat-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 24px; }
+  .mat-box { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .mat-box figcaption { font-size: 12px; font-weight: 600; color: var(--ink-muted); }
+  .mat { border-collapse: collapse; font-family: var(--font-mono); font-size: 15px; font-variant-numeric: tabular-nums; }
+  .mat td { width: 2.2em; height: 2.2em; text-align: center; border: 1px solid var(--border); background: var(--surface); }
+
+  /* ===== 混同行列 ここから(道場・実験室・理論帳の3ページで同じ内容。変えるときはすべて直す) ===== */
+  .cm { margin: 0 auto; border-collapse: separate; border-spacing: 4px; font-size: 13px; }
+  .cm th { padding: 4px 8px; color: var(--ink-muted); font-weight: 600; white-space: nowrap; }
+  .cm thead th { text-align: center; }
+  .cm tbody th { text-align: right; }
+  .cm td { min-width: 5.5em; padding: 8px 10px; border-radius: 8px; text-align: center; border: 1px solid var(--border); }
+  .cm td.cm-good { background: var(--good-soft); }
+  .cm td.cm-bad { background: var(--bad-soft); }
+  .cm .cm-term { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--ink-muted); }
+  .cm .cm-n { display: block; font-family: var(--font-mono); font-size: 18px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  /* ===== 混同行列 ここまで ===== */
+
+  /* ---------- スマホ表示の調整 ---------- */
+  @media (max-width: 480px) {
+    .card { padding: 18px 16px; }
+    .stat-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stat-num { font-size: 1.2rem; }
+    .stat-label { font-size: 10.5px; letter-spacing: 0; }
+    select { font-size: 16px; padding: 7px 8px; }
+    .unit-list { grid-template-columns: 1fr; }
+    .cat-check { padding: 10px 10px; gap: 7px; }
+    .start-bar { position: sticky; bottom: 12px; z-index: 5; }
+    .start-bar .btn-primary { box-shadow: 0 6px 18px var(--shadow), 0 0 0 3px var(--bg); }
+    .start-bar .error-msg {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 7px 10px;
+    }
+    .result-head .score { font-size: 42px; }
+    .btn-row button { font-size: 0.86rem; padding: 12px 6px; }
+    .feedback { padding: 12px 14px; }
+    .choices.grid .choice-btn { font-size: 16px; }
+    .cm { border-spacing: 3px; font-size: 12px; }
+    .cm th { padding: 3px 4px; }
+    .cm td { min-width: 4.6em; padding: 6px 6px; }
+    .q-table th, .q-table td { padding: 5px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow" id="eyebrow">AI THEORY LAB · 道場</p>
+    <h1>AI理論道場</h1>
+    <p class="tagline" id="tagline">機械学習の基礎から生成AIまでの8単元を、4択クイズで確かめます。用語だけでなく計算問題もあります。単元ごとの正答率が残るので、苦手がわかります。</p>
+    <nav class="site-nav" aria-label="AI理論ラボのページ">
+      <span aria-current="page">道場</span>
+      <a href="lab.html">実験室</a>
+      <a href="reference.html">理論帳</a>
+    </nav>
+  </header>
+
+  <!-- ============ 設定 ============ -->
+  <div id="setup-screen">
+    <p class="preselect-note" id="preselectNote" role="status" hidden></p>
+
+    <div class="card">
+      <h2 id="unitHeading">単元を選ぶ</h2>
+      <div class="unit-tools">
+        <button type="button" class="tool-btn" id="selectAllBtn">すべて選ぶ</button>
+        <button type="button" class="tool-btn" id="clearAllBtn">すべてはずす</button>
+      </div>
+      <div class="unit-list" id="unitList" role="group" aria-labelledby="unitHeading"></div>
+      <p class="hint">右の数字はこれまでの正答率です。5問以上答えて70%未満の単元に「苦手」がつきます。</p>
+    </div>
+
+    <div class="card">
+      <h2>出題数</h2>
+      <div class="field">
+        <label for="countSelect">1回のクイズで出す問題の数</label>
+        <select id="countSelect">
+          <option value="5">5問</option>
+          <option value="10" selected>10問</option>
+          <option value="20">20問</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="start-bar">
+      <p class="error-msg" id="setupError" role="status">単元を1つ以上選んでください。</p>
+      <button type="button" class="btn-primary" id="startBtn">クイズを始める</button>
+    </div>
+
+    <div class="card" id="statsCard">
+      <h2>これまでの成績</h2>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num" id="statTotal">0</div><div class="stat-label">回答数</div></div>
+        <div class="stat-box"><div class="stat-num" id="statAccuracy">–</div><div class="stat-label">正答率</div></div>
+        <div class="stat-box"><div class="stat-num" id="statUnits">0/8</div><div class="stat-label">取り組んだ単元</div></div>
+      </div>
+
+      <h3>分野ごとの正答率</h3>
+      <div class="cat-bars" id="areaBars"></div>
+
+      <h3>苦手な単元</h3>
+      <div class="weak-list" id="weakList"></div>
+      <button type="button" class="btn-secondary weak-practice" id="weakBtn" hidden>苦手な単元だけ練習する</button>
+
+      <div class="reset-row">
+        <button type="button" class="reset-btn" id="resetBtn">成績をリセット</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 出題 ============ -->
+  <div id="quiz-screen">
+    <div class="card">
+      <div class="progress-row">
+        <span id="progressText">問題 1 / 10</span>
+        <span id="scoreText">正解 0 ・ 連続 0</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+      <div class="problem-type-label" id="unitLabel"></div>
+      <p class="question" id="questionText"></p>
+      <div class="q-material" id="questionMaterial" hidden></div>
+
+      <div class="choices" id="choices"></div>
+
+      <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+      <div class="next-row" id="nextRow">
+        <button type="button" class="btn-primary" id="nextBtn">次の問題 →</button>
+      </div>
+      <button type="button" class="quit-link" id="quitBtn">中断して結果を見る</button>
+    </div>
+  </div>
+
+  <!-- ============ 結果 ============ -->
+  <div id="result-screen">
+    <div class="card">
+      <div class="result-head">
+        <div class="label">クイズ終了</div>
+        <div class="score" id="resultScore">0<span> / 0</span></div>
+        <div class="label" id="resultRate">正答率 –</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num" id="resCorrect">0</div><div class="stat-label">正解数</div></div>
+        <div class="stat-box"><div class="stat-num" id="resAccuracy">–</div><div class="stat-label">正答率</div></div>
+        <div class="stat-box"><div class="stat-num" id="resStreak">0</div><div class="stat-label">最大連続正解</div></div>
+      </div>
+
+      <h3>単元ごとの結果</h3>
+      <div class="unit-result" id="unitResult"></div>
+
+      <h3>間違えた問題</h3>
+      <div class="miss-list" id="missList"></div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-secondary" id="backBtn">単元を選び直す</button>
+        <button type="button" class="btn-primary" id="retryBtn">同じ設定でもう一度</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="../../../shared/review.js"></script>
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var setupScreen = document.getElementById("setup-screen");
+  var quizScreen = document.getElementById("quiz-screen");
+  var resultScreen = document.getElementById("result-screen");
+  var preselectNote = document.getElementById("preselectNote");
+  var unitList = document.getElementById("unitList");
+  var countSelect = document.getElementById("countSelect");
+  var startBtn = document.getElementById("startBtn");
+  var setupError = document.getElementById("setupError");
+  var weakBtn = document.getElementById("weakBtn");
+  var questionText = document.getElementById("questionText");
+  var questionMaterial = document.getElementById("questionMaterial");
+  var choicesEl = document.getElementById("choices");
+  var feedbackEl = document.getElementById("feedback");
+  var nextRow = document.getElementById("nextRow");
+  var nextBtn = document.getElementById("nextBtn");
+
+  // ---------- 状態 ----------
+  var stats = AITL.loadStats();
+  var selected = {};       // 選んでいる単元(ID → true)
+  var count = 10;
+  var session = null;
+
+  function readyUnits() { return AITL.UNITS.filter(function (u) { return AITL.isReady(u.id); }); }
+  function selectedIds() {
+    return AITL.UNITS.filter(function (u) { return selected[u.id] && AITL.isReady(u.id); }).map(function (u) { return u.id; });
+  }
+
+  // 単元数は、データから作る
+  (function initHero() {
+    var n = AITL.UNITS.length;
+    document.getElementById("tagline").textContent = "機械学習の基礎から生成AIまでの" + n + "単元を、4択クイズで確かめます。用語だけでなく計算問題もあります。単元ごとの正答率が残るので、苦手がわかります。";
+  })();
+
+  // 保存済みの設定 → なければ、全単元を選ぶ
+  (function initSelection() {
+    var saved = AITL.loadSettings(), restored = false;
+    if (saved) {
+      count = saved.count;
+      saved.units.forEach(function (id) { if (AITL.isReady(id)) { selected[id] = true; restored = true; } });
+    }
+    if (!restored) readyUnits().forEach(function (u) { selected[u.id] = true; });
+    // index.html?unit=<ID> で開いたとき: その単元だけを選ぶ(保存は、開始を押すまで上書きしない)
+    var wanted = null;
+    try { wanted = new URLSearchParams(location.search).get("unit"); } catch (e) { wanted = null; }
+    var u = wanted ? AITL.unit(wanted) : null;
+    if (u && AITL.isReady(u.id)) {
+      selected = {};
+      selected[u.id] = true;
+      preselectNote.textContent = "「" + u.name + "」だけを選びました。";
+      preselectNote.hidden = false;
+    }
+  })();
+
+  function pct(correct, total) { return total > 0 ? Math.round((correct / total) * 100) + "%" : "–"; }
+  function recOf(id) { return stats.byUnit[id] || { total: 0, correct: 0 }; }
+
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  // データファイルの式・表(作者が書いたHTML)を入れる
+  function htmlEl(tag, className, html) {
+    var e = el(tag, className);
+    e.innerHTML = html;
+    return e;
+  }
+  // 実験室へのリンク(単元に実験があるときだけ)。同じタブで開く
+  function labLink(href, className) {
+    var a = el("a", className || "", "実験室で試す →");
+    a.href = href;
+    return a;
+  }
+  // 理論帳の、その単元の解説へのリンク(全単元)
+  function refLink(unitId, className) {
+    var a = el("a", className || "", "理論帳で読む →");
+    a.href = "reference.html#" + encodeURIComponent(unitId);
+    return a;
+  }
+  function unitMeta(u) { return u.area; }
+
+  // ---------- 画面の切り替え ----------
+  function showScreen(name) {
+    setupScreen.style.display = name === "setup" ? "flex" : "none";
+    quizScreen.style.display = name === "quiz" ? "block" : "none";
+    resultScreen.style.display = name === "result" ? "block" : "none";
+    document.body.classList.toggle("is-quiz", name === "quiz");
+  }
+
+  // ---------- 設定画面 ----------
+  function renderUnitList() {
+    unitList.innerHTML = "";
+    AITL.AREAS.forEach(function (area) {
+      var inArea = AITL.UNITS.filter(function (u) { return u.area === area; });
+      if (inArea.length === 0) return;
+      unitList.appendChild(el("p", "unit-area", area));
+      inArea.forEach(function (u) {
+        var ready = AITL.isReady(u.id), on = ready && !!selected[u.id], rec = recOf(u.id);
+        var label = el("label", "cat-check" + (on ? " checked" : "") + (ready ? "" : " disabled"));
+        var input = el("input");
+        input.type = "checkbox";
+        input.checked = on;
+        input.disabled = !ready;
+        label.appendChild(input);
+        label.appendChild(el("span", "unit-name", u.name));
+        if (ready && AITL.isWeak(rec)) label.appendChild(el("span", "weak-tag", "苦手"));
+        var rate = el("span", "cat-rate", ready ? pct(rec.correct, rec.total) : "準備中");
+        if (ready) rate.setAttribute("aria-label", rec.total > 0 ? "正答率 " + pct(rec.correct, rec.total) : "まだ回答なし");
+        label.appendChild(rate);
+        input.addEventListener("change", function () {
+          if (input.checked) selected[u.id] = true; else delete selected[u.id];
+          renderSetup();
+          var again = unitList.querySelector('[data-unit="' + u.id + '"] input');
+          if (again) again.focus();
+        });
+        label.dataset.unit = u.id;
+        unitList.appendChild(label);
+      });
+    });
+  }
+
+  function renderStartBar() {
+    var n = selectedIds().length;
+    startBtn.disabled = n === 0;
+    startBtn.textContent = n === 0 ? "クイズを始める" : "クイズを始める(" + n + "単元・" + count + "問)";
+    setupError.classList.toggle("show", n === 0);
+  }
+
+  function weakUnits() {
+    var list = [];
+    AITL.UNITS.forEach(function (u) {
+      var rec = recOf(u.id);
+      if (AITL.isWeak(rec)) list.push({ unit: u, rec: rec, rate: rec.correct / rec.total });
+    });
+    list.sort(function (a, b) { return a.rate - b.rate || b.rec.total - a.rec.total; });
+    return list;
+  }
+
+  function renderStats() {
+    var total = 0, correct = 0, tried = 0;
+    AITL.UNITS.forEach(function (u) {
+      var r = recOf(u.id);
+      total += r.total; correct += r.correct;
+      if (r.total > 0) tried++;
+    });
+    document.getElementById("statTotal").textContent = total;
+    document.getElementById("statAccuracy").textContent = pct(correct, total);
+    document.getElementById("statUnits").textContent = tried + "/" + AITL.UNITS.length;
+
+    var bars = document.getElementById("areaBars");
+    bars.innerHTML = "";
+    AITL.AREAS.forEach(function (area) {
+      var t = 0, c = 0;
+      AITL.UNITS.forEach(function (u) {
+        if (u.area !== area) return;
+        var r = recOf(u.id); t += r.total; c += r.correct;
+      });
+      var row = el("div", "cat-row");
+      row.appendChild(el("span", "cat-row-label", area));
+      var track = el("div", "cat-row-track");
+      var fill = el("div", "cat-row-fill");
+      fill.style.width = (t > 0 ? Math.round((c / t) * 100) : 0) + "%";
+      track.appendChild(fill);
+      row.appendChild(track);
+      row.appendChild(el("span", "cat-row-pct", pct(c, t)));
+      bars.appendChild(row);
+    });
+
+    var weak = weakUnits();
+    var list = document.getElementById("weakList");
+    list.innerHTML = "";
+    if (weak.length === 0) {
+      list.appendChild(el("p", "weak-empty", "まだ苦手な単元はありません(5問以上答えた単元から判定します)。"));
+    } else {
+      weak.slice(0, 5).forEach(function (w) {
+        var row = el("div", "miss-item");
+        var left = el("span");
+        left.appendChild(el("span", "name", w.unit.name));
+        left.appendChild(el("span", "detail", "(" + unitMeta(w.unit) + ")"));
+        row.appendChild(left);
+        row.appendChild(el("span", "rate spacer", w.rec.correct + "/" + w.rec.total + " (" + pct(w.rec.correct, w.rec.total) + ")"));
+        if (w.unit.lab) row.appendChild(labLink(w.unit.lab));
+        list.appendChild(row);
+      });
+      if (weak.length > 5) list.appendChild(el("p", "weak-more", "ほか" + (weak.length - 5) + "単元"));
+    }
+    weakBtn.hidden = !weak.some(function (w) { return AITL.isReady(w.unit.id); });
+  }
+
+  function renderSetup() {
+    renderUnitList();
+    countSelect.value = String(count);
+    renderStartBar();
+    renderStats();
+  }
+
+  document.getElementById("selectAllBtn").addEventListener("click", function () {
+    readyUnits().forEach(function (u) { selected[u.id] = true; });
+    renderSetup();
+  });
+  document.getElementById("clearAllBtn").addEventListener("click", function () {
+    selected = {};
+    renderSetup();
+  });
+  countSelect.addEventListener("change", function () {
+    var n = Number(countSelect.value);
+    count = AITL.COUNTS.indexOf(n) >= 0 ? n : 10;
+    renderStartBar();
+  });
+  weakBtn.addEventListener("click", function () {
+    var ids = weakUnits().map(function (w) { return w.unit.id; }).filter(AITL.isReady);
+    if (ids.length === 0) return;
+    selected = {};
+    ids.forEach(function (id) { selected[id] = true; });
+    startQuiz();
+  });
+  document.getElementById("resetBtn").addEventListener("click", function () {
+    if (!confirm("これまでの成績をすべて消します。よろしいですか?")) return;
+    AITL.clearStats();
+    stats = AITL.emptyStats();
+    renderSetup();
+  });
+
+  // ---------- 出題画面 ----------
+  function startQuiz() {
+    var ids = selectedIds();
+    if (ids.length === 0) return;
+    var questions = AITL.buildQuiz(ids, count);
+    if (questions.length === 0) return;
+    AITL.saveSettings({ units: ids, count: count });
+    preselectNote.hidden = true;
+    session = { questions: questions, index: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, results: [] };
+    showScreen("quiz");
+    renderQuestion();
+    window.scrollTo(0, 0);
+  }
+
+  function updateProgress() {
+    var total = session.questions.length;
+    document.getElementById("progressText").textContent = "問題 " + (session.index + 1) + " / " + total;
+    document.getElementById("scoreText").textContent = "正解 " + session.correct + " ・ 連続 " + session.streak;
+    document.getElementById("progressFill").style.width = Math.round((session.results.length / total) * 100) + "%";
+  }
+
+  // 2列の選択肢がボタンからはみ出すときは、1列に戻す
+  function fitChoices() {
+    if (!session || quizScreen.style.display === "none") return;
+    var q = session.questions[session.index];
+    choicesEl.classList.toggle("grid", q.choiceLayout === "grid");
+    if (q.choiceLayout !== "grid") return;
+    var bodies = choicesEl.querySelectorAll(".choice-body");
+    for (var i = 0; i < bodies.length; i++) {
+      if (bodies[i].scrollWidth > bodies[i].clientWidth + 1) { choicesEl.classList.remove("grid"); return; }
+    }
+  }
+
+  function renderQuestion() {
+    var q = session.questions[session.index];
+    var u = AITL.unit(q.unitId);
+    session.answered = false;
+    updateProgress();
+
+    document.getElementById("unitLabel").textContent = unitMeta(u) + " · " + u.name;
+    questionText.innerHTML = q.text;
+    questionText.classList.toggle("long", questionText.textContent.length > 38);
+    questionMaterial.hidden = !q.material;
+    questionMaterial.innerHTML = q.material || "";
+
+    choicesEl.innerHTML = "";
+    q.choices.forEach(function (c, i) {
+      var btn = el("button", "choice-btn");
+      btn.type = "button";
+      var key = el("span", "choice-key", String(i + 1));
+      key.setAttribute("aria-hidden", "true");
+      btn.appendChild(key);
+      btn.appendChild(htmlEl("span", "choice-body", c));
+      btn.addEventListener("click", function () { onAnswer(i); });
+      choicesEl.appendChild(btn);
+    });
+    fitChoices();
+
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = "";
+    nextRow.classList.remove("show");
+    nextBtn.textContent = session.index + 1 >= session.questions.length ? "結果を見る" : "次の問題 →";
+  }
+
+  function recordAnswer(q, isCorrect) {
+    if (!stats.byUnit[q.unitId]) stats.byUnit[q.unitId] = { total: 0, correct: 0 };
+    stats.byUnit[q.unitId].total++;
+    if (isCorrect) stats.byUnit[q.unitId].correct++;
+    if (session.streak > stats.bestStreak) stats.bestStreak = session.streak;
+    AITL.saveStats(stats);
+    if (typeof Review !== "undefined") Review.record("ai", q.unitId, isCorrect);   // 復習プランナーの記録
+  }
+
+  function onAnswer(chosen) {
+    if (!session || session.answered) return;
+    var q = session.questions[session.index];
+    if (chosen < 0 || chosen >= q.choices.length) return;
+    session.answered = true;
+    var isCorrect = chosen === q.answer;
+
+    if (isCorrect) {
+      session.correct++;
+      session.streak++;
+      if (session.streak > session.bestStreak) session.bestStreak = session.streak;
+    } else {
+      session.streak = 0;
+    }
+    session.results.push({ q: q, chosen: chosen, isCorrect: isCorrect });
+    recordAnswer(q, isCorrect);
+
+    // 色だけでなく、文字でも正誤を示す
+    choicesEl.querySelectorAll(".choice-btn").forEach(function (btn, i) {
+      btn.disabled = true;
+      if (i === q.answer) {
+        btn.classList.add("correct");
+        btn.appendChild(el("span", "choice-mark", "正解"));
+      } else if (i === chosen) {
+        btn.classList.add("wrong");
+        btn.appendChild(el("span", "choice-mark", "×"));
+      }
+    });
+
+    feedbackEl.innerHTML = "";
+    var line = el("div", "answer-line");
+    if (isCorrect) {
+      line.textContent = "正解!";
+    } else {
+      line.appendChild(document.createTextNode("不正解 — 正解は "));
+      line.appendChild(htmlEl("span", "", q.choices[q.answer]));
+    }
+    feedbackEl.appendChild(line);
+    feedbackEl.appendChild(htmlEl("div", "explanation", AITL.steps(q.explain)));
+    var refRow = el("div", "ref-row");
+    if (q.lab) refRow.appendChild(labLink(q.lab, "ref-link"));
+    refRow.appendChild(refLink(q.unitId, "ref-link"));
+    feedbackEl.appendChild(refRow);
+    feedbackEl.className = "feedback " + (isCorrect ? "good" : "bad");
+
+    nextRow.classList.add("show");
+    updateProgress();
+    nextBtn.focus({ preventScroll: true });
+    feedbackEl.scrollIntoView({ block: "nearest" });
+  }
+
+  function goNext() {
+    if (!session || !session.answered) return;
+    session.index++;
+    if (session.index >= session.questions.length) {
+      showResult();
+    } else {
+      renderQuestion();
+      quizScreen.scrollIntoView({ block: "start" });
+    }
+  }
+  nextBtn.addEventListener("click", goNext);
+  document.getElementById("quitBtn").addEventListener("click", showResult);
+
+  // 数字キー 1〜4 で答え、Enter で次へ
+  document.addEventListener("keydown", function (e) {
+    if (!session || quizScreen.style.display !== "block") return;
+    if (e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+    if (!session.answered && /^[1-4]$/.test(e.key)) {
+      e.preventDefault();
+      onAnswer(Number(e.key) - 1);
+    } else if (session.answered && e.key === "Enter") {
+      var t = e.target;
+      if (t && (t.tagName === "BUTTON" || t.tagName === "A")) return;
+      e.preventDefault();
+      goNext();
+    }
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitChoices);
+  window.addEventListener("resize", fitChoices);
+
+  // ---------- 結果画面 ----------
+  function showResult() {
+    if (!session) return;
+    var results = session.results;
+    var total = results.length;
+    var correct = results.filter(function (r) { return r.isCorrect; }).length;
+
+    var score = document.getElementById("resultScore");
+    score.textContent = correct;
+    score.appendChild(el("span", "", " / " + total));
+    document.getElementById("resultRate").textContent = "正答率 " + pct(correct, total);
+    document.getElementById("resCorrect").textContent = correct;
+    document.getElementById("resAccuracy").textContent = pct(correct, total);
+    document.getElementById("resStreak").textContent = session.bestStreak;
+
+    var unitBox = document.getElementById("unitResult");
+    unitBox.innerHTML = "";
+    var per = {};
+    results.forEach(function (r) {
+      if (!per[r.q.unitId]) per[r.q.unitId] = { total: 0, correct: 0 };
+      per[r.q.unitId].total++;
+      if (r.isCorrect) per[r.q.unitId].correct++;
+    });
+    AITL.UNITS.forEach(function (u) {
+      if (!per[u.id]) return;
+      var row = el("div", "miss-item");
+      var left = el("span");
+      left.appendChild(el("span", "name", u.name));
+      left.appendChild(el("span", "detail", "(" + unitMeta(u) + ")"));
+      row.appendChild(left);
+      row.appendChild(el("span", "rate spacer", per[u.id].correct + "/" + per[u.id].total));
+      if (u.lab) row.appendChild(labLink(u.lab));
+      unitBox.appendChild(row);
+    });
+    if (total === 0) unitBox.appendChild(el("p", "weak-empty", "まだ1問も答えていません。"));
+
+    var list = document.getElementById("missList");
+    list.innerHTML = "";
+    var misses = results.filter(function (r) { return !r.isCorrect; });
+    if (total === 0) {
+      list.appendChild(el("p", "weak-empty", "まだ1問も答えていません。"));
+    } else if (misses.length === 0) {
+      list.appendChild(el("p", "weak-empty", "誤答はありませんでした。"));
+    } else {
+      misses.forEach(function (r) {
+        var q = r.q;
+        var row = el("div", "miss-item");
+        row.appendChild(htmlEl("div", "miss-q", q.text + (q.material || "")));
+        var pair = el("div", "detail answer-pair");
+        pair.appendChild(document.createTextNode("選んだ答え "));
+        pair.appendChild(htmlEl("span", "chosen", q.choices[r.chosen]));
+        pair.appendChild(document.createTextNode(" → 正解 "));
+        pair.appendChild(htmlEl("span", "correct", q.choices[q.answer]));
+        row.appendChild(pair);
+        list.appendChild(row);
+      });
+    }
+    showScreen("result");
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById("backBtn").addEventListener("click", function () {
+    session = null;
+    renderSetup();
+    showScreen("setup");
+    window.scrollTo(0, 0);
+  });
+  document.getElementById("retryBtn").addEventListener("click", startQuiz);
+  startBtn.addEventListener("click", startQuiz);
+
+  renderSetup();
+  showScreen("setup");
+})();
+</script>
+</body>
+</html>

@@ -1,13 +1,17 @@
 // 中学英語道場: 学年・分野・単元の定義と、学年別ファイル(data-g1.js など)が中身を登録するための入れ物。
 // 例文・会話・表・語順の枠などの表示部品を組み立てる関数も、このファイルに置く。
-// 読み込む順番: shared/store.js → data.js → data-g1.js → data-g1-2.js
+// 読み込む順番: shared/store.js → data.js → data-g1.js → data-g1-2.js → data-g2.js → data-g2-2.js → data-g3.js → data-g3-2.js
 //   data-g1.js   中1「動詞」の7単元
 //   data-g1-2.js 中1「文の形」「語句」の6単元
+//   data-g2.js   中2「動詞」「文の形」の5単元
+//   data-g2-2.js 中2「準動詞」「文の形(比較)」の5単元
+//   data-g3.js   中3「動詞」「文の形」の6単元
+//   data-g3-2.js 中3「準動詞」「文の形」の6単元
 //
-// ■ 学年を足すとき(中2・中3)
-//   1. 下の GRADES に学年を、UNITS に単元を足す(ID は "g2-…")。
-//   2. data-g2.js を作り、index.html と reference.html の <script> に足す。
-//   学年が2つ以上になると、道場の学年タブが自動で出る。
+// ■ 単元を足すとき(UNITS は学年ごとに AREAS の順に並べる。要点帳の番号はこの順につく)
+//   1. 下の UNITS に単元を足す(ID は "g2-…" のように学年から始める)。
+//   2. 中身は学年別ファイルに書く。ファイルを足したら、index.html と reference.html の <script> にも足す。
+//   学年が2つ以上あると、道場の学年タブが自動で出る。
 //
 // ■ 単元の中身の登録(学年別ファイルに書く)
 //   JHE.register("単元ID", {
@@ -53,11 +57,13 @@ var JHE = (function () {
   var COUNTS = [5, 10, 20];
 
   var GRADES = [
-    { id: "g1", short: "中1", name: "中学1年" }
+    { id: "g1", short: "中1", name: "中学1年" },
+    { id: "g2", short: "中2", name: "中学2年" },
+    { id: "g3", short: "中3", name: "中学3年" }
   ];
 
   // 分野。設定画面の小見出し、要点帳の目次、成績の「分野ごとの正答率」は、この順に並ぶ
-  var AREAS = ["動詞", "文の形", "語句"];
+  var AREAS = ["動詞", "文の形", "準動詞", "語句"];
 
   // ID は保存データのキーなので変えない。
   // name は短い名前(一覧・出題ラベル・目次)、sub は補足(要点帳の見出しの下)。
@@ -76,7 +82,33 @@ var JHE = (function () {
     { id: "g1-nouns-articles", grade: "g1", area: "語句", name: "名詞の複数形と冠詞", sub: "s / es のつけ方、a / an / the、数えられない名詞", wide: true },
     { id: "g1-pronouns", grade: "g1", area: "語句", name: "代名詞", sub: "I / my / me / mine の変化、this / that", wide: true },
     { id: "g1-prepositions", grade: "g1", area: "語句", name: "前置詞", sub: "in / on / at / to / from / with など", wide: true },
-    { id: "g1-numbers-dates", grade: "g1", area: "語句", name: "数・曜日・月", sub: "基数と序数、曜日、月、時刻の言い方", wide: true }
+    { id: "g1-numbers-dates", grade: "g1", area: "語句", name: "数・曜日・月", sub: "基数と序数、曜日、月、時刻の言い方", wide: true },
+
+    // 中2(動詞・文の形は data-g2.js と data-g2-2.js、準動詞は data-g2-2.js)
+    { id: "g2-future", grade: "g2", area: "動詞", name: "未来の文", sub: "will / be going to", wide: true },
+    { id: "g2-modals", grade: "g2", area: "動詞", name: "助動詞", sub: "must / have to / should / may、Will you 〜? / Shall I 〜?", wide: true },
+    { id: "g2-there-is", grade: "g2", area: "文の形", name: "There is / are", sub: "〜がある・いる、否定文・疑問文", wide: true },
+    { id: "g2-sentence-patterns", grade: "g2", area: "文の形", name: "文型", sub: "look + 形容詞、become、give + 人 + 物", wide: true },
+    { id: "g2-conjunctions", grade: "g2", area: "文の形", name: "接続詞", sub: "when / if / because / that、and / but / or / so", wide: true },
+    { id: "g2-comparative-superlative", grade: "g2", area: "文の形", name: "比較級と最上級", sub: "er / est、than、the 〜est of / in", wide: true },
+    { id: "g2-comparison-more-as", grade: "g2", area: "文の形", name: "more / most と as 〜 as", sub: "more / most、better / best、as 〜 as", wide: true },
+    { id: "g2-infinitive-noun", grade: "g2", area: "準動詞", name: "不定詞(名詞的用法)", sub: "want to 〜、like to 〜、〜すること", wide: true },
+    { id: "g2-infinitive-adverb-adjective", grade: "g2", area: "準動詞", name: "不定詞(副詞的・形容詞的用法)", sub: "〜するために、〜して、〜するための", wide: true },
+    { id: "g2-gerunds", grade: "g2", area: "準動詞", name: "動名詞", sub: "enjoy 〜ing、不定詞との使い分け", wide: true },
+
+    // 中3(動詞と call / make・間接疑問文は data-g3.js、そのほかは data-g3-2.js)
+    { id: "g3-passive", grade: "g3", area: "動詞", name: "受け身", sub: "be動詞 + 過去分詞、by 〜", wide: true },
+    { id: "g3-present-perfect-continuation", grade: "g3", area: "動詞", name: "現在完了(継続)", sub: "for / since、How long 〜?、現在完了進行形", wide: true },
+    { id: "g3-present-perfect-experience", grade: "g3", area: "動詞", name: "現在完了(経験)", sub: "ever / never / before、How many times 〜?", wide: true },
+    { id: "g3-present-perfect-completion", grade: "g3", area: "動詞", name: "現在完了(完了)", sub: "just / already / yet", wide: true },
+    { id: "g3-svoc", grade: "g3", area: "文の形", name: "call / make + A + B", sub: "AをBと呼ぶ、AをBにする", wide: true },
+    { id: "g3-indirect-questions", grade: "g3", area: "文の形", name: "間接疑問文", sub: "I know where he lives. の語順", wide: true },
+    { id: "g3-relative-subject", grade: "g3", area: "文の形", name: "関係代名詞(主格)", sub: "who / which / that", wide: true },
+    { id: "g3-relative-object", grade: "g3", area: "文の形", name: "関係代名詞(目的格)", sub: "which / that、関係代名詞の省略", wide: true },
+    { id: "g3-subjunctive", grade: "g3", area: "文の形", name: "仮定法", sub: "I wish 〜、If I were 〜", wide: true },
+    { id: "g3-infinitive-it-wh", grade: "g3", area: "準動詞", name: "It is 〜 to と疑問詞 + to", sub: "It is 〜 (for 人) to 〜、how to / what to", wide: true },
+    { id: "g3-infinitive-object", grade: "g3", area: "準動詞", name: "want 人 to と原形不定詞", sub: "want / tell / ask 人 to 〜、let / help / make 人 〜", wide: true },
+    { id: "g3-participles", grade: "g3", area: "準動詞", name: "名詞を修飾する分詞", sub: "running dog、a car made in Japan", wide: true }
   ];
 
   var byId = {};
@@ -164,8 +196,12 @@ var JHE = (function () {
   // 日本語の文中・選択肢の英語
   function en(html) { return '<span class="en" lang="en">' + html + "</span>"; }
   // 英文と訳の1組(訳は省略可)
+  // 空所のすぐあとの句読点だけが次の行に落ちないよう、まとめて折り返さないようにする
+  function keepBlankPunct(html) {
+    return String(html).replace(/(<span class="blank[^"]*"[^>]*>[^<]*<\/span>)([.,?!]+)/g, '<span class="nobr">$1$2</span>');
+  }
   function pair(enHtml, jaHtml) {
-    return '<div class="eibun-pair"><p class="eibun-en" lang="en">' + enHtml + "</p>" +
+    return '<div class="eibun-pair"><p class="eibun-en" lang="en">' + keepBlankPunct(enHtml) + "</p>" +
       (jaHtml ? '<p class="eibun-ja">' + jaHtml + "</p>" : "") + "</div>";
   }
   // 例文ブロック。eibun(en, ja) か、eibun([[en, ja], [en, ja]])(配列の中は、英文だけの文字列でもよい)

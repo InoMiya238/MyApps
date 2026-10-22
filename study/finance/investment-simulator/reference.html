@@ -181,8 +181,9 @@
   <header class="hero">
     <p class="eyebrow">INVESTMENT · 用語帳</p>
     <h1>投資用語帳</h1>
-    <p class="tagline">シミュレーターに出てくる投資の言葉を、短い説明でまとめました。</p>
+    <p class="tagline">入門コースとシミュレーターに出てくる投資の言葉を、短い説明でまとめました。</p>
     <nav class="site-nav" aria-label="投資シミュレーション道場のページ">
+      <a href="course.html">入門コース</a>
       <a href="index.html">シミュレーター</a>
       <span aria-current="page">投資用語帳</span>
     </nav>
@@ -201,11 +202,12 @@
 
   <footer class="page-foot">
     学習用のシミュレーションです。実際の投資成果を保証しません。<br>
-    <a href="index.html">← シミュレーターへ</a>
+    <a href="course.html">← 入門コース</a> ・ <a href="index.html">シミュレーター →</a>
   </footer>
 </div>
 
 <script src="terms.js"></script>
+<script src="lessons.js"></script>
 <script>
 (function () {
   "use strict";
@@ -213,6 +215,14 @@
   var GROUP_LABEL = { basic: "基本", product: "商品・制度", risk: "リスク", strategy: "売買・戦略" };
   var TAB_LABEL = { dca: "積立と一括", compound: "複利と長期", diversify: "分散投資", timing: "売買ルール" };
   var grid = document.getElementById("grid");
+
+  // 用語 → 最初に出てくるレッスン(lessons.js の terms から)
+  var FIRST_LESSON = {};
+  if (typeof INVEST_LESSONS !== "undefined") {
+    INVEST_LESSONS.forEach(function (ls) {
+      (ls.terms || []).forEach(function (id) { if (!FIRST_LESSON[id]) FIRST_LESSON[id] = ls; });
+    });
+  }
   var tabs = document.querySelectorAll("#tabs .tab");
 
   function el(tag, className, text) {
@@ -235,6 +245,12 @@
 
     card.appendChild(el("p", "meaning", t.meaning));
     if (t.extra) card.appendChild(el("p", "extra", t.extra));
+    var ls = FIRST_LESSON[t.id];
+    if (ls) {
+      var c = el("a", "try-link", "入門コースで読む: レッスン" + ls.no + " " + ls.short + " →");
+      c.href = "course.html#lesson-" + ls.no;
+      card.appendChild(c);
+    }
     if (t.tryTab && TAB_LABEL[t.tryTab]) {
       var a = el("a", "try-link", "シミュレーターで試す(" + TAB_LABEL[t.tryTab] + ")→");
       a.href = "index.html#" + t.tryTab;

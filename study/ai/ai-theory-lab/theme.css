@@ -1,0 +1,121 @@
+/* AI理論ラボ の色。変数名は学習シリーズ共通(shared/base.css を参照)。
+   --plot-* は実験室・道場・理論帳のグラフ(SVG)だけで使う。
+   --plot-grid 目盛り線 / --plot-axis 軸 / --plot-guide 補助線・接線
+   --plot-curve 損失曲線・正解の曲線 / --plot-model モデルの直線・曲線 / --plot-point データ点 / --plot-residual 残差
+   --plot-path 勾配降下法の通り道 / --plot-ball 今の位置 / --plot-train 訓練点 / --plot-test テスト点
+   --plot-pos 陽性 / --plot-neg 陰性 / --plot-threshold しきい値線 / --plot-region 陽性と判定する範囲
+   --plot-bar 確率の棒 / --plot-bar-hi 最大の棒 / --plot-fill-alpha 分布の面の濃さ */
+:root {
+  color-scheme: light;
+  --bg: #F3F1F8;
+  --surface: #FFFFFF;
+  --surface-2: #E8E4F1;
+  --border: #D3CCE2;
+  --ink: #1A1526;
+  --ink-muted: #4A4260;
+  --ink-faint: #5E5675;
+  --accent: #A0237F;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #F6E1F0;
+  --good: #2C6A30;
+  --good-soft: #E0F0DD;
+  --bad: #A63A2A;
+  --bad-soft: #F7E1DC;
+  --shadow: rgba(26, 21, 38, 0.10);
+  --plot-grid: #E4E0EE;
+  --plot-axis: #6A6280;
+  --plot-guide: #8C84A3;
+  --plot-curve: #1F6F9E;
+  --plot-model: #A0237F;
+  --plot-point: #1F6F9E;
+  --plot-residual: #8C84A3;
+  --plot-path: #A86A12;
+  --plot-ball: #A0237F;
+  --plot-train: #1F6F9E;
+  --plot-test: #C0461B;
+  --plot-pos: #C0461B;
+  --plot-neg: #1F6F9E;
+  --plot-threshold: #1A1526;
+  --plot-region: rgba(160, 35, 127, 0.08);
+  --plot-bar: #8B7FB0;
+  --plot-bar-hi: #A0237F;
+  --plot-fill-alpha: 0.28;
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0F0C17;
+    --surface: #181324;
+    --surface-2: #221B31;
+    --border: #382E4D;
+    --ink: #EDE8F5;
+    --ink-muted: #B8AECB;
+    --ink-faint: #988DAD;
+    --accent: #F08BD3;
+    --accent-ink: #2A0821;
+    --accent-soft: #3A1A33;
+    --good: #86D18F;
+    --good-soft: #1A3020;
+    --bad: #EE927C;
+    --bad-soft: #3B231E;
+    --shadow: rgba(0, 0, 0, 0.4);
+    --plot-grid: #2A2338;
+    --plot-axis: #9C92B0;
+    --plot-guide: #7A6F90;
+    --plot-curve: #6FB7EA;
+    --plot-model: #F08BD3;
+    --plot-point: #6FB7EA;
+    --plot-residual: #7A6F90;
+    --plot-path: #F2C46A;
+    --plot-ball: #F08BD3;
+    --plot-train: #6FB7EA;
+    --plot-test: #F5A06A;
+    --plot-pos: #F5A06A;
+    --plot-neg: #6FB7EA;
+    --plot-threshold: #EDE8F5;
+    --plot-region: rgba(240, 139, 211, 0.10);
+    --plot-bar: #6E6290;
+    --plot-bar-hi: #F08BD3;
+    --plot-fill-alpha: 0.35;
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0F0C17;
+  --surface: #181324;
+  --surface-2: #221B31;
+  --border: #382E4D;
+  --ink: #EDE8F5;
+  --ink-muted: #B8AECB;
+  --ink-faint: #988DAD;
+  --accent: #F08BD3;
+  --accent-ink: #2A0821;
+  --accent-soft: #3A1A33;
+  --good: #86D18F;
+  --good-soft: #1A3020;
+  --bad: #EE927C;
+  --bad-soft: #3B231E;
+  --shadow: rgba(0, 0, 0, 0.4);
+  --plot-grid: #2A2338;
+  --plot-axis: #9C92B0;
+  --plot-guide: #7A6F90;
+  --plot-curve: #6FB7EA;
+  --plot-model: #F08BD3;
+  --plot-point: #6FB7EA;
+  --plot-residual: #7A6F90;
+  --plot-path: #F2C46A;
+  --plot-ball: #F08BD3;
+  --plot-train: #6FB7EA;
+  --plot-test: #F5A06A;
+  --plot-pos: #F5A06A;
+  --plot-neg: #6FB7EA;
+  --plot-threshold: #EDE8F5;
+  --plot-region: rgba(240, 139, 211, 0.10);
+  --plot-bar: #6E6290;
+  --plot-bar-hi: #F08BD3;
+  --plot-fill-alpha: 0.35;
+}

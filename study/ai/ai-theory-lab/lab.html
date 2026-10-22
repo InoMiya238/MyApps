@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI実験室 | AI理論ラボ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 960px; gap: 22px; }
+  [hidden] { display: none !important; }
+
+  /* ---------- 見出し ---------- */
+  .tagline { max-width: 48ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+  .var { font-family: var(--font-display); font-style: italic; }
+
+  /* ---------- タブ ---------- */
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .tab:hover { border-color: var(--accent); color: var(--ink); }
+  .tab[aria-selected="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  button:focus-visible, a:focus-visible, input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- パネル(左=設定、右=説明・グラフ・数値) ---------- */
+  .panel {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+  .lead {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .chart-card { grid-column: 2; grid-row: 2; }
+  .settings {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    position: sticky;
+    top: 16px;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+  }
+  .main {
+    grid-column: 2;
+    grid-row: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+  }
+
+  /* ---------- カード ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+  .card h3 {
+    font-size: 0.86rem;
+    font-weight: 600;
+    margin: 18px 0 6px;
+    color: var(--ink-muted);
+  }
+
+  /* ---------- 入力 ---------- */
+  input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex: none;
+    margin: 0;
+  }
+  /* スライダー: 指で操作しやすいよう、つまみを大きく、さわれる高さを広くとる */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 34px;
+    margin: 2px 0 0;
+    background: transparent;
+    cursor: pointer;
+    --p: 50%;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--accent) 0, var(--accent) var(--p), var(--surface-2) var(--p), var(--surface-2) 100%);
+    box-shadow: inset 0 0 0 1px var(--border);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    margin-top: -10px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--surface);
+    box-shadow: 0 0 0 1px var(--accent), 0 1px 3px var(--shadow);
+  }
+  input[type="range"]:focus-visible { outline-offset: 0; }
+  .field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .field:last-child { border-bottom: none; }
+  .field.stack { flex-direction: column; align-items: stretch; gap: 0; }
+  .field-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .field-label { font-size: 0.92rem; min-width: 0; }
+  .field-label label { cursor: pointer; }
+  .check-label { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.92rem; min-height: 32px; }
+  .val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    margin: 4px 0 0;
+    line-height: 1.6;
+  }
+  .formula {
+    margin: 2px 0 6px;
+    padding: 8px 10px;
+    border-radius: 9px;
+    background: var(--surface-2);
+    font-size: 0.86rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  /* ---------- チップ ---------- */
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 0 8px; }
+  .chip-btn {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 38px;
+    padding: 6px 13px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .chip-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+  /* ---------- ボタン ---------- */
+  .btn-primary, .btn-secondary {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    padding: 10px 10px;
+    min-height: 44px;
+    font-weight: 700;
+  }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-secondary { background: var(--surface-2); color: var(--ink); border: 1px solid var(--border); }
+  .btn-primary:disabled, .btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+  .btn-row button { flex: 1; min-width: 0; white-space: nowrap; }
+
+  /* ---------- グラフ ---------- */
+  .chart-card h2 { margin-bottom: 6px; }
+  .readout {
+    margin: 0 0 6px;
+    min-height: 1.6em;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .chart-wrap.small { height: 140px; }
+  .chart-wrap svg { display: block; }
+  .chart-wrap svg text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: var(--ink-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .chart-wrap svg text.t-word { font-family: var(--font-body); font-size: 13px; font-weight: 600; fill: var(--ink); }
+  .chart-wrap svg text.t-strong { fill: var(--ink); font-weight: 600; }
+  .chart-wrap svg text.t-tag { font-family: var(--font-body); font-size: 11px; font-weight: 700; fill: var(--accent-ink); }
+  .pl-grid { stroke: var(--plot-grid); stroke-width: 1; }
+  .pl-axis { stroke: var(--plot-axis); stroke-width: 1; }
+  .ln { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .dash { stroke-dasharray: 5 4; }
+  .st-curve { stroke: var(--plot-curve); }
+  .st-model { stroke: var(--plot-model); }
+  .st-guide { stroke: var(--plot-guide); }
+  .st-path { stroke: var(--plot-path); }
+  .st-residual { stroke: var(--plot-residual); }
+  .st-train { stroke: var(--plot-train); }
+  .st-test { stroke: var(--plot-test); }
+  .st-pos { stroke: var(--plot-pos); }
+  .st-neg { stroke: var(--plot-neg); }
+  .st-threshold { stroke: var(--plot-threshold); }
+  .fl-path { fill: var(--plot-path); }
+  .fl-point { fill: var(--plot-point); }
+  .fl-train { fill: var(--plot-train); }
+  .fl-test { fill: var(--surface); stroke: var(--plot-test); stroke-width: 1.8; }
+  .fl-model { fill: var(--plot-model); stroke: var(--surface); stroke-width: 2; }
+  .fl-ball { fill: var(--plot-ball); stroke: var(--surface); stroke-width: 2.5; }
+  .fl-pos { fill: var(--plot-pos); fill-opacity: var(--plot-fill-alpha); stroke: none; }
+  .fl-neg { fill: var(--plot-neg); fill-opacity: var(--plot-fill-alpha); stroke: none; }
+  .fl-region { fill: var(--plot-region); }
+  .fl-track { fill: var(--plot-grid); }
+  .fl-bar { fill: var(--plot-bar); }
+  .fl-bar-hi { fill: var(--plot-bar-hi); }
+  .fl-tag { fill: var(--accent); }
+  .fl-pick { fill: var(--accent-soft); }
+  .fl-curve-dot { fill: var(--plot-curve); }
+  .fl-test-dot { fill: var(--plot-test); }
+
+  .legend {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .legend li { display: flex; align-items: center; gap: 6px; }
+  .sw { display: inline-block; width: 18px; height: 0; border-top: 2.5px solid currentColor; }
+  .sw.dashed { border-top-style: dashed; }
+  .sw.dot { width: 10px; height: 10px; border: none; border-radius: 50%; background: currentColor; }
+  .sw.ring { width: 10px; height: 10px; border: 1.8px solid currentColor; border-radius: 50%; }
+  .sw.area { height: 10px; border: none; background: currentColor; opacity: 0.45; border-radius: 2px; }
+  .sw.region { width: 14px; height: 10px; border: 1px solid var(--border); background: var(--plot-region); }
+  .c-curve { color: var(--plot-curve); }
+  .c-model { color: var(--plot-model); }
+  .c-guide { color: var(--plot-guide); }
+  .c-path { color: var(--plot-path); }
+  .c-ball { color: var(--plot-ball); }
+  .c-point { color: var(--plot-point); }
+  .c-residual { color: var(--plot-residual); }
+  .c-train { color: var(--plot-train); }
+  .c-test { color: var(--plot-test); }
+  .c-pos { color: var(--plot-pos); }
+  .c-neg { color: var(--plot-neg); }
+  .c-threshold { color: var(--plot-threshold); }
+  .c-bar { color: var(--plot-bar); }
+  .c-bar-hi { color: var(--plot-bar-hi); }
+
+  /* ニューロンの計算の流れ */
+  .neuron-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0 0 10px;
+  }
+  .nf-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 56px;
+    padding: 6px 9px;
+    border-radius: 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+  }
+  .nf-step.out { background: var(--accent-soft); border-color: var(--accent); }
+  .nf-k { font-size: 11.5px; color: var(--ink-muted); white-space: nowrap; }
+  .nf-v { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 13px; font-weight: 700; color: var(--ink); white-space: nowrap; }
+  .nf-arrow { color: var(--ink-faint); font-size: 14px; }
+  .nf-break { display: none; }
+
+  /* ソフトマックスの語ごとのスライダー */
+  .temp-field .val { font-size: 1.15rem; color: var(--accent); }
+  .context {
+    margin: 12px 0 4px;
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .context b { font-weight: 700; }
+  .logit-row {
+    display: grid;
+    grid-template-columns: 4.5em minmax(0, 1fr) 3em;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 0;
+  }
+  .logit-row label { font-size: 0.92rem; font-weight: 600; cursor: pointer; }
+  .logit-row .val { text-align: right; font-size: 0.85rem; }
+
+  /* ---------- 数値 ---------- */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .stat-grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat-box {
+    text-align: center;
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 12px 6px;
+    min-width: 0;
+  }
+  .stat-label { font-size: 11.5px; color: var(--ink-muted); line-height: 1.4; }
+  .stat-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-top: 4px;
+    overflow-wrap: anywhere;
+  }
+  .stat-num.word { font-family: var(--font-body); font-size: 1.05rem; line-height: 1.45; }
+  .stat-sub { font-size: 11px; color: var(--ink-faint); margin-top: 3px; line-height: 1.4; }
+  .is-good { color: var(--good); }
+  .is-bad { color: var(--bad); }
+
+  /* ===== 混同行列 ここから(道場・実験室・理論帳の3ページで同じ内容。変えるときはすべて直す) ===== */
+  .cm { margin: 0 auto; border-collapse: separate; border-spacing: 4px; font-size: 13px; }
+  .cm th { padding: 4px 8px; color: var(--ink-muted); font-weight: 600; white-space: nowrap; }
+  .cm thead th { text-align: center; }
+  .cm tbody th { text-align: right; }
+  .cm td { min-width: 5.5em; padding: 8px 10px; border-radius: 8px; text-align: center; border: 1px solid var(--border); }
+  .cm td.cm-good { background: var(--good-soft); }
+  .cm td.cm-bad { background: var(--bad-soft); }
+  .cm .cm-term { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--ink-muted); }
+  .cm .cm-n { display: block; font-family: var(--font-mono); font-size: 18px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  /* ===== 混同行列 ここまで ===== */
+  .cm-wrap { margin-top: 14px; max-width: 100%; overflow-x: auto; }
+
+  /* 見どころ */
+  .auto-point {
+    margin: 0 0 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    font-weight: 600;
+  }
+  .auto-point.good { background: var(--good-soft); color: var(--good); }
+  .auto-point.bad { background: var(--bad-soft); color: var(--bad); }
+  .auto-point.info { background: var(--accent-soft); color: var(--ink); }
+  .points ul { margin: 0; padding-left: 1.2em; }
+  .points li { font-size: 0.9rem; line-height: 1.75; margin-bottom: 6px; color: var(--ink); }
+  .points li:last-child { margin-bottom: 0; }
+  .unit-link { display: inline-block; margin-top: 12px; color: var(--accent); font-weight: 600; font-size: 0.9rem; text-decoration: none; padding: 4px 0; }
+  .unit-link:hover { text-decoration: underline; }
+  .points .unit-link { margin-right: 18px; }
+
+  /* ---------- フッター ---------- */
+  .page-foot {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    line-height: 1.8;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .page-foot a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .page-foot a:hover { text-decoration: underline; }
+
+  /* ---------- スマホ ---------- */
+  @media (max-width: 819px) {
+    .panel { grid-template-columns: minmax(0, 1fr); }
+    .lead, .chart-card, .settings, .main { grid-column: 1; grid-row: auto; }
+    .settings { position: static; max-height: none; overflow: visible; }
+    .tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .tab { font-size: 12.5px; padding: 8px 4px; }
+    .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 480px) {
+    .card { padding: 18px 16px; }
+    .chart-wrap { height: 220px; }
+    .chart-wrap.small { height: 140px; }
+    .stat-num { font-size: 1.08rem; }
+    .nf-break { display: block; flex-basis: 100%; height: 0; }
+    .nf-step { min-width: 0; padding: 5px 7px; }
+    /* 混同行列(道場の index.html と同じ) */
+    .cm { border-spacing: 3px; font-size: 12px; }
+    .cm th { padding: 3px 4px; }
+    .cm td { min-width: 4.6em; padding: 6px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">AI THEORY LAB · 実験室</p>
+    <h1>AI実験室</h1>
+    <p class="tagline">スライダーを動かして、機械学習のしくみを目で確かめます。数値はすべてこのページの中で計算しています。</p>
+    <nav class="site-nav" aria-label="AI理論ラボのページ">
+      <a href="index.html">道場</a>
+      <span aria-current="page">実験室</span>
+      <a href="reference.html">理論帳</a>
+    </nav>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="実験の種類">
+    <button type="button" class="tab" role="tab" id="tab-gd" data-tab="gd" aria-controls="panel-gd" aria-selected="true">勾配降下法</button>
+    <button type="button" class="tab" role="tab" id="tab-regression" data-tab="regression" aria-controls="panel-regression" aria-selected="false" tabindex="-1">線形回帰</button>
+    <button type="button" class="tab" role="tab" id="tab-neuron" data-tab="neuron" aria-controls="panel-neuron" aria-selected="false" tabindex="-1">ニューロン</button>
+    <button type="button" class="tab" role="tab" id="tab-overfit" data-tab="overfit" aria-controls="panel-overfit" aria-selected="false" tabindex="-1">過学習</button>
+    <button type="button" class="tab" role="tab" id="tab-threshold" data-tab="threshold" aria-controls="panel-threshold" aria-selected="false" tabindex="-1">しきい値</button>
+    <button type="button" class="tab" role="tab" id="tab-softmax" data-tab="softmax" aria-controls="panel-softmax" aria-selected="false" tabindex="-1">ソフトマックス</button>
+  </div>
+
+  <!-- ==================== 1 勾配降下法 ==================== -->
+  <section class="panel" id="panel-gd" role="tabpanel" aria-labelledby="tab-gd">
+    <p class="lead">損失 <span class="var">f</span>(<span class="var">w</span>) の坂を、傾きの逆向きに少しずつ下ります。学習率 <span class="var">η</span> を変えて、1歩ずつの動きを確かめましょう。</p>
+
+    <div class="card chart-card">
+      <h2>損失の坂と、たどった道</h2>
+      <p class="readout" id="gd-ro"></p>
+      <div class="chart-wrap" id="gd-chart"></div>
+      <ul class="legend">
+        <li><span class="sw c-curve"></span><span>損失 <span class="var">f</span>(<span class="var">w</span>)</span></li>
+        <li><span class="sw c-path"></span><span>たどった道</span></li>
+        <li><span class="sw dot c-ball"></span><span>今の位置</span></li>
+        <li><span class="sw dashed c-guide"></span><span>接線(傾き <span class="var">f</span>′(<span class="var">w</span>))</span></li>
+      </ul>
+    </div>
+
+    <div class="card settings">
+      <h2>設定</h2>
+      <div class="chips" role="group" aria-label="損失の形">
+        <button type="button" class="chip-btn" data-gdfn="one" aria-pressed="true">谷が1つ</button>
+        <button type="button" class="chip-btn" data-gdfn="two" aria-pressed="false">谷が2つ</button>
+      </div>
+      <p class="formula" id="gd-formula"></p>
+      <div class="field stack">
+        <div class="field-top">
+          <div class="field-label"><label for="gd-eta">学習率 <span class="var">η</span></label></div>
+          <span class="val" id="gd-eta-v"></span>
+        </div>
+        <input type="range" id="gd-eta" min="0.01" max="1.2" step="0.01">
+      </div>
+      <div class="field stack">
+        <div class="field-top">
+          <div class="field-label"><label for="gd-w0">初期値 <span class="var">w</span>₀</label></div>
+          <span class="val" id="gd-w0-v"></span>
+        </div>
+        <input type="range" id="gd-w0" step="0.1">
+      </div>
+      <p class="formula">1歩: <span class="var">w</span> ← <span class="var">w</span> − <span class="var">η</span>·<span class="var">f</span>′(<span class="var">w</span>)</p>
+      <div class="btn-row">
+        <button type="button" class="btn-secondary" id="gd-step">1歩</button>
+        <button type="button" class="btn-primary" id="gd-auto">自動</button>
+        <button type="button" class="btn-secondary" id="gd-reset">リセット</button>
+      </div>
+      <p class="hint">学習率や初期値を変えると、最初からやり直します。</p>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <h2>今の状態</h2>
+        <div class="stat-grid" id="gd-stats"></div>
+      </div>
+      <div class="card points">
+        <h2>見どころ</h2>
+        <p class="auto-point" id="gd-auto-point" hidden></p>
+        <ul>
+          <li>1歩ごとに <span class="var">w</span> ← <span class="var">w</span> − <span class="var">η</span>·<span class="var">f</span>′(<span class="var">w</span>)。坂が急なほど一歩が大きく、谷の底(傾き 0)に近づくほど一歩が小さくなります。</li>
+          <li>谷が1つ <span class="var">f</span>(<span class="var">w</span>) = (<span class="var">w</span> − 3)² では、<span class="var">η</span> が 0.5 より小さいとまっすぐ谷へ、0.5〜1 だと谷をはさんで行き来しながら近づき、1 だと同じ2点を行き来し続け、1 を超えると離れていきます(発散)。</li>
+          <li>谷が2つのときは、始める位置で行き先が変わります。学習率が小さいときは、<span class="var">w</span>₀ が山(<span class="var">w</span> = 1)より右だと浅い谷(局所解)で止まりがち。勾配降下法は、足もとの傾きしか見ないからです。学習率が大きいと、山を飛びこえて反対側の谷へ行くこともあります(例: <span class="var">η</span> = 1.20、<span class="var">w</span>₀ = −3.5)。</li>
+        </ul>
+        <a class="unit-link" href="index.html?unit=gradient-descent">道場でこの単元を解く →</a>
+        <a class="unit-link" href="reference.html#gradient-descent">理論帳で読む →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 2 線形回帰 ==================== -->
+  <section class="panel" id="panel-regression" role="tabpanel" aria-labelledby="tab-regression" hidden>
+    <p class="lead">点の並びに直線 <span class="var">y</span> = <span class="var">a</span><span class="var">x</span> + <span class="var">b</span> を合わせます。傾きと切片を動かして、平均二乗誤差(MSE)がいちばん小さくなる直線を探しましょう。</p>
+
+    <div class="card chart-card">
+      <h2>データと直線</h2>
+      <p class="readout" id="reg-ro"></p>
+      <div class="chart-wrap" id="reg-chart"></div>
+      <ul class="legend">
+        <li><span class="sw dot c-point"></span><span>データの点</span></li>
+        <li><span class="sw c-model"></span><span>直線</span></li>
+        <li><span class="sw dashed c-residual"></span><span>残差(点と直線の縦のずれ)</span></li>
+      </ul>
+    </div>
+
+    <div class="card settings">
+      <h2>設定</h2>
+      <div class="field stack">
+        <div class="field-top">
+          <div class="field-label"><label for="reg-a">傾き <span class="var">a</span></label></div>
+          <span class="val" id="reg-a-v"></span>
+        </div>
+        <input type="range" id="reg-a" min="-1" max="2" step="0.01">
+      </div>
+      <div class="field stack">
+        <div class="field-top">
+          <div class="field-label"><label for="reg-b">切片 <span class="var">b</span></label></div>
+          <span class="val" id="reg-b-v"></span>
+        </div>
+        <input type="range" id="reg-b" min="-5" max="10" step="0.05">
+      </div>
+      <div class="field">
+        <label class="check-label"><input type="checkbox" id="reg-resid"> 残差を表示</label>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn-primary" id="reg-fit">最小二乗で合わせる</button>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn-secondary" id="reg-new">点を作り直す</button>
+      </div>
+      <p class="formula">MSE = (残差² の平均)</p>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <h2>今の直線</h2>
+        <div class="stat-grid" id="reg-stats"></div>
+      </div>
+      <div class="card points">
+        <h2>見どころ</h2>
+        <p class="auto-point" id="reg-auto-point" hidden></p>
+        <ul>
+          <li>MSE は、残差(点と直線の縦のずれ)を2乗して平均したもの。直線が点から離れるほど大きくなります。</li>
+          <li>MSE がいちばん小さくなる直線は計算で1つに決まります(最小二乗法)。<span class="var">a</span> = Σ(<span class="var">x</span> − <span class="var">x̄</span>)(<span class="var">y</span> − <span class="var">ȳ</span>) ÷ Σ(<span class="var">x</span> − <span class="var">x̄</span>)²、<span class="var">b</span> = <span class="var">ȳ</span> − <span class="var">a</span><span class="var">x̄</span>。</li>
+          <li>「学習」とは、損失(ここでは MSE)が小さくなるようにパラメーター(<span class="var">a</span> と <span class="var">b</span>)を動かすこと。勾配降下法で少しずつ動かしても、同じ直線にたどりつきます。</li>
+        </ul>
+        <a class="unit-link" href="index.html?unit=regression">道場でこの単元を解く →</a>
+        <a class="unit-link" href="reference.html#regression">理論帳で読む →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3 ニューロン ==================== -->
+  <section class="panel" id="panel-neuron" role="tabpanel" aria-labelledby="tab-neuron" hidden>
+    <p class="lead">1つのニューロンは、入力に重みをかけてバイアスを足し、活性化関数に通して出力します。<span class="var">w</span> と <span class="var">b</span> で出力の曲線がどう変わるかを見ましょう。</p>
+
+    <div class="card chart-card">
+      <h2>入力 <span class="var">x</span> と出力 <span class="var">y</span></h2>
+      <div class="neuron-flow" id="nf" aria-live="polite">
+        <div class="nf-step"><span class="nf-k">入力 <span class="var">x</span></span><span class="nf-v" id="nf-x"></span></div>
+        <span class="nf-arrow" aria-hidden="true">→</span>
+        <div class="nf-step"><span class="nf-k">×<span class="var">w</span> + <span class="var">b</span></span><span class="nf-v" id="nf-wb"></span></div>
+        <span class="nf-arrow" aria-hidden="true">→</span>
+        <div class="nf-step"><span class="nf-k">重み付き和 <span class="var">z</span></span><span class="nf-v" id="nf-z"></span></div>
+        <span class="nf-break" aria-hidden="true"></span>
+        <span class="nf-arrow" aria-hidden="true">→</span>
+        <div class="nf-step"><span class="nf-k">活性化 <span class="var">φ</span></span><span class="nf-v" id="nf-phi"></span></div>
+        <span class="nf-arrow" aria-hidden="true">→</span>
+        <div class="nf-step out"><span class="nf-k">出力 <span class="var">y</span></span><span class="nf-v" id="nf-y"></span></div>
+      </div>
+      <p class="readout" id="neu-ro"></p>
+      <div class="chart-wrap" id="neu-chart"></div>
+      <ul class="legend">
+        <li><span class="sw c-model"></span><span>出力 <span class="var">y</span> = <span class="var">φ</span>(<span class="var">w</span><span class="var">x</span> + <span class="var">b</span>)</span></li>
+        <li><span class="sw dot c-model"></span><span>今の <span class="var">x</span> での出力</span></li>
+        <li><span class="sw dashed c-guide"></span><span><span class="var">y</span> = 0 と 1</span></li>
+      </ul>
+    </div>
+
+    <div class="card settings">
+      <h2>設定</h2>
+      <div class="field stack">
+        <div class="field-top">
+          <div class="field-label"><label for="neu-x">入力 <span class="var">x</span></label></div>
+          <span class="val" id="neu-x-v"></span>
+        </div>
+        <input type="range" id="neu-x" min="-5" max="5" step="0.1">
+      </div>
+      <div class="field stack">
+        <div class="field-top">
+          <div class="field-label"><label for="neu-w">重み <span class="var">w</span></label></div>
+          <span class="val" id="neu-w-v"></span>
+        </div>
+        <input type="range" id="neu-w" min="-3" max="3" step="0.1">
+      </div>
+      <div class="field stack">
+        <div class="field-top">
+          <div class="field-label"><label for="neu-b">バイアス <span class="var">b</span></label></div>
+          <span class="val" id="neu-b-v"></span>
+        </div>
+        <input type="range" id="neu-b" min="-5" max="5" step="0.1">
+      </div>
+      <h3>活性化関数 <span class="var">φ</span></h3>
+      <div class="chips" role="group" aria-label="活性化関数">
+        <button type="button" class="chip-btn" data-act="step" aria-pressed="false">ステップ</button>
+        <button type="button" class="chip-btn" data-act="sigmoid" aria-pressed="true">シグモイド</button>
+        <button type="button" class="chip-btn" data-act="tanh" aria-pressed="false">tanh</button>
+        <button type="button" class="chip-btn" data-act="relu" aria-pressed="false">ReLU</button>
+      </div>
+      <p class="formula" id="neu-formula"></p>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <h2>今の計算</h2>
+        <div class="stat-grid" id="neu-stats"></div>
+      </div>
+      <div class="card points">
+        <h2>見どころ</h2>
+        <p class="auto-point" id="neu-auto-point" hidden></p>
+        <ul>
+          <li>ニューロンは、入力に重み <span class="var">w</span> をかけてバイアス <span class="var">b</span> を足し(<span class="var">z</span> = <span class="var">w</span><span class="var">x</span> + <span class="var">b</span>)、活性化関数 <span class="var">φ</span> に通して出力 <span class="var">y</span> を出します。</li>
+          <li><span class="var">w</span> は曲線の急さと向き、<span class="var">b</span> は曲線の左右の位置を決めます。<span class="var">z</span> = 0 になる境目は <span class="var">x</span> = −<span class="var">b</span> ÷ <span class="var">w</span>。</li>
+          <li>活性化関数が直線でない(非線形)おかげで、ニューロンを重ねると直線では表せない形も作れます。学習とは、たくさんの <span class="var">w</span> と <span class="var">b</span> を調整することです。</li>
+        </ul>
+        <a class="unit-link" href="index.html?unit=neural-network">道場でこの単元を解く →</a>
+        <a class="unit-link" href="reference.html#neural-network">理論帳で読む →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 4 過学習 ==================== -->
+  <section class="panel" id="panel-overfit" role="tabpanel" aria-labelledby="tab-overfit" hidden>
+    <p class="lead">雑音の入った訓練データに、多項式を最小二乗で当てはめます。次数を上げると訓練誤差は下がり続けますが、訓練に使っていないテストデータの誤差はどうなるでしょう。</p>
+
+    <div class="card chart-card">
+      <h2>多項式の当てはめ</h2>
+      <p class="readout" id="of-ro"></p>
+      <div class="chart-wrap" id="of-chart"></div>
+      <ul class="legend">
+        <li><span class="sw dot c-train"></span><span>訓練データ</span></li>
+        <li><span class="sw ring c-test"></span><span>テストデータ</span></li>
+        <li><span class="sw c-model"></span><span>当てはめた曲線</span></li>
+        <li><span class="sw dashed c-curve"></span><span>正解の曲線</span></li>
+      </ul>
+      <h3>次数と誤差(縦軸は対数目盛り)</h3>
+      <div class="chart-wrap small" id="of-chart-err"></div>
+      <ul class="legend">
+        <li><span class="sw c-train"></span><span>訓練誤差</span></li>
+        <li><span class="sw c-test"></span><span>テスト誤差</span></li>
+        <li><span class="sw dashed c-guide"></span><span>今の次数</span></li>
+      </ul>
+    </div>
+
+    <div class="card settings">
+      <h2>設定</h2>
+      <div class="field stack">
+        <div class="field-top">
+          <div class="field-label"><label for="of-deg">多項式の次数</label></div>
+          <span class="val" id="of-deg-v"></span>
+        </div>
+        <input type="range" id="of-deg" min="1" max="12" step="1">
+      </div>
+      <div class="field">
+        <label class="check-label"><input type="checkbox" id="of-truth"> 正解の曲線を表示</label>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn-secondary" id="of-new">点を作り直す</button>
+      </div>
+      <p class="hint">正解の曲線は <span class="var">y</span> = sin(π<span class="var">x</span>)。訓練データ 14 点とテストデータ 30 点は、これに雑音を足して作っています。</p>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <h2>誤差(MSE)</h2>
+        <div class="stat-grid" id="of-stats"></div>
+      </div>
+      <div class="card points">
+        <h2>見どころ</h2>
+        <p class="auto-point" id="of-auto-point" hidden></p>
+        <ul>
+          <li>次数を上げるほど曲線は自由に曲がり、訓練誤差は下がり続けます。でもテスト誤差は、ある次数から逆に上がります(下の小さなグラフのU字)。</li>
+          <li>次数が高すぎると、点の雑音まで覚えてしまい、点と点のあいだで大きく外れます。これが過学習です。逆に低すぎて形をつかめないのが未学習です。</li>
+          <li>モデルの良し悪しは、訓練に使っていないデータ(テストデータや検証データ)の誤差で判断します。</li>
+        </ul>
+        <a class="unit-link" href="index.html?unit=overfitting">道場でこの単元を解く →</a>
+        <a class="unit-link" href="reference.html#overfitting">理論帳で読む →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 5 しきい値 ==================== -->
+  <section class="panel" id="panel-threshold" role="tabpanel" aria-labelledby="tab-threshold" hidden>
+    <p class="lead">分類モデルが出した「陽性らしさ」のスコアに、しきい値を決めて陽性・陰性を判定します。しきい値を動かすと、混同行列と評価の数値がどう変わるかを見ましょう。</p>
+
+    <div class="card chart-card">
+      <h2>スコアの分布</h2>
+      <p class="readout" id="th-ro"></p>
+      <div class="chart-wrap" id="th-chart"></div>
+      <ul class="legend">
+        <li><span class="sw area c-pos"></span><span>実際に陽性</span></li>
+        <li><span class="sw area c-neg"></span><span>実際に陰性</span></li>
+        <li><span class="sw c-threshold"></span><span>しきい値</span></li>
+        <li><span class="sw region"></span><span>陽性と判定する範囲</span></li>
+      </ul>
+      <!-- 混同行列: 道場(data.js の AITL.cm)と同じ構造・文言 -->
+      <div class="cm-wrap">
+        <table class="cm" aria-label="混同行列">
+          <thead><tr><th></th><th scope="col">予測: 陽性</th><th scope="col">予測: 陰性</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">実際: 陽性</th><td class="cm-good"><span class="cm-term">TP</span><span class="cm-n" id="cm-tp"></span></td><td class="cm-bad"><span class="cm-term">FN</span><span class="cm-n" id="cm-fn"></span></td></tr>
+            <tr><th scope="row">実際: 陰性</th><td class="cm-bad"><span class="cm-term">FP</span><span class="cm-n" id="cm-fp"></span></td><td class="cm-good"><span class="cm-term">TN</span><span class="cm-n" id="cm-tn"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card settings">
+      <h2>設定</h2>
+      <div class="field stack">
+        <div class="field-top">
+          <div class="field-label"><label for="th-t">しきい値</label></div>
+          <span class="val" id="th-t-v"></span>
+        </div>
+        <input type="range" id="th-t" min="0" max="1" step="0.01">
+      </div>
+      <p class="hint">スコアがしきい値以上なら「陽性」と判定します。</p>
+      <div class="btn-row">
+        <button type="button" class="btn-secondary" id="th-new">データを作り直す</button>
+      </div>
+      <p class="hint">実際に陽性 80 件、陰性 120 件。スコアは正規分布の乱数から、0〜1 に収まる値だけを残して(外れたら引き直して)作っています。</p>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <h2>評価の数値</h2>
+        <div class="stat-grid" id="th-stats"></div>
+      </div>
+      <div class="card points">
+        <h2>見どころ</h2>
+        <p class="auto-point" id="th-auto-point" hidden></p>
+        <ul>
+          <li>しきい値を下げると、見逃し(FN)が減って再現率が上がる代わりに、誤検出(FP)が増えて適合率が下がります。しきい値を上げると、再現率は下がるか変わらず、適合率は上がることが多くなります(必ず上がるとは限りません)。</li>
+          <li>正解率 = (TP + TN) ÷ 全体、適合率 = TP ÷ (TP + FP)、再現率 = TP ÷ (TP + FN)、F1 = 2 × 適合率 × 再現率 ÷ (適合率 + 再現率)。</li>
+          <li>どのしきい値がよいかは目的しだいです。病気の検査なら見逃しを減らしたい(再現率重視)、迷惑メールの判定なら大事なメールを捨てたくない(適合率重視)。</li>
+        </ul>
+        <a class="unit-link" href="index.html?unit=classification">道場でこの単元を解く →</a>
+        <a class="unit-link" href="reference.html#classification">理論帳で読む →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 6 ソフトマックス ==================== -->
+  <section class="panel" id="panel-softmax" role="tabpanel" aria-labelledby="tab-softmax" hidden>
+    <p class="lead">生成AIは、次に来る語の確率をソフトマックスで作り、そこから1つ選びます。温度 <span class="var">T</span> を変えると、選ばれ方がどう変わるかを見ましょう。</p>
+
+    <div class="card chart-card">
+      <h2>「今日の天気は」の次の語の確率</h2>
+      <p class="readout" id="sm-ro"></p>
+      <div class="chart-wrap" id="sm-chart"></div>
+      <ul class="legend">
+        <li><span class="sw area c-bar-hi"></span><span>いちばん高い確率</span></li>
+        <li><span class="sw area c-bar"></span><span>ほかの語</span></li>
+        <li>×回数 = 選ばれた回数</li>
+      </ul>
+    </div>
+
+    <div class="card settings">
+      <h2>設定</h2>
+      <div class="field stack temp-field">
+        <div class="field-top">
+          <div class="field-label"><label for="sm-t">温度 <span class="var">T</span></label></div>
+          <span class="val" id="sm-t-v"></span>
+        </div>
+        <input type="range" id="sm-t" min="0.1" max="3" step="0.05">
+      </div>
+      <p class="context">文脈: <b>今日の天気は</b> ___</p>
+      <p class="hint" style="margin: 0 0 6px;">候補の語のスコア(ロジット <span class="var">z</span>)</p>
+      <div id="sm-logits"></div>
+      <div class="btn-row">
+        <button type="button" class="btn-primary" id="sm-one">1回選ぶ</button>
+        <button type="button" class="btn-secondary" id="sm-twenty">20回選ぶ</button>
+      </div>
+      <p class="hint">温度やスコアを変えると、選んだ回数は 0 にもどります。</p>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <h2>確率と選んだ結果</h2>
+        <div class="stat-grid cols-2" id="sm-stats"></div>
+      </div>
+      <div class="card points">
+        <h2>見どころ</h2>
+        <p class="auto-point" id="sm-auto-point" hidden></p>
+        <ul>
+          <li>ソフトマックス: 語 <span class="var">i</span> の確率 = e^(<span class="var">z<sub>i</sub></span>/<span class="var">T</span>) ÷ Σ e^(<span class="var">z<sub>j</sub></span>/<span class="var">T</span>)。どれも 0 より大きく、合計は必ず 100% です。</li>
+          <li><span class="var">T</span> を小さくすると、いちばんスコアの高い語に確率が集まり、ほぼ毎回同じ語が選ばれます。大きくすると確率がならされ、意外な語も出やすくなります。</li>
+          <li>生成AIは「次の語の確率を作って1つ選ぶ」をくり返して文章を作ります。同じ質問でも答えが毎回少し変わるのは、このくじ引きがあるからです。</li>
+        </ul>
+        <a class="unit-link" href="index.html?unit=generative-ai">道場でこの単元を解く →</a>
+        <a class="unit-link" href="reference.html#generative-ai">理論帳で読む →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="page-foot">
+    乱数で作ったデータは「作り直す」で変わります。設定はこの端末に保存されます。<br>
+    <a href="index.html">AI理論道場で問題を解く →</a>
+  </footer>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var svgNS = "http://www.w3.org/2000/svg";
+  var KEY = "aiTheoryLabLab";
+  var TABS = ["gd", "regression", "neuron", "overfit", "threshold", "softmax"];
+  var reduceMotion = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  function $(id) { return document.getElementById(id); }
+
+  // ---------- 乱数(シード付き) ----------
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  // 標準正規分布(ボックス=ミュラー法)
+  function normal(rng) {
+    var u = 0;
+    while (u === 0) u = rng();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * rng());
+  }
+  function newSeed() { return 1 + Math.floor(Math.random() * 2147483000); }
+
+  // ---------- 数の表示 ----------
+  function fmt(v, d) {
+    if (!isFinite(v)) return v > 0 ? "∞" : v < 0 ? "−∞" : "—";
+    var s = v.toFixed(d);
+    if (Number(s) === 0) s = (0).toFixed(d);
+    return s.replace("-", "−");
+  }
+  function signed(v, d) { var s = fmt(v, d); return s.charAt(0) === "−" ? s : "+" + s; }
+  function pct(v, d) {
+    if (!isFinite(v)) return "—";
+    d = d == null ? 1 : d;
+    var lim = Math.pow(10, -d);
+    // 丸めて 100% や 0% に見えても、ちょうどでなければそう書かない
+    if (v < 1 && v * 100 > 100 - lim / 2) return fmt(100 - lim, d) + "%超";
+    if (v > 0 && v * 100 < lim / 2) return fmt(lim, d) + "%未満";
+    return fmt(v * 100, d) + "%";
+  }
+  // 大きな数や小さな数も読める形で
+  function fmtAuto(v) {
+    if (!isFinite(v)) return fmt(v, 0);
+    var a = Math.abs(v);
+    if (a >= 1e5) return v.toExponential(2).replace("-", "−").replace("e+", "×10^").replace("e−", "×10^−");
+    if (a >= 100) return fmt(v, 1);
+    if (a >= 1) return fmt(v, 3);
+    if (a >= 0.001 || a === 0) return fmt(v, 4);
+    return v.toExponential(2).replace(/-/g, "−").replace("e", "×10^");
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  // ---------- 保存 ----------
+  function num(v, lo, hi, def) {
+    if (v === null || v === undefined || v === "" || typeof v === "boolean") return def;
+    v = Number(v);
+    if (!isFinite(v)) return def;
+    return Math.min(hi, Math.max(lo, v));
+  }
+  function obj(o, k) { return o && typeof o[k] === "object" && o[k] ? o[k] : {}; }
+  function seedOf(v) { v = Math.floor(Number(v)); return isFinite(v) && v > 0 ? v : newSeed(); }
+
+  var WORDS = ["晴れ", "雨", "くもり", "雪", "最高"];
+  var DEF_LOGITS = [2.0, 1.0, 1.5, -1.0, 0.5];
+
+  var saved = Store.load(KEY, {});
+  if (!saved || typeof saved !== "object") saved = {};
+  var s = (function () {
+    var gd = obj(saved, "gd"), w0 = obj(gd, "w0");
+    var rg = obj(saved, "regression"), ne = obj(saved, "neuron"), of = obj(saved, "overfit");
+    var th = obj(saved, "threshold"), sm = obj(saved, "softmax");
+    var z = Array.isArray(sm.z) ? sm.z : [];
+    return {
+      tab: TABS.indexOf(saved.tab) >= 0 ? saved.tab : "gd",
+      gd: {
+        fn: gd.fn === "two" ? "two" : "one",
+        eta: num(gd.eta, 0.01, 1.2, 0.1),
+        w0: { one: num(w0.one, -3, 9, -2), two: num(w0.two, -3.5, 4.5, 4) }
+      },
+      regression: { a: num(rg.a, -1, 2, 0), b: num(rg.b, -5, 10, 5), resid: rg.resid !== false, seed: seedOf(rg.seed) },
+      neuron: {
+        x: num(ne.x, -5, 5, 1), w: num(ne.w, -3, 3, 1.5), b: num(ne.b, -5, 5, -0.5),
+        act: ["step", "sigmoid", "tanh", "relu"].indexOf(ne.act) >= 0 ? ne.act : "sigmoid"
+      },
+      overfit: { deg: Math.round(num(of.deg, 1, 12, 3)), truth: of.truth !== false, seed: seedOf(of.seed) },
+      threshold: { t: num(th.t, 0, 1, 0.5), seed: seedOf(th.seed) },
+      softmax: { T: num(sm.T, 0.1, 3, 1), z: DEF_LOGITS.map(function (d, i) { return num(z[i], -4, 6, d); }) }
+    };
+  })();
+  function save() { Store.save(KEY, s); }
+
+  // ---------- スライダー ----------
+  // 値の表示と、つまみの左側の色(--p)をそろえる
+  function paintRange(el) {
+    var lo = Number(el.min), hi = Number(el.max), v = Number(el.value);
+    el.style.setProperty("--p", ((v - lo) / (hi - lo) * 100).toFixed(2) + "%");
+  }
+  function bindRange(el, get, set, show, onChange) {
+    var out = el.id ? $(el.id + "-v") : null;
+    function sync() {
+      el.value = get();
+      paintRange(el);
+      if (out) out.textContent = show(get());
+    }
+    el.addEventListener("input", function () {
+      set(Number(el.value));
+      paintRange(el);
+      if (out) out.textContent = show(get());
+      onChange();
+      save();
+    });
+    sync();
+    return sync;
+  }
+
+  // ---------- SVG のグラフ ----------
+  function svgEl(tag, attrs, parent) {
+    var e = document.createElementNS(svgNS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function svgText(parent, x, y, str, attrs) {
+    var a = { x: x, y: y };
+    for (var k in attrs) a[k] = attrs[k];
+    var t = svgEl("text", a, parent);
+    t.textContent = str;
+    return t;
+  }
+  // 目盛りの文字の幅の見積もり(11px の等幅。漢字は約1文字分)
+  function textWidth(str) {
+    var w = 0;
+    for (var i = 0; i < str.length; i++) w += str.charCodeAt(i) > 0x2000 ? 11 : 6.7;
+    return w;
+  }
+  function niceStep(raw) {
+    var p = Math.pow(10, Math.floor(Math.log10(raw)));
+    var f = raw / p;
+    return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
+  }
+  function decimalsOf(step) {
+    for (var d = 0; d < 6; d++) if (Math.abs(Math.round(step * Math.pow(10, d)) - step * Math.pow(10, d)) < 1e-6) return d;
+    return 6;
+  }
+  function niceTicks(lo, hi, n) {
+    var st = niceStep((hi - lo) / n), out = [];
+    for (var v = Math.ceil(lo / st - 1e-9) * st; v <= hi + st * 1e-9; v += st) out.push(Math.abs(v) < st * 1e-9 ? 0 : v);
+    var d = decimalsOf(st);
+    return { list: out, fmt: function (v) { return fmt(v, d); } };
+  }
+
+  var clipCount = 0;
+  // 座標軸つきの空のグラフを作る。o: { x0, x1, y0, y1, xt, yt(niceTicks の戻り値), log, xLabel, yLabel, aria }
+  function makePlot(wrap, o) {
+    var W = wrap.clientWidth, H = wrap.clientHeight;
+    if (!W || !H) return null;
+    var lw = 0;
+    o.yt.list.forEach(function (v) { lw = Math.max(lw, textWidth(o.yt.fmt(v))); });
+    var l = Math.ceil(lw) + 12, r = o.r != null ? o.r : 14, t = o.t != null ? o.t : 12, b = 24;
+    var pw = W - l - r, ph = H - t - b;
+    var ly0 = o.log ? Math.log10(o.y0) : 0, ly1 = o.log ? Math.log10(o.y1) : 0;
+    function X(v) { return l + (v - o.x0) / (o.x1 - o.x0) * pw; }
+    function Y(v) {
+      var u = o.log ? (Math.log10(Math.max(v, 1e-300)) - ly0) / (ly1 - ly0) : (v - o.y0) / (o.y1 - o.y0);
+      // 画面から大きく外れる値は、描ける範囲に抑える(はみ出た分は切り抜きで隠れる)
+      return t + (1 - Math.max(-20, Math.min(21, u))) * ph;
+    }
+    var svg = svgEl("svg", { width: W, height: H, role: "img", "aria-label": o.aria || "" });
+    var id = "clip" + (++clipCount);
+    var defs = svgEl("defs", {}, svg);
+    var cp = svgEl("clipPath", { id: id }, defs);
+    svgEl("rect", { x: l, y: t, width: pw, height: ph }, cp);
+
+    o.yt.list.forEach(function (v) {
+      var yy = Y(v);
+      svgEl("line", { "class": "pl-grid", x1: l, x2: l + pw, y1: yy, y2: yy }, svg);
+      svgText(svg, l - 6, yy + 4, o.yt.fmt(v), { "text-anchor": "end" });
+    });
+    o.xt.list.forEach(function (v, i) {
+      var xx = X(v);
+      svgEl("line", { "class": "pl-grid", x1: xx, x2: xx, y1: t, y2: t + ph }, svg);
+      if (o.xt.skip && o.xt.skip(i, pw)) return;
+      svgText(svg, xx, H - 6, o.xt.fmt(v), { "text-anchor": "middle" });
+    });
+    // 軸(0 が範囲内ならそこに、なければ端に)
+    var ay = (!o.log && o.y0 <= 0 && o.y1 >= 0) ? Y(0) : t + ph;
+    var ax = (o.x0 <= 0 && o.x1 >= 0) ? X(0) : l;
+    svgEl("line", { "class": "pl-axis", x1: l, x2: l + pw, y1: ay, y2: ay }, svg);
+    svgEl("line", { "class": "pl-axis", x1: ax, x2: ax, y1: t, y2: t + ph }, svg);
+    if (o.xLabel) svgText(svg, l + pw, ay - 6, o.xLabel, { "text-anchor": "end", "class": "t-strong" });
+    if (o.yLabel) svgText(svg, ax + 6, t + 11, o.yLabel, { "class": "t-strong" });
+
+    var g = svgEl("g", { "clip-path": "url(#" + id + ")" }, svg);
+    return { svg: svg, g: g, X: X, Y: Y, l: l, t: t, pw: pw, ph: ph, W: W, H: H };
+  }
+  function finish(wrap, p) {
+    wrap.textContent = "";
+    wrap.appendChild(p.svg);
+  }
+  function pathOf(p, xs, ys) {
+    var d = "", pen = false;
+    for (var i = 0; i < xs.length; i++) {
+      if (!isFinite(ys[i])) { pen = false; continue; }
+      d += (pen ? "L" : "M") + p.X(xs[i]).toFixed(1) + " " + p.Y(ys[i]).toFixed(1);
+      pen = true;
+    }
+    return d;
+  }
+  function linspace(a, b, n) {
+    var out = [];
+    for (var i = 0; i < n; i++) out.push(a + (b - a) * i / (n - 1));
+    return out;
+  }
+
+  function statBox(label, numHtml, numCls, subHtml) {
+    return '<div class="stat-box"><div class="stat-label">' + label + '</div>' +
+      '<div class="stat-num ' + (numCls || "") + '">' + numHtml + '</div>' +
+      (subHtml ? '<div class="stat-sub">' + subHtml + "</div>" : "") + "</div>";
+  }
+  function setPoint(el, cls, html) {
+    if (!cls) { el.hidden = true; el.innerHTML = ""; return; }
+    el.hidden = false;
+    el.className = "auto-point " + cls;
+    el.innerHTML = html;
+  }
+  function V(name) { return '<span class="var">' + name + "</span>"; }
+
+  // グラフの幅が変わったら描き直す(タブを開いたときも幅が 0 から変わるので描かれる)
+  var drawers = [];
+  var ro = typeof ResizeObserver === "function" ? new ResizeObserver(function (entries) {
+    entries.forEach(function (en) {
+      drawers.forEach(function (d) { if (d.wrap === en.target) d.draw(); });
+    });
+  }) : null;
+  function watch(wrap, draw) {
+    drawers.push({ wrap: wrap, draw: draw });
+    if (ro) ro.observe(wrap);
+  }
+  if (!ro) window.addEventListener("resize", function () { drawers.forEach(function (d) { d.draw(); }); });
+
+  // ================================================================
+  // 1 勾配降下法
+  // ================================================================
+  // 谷が1つ: f(w) = (w − 3)²、f′(w) = 2(w − 3)。
+  //   w − 3 は 1歩ごとに (1 − 2η) 倍になる → η < 0.5 単調、0.5〜1 振動しながら収束、1 で往復、1 超で発散。
+  // 谷が2つ: f′(w) = (w + 2)(w − 1)(w − 3) / 10 となる4次関数。
+  //   f(w) = (3w⁴ − 8w³ − 30w² + 72w + 152) / 120。深い谷 w = −2(f = 0)、山 w = 1、浅い谷 w = 3(f ≈ 1.04)。
+  var GD = {
+    one: {
+      f: function (w) { return (w - 3) * (w - 3); },
+      d: function (w) { return 2 * (w - 3); },
+      x0: -3, x1: 9, y0: 0, y1: 36,
+      formula: V("f") + "(" + V("w") + ") = (" + V("w") + " − 3)²<br>" + V("f") + "′(" + V("w") + ") = 2(" + V("w") + " − 3)。谷の底は " + V("w") + " = 3"
+    },
+    two: {
+      f: function (w) { return (3 * w * w * w * w - 8 * w * w * w - 30 * w * w + 72 * w + 152) / 120; },
+      d: function (w) { return (w + 2) * (w - 1) * (w - 3) / 10; },
+      x0: -3.5, x1: 4.5, y0: 0, y1: 3.5,
+      formula: V("f") + "′(" + V("w") + ") = (" + V("w") + " + 2)(" + V("w") + " − 1)(" + V("w") + " − 3) ÷ 10 となる4次関数。深い谷 " + V("w") + " = −2、浅い谷 " + V("w") + " = 3"
+    }
+  };
+  var GD_MAX_STEPS = 500;
+  var gdHist = [];
+  var gdTimer = null;
+
+  function gdOut(w) {
+    var F = GD[s.gd.fn];
+    return !isFinite(w) || w < F.x0 || w > F.x1 || F.f(w) > F.y1;
+  }
+  function gdStatus() {
+    var F = GD[s.gd.fn], h = gdHist, n = h.length - 1, w = h[n];
+    if (n === 0) return { label: "スタート前", cls: "", out: gdOut(w) };
+    if (gdOut(w) || Math.abs(w) > 1e6) return { label: "発散", cls: "is-bad", out: true, done: true };
+    var dw = w - h[n - 1];
+    // 傾きがほぼ 0 なら止まる。谷が2つのときの山の頂上(w = 1)も傾き 0 なので、別に扱う
+    if (Math.abs(F.d(w)) < 1e-3) {
+      if (s.gd.fn === "two" && Math.abs(w - 1) < 0.1) return { label: "山の上で停止", cls: "", hill: true, done: true };
+      return { label: "収束", cls: "is-good", conv: true, done: true };
+    }
+    if (n >= 2) {
+      var d1 = h[n - 1] - h[n - 2];
+      if (d1 * dw < 0) {
+        var ratio = Math.abs(dw) / Math.abs(d1);
+        if (ratio > 1.0005) return { label: "振動して発散", cls: "is-bad", grow: true };
+        if (ratio > 0.9995) return { label: "往復のまま", cls: "is-bad", stuck: true };
+        return { label: "振動しつつ収束", cls: "", osc: true };
+      }
+    }
+    // f が減っていなければ「下っている」とは言わない(1歩目で谷を飛びこえた場合など)
+    var fNow = F.f(w), fPrev = F.f(h[n - 1]);
+    if (fNow > fPrev + 1e-12) return { label: "上っている", cls: "is-bad", up: true };
+    if (fNow >= fPrev - 1e-12) return { label: "下がらない", cls: "is-bad", flat: true };
+    return { label: "下っている", cls: "" };
+  }
+  function gdStop() {
+    if (gdTimer) { clearTimeout(gdTimer); gdTimer = null; }
+    $("gd-auto").textContent = "自動";
+    $("gd-auto").setAttribute("aria-pressed", "false");
+  }
+  function gdReset() {
+    gdStop();
+    gdHist = [s.gd.w0[s.gd.fn]];
+    gdRender();
+  }
+  function gdStep() {
+    var w = gdHist[gdHist.length - 1];
+    if (gdOut(w) && gdHist.length > 1) return false;
+    if (gdHist.length - 1 >= GD_MAX_STEPS) return false;
+    gdHist.push(w - s.gd.eta * GD[s.gd.fn].d(w));
+    return true;
+  }
+  function gdTick() {
+    var ok = gdStep();
+    gdRender();
+    var st = gdStatus();
+    if (!ok || st.done || gdHist.length - 1 >= GD_MAX_STEPS) { gdStop(); gdRender(); return; }
+    var n = gdHist.length - 1;
+    gdTimer = setTimeout(gdTick, n < 15 ? 260 : n < 60 ? 120 : 50);
+  }
+  function gdDraw() {
+    var wrap = $("gd-chart"), F = GD[s.gd.fn];
+    var p = makePlot(wrap, {
+      x0: F.x0, x1: F.x1, y0: F.y0, y1: F.y1,
+      xt: niceTicks(F.x0, F.x1, 6), yt: niceTicks(F.y0, F.y1, 4),
+      xLabel: "w", yLabel: "f(w)", aria: "損失の曲線と、勾配降下法でたどった道"
+    });
+    if (!p) return;
+    var xs = linspace(F.x0, F.x1, 300);
+    svgEl("path", { "class": "ln st-curve", "stroke-width": 2.5, d: pathOf(p, xs, xs.map(F.f)) }, p.g);
+
+    var h = gdHist, w = h[h.length - 1];
+    // たどった道(線分と点)
+    var d = "";
+    for (var i = 0; i < h.length; i++) {
+      if (!isFinite(h[i])) break;
+      d += (i ? "L" : "M") + p.X(h[i]).toFixed(1) + " " + p.Y(F.f(h[i])).toFixed(1);
+    }
+    svgEl("path", { "class": "ln st-path", "stroke-width": 1.6, d: d, opacity: 0.9 }, p.g);
+    var from = Math.max(0, h.length - 200);
+    for (var j = from; j < h.length - 1; j++) {
+      if (!isFinite(h[j])) break;
+      svgEl("circle", { "class": "fl-path", cx: p.X(h[j]).toFixed(1), cy: p.Y(F.f(h[j])).toFixed(1), r: 3 }, p.g);
+    }
+    if (!gdOut(w)) {
+      // 接線(傾き f′(w))
+      var span = (F.x1 - F.x0) * 0.12, fw = F.f(w), dw = F.d(w);
+      svgEl("line", {
+        "class": "ln st-guide dash", "stroke-width": 1.6,
+        x1: p.X(w - span), y1: p.Y(fw - dw * span), x2: p.X(w + span), y2: p.Y(fw + dw * span)
+      }, p.g);
+      svgEl("circle", { "class": "fl-ball", cx: p.X(w).toFixed(1), cy: p.Y(fw).toFixed(1), r: 8 }, p.svg);
+    }
+    finish(wrap, p);
+  }
+  function gdRender() {
+    var F = GD[s.gd.fn], h = gdHist, n = h.length - 1, w = h[n], st = gdStatus();
+    var fw = F.f(w), dw = F.d(w);
+    if (st.out && n > 0) {
+      $("gd-ro").textContent = "w = " + fmtAuto(w) + "(グラフの外) f(w) = " + fmtAuto(fw);
+    } else {
+      $("gd-ro").textContent = "w = " + fmt(w, 3) + "  f(w) = " + fmt(fw, 3) + "  傾き f′(w) = " + fmt(dw, 3) +
+        "  次の一歩 −η·f′(w) = " + signed(-s.gd.eta * dw, 3);
+    }
+    $("gd-stats").innerHTML =
+      statBox("歩数", String(n)) +
+      statBox(V("w"), fmtAuto(w)) +
+      statBox(V("f") + "(" + V("w") + ")", fmtAuto(fw)) +
+      statBox("状態", esc(st.label), "word " + st.cls);
+
+    var pt = $("gd-auto-point");
+    if (st.out && n > 0) {
+      setPoint(pt, "bad", "学習率が大きすぎて谷を飛びこえています。" + V("η") + " を小さくしてリセットしましょう。");
+    } else if (st.conv) {
+      if (s.gd.fn === "one") setPoint(pt, "good", "谷の底 " + V("w") + " = 3 に着きました(" + n + "歩)。");
+      else {
+        // 山(w = 1)をまたいだ最初の歩を探す。またいでいれば、初期値と反対側の谷に着いている
+        var cross = 0;
+        for (var k = 1; k < h.length; k++) if ((h[k - 1] - 1) * (h[k] - 1) < 0) { cross = k; break; }
+        var when = cross === 1 ? "1歩目で" : cross + "歩目で";
+        if (w < 1 && cross) setPoint(pt, "good", "学習率が大きいので、" + when + "山(" + V("w") + " = 1)を飛びこえ、いちばん深い谷 " + V("w") + " = −2(最小値)に着きました(" + n + "歩)。たまたまうまくいっただけで、いつもこうなるとは限りません。");
+        else if (w < 1) setPoint(pt, "good", "いちばん深い谷 " + V("w") + " = −2(最小値)に着きました(" + n + "歩)。");
+        else if (cross) setPoint(pt, "info", "学習率が大きいので、" + when + "山(" + V("w") + " = 1)を飛びこえ、浅い谷 " + V("w") + " = 3(局所解)に着いてしまいました。初期値の近くには深い谷 " + V("w") + " = −2 があります。" + V("η") + " を小さくすると、近い谷へ下ります。");
+        else setPoint(pt, "info", "浅い谷 " + V("w") + " = 3(局所解)で止まりました。もっと深い谷が " + V("w") + " = −2 にありますが、ここは傾きが 0 なので動けません。学習率が小さいときは、初期値を山(" + V("w") + " = 1)より左にすると深い谷へ行けます。");
+      }
+    } else if (st.hill) {
+      setPoint(pt, "info", "山の頂上 " + V("w") + " = 1 は傾きが 0 なので、ここからは動けません。傾きが 0 になるのは谷の底だけではありません。初期値を少しずらしてみましょう。");
+    } else if (st.stuck) {
+      setPoint(pt, "bad", "谷をはさんで同じ2点を行き来し続けています。" + V("η") + " を少し小さくすると近づきます。");
+    } else if (st.up) {
+      setPoint(pt, "bad", "損失が " + fmtAuto(F.f(h[n - 1])) + " → " + fmtAuto(fw) + " と増えました。学習率が大きすぎて、谷を飛びこえて反対側の高い所に着いています。");
+    } else if (st.flat) {
+      setPoint(pt, "bad", "損失が " + fmtAuto(fw) + " のまま下がっていません。谷を飛びこえて、同じ高さの反対側に着きました。");
+    } else if (st.grow) {
+      setPoint(pt, "bad", "行き来するたびに谷から遠ざかっています(発散)。");
+    } else if (n >= GD_MAX_STEPS) {
+      setPoint(pt, "info", GD_MAX_STEPS + "歩で止めました。" + V("η") + " が小さいと一歩が小さく、谷の底に着くまで時間がかかります。");
+    } else if (st.osc) {
+      setPoint(pt, "info", "谷をはさんで行き来しながら近づいています。" + V("η") + " をもっと小さくすると、まっすぐ下ります。");
+    } else {
+      setPoint(pt, null);
+    }
+    $("gd-step").disabled = (st.out && n > 0) || n >= GD_MAX_STEPS || !!st.done;
+    $("gd-auto").disabled = !gdTimer && $("gd-step").disabled;
+    gdDraw();
+  }
+
+  var gdEta = $("gd-eta"), gdW0 = $("gd-w0");
+  function gdSetW0Range() {
+    var F = GD[s.gd.fn];
+    gdW0.min = F.x0; gdW0.max = F.x1;
+  }
+  gdSetW0Range();
+  var syncGdEta = bindRange(gdEta, function () { return s.gd.eta; }, function (v) { s.gd.eta = v; },
+    function (v) { return fmt(v, 2); }, gdReset);
+  var syncGdW0 = bindRange(gdW0, function () { return s.gd.w0[s.gd.fn]; }, function (v) { s.gd.w0[s.gd.fn] = v; },
+    function (v) { return fmt(v, 1); }, gdReset);
+  function gdSetFn(fn) {
+    s.gd.fn = fn;
+    document.querySelectorAll("[data-gdfn]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.gdfn === fn)); });
+    $("gd-formula").innerHTML = GD[fn].formula;
+    gdSetW0Range();
+    syncGdW0();
+    syncGdEta();
+    gdReset();
+  }
+  document.querySelectorAll("[data-gdfn]").forEach(function (b) {
+    b.addEventListener("click", function () { gdSetFn(b.dataset.gdfn); save(); });
+  });
+  $("gd-step").addEventListener("click", function () { gdStop(); gdStep(); gdRender(); });
+  $("gd-auto").addEventListener("click", function () {
+    if (gdTimer) { gdStop(); gdRender(); return; }
+    $("gd-auto").textContent = "停止";
+    $("gd-auto").setAttribute("aria-pressed", "true");
+    gdTimer = setTimeout(gdTick, 0);
+  });
+  $("gd-reset").addEventListener("click", gdReset);
+  watch($("gd-chart"), gdDraw);
+
+  // ================================================================
+  // 2 線形回帰
+  // ================================================================
+  var reg = { xs: [], ys: [], fitA: 0, fitB: 0, minMse: 0, y0: 0, y1: 10, anim: 0, animEnd: 0 };
+  function regMake() {
+    var rng = mulberry32(s.regression.seed);
+    var a = 0.4 + 0.8 * rng(), b = 1 + 2 * rng(), n = 20;
+    reg.xs = []; reg.ys = [];
+    for (var i = 0; i < n; i++) {
+      // x は 0.3〜9.7 を20区間に分け、各区間に1点(点が重ならないように)
+      var x = 0.3 + (i + 0.15 + 0.7 * rng()) * (9.4 / n);
+      reg.xs.push(x);
+      reg.ys.push(a * x + b + normal(rng) * 1.0);
+    }
+    // 最小二乗: a = Sxy / Sxx、b = ȳ − a x̄
+    var mx = 0, my = 0;
+    for (i = 0; i < n; i++) { mx += reg.xs[i]; my += reg.ys[i]; }
+    mx /= n; my /= n;
+    var sxy = 0, sxx = 0;
+    for (i = 0; i < n; i++) { sxy += (reg.xs[i] - mx) * (reg.ys[i] - my); sxx += (reg.xs[i] - mx) * (reg.xs[i] - mx); }
+    reg.fitA = sxy / sxx;
+    reg.fitB = my - reg.fitA * mx;
+    reg.minMse = regMse(reg.fitA, reg.fitB);
+    var lo = Math.min.apply(null, reg.ys), hi = Math.max.apply(null, reg.ys);
+    reg.y0 = Math.floor(Math.min(0, lo - 1));
+    reg.y1 = Math.ceil(hi + 1);
+  }
+  function regMse(a, b) {
+    var sum = 0;
+    for (var i = 0; i < reg.xs.length; i++) { var e = reg.ys[i] - (a * reg.xs[i] + b); sum += e * e; }
+    return sum / reg.xs.length;
+  }
+  function regDraw() {
+    var wrap = $("reg-chart");
+    var p = makePlot(wrap, {
+      x0: 0, x1: 10, y0: reg.y0, y1: reg.y1,
+      xt: niceTicks(0, 10, 5), yt: niceTicks(reg.y0, reg.y1, 4),
+      xLabel: "x", yLabel: "y", aria: "データの点と直線"
+    });
+    if (!p) return;
+    var a = s.regression.a, b = s.regression.b;
+    if (s.regression.resid) {
+      for (var i = 0; i < reg.xs.length; i++) {
+        var x = reg.xs[i];
+        svgEl("line", { "class": "ln st-residual dash", "stroke-width": 1.4, x1: p.X(x), x2: p.X(x), y1: p.Y(reg.ys[i]), y2: p.Y(a * x + b) }, p.g);
+      }
+    }
+    svgEl("line", { "class": "ln st-model", "stroke-width": 2.5, x1: p.X(0), y1: p.Y(b), x2: p.X(10), y2: p.Y(a * 10 + b) }, p.g);
+    for (var j = 0; j < reg.xs.length; j++) {
+      svgEl("circle", { "class": "fl-point", cx: p.X(reg.xs[j]).toFixed(1), cy: p.Y(reg.ys[j]).toFixed(1), r: 4.5 }, p.g);
+    }
+    finish(wrap, p);
+  }
+  function regRender() {
+    var a = s.regression.a, b = s.regression.b, mse = regMse(a, b);
+    $("reg-ro").textContent = "直線 y = " + fmt(a, 2) + "x " + (b < 0 ? "− " + fmt(-b, 2) : "+ " + fmt(b, 2)) + "  MSE = " + fmt(mse, 3);
+    var atMin = mse <= reg.minMse * 1.0005 + 1e-9;
+    $("reg-stats").innerHTML =
+      statBox("MSE(今)", fmt(mse, 3), atMin ? "is-good" : "") +
+      statBox("最小の MSE", fmt(reg.minMse, 3)) +
+      statBox("傾き " + V("a"), fmt(a, 2), "", "最小二乗: " + fmt(reg.fitA, 2)) +
+      statBox("切片 " + V("b"), fmt(b, 2), "", "最小二乗: " + fmt(reg.fitB, 2));
+    var pt = $("reg-auto-point");
+    if (atMin) setPoint(pt, "good", "最小二乗の直線です。傾きや切片をどちらに少し動かしても、MSE は大きくなります。");
+    else setPoint(pt, "info", "今の MSE は、最小より " + fmt(mse - reg.minMse, 3) + " 大きい状態です。");
+    regDraw();
+  }
+  var syncRegA = bindRange($("reg-a"), function () { return s.regression.a; }, function (v) { regStopAnim(); s.regression.a = v; },
+    function (v) { return fmt(v, 2); }, regRender);
+  var syncRegB = bindRange($("reg-b"), function () { return s.regression.b; }, function (v) { regStopAnim(); s.regression.b = v; },
+    function (v) { return fmt(v, 2); }, regRender);
+  function regStopAnim() {
+    if (reg.anim) { cancelAnimationFrame(reg.anim); reg.anim = 0; }
+    clearTimeout(reg.animEnd);
+  }
+  $("reg-resid").checked = s.regression.resid;
+  $("reg-resid").addEventListener("change", function () { s.regression.resid = $("reg-resid").checked; save(); regRender(); });
+  $("reg-fit").addEventListener("click", function () {
+    regStopAnim();
+    var a0 = s.regression.a, b0 = s.regression.b, a1 = reg.fitA, b1 = reg.fitB;
+    function end() { s.regression.a = a1; s.regression.b = b1; syncRegA(); syncRegB(); regRender(); save(); }
+    if (reduceMotion) { end(); return; }
+    var start = null;
+    function frame(ts) {
+      if (start === null) start = ts;
+      var u = Math.min(1, (ts - start) / 300);
+      if (u >= 1) { reg.anim = 0; clearTimeout(reg.animEnd); end(); return; }
+      var e = 1 - Math.pow(1 - u, 3);
+      s.regression.a = a0 + (a1 - a0) * e;
+      s.regression.b = b0 + (b1 - b0) * e;
+      syncRegA(); syncRegB(); regRender();
+      reg.anim = requestAnimationFrame(frame);
+    }
+    reg.anim = requestAnimationFrame(frame);
+    // 画面が描かれないとき(タブが裏にあるときなど)も、最後は必ず合わせる
+    reg.animEnd = setTimeout(function () { if (reg.anim) { regStopAnim(); end(); } }, 450);
+  });
+  $("reg-new").addEventListener("click", function () {
+    regStopAnim();
+    s.regression.seed = newSeed();
+    save();
+    regMake();
+    regRender();
+  });
+  watch($("reg-chart"), regDraw);
+
+  // ================================================================
+  // 3 ニューロン
+  // ================================================================
+  var ACT = {
+    step: { name: "ステップ", f: function (z) { return z > 0 ? 1 : 0; }, formula: V("φ") + "(" + V("z") + ") = 1(" + V("z") + " &gt; 0)、0(" + V("z") + " ≤ 0)" },
+    sigmoid: { name: "シグモイド", f: function (z) { return 1 / (1 + Math.exp(-z)); }, formula: V("φ") + "(" + V("z") + ") = 1 ÷ (1 + e<sup>−" + V("z") + "</sup>)。出力は 0〜1" },
+    tanh: { name: "tanh", f: function (z) { return Math.tanh(z); }, formula: V("φ") + "(" + V("z") + ") = tanh " + V("z") + "。出力は −1〜1" },
+    relu: { name: "ReLU", f: function (z) { return Math.max(0, z); }, formula: V("φ") + "(" + V("z") + ") = max(0, " + V("z") + ")。負なら 0、正ならそのまま" }
+  };
+  function neuDraw() {
+    var wrap = $("neu-chart"), ne = s.neuron, A = ACT[ne.act];
+    var y0, y1;
+    if (ne.act === "tanh") { y0 = -1.25; y1 = 1.25; }
+    else if (ne.act === "relu") {
+      var top = Math.max(1, Math.abs(ne.w) * 5 + ne.b);
+      y1 = top * 1.08; y0 = -y1 * 0.08;
+    } else { y0 = -0.2; y1 = 1.2; }
+    var yt = ne.act === "relu" ? niceTicks(0, y1, 4) : niceTicks(y0 + 0.2, y1 - 0.2, 4);
+    var p = makePlot(wrap, {
+      x0: -5, x1: 5, y0: y0, y1: y1, xt: niceTicks(-5, 5, 5), yt: yt,
+      xLabel: "x", yLabel: "y", aria: "ニューロンの入力 x と出力 y の関係"
+    });
+    if (!p) return;
+    [0, 1].forEach(function (g) {
+      if (g >= y0 && g <= y1) svgEl("line", { "class": "ln st-guide dash", "stroke-width": 1.3, x1: p.l, x2: p.l + p.pw, y1: p.Y(g), y2: p.Y(g) }, p.g);
+    });
+    var xs = linspace(-5, 5, 601);
+    svgEl("path", { "class": "ln st-model", "stroke-width": 2.5, d: pathOf(p, xs, xs.map(function (x) { return A.f(ne.w * x + ne.b); })) }, p.g);
+    var y = A.f(ne.w * ne.x + ne.b);
+    svgEl("line", { "class": "ln st-guide", "stroke-width": 1.2, x1: p.X(ne.x), x2: p.X(ne.x), y1: p.t, y2: p.t + p.ph }, p.g);
+    svgEl("circle", { "class": "fl-model", cx: p.X(ne.x).toFixed(1), cy: p.Y(y).toFixed(1), r: 7 }, p.svg);
+    finish(wrap, p);
+  }
+  function neuRender() {
+    var ne = s.neuron, A = ACT[ne.act], z = ne.w * ne.x + ne.b, y = A.f(z);
+    $("nf-x").textContent = fmt(ne.x, 1);
+    $("nf-wb").textContent = "×" + fmt(ne.w, 1) + " " + (ne.b < 0 ? "− " + fmt(-ne.b, 1) : "+ " + fmt(ne.b, 1));
+    $("nf-z").textContent = fmt(z, 2);
+    $("nf-phi").textContent = A.name;
+    $("nf-y").textContent = fmt(y, 3);
+    $("neu-ro").textContent = "z = " + fmt(ne.w, 1) + " × " + (ne.x < 0 ? "(" + fmt(ne.x, 1) + ")" : fmt(ne.x, 1)) + " " + (ne.b < 0 ? "− " + fmt(-ne.b, 1) : "+ " + fmt(ne.b, 1)) +
+      " = " + fmt(z, 2) + "  →  y = φ(z) = " + fmt(y, 3);
+    var border = ne.w !== 0 ? fmt(-ne.b / ne.w, 2) : "なし";
+    $("neu-stats").innerHTML =
+      statBox("重み付き和 " + V("z"), fmt(z, 2)) +
+      statBox("出力 " + V("y"), fmt(y, 3)) +
+      statBox("活性化関数", esc(A.name), "word") +
+      statBox(V("z") + " = 0 の境目", border, "", V("x") + " = −" + V("b") + " ÷ " + V("w"));
+    $("neu-formula").innerHTML = A.formula;
+    var pt = $("neu-auto-point");
+    if (Math.abs(ne.w) < 1e-9) setPoint(pt, "info", V("w") + " = 0 なので、" + V("x") + " を変えても " + V("z") + " = " + V("b") + " のまま。出力は一定です。");
+    else if (ne.act === "relu" && z < 0) setPoint(pt, "info", V("z") + " が負なので、ReLU の出力は 0。この入力ではニューロンは何も出しません。");
+    else if (ne.act === "step") setPoint(pt, "info", "ステップ関数は " + V("x") + " = " + border + " を境に、出力が 0 と 1 で急に切り替わります。");
+    else if ((ne.act === "sigmoid" || ne.act === "tanh") && Math.abs(z) > 4) setPoint(pt, "info", V("z") + " の大きさが大きいので、出力が " + (ne.act === "tanh" ? (z > 0 ? "1" : "−1") : (z > 0 ? "1" : "0")) + " に張りついています。ここでは " + V("x") + " を少し変えても出力はほとんど変わりません(傾きがほぼ 0)。");
+    else setPoint(pt, null);
+    neuDraw();
+  }
+  bindRange($("neu-x"), function () { return s.neuron.x; }, function (v) { s.neuron.x = v; }, function (v) { return fmt(v, 1); }, neuRender);
+  bindRange($("neu-w"), function () { return s.neuron.w; }, function (v) { s.neuron.w = v; }, function (v) { return fmt(v, 1); }, neuRender);
+  bindRange($("neu-b"), function () { return s.neuron.b; }, function (v) { s.neuron.b = v; }, function (v) { return fmt(v, 1); }, neuRender);
+  function neuSetAct(act) {
+    s.neuron.act = act;
+    document.querySelectorAll("[data-act]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.act === act)); });
+  }
+  document.querySelectorAll("[data-act]").forEach(function (b) {
+    b.addEventListener("click", function () { neuSetAct(b.dataset.act); save(); neuRender(); });
+  });
+  watch($("neu-chart"), neuDraw);
+
+  // ================================================================
+  // 4 過学習
+  // ================================================================
+  // x は [−1, 1] にあるので、そのままチェビシェフ多項式 T₀〜T_d を基底にして、
+  // ハウスホルダーQR分解で最小二乗を解く(x, x², … をそのまま使うより、次数12でも数値が安定する)。
+  var OF_TRAIN = 14, OF_TEST = 30, OF_NOISE = 0.3;
+  var of = { tx: [], ty: [], vx: [], vy: [], fits: [], train: [], test: [], best: 1 };
+  function truth(x) { return Math.sin(Math.PI * x); }
+  function chebRow(x, d) {
+    var r = [1];
+    if (d >= 1) r.push(x);
+    for (var k = 2; k <= d; k++) r.push(2 * x * r[k - 1] - r[k - 2]);
+    return r;
+  }
+  function lstsq(A, b) {
+    var m = A.length, n = A[0].length, R = A.map(function (row) { return row.slice(); }), y = b.slice();
+    var i, j, k;
+    for (k = 0; k < n; k++) {
+      var norm = 0;
+      for (i = k; i < m; i++) norm += R[i][k] * R[i][k];
+      norm = Math.sqrt(norm);
+      if (norm === 0) continue;
+      var alpha = R[k][k] > 0 ? -norm : norm;
+      var v = [];
+      for (i = 0; i < m; i++) v.push(i < k ? 0 : R[i][k]);
+      v[k] -= alpha;
+      var vv = 0;
+      for (i = k; i < m; i++) vv += v[i] * v[i];
+      if (vv === 0) continue;
+      for (j = k; j < n; j++) {
+        var dot = 0;
+        for (i = k; i < m; i++) dot += v[i] * R[i][j];
+        var f = 2 * dot / vv;
+        for (i = k; i < m; i++) R[i][j] -= f * v[i];
+      }
+      var dy = 0;
+      for (i = k; i < m; i++) dy += v[i] * y[i];
+      var fy = 2 * dy / vv;
+      for (i = k; i < m; i++) y[i] -= fy * v[i];
+    }
+    var c = [];
+    for (k = n - 1; k >= 0; k--) {
+      var sum = y[k];
+      for (j = k + 1; j < n; j++) sum -= R[k][j] * c[j];
+      c[k] = Math.abs(R[k][k]) > 1e-12 ? sum / R[k][k] : 0;
+    }
+    return c;
+  }
+  function polyEval(c, x) {
+    // チェビシェフ級数の値(クレンショーの方法)
+    var b1 = 0, b2 = 0;
+    for (var k = c.length - 1; k >= 1; k--) { var t = 2 * x * b1 - b2 + c[k]; b2 = b1; b1 = t; }
+    return x * b1 - b2 + c[0];
+  }
+  function mseOf(c, xs, ys) {
+    var sum = 0;
+    for (var i = 0; i < xs.length; i++) { var e = ys[i] - polyEval(c, xs[i]); sum += e * e; }
+    return sum / xs.length;
+  }
+  function ofMake() {
+    var rng = mulberry32(s.overfit.seed), i;
+    of.tx = []; of.ty = []; of.vx = []; of.vy = [];
+    for (i = 0; i < OF_TRAIN; i++) {
+      // [−1, 1] を14区間に分け、各区間に1点(点が重なって式が不安定にならないように)
+      var x = -1 + (i + 0.1 + 0.8 * rng()) * (2 / OF_TRAIN);
+      of.tx.push(x);
+      of.ty.push(truth(x) + normal(rng) * OF_NOISE);
+    }
+    for (i = 0; i < OF_TEST; i++) {
+      var x2 = -1 + 2 * rng();
+      of.vx.push(x2);
+      of.vy.push(truth(x2) + normal(rng) * OF_NOISE);
+    }
+    of.fits = []; of.train = []; of.test = [];
+    var bestV = Infinity;
+    for (var d = 1; d <= 12; d++) {
+      var c = lstsq(of.tx.map(function (x) { return chebRow(x, d); }), of.ty);
+      of.fits[d] = c;
+      of.train[d] = mseOf(c, of.tx, of.ty);
+      of.test[d] = mseOf(c, of.vx, of.vy);
+      if (of.test[d] < bestV) { bestV = of.test[d]; of.best = d; }
+    }
+  }
+  function ofDraw() {
+    var wrap = $("of-chart");
+    var p = makePlot(wrap, {
+      x0: -1, x1: 1, y0: -2, y1: 2, xt: niceTicks(-1, 1, 4), yt: niceTicks(-2, 2, 4),
+      xLabel: "x", yLabel: "y", aria: "訓練データ・テストデータと、当てはめた多項式"
+    });
+    if (p) {
+      var xs = linspace(-1, 1, 400);
+      if (s.overfit.truth) svgEl("path", { "class": "ln st-curve dash", "stroke-width": 2, d: pathOf(p, xs, xs.map(truth)) }, p.g);
+      var c = of.fits[s.overfit.deg];
+      svgEl("path", { "class": "ln st-model", "stroke-width": 2.5, d: pathOf(p, xs, xs.map(function (x) { return polyEval(c, x); })) }, p.g);
+      for (var i = 0; i < of.vx.length; i++) svgEl("circle", { "class": "fl-test", cx: p.X(of.vx[i]).toFixed(1), cy: p.Y(of.vy[i]).toFixed(1), r: 3.8 }, p.g);
+      for (var j = 0; j < of.tx.length; j++) svgEl("circle", { "class": "fl-train", cx: p.X(of.tx[j]).toFixed(1), cy: p.Y(of.ty[j]).toFixed(1), r: 4.5 }, p.g);
+      finish(wrap, p);
+    }
+
+    // 次数と誤差(対数目盛り)
+    var wrap2 = $("of-chart-err");
+    var lo = Infinity, hi = -Infinity;
+    for (var d = 1; d <= 12; d++) {
+      [of.train[d], of.test[d]].forEach(function (v) { v = Math.max(v, 1e-4); lo = Math.min(lo, v); hi = Math.max(hi, v); });
+    }
+    var e0 = Math.max(-4, Math.floor(Math.log10(lo))), e1 = Math.min(4, Math.ceil(Math.log10(hi)));
+    if (e1 <= e0) e1 = e0 + 1;
+    var every = e1 - e0 > 4 ? 2 : 1;
+    var yl = [];
+    for (var e = e0; e <= e1; e += every) yl.push(Math.pow(10, e));
+    var p2 = makePlot(wrap2, {
+      x0: 0.5, x1: 12.5, y0: Math.pow(10, e0), y1: Math.pow(10, e1), log: true, t: 8,
+      xt: { list: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], fmt: String, skip: function (i, pw) { return pw < 260 && i % 2 === 1; } },
+      yt: { list: yl, fmt: function (v) { var k = Math.round(Math.log10(v)); return k >= 0 ? String(Math.pow(10, k)) : "0." + new Array(-k).join("0") + "1"; } },
+      aria: "多項式の次数ごとの訓練誤差とテスト誤差"
+    });
+    if (!p2) return;
+    var ds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    svgEl("line", { "class": "ln st-guide dash", "stroke-width": 1.4, x1: p2.X(s.overfit.deg), x2: p2.X(s.overfit.deg), y1: p2.t, y2: p2.t + p2.ph }, p2.g);
+    function clampV(v) { return Math.max(v, 1e-4); }
+    svgEl("path", { "class": "ln st-train", "stroke-width": 2, d: pathOf(p2, ds, ds.map(function (k) { return clampV(of.train[k]); })) }, p2.g);
+    svgEl("path", { "class": "ln st-test", "stroke-width": 2, d: pathOf(p2, ds, ds.map(function (k) { return clampV(of.test[k]); })) }, p2.g);
+    svgEl("circle", { "class": "fl-train", cx: p2.X(s.overfit.deg), cy: p2.Y(clampV(of.train[s.overfit.deg])), r: 4.5 }, p2.svg);
+    svgEl("circle", { "class": "fl-test-dot", cx: p2.X(s.overfit.deg), cy: p2.Y(clampV(of.test[s.overfit.deg])), r: 4.5 }, p2.svg);
+    finish(wrap2, p2);
+  }
+  function ofRender() {
+    var d = s.overfit.deg, tr = of.train[d], te = of.test[d], best = of.best;
+    $("of-ro").textContent = d + "次式  訓練誤差 " + fmtAuto(tr) + "  テスト誤差 " + fmtAuto(te);
+    $("of-stats").innerHTML =
+      statBox("訓練誤差", fmtAuto(tr), "", "訓練データ " + OF_TRAIN + "点") +
+      statBox("テスト誤差", fmtAuto(te), te > of.test[best] * 2 ? "is-bad" : d === best ? "is-good" : "", "テストデータ " + OF_TEST + "点") +
+      statBox("次数", String(d)) +
+      statBox("テスト誤差が最小の次数", String(best), "", fmtAuto(of.test[best]));
+    var pt = $("of-auto-point");
+    if (d === best) setPoint(pt, "good", "この点の並びでは、テスト誤差がいちばん小さい次数です。");
+    else if (d > best && te > of.test[best] * 2) setPoint(pt, "bad", "訓練誤差は " + fmtAuto(tr) + " と小さいのに、テスト誤差は " + fmtAuto(te) + "。雑音まで覚えた過学習です。");
+    else if (d < best && te > of.test[best] * 1.5) setPoint(pt, "info", "次数が低くて、曲線の形をとらえきれていません(未学習)。訓練誤差も大きいままです。");
+    else setPoint(pt, null);
+    ofDraw();
+  }
+  bindRange($("of-deg"), function () { return s.overfit.deg; }, function (v) { s.overfit.deg = Math.round(v); }, String, ofRender);
+  $("of-truth").checked = s.overfit.truth;
+  $("of-truth").addEventListener("change", function () { s.overfit.truth = $("of-truth").checked; save(); ofDraw(); });
+  $("of-new").addEventListener("click", function () { s.overfit.seed = newSeed(); save(); ofMake(); ofRender(); });
+  watch($("of-chart"), ofDraw);
+  watch($("of-chart-err"), ofDraw);
+
+  // ================================================================
+  // 5 しきい値
+  // ================================================================
+  var TH_POS = 80, TH_NEG = 120, TH_BINS = 20;
+  var th = { pos: [], neg: [], bestT: 0.5, bestF1: 0 };
+  function scoreSample(rng, mean, sd) {
+    // 0〜1 の外に出た値は捨てて引き直す(端に件数がたまらないように)
+    for (;;) {
+      var v = mean + sd * normal(rng);
+      if (v >= 0 && v < 1) return v;
+    }
+  }
+  function thMake() {
+    var rng = mulberry32(s.threshold.seed), i;
+    th.pos = []; th.neg = [];
+    for (i = 0; i < TH_POS; i++) th.pos.push(scoreSample(rng, 0.64, 0.15));
+    for (i = 0; i < TH_NEG; i++) th.neg.push(scoreSample(rng, 0.38, 0.15));
+    th.bestF1 = -1;
+    for (var k = 0; k <= 100; k++) {
+      var m = thCount(k / 100);
+      if (m.f1 > th.bestF1 + 1e-12) { th.bestF1 = m.f1; th.bestT = k / 100; }
+    }
+  }
+  function thCount(t) {
+    var tp = 0, fn = 0, fp = 0, tn = 0, i;
+    for (i = 0; i < th.pos.length; i++) { if (th.pos[i] >= t) tp++; else fn++; }
+    for (i = 0; i < th.neg.length; i++) { if (th.neg[i] >= t) fp++; else tn++; }
+    var prec = tp + fp > 0 ? tp / (tp + fp) : NaN;
+    var rec = tp + fn > 0 ? tp / (tp + fn) : NaN;
+    var f1 = prec + rec > 0 ? 2 * prec * rec / (prec + rec) : 0;
+    if (!isFinite(f1)) f1 = 0;
+    return { tp: tp, fn: fn, fp: fp, tn: tn, acc: (tp + tn) / (tp + fn + fp + tn), prec: prec, rec: rec, f1: f1 };
+  }
+  function hist(vals) {
+    var h = [];
+    for (var i = 0; i < TH_BINS; i++) h.push(0);
+    vals.forEach(function (v) { h[Math.min(TH_BINS - 1, Math.floor(v * TH_BINS))]++; });
+    return h;
+  }
+  function thDraw() {
+    var wrap = $("th-chart");
+    var hp = hist(th.pos), hn = hist(th.neg);
+    var top = Math.max(Math.max.apply(null, hp), Math.max.apply(null, hn));
+    var yt = niceTicks(0, top * 1.12, 4);
+    var y1 = Math.max(top * 1.18, yt.list[yt.list.length - 1]);
+    var p = makePlot(wrap, {
+      x0: 0, x1: 1, y0: 0, y1: y1, xt: niceTicks(0, 1, 5), yt: yt, t: 22,
+      yLabel: "件数", aria: "陽性と陰性のスコアの分布としきい値"
+    });
+    if (!p) return;
+    var t = s.threshold.t;
+    svgEl("rect", { "class": "fl-region", x: p.X(t), y: p.t, width: Math.max(0, p.X(1) - p.X(t)), height: p.ph }, p.g);
+    function stepPath(h, close) {
+      var d = "M" + p.X(0).toFixed(1) + " " + p.Y(0).toFixed(1);
+      for (var i = 0; i < TH_BINS; i++) {
+        d += "L" + p.X(i / TH_BINS).toFixed(1) + " " + p.Y(h[i]).toFixed(1) + "L" + p.X((i + 1) / TH_BINS).toFixed(1) + " " + p.Y(h[i]).toFixed(1);
+      }
+      d += "L" + p.X(1).toFixed(1) + " " + p.Y(0).toFixed(1);
+      return close ? d + "Z" : d;
+    }
+    svgEl("path", { "class": "fl-neg", d: stepPath(hn, true) }, p.g);
+    svgEl("path", { "class": "fl-pos", d: stepPath(hp, true) }, p.g);
+    svgEl("path", { "class": "ln st-neg", "stroke-width": 1.8, d: stepPath(hn) }, p.g);
+    svgEl("path", { "class": "ln st-pos", "stroke-width": 1.8, d: stepPath(hp) }, p.g);
+    svgEl("line", { "class": "ln st-threshold", "stroke-width": 2.2, x1: p.X(t), x2: p.X(t), y1: p.t - 4, y2: p.t + p.ph }, p.svg);
+    var anchor = t < 0.15 ? "start" : t > 0.85 ? "end" : "middle";
+    svgText(p.svg, p.X(t), p.t - 8, "しきい値 " + t.toFixed(2), { "text-anchor": anchor, "class": "t-strong" });
+    finish(wrap, p);
+  }
+  function thRender() {
+    var t = s.threshold.t, m = thCount(t);
+    $("cm-tp").textContent = String(m.tp);
+    $("cm-fn").textContent = String(m.fn);
+    $("cm-fp").textContent = String(m.fp);
+    $("cm-tn").textContent = String(m.tn);
+    $("th-ro").textContent = "スコア " + t.toFixed(2) + " 以上を陽性と判定 → 陽性と判定 " + (m.tp + m.fp) + "件(うち実際に陽性 " + m.tp + "件)";
+    $("th-stats").innerHTML =
+      statBox("正解率", pct(m.acc), "", "(TP+TN)÷" + (TH_POS + TH_NEG)) +
+      statBox("適合率", pct(m.prec), "", isFinite(m.prec) ? "TP÷(TP+FP)" : "陽性と判定が0件") +
+      statBox("再現率", pct(m.rec), "", "TP÷(TP+FN)") +
+      statBox("F1", fmt(m.f1, 3), "", "最大 " + fmt(th.bestF1, 3) + "(" + th.bestT.toFixed(2) + ")");
+    var pt = $("th-auto-point");
+    if (m.tp + m.fp === 0) setPoint(pt, "bad", "陽性と判定したものが1件もないので、適合率は計算できません(0 で割ることになる)。再現率は 0% です。");
+    else if (m.f1 >= th.bestF1 - 0.005) setPoint(pt, "good", "F1 がほぼ最大になるしきい値です。適合率と再現率のバランスがとれています。");
+    else if (m.rec > m.prec + 0.15) setPoint(pt, "info", "しきい値が低めです。見逃し(FN " + m.fn + "件)は少ないかわりに、誤検出(FP " + m.fp + "件)が多く、適合率が下がっています。");
+    else if (m.prec > m.rec + 0.15) setPoint(pt, "info", "しきい値が高めです。誤検出(FP " + m.fp + "件)は少ないかわりに、見逃し(FN " + m.fn + "件)が多く、再現率が下がっています。");
+    else setPoint(pt, null);
+    thDraw();
+  }
+  bindRange($("th-t"), function () { return s.threshold.t; }, function (v) { s.threshold.t = Math.round(v * 100) / 100; }, function (v) { return v.toFixed(2); }, thRender);
+  $("th-new").addEventListener("click", function () { s.threshold.seed = newSeed(); save(); thMake(); thRender(); });
+  watch($("th-chart"), thDraw);
+
+  // ================================================================
+  // 6 ソフトマックス
+  // ================================================================
+  var sm = { counts: [0, 0, 0, 0, 0], total: 0, last: -1, rng: mulberry32(newSeed()) };
+  function softmax(z, T) {
+    // T で割ってから最大値を引く(e^ が大きくなりすぎてあふれないように)
+    var u = z.map(function (v) { return v / T; });
+    var mx = Math.max.apply(null, u);
+    var e = u.map(function (v) { return Math.exp(v - mx); });
+    var sum = e.reduce(function (a, b) { return a + b; }, 0);
+    return e.map(function (v) { return v / sum; });
+  }
+  function smReset() { sm.counts = [0, 0, 0, 0, 0]; sm.total = 0; sm.last = -1; }
+  function smPick(times) {
+    var pr = softmax(s.softmax.z, s.softmax.T);
+    for (var k = 0; k < times; k++) {
+      var r = sm.rng(), acc = 0, pick = pr.length - 1;
+      for (var i = 0; i < pr.length; i++) { acc += pr[i]; if (r < acc) { pick = i; break; } }
+      sm.counts[pick]++;
+      sm.total++;
+      sm.last = pick;
+    }
+    smRender();
+  }
+  function smDraw() {
+    var wrap = $("sm-chart");
+    var W = wrap.clientWidth, H = wrap.clientHeight;
+    if (!W || !H) return;
+    var pr = softmax(s.softmax.z, s.softmax.T), hiI = 0;
+    for (var i = 1; i < pr.length; i++) if (pr[i] > pr[hiI]) hiI = i;
+    var labW = 58, pctW = 54, cntW = 36, x0 = labW, x1 = W - pctW - cntW;
+    var rowH = H / WORDS.length, barH = Math.min(24, rowH * 0.56);
+    var svg = svgEl("svg", { width: W, height: H, role: "img", "aria-label": "次の語の確率の横棒グラフ" });
+    WORDS.forEach(function (word, i) {
+      var cy = rowH * (i + 0.5);
+      if (i === sm.last) svgEl("rect", { "class": "fl-pick", x: 0, y: cy - rowH / 2 + 2, width: W, height: rowH - 4, rx: 8 }, svg);
+      svgText(svg, 6, cy + 4.5, word, { "class": "t-word" });
+      svgEl("rect", { "class": "fl-track", x: x0, y: cy - barH / 2, width: Math.max(0, x1 - x0), height: barH, rx: 4 }, svg);
+      var bw = Math.max(0, (x1 - x0) * pr[i]);
+      svgEl("rect", { "class": i === hiI ? "fl-bar-hi" : "fl-bar", x: x0, y: cy - barH / 2, width: bw, height: barH, rx: 4 }, svg);
+      svgText(svg, x1 + pctW - 4, cy + 4, pct(pr[i]), { "text-anchor": "end", "class": "t-strong" });
+      if (sm.counts[i]) svgText(svg, W - 2, cy + 4, "×" + sm.counts[i], { "text-anchor": "end" });
+      if (i === sm.last) {
+        // 「選ばれた」タグ: 棒の右に入らなければ、棒の上(右端)に置く
+        var tw = 58, th2 = 20, tx = x0 + bw + 6;
+        if (tx + tw > x1) tx = Math.max(x0 + 2, x0 + bw - tw - 4);
+        svgEl("rect", { "class": "fl-tag", x: tx, y: cy - th2 / 2, width: tw, height: th2, rx: 10 }, svg);
+        svgText(svg, tx + tw / 2, cy + 4, "選ばれた", { "text-anchor": "middle", "class": "t-tag" });
+      }
+    });
+    wrap.textContent = "";
+    wrap.appendChild(svg);
+  }
+  function smRender() {
+    var z = s.softmax.z, T = s.softmax.T, pr = softmax(z, T), hiI = 0, i;
+    for (i = 1; i < pr.length; i++) if (pr[i] > pr[hiI]) hiI = i;
+    $("sm-ro").textContent = "z ÷ T(T = " + fmt(T, 2) + "): " + WORDS.map(function (w, k) { return w + " " + fmt(z[k] / T, 2); }).join(" · ");
+    var most = -1;
+    for (i = 0; i < 5; i++) if (sm.counts[i] > 0 && (most < 0 || sm.counts[i] > sm.counts[most])) most = i;
+    $("sm-stats").innerHTML =
+      statBox("最大確率", pct(pr[hiI]), "", esc(WORDS[hiI])) +
+      statBox("選んだ回数", sm.total + "回", "", most >= 0 ? "いちばん多いのは「" + esc(WORDS[most]) + "」" + sm.counts[most] + "回" : "まだ選んでいません");
+    var pt = $("sm-auto-point");
+    // 偏りは「スコアの差 ÷ T」で決まる。温度だけのせいにしない
+    var sorted = z.slice().sort(function (a, b) { return b - a; });
+    var gapT = (sorted[0] - sorted[1]) / T, spreadT = (sorted[0] - sorted[4]) / T;
+    var tNote = "(T = " + fmt(T, 2) + ")";
+    if (pr[hiI] > 0.95) setPoint(pt, "info", "1位と2位のスコアの差を T で割ると " + fmt(gapT, 2) + tNote + "。スコアの差が大きいか、温度が低いと、この値が大きくなり、ほぼ毎回「" + esc(WORDS[hiI]) + "」が選ばれます(" + pct(pr[hiI]) + ")。");
+    else if (pr[hiI] < 0.3) setPoint(pt, "info", "いちばん高いスコアといちばん低いスコアの差を T で割ると " + fmt(spreadT, 2) + tNote + "。スコアが近いか、温度が高いと、この値が小さくなり、確率がならされて、どの語もそれなりに選ばれます。");
+    else if (sm.last >= 0 && sm.last !== hiI) setPoint(pt, "info", "いちばん確率の高い語でなくても、くじ引きなので「" + esc(WORDS[sm.last]) + "」が選ばれることがあります。");
+    else setPoint(pt, null);
+    smDraw();
+  }
+  var smSyncs = [];
+  var logitBox = $("sm-logits");
+  WORDS.forEach(function (w, i) {
+    var row = document.createElement("div");
+    row.className = "logit-row";
+    row.innerHTML = '<label for="sm-z' + i + '">' + esc(w) + '</label><input type="range" id="sm-z' + i + '" min="-4" max="6" step="0.1"><span class="val" id="sm-z' + i + '-v"></span>';
+    logitBox.appendChild(row);
+    smSyncs.push(bindRange($("sm-z" + i), function () { return s.softmax.z[i]; }, function (v) { s.softmax.z[i] = v; },
+      function (v) { return fmt(v, 1); }, function () { smReset(); smRender(); }));
+  });
+  bindRange($("sm-t"), function () { return s.softmax.T; }, function (v) { s.softmax.T = v; }, function (v) { return fmt(v, 2); },
+    function () { smReset(); smRender(); });
+  $("sm-one").addEventListener("click", function () { smPick(1); });
+  $("sm-twenty").addEventListener("click", function () { smPick(20); });
+  watch($("sm-chart"), smDraw);
+
+  // ---------- タブ ----------
+  var RENDER = { gd: gdRender, regression: regRender, neuron: neuRender, overfit: ofRender, threshold: thRender, softmax: smRender };
+  var tabBtns = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  function selectTab(tab, focus) {
+    if (tab !== "gd") { gdStop(); }
+    tabBtns.forEach(function (b) {
+      var on = b.dataset.tab === tab;
+      b.setAttribute("aria-selected", String(on));
+      b.tabIndex = on ? 0 : -1;
+      if (on && focus) b.focus();
+    });
+    TABS.forEach(function (t) { $("panel-" + t).hidden = t !== tab; });
+    s.tab = tab;
+    save();
+    if (location.hash !== "#" + tab) {
+      try { history.replaceState(null, "", "#" + tab); } catch (e) { /* file:// などで使えなくても続ける */ }
+    }
+    RENDER[tab]();
+  }
+  tabBtns.forEach(function (b, i) {
+    b.addEventListener("click", function () { selectTab(b.dataset.tab); });
+    b.addEventListener("keydown", function (e) {
+      if (e.key === "Home") { selectTab(TABS[0], true); e.preventDefault(); return; }
+      if (e.key === "End") { selectTab(TABS[TABS.length - 1], true); e.preventDefault(); return; }
+      var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      selectTab(TABS[(i + d + TABS.length) % TABS.length], true);
+    });
+  });
+  function hashTab() {
+    var h = location.hash.slice(1);
+    return TABS.indexOf(h) >= 0 ? h : null;
+  }
+  window.addEventListener("hashchange", function () {
+    var h = hashTab();
+    if (h && h !== s.tab) selectTab(h);
+    else if (!h) {
+      // 知らないハッシュは、今開いているタブのハッシュに置き換える
+      try { history.replaceState(null, "", "#" + s.tab); } catch (e) { /* 使えなくても続ける */ }
+    }
+  });
+
+  // ---------- 開始 ----------
+  regMake();
+  ofMake();
+  thMake();
+  neuSetAct(s.neuron.act);
+  gdSetFn(s.gd.fn);
+  selectTab(hashTab() || s.tab);
+})();
+</script>
+</body>
+</html>

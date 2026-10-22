@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>投資入門コース | 投資シミュレーション道場</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 760px; gap: 22px; }
+  .app.is-lesson { max-width: 960px; }
+  [hidden] { display: none !important; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+  .notice {
+    margin: 16px auto 0;
+    max-width: 60ch;
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    font-size: 13px;
+    line-height: 1.7;
+    border-radius: 10px;
+    padding: 12px 14px;
+    text-align: left;
+  }
+  .hero.is-compact { padding-bottom: 12px; }
+  .hero.is-compact h1 { font-size: 24px; margin-bottom: 4px; }
+  .hero.is-compact .tagline,
+  .hero.is-compact .notice { display: none; }
+
+  button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  h2[tabindex="-1"]:focus { outline: none; }
+
+  /* ---------- カード・ボタン(index.html と同じ) ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+  .btn-primary, .btn-secondary {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    padding: 12px 14px;
+    min-height: 44px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none;
+    line-height: 1.4;
+  }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-secondary { background: var(--surface-2); color: var(--ink); border: 1px solid var(--border); }
+  .btn-primary:disabled, .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-small {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    min-height: 36px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .lbl-short { display: none; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 0 8px; }
+  .chip-btn {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 36px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .chip-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .chip {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .hint {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin: 8px 0 0;
+    line-height: 1.6;
+  }
+  .val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .pos { color: var(--good); }
+  .neg { color: var(--bad); }
+
+  /* ---------- 進み具合 ---------- */
+  .progress { display: flex; align-items: center; gap: 12px; }
+  .progress-track { flex: 1; height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+  .progress-bar { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.2s ease; }
+  .progress-text {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+
+  /* ---------- コースのトップ ---------- */
+  .view-top { display: flex; flex-direction: column; gap: 18px; }
+  .course-intro ul { margin: 0; padding-left: 1.2em; }
+  .course-intro li { font-size: 14.5px; line-height: 1.75; color: var(--ink); margin-bottom: 4px; }
+  .course-intro li:last-child { margin-bottom: 0; }
+  .resume { align-self: stretch; }
+  .lesson-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .lesson-row {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 4px 14px;
+    align-items: start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: var(--ink);
+    text-decoration: none;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .lesson-row:hover { border-color: var(--accent); }
+  .lesson-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .lesson-row.is-done .lesson-num { background: var(--good-soft); color: var(--good); }
+  .lesson-main { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .lesson-row .lesson-title { font-size: 15.5px; font-weight: 600; line-height: 1.5; margin-top: 4px; }
+  .lesson-summary { font-size: 13.5px; color: var(--ink-muted); line-height: 1.6; }
+  .lesson-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+  .summary-card h3 { font-size: 15px; font-weight: 600; margin: 18px 0 6px; }
+  .summary-card h3:first-of-type { margin-top: 0; }
+  .summary-card ul { margin: 0; padding-left: 1.2em; }
+  .summary-card li { font-size: 14px; line-height: 1.7; }
+
+  /* ---------- レッスン画面 ---------- */
+  .course-layout {
+    display: grid;
+    grid-template-columns: 232px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .toc {
+    position: sticky;
+    top: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 10px;
+    min-width: 0;
+  }
+  .toc > summary { display: none; }
+  .toc-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    padding: 2px 8px 8px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .toc-head .progress-text { font-size: 12px; }
+  .toc-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 6px 8px;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 13.5px;
+    line-height: 1.4;
+  }
+  .toc-item:hover { background: var(--surface-2); }
+  .toc-item.is-current { background: var(--accent-soft); border-left-color: var(--accent); font-weight: 600; }
+  .toc-no {
+    flex: none;
+    width: 22px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-faint);
+  }
+  .toc-item.is-done .toc-no { color: var(--good); }
+  .toc-top {
+    display: block;
+    margin: 8px 8px 0;
+    padding: 6px 0 2px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .toc-top:hover { text-decoration: underline; }
+
+  .lesson { padding: 26px 30px; }
+  .lesson-head { margin-bottom: 8px; }
+  .lesson-no {
+    margin: 0 0 8px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+  }
+  .lesson-head h2.lesson-title {
+    margin: 0 0 10px;
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-wrap: balance;
+    display: block;
+  }
+  .lesson-lead { margin: 0; font-size: 16px; line-height: 1.7; color: var(--ink-muted); }
+
+  .lesson-body { font-size: 15.5px; line-height: 1.85; }
+  .lesson-body > * { margin: 0 0 0.9em; }
+  .lesson-body > h3 { font-size: 17px; font-weight: 600; margin: 28px 0 8px; line-height: 1.5; }
+  .lesson-body > p { margin: 0 0 0.9em; }
+  .c-faint { color: var(--ink-faint); font-weight: 400; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .lesson-body b { font-weight: 700; }
+  .lesson-body a, .feedback a { color: var(--accent); font-weight: 600; }
+  a.term-link { color: var(--accent); text-decoration: underline dotted; text-underline-offset: 3px; font-weight: 600; }
+  .analogy {
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .note-box {
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--ink-muted);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+  .box-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .note-box .box-label { color: var(--ink-faint); }
+  ul.bullets { padding-left: 1.3em; }
+  ul.plain { list-style: none; padding: 0; }
+  ul.bullets li, ul.plain li { margin-bottom: 0.35em; }
+
+  /* 図: 株式・債券・投資信託 */
+  .kind-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .kind-card {
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    min-width: 0;
+  }
+  .kind-card h4 { margin: 0 0 6px; font-family: var(--font-display); font-size: 17px; font-weight: 600; }
+  .kind-card dl { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+  .kind-card dt { font-size: 11.5px; font-weight: 700; color: var(--ink-faint); }
+  .kind-card dd { margin: 0; }
+
+  /* ---------- ミニ体験 ---------- */
+  section.mini {
+    border: 1.5px solid var(--accent-soft);
+    border-radius: 14px;
+    padding: 16px;
+    background: var(--surface);
+    font-size: 14.5px;
+    line-height: 1.6;
+    margin: 22px 0;
+  }
+  .mini-tag { margin: 0 0 2px; font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--accent); }
+  .lesson-body section.mini h3.mini-title { margin: 0 0 10px; font-size: 16px; font-weight: 600; line-height: 1.5; }
+  .mini-controls { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+  .ctl-label { font-size: 12.5px; font-weight: 600; color: var(--ink-muted); }
+  .mini-out { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .mini-out > * { margin: 0; }
+  .mini-note { margin-top: 10px; }
+  .mini .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .mini .btn-row > * { flex: 1 1 140px; }
+  .mini-line { font-size: 14px; line-height: 1.7; }
+  .field { padding: 6px 0; }
+  .field.stack { display: flex; flex-direction: column; gap: 2px; }
+  .field-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 14px; }
+  input[type="range"] { width: 100%; accent-color: var(--accent); margin: 6px 0 0; }
+  input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); flex: none; margin: 2px 0 0; cursor: pointer; }
+  .check-list .field { border-bottom: 1px solid var(--border); padding: 4px 0; }
+  .check-list .field:last-child { border-bottom: none; }
+  .check-label { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 14.5px; line-height: 1.6; padding: 6px 0; min-height: 36px; }
+  .check-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+
+  /* グラフ(index.html と同じ描き方) */
+  .chart-wrap { position: relative; width: 100%; height: 220px; }
+  .chart-wrap svg { display: block; overflow: visible; }
+  .chart-wrap svg text { font-family: var(--font-mono); font-size: 11px; fill: var(--ink-muted); font-variant-numeric: tabular-nums; }
+  .grid-line { stroke: var(--chart-grid); stroke-width: 1; }
+  .ln { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .dash { stroke-dasharray: 4 4; }
+  .s1 { stroke: var(--series-1); }
+  .s2 { stroke: var(--series-2); }
+  .s3 { stroke: var(--series-3); }
+  .s5 { stroke: var(--series-5); }
+  .f1 { fill: var(--series-1); }
+  .legend {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .legend li { display: flex; align-items: center; gap: 6px; }
+  .sw { display: inline-block; width: 18px; height: 0; border-top: 2.5px solid currentColor; }
+  .sw.dashed { border-top-style: dashed; }
+  .sw.dot { width: 10px; height: 10px; border: none; border-radius: 50%; background: currentColor; }
+  .c1 { color: var(--series-1); }
+  .c2 { color: var(--series-2); }
+  .c3 { color: var(--series-3); }
+  .c5 { color: var(--series-5); }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .stat-grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat-box { text-align: center; background: var(--surface-2); border-radius: 12px; padding: 12px 6px; min-width: 0; }
+  .stat-label { font-size: 11.5px; color: var(--ink-muted); line-height: 1.4; }
+  .stat-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-top: 4px;
+    overflow-wrap: anywhere;
+  }
+  .stat-sub { font-size: 11px; color: var(--ink-faint); margin-top: 3px; line-height: 1.4; }
+  .badge {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--good-soft);
+    color: var(--good);
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+  .extra-line {
+    font-size: 0.88rem;
+    line-height: 1.7;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--surface-2);
+  }
+  .readout {
+    min-height: 1.6em;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .auto-point { padding: 12px 14px; border-radius: 10px; font-size: 0.92rem; line-height: 1.6; font-weight: 600; }
+  .auto-point.good { background: var(--good-soft); color: var(--good); }
+
+  .tbl { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+  .tbl th, .tbl td { padding: 7px 6px; border-bottom: 1px solid var(--border); text-align: right; }
+  .tbl th { font-weight: 600; color: var(--ink-muted); font-size: 0.78rem; line-height: 1.4; }
+  .tbl th:first-child, .tbl td:first-child { text-align: left; }
+  .tbl td { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .tbl td.txt { font-family: var(--font-body); }
+  .tbl tr.total td { font-weight: 700; border-bottom: none; }
+  .rule-box { font-size: 13.5px; line-height: 1.7; background: var(--surface-2); border-radius: 10px; padding: 10px 12px; }
+
+  /* 範囲バー */
+  .range-list { display: flex; flex-direction: column; gap: 14px; }
+  .range-head { display: flex; justify-content: space-between; gap: 4px 8px; flex-wrap: wrap; font-size: 0.86rem; margin-bottom: 4px; }
+  .range-head .num { font-size: 0.8rem; color: var(--ink-muted); margin-left: auto; text-align: right; }
+  .range-track { position: relative; height: 14px; background: var(--surface-2); border-radius: 7px; }
+  .range-bar { position: absolute; top: 3px; height: 8px; border-radius: 4px; background: currentColor; opacity: 0.55; }
+  .range-dot { position: absolute; top: 1px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: currentColor; border: 2px solid var(--surface); }
+  .range-dot.pt { top: 2px; width: 10px; height: 10px; margin-left: -5px; border: none; opacity: 0.75; }
+  .range-zero { position: absolute; top: -3px; bottom: -3px; width: 0; border-left: 1.5px dashed var(--ink-faint); }
+  .range-sub { font-size: 0.78rem; color: var(--ink-faint); margin-top: 3px; }
+  .range-axis { position: relative; height: 16px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-faint); }
+  .range-axis span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+  .range-axis span:first-child { transform: none; }
+  .range-axis span:last-child { transform: translateX(-100%); }
+
+  /* 10×10 マス */
+  .basket { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; max-width: 240px; }
+  .basket span { aspect-ratio: 1; border-radius: 3px; background: var(--surface-2); }
+  .basket span.hit-bad { background: var(--bad); }
+  .basket span.hit-good { background: var(--good); }
+
+  /* ---------- ここだけ覚える ---------- */
+  aside.keypoints {
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin: 26px 0 0;
+  }
+  aside.keypoints h3 { margin: 0 0 8px; font-size: 15px; font-weight: 700; color: var(--accent); }
+  aside.keypoints ul { margin: 0; padding-left: 1.2em; }
+  aside.keypoints li { font-size: 15px; font-weight: 500; color: var(--ink); line-height: 1.7; margin-bottom: 4px; }
+  aside.keypoints li:last-child { margin-bottom: 0; }
+
+  /* ---------- 確認クイズ ---------- */
+  section.quiz { margin-top: 28px; }
+  section.quiz > h3 { margin: 0 0 12px; font-size: 17px; font-weight: 600; }
+  .quiz-item { padding: 14px 0; border-top: 1px solid var(--border); }
+  .quiz-q { margin: 0 0 10px; font-size: 15.5px; font-weight: 600; line-height: 1.65; }
+  .choices { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .choice-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 48px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent); }
+  .choice-btn:disabled { cursor: default; }
+  .choice-btn.correct { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+  .choice-btn.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+  .choice-key { flex: none; font-family: var(--font-mono); font-weight: 700; font-size: 13px; width: 16px; }
+  .feedback { margin-top: 10px; padding: 12px 14px; border-radius: 12px; font-size: 14px; line-height: 1.7; }
+  .feedback.good { background: var(--good-soft); color: var(--good); }
+  .feedback.bad { background: var(--bad-soft); color: var(--bad); }
+  .quiz-again { margin-top: 10px; }
+
+  /* ---------- リンク・ページ送り ---------- */
+  .lesson-links { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+  .lesson-links .hint { margin: 0 0 6px; }
+  .lesson-links .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .try-link { align-self: flex-start; }
+  .term-links { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; margin-top: 6px; }
+  .term-links-label { font-weight: 600; color: var(--ink-muted); margin-right: 4px; }
+  .term-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .term-chip:hover { text-decoration: underline; }
+  .lesson-foot { margin-top: 22px; display: flex; flex-direction: column; gap: 12px; }
+  .done-toggle {
+    align-self: stretch;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 700;
+    min-height: 48px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1.5px dashed var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    cursor: pointer;
+  }
+  .done-toggle[aria-pressed="true"] { border: 1.5px solid var(--good); background: var(--good-soft); color: var(--good); }
+  .pager { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+
+  /* ---------- フッター ---------- */
+  .page-foot {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    line-height: 1.8;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .page-foot a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .page-foot a:hover { text-decoration: underline; }
+
+  /* ---------- スマホ ---------- */
+  @media (max-width: 819px) {
+    .course-layout { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    .toc { position: static; padding: 0; }
+    .toc > summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 44px;
+      padding: 10px 14px;
+      cursor: pointer;
+      list-style: none;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .toc > summary::-webkit-details-marker { display: none; }
+    .toc > summary .arrow { color: var(--ink-faint); transition: transform 0.15s ease; }
+    .toc[open] > summary .arrow { transform: rotate(180deg); }
+    .toc .toc-head { display: none; }
+    .toc[open] .toc-list { padding: 0 8px; border-top: 1px solid var(--border); padding-top: 6px; }
+    .toc-top { margin: 6px 16px 0; padding-bottom: 12px; }
+    .lesson { padding: 18px 16px; }
+    .lesson-head h2.lesson-title { font-size: 22px; }
+    .kind-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .card { padding: 18px 16px; }
+    .lesson { padding: 18px 16px; }
+    section.mini { padding: 14px 12px; }
+    .chart-wrap { height: 180px; }
+    .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stat-num { font-size: 1.02rem; }
+    .lbl-long { display: none; }
+    .lbl-short { display: inline; }
+    .tbl { font-size: 0.78rem; }
+    .tbl th, .tbl td { padding: 6px 4px; }
+    .lesson-row { padding: 12px 14px; gap: 4px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero" id="hero">
+    <p class="eyebrow">INVESTMENT · 入門コース</p>
+    <h1>投資入門コース</h1>
+    <p class="tagline">投資のことをまったく知らない人のための10のレッスン。身近なたとえと小さな体験で、しくみを順番に学びます。</p>
+    <nav class="site-nav" aria-label="投資シミュレーション道場のページ">
+      <span aria-current="page">入門コース</span>
+      <a href="index.html">シミュレーター</a>
+      <a href="reference.html">投資用語帳</a>
+    </nav>
+    <p class="notice">このコースは投資のしくみを学ぶための教材です。特定の商品や投資を勧めるものではありません。金利や物価などの数値は説明のための例で、制度は変わることがあります。投資の判断はご自身の責任で行ってください。</p>
+  </header>
+
+  <main id="view"></main>
+
+  <footer class="page-foot">
+    学習用の教材です。実際の投資成果を保証しません。<br>
+    <a href="index.html">シミュレーター →</a> ・ <a href="reference.html">投資用語帳 →</a>
+  </footer>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="terms.js"></script>
+<script src="sim.js"></script>
+<script src="lessons.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var KEY = "investmentSimulatorCourse";
+  var L = INVEST_LESSONS;
+  var N = L.length;
+  var TAB_LABEL = { compound: "複利と長期", dca: "積立と一括", diversify: "分散投資", timing: "売買ルール" };
+  var KEYS = ["A", "B", "C", "D"];
+  var svgNS = "http://www.w3.org/2000/svg";
+  var MAN = 10000;
+
+  var CHECKS = [
+    { id: "fund", text: "生活防衛資金を、預金で別に取ってある" },
+    { id: "spare", text: "投資に回すのは、当面使う予定のないお金だけにする" },
+    { id: "drop", text: "何%くらい下がっても売らずにいられるか、考えた" },
+    { id: "long", text: "10年以上など、長く続けるつもりでいる" },
+    { id: "know", text: "買うもののしくみ(何に投資しているか)と手数料を説明できる" },
+    { id: "scam", text: "「必ずもうかる」話は詐欺を疑う" },
+    { id: "noloan", text: "借金をしてまで投資はしない" },
+    { id: "official", text: "NISAなど制度の最新情報を、公式サイトで確かめる" }
+  ];
+
+  var TERM_BY_ID = {};
+  INVEST_TERMS.forEach(function (t) { TERM_BY_ID[t.id] = t; });
+
+  // ---------- 保存 ----------
+  // { done: [id…], last: 1〜10(0 = まだ), checks: [id…] }
+  function uniqKnown(arr, known) {
+    if (!Array.isArray(arr)) return [];
+    var out = [];
+    arr.forEach(function (v) { if (known.indexOf(v) >= 0 && out.indexOf(v) < 0) out.push(v); });
+    return out;
+  }
+  function sanitize(raw) {
+    raw = raw && typeof raw === "object" ? raw : {};
+    var last = raw.last;
+    return {
+      done: uniqKnown(raw.done, L.map(function (l) { return l.id; })),
+      last: typeof last === "number" && last % 1 === 0 && last >= 1 && last <= N ? last : 0,
+      checks: uniqKnown(raw.checks, CHECKS.map(function (c) { return c.id; }))
+    };
+  }
+  var state = sanitize(Store.load(KEY, null));
+  function save() { Store.save(KEY, state); }
+  function isDone(id) { return state.done.indexOf(id) >= 0; }
+  function setDone(id, on) {
+    var i = state.done.indexOf(id);
+    if (on && i < 0) state.done.push(id);
+    if (!on && i >= 0) state.done.splice(i, 1);
+    save();
+  }
+  function doneCount() { return state.done.length; }
+  // 続きから読むレッスン: last から先の最初の未読。なければ最初の未読
+  function resumeLesson() {
+    var from = state.last || 1, k;
+    for (k = from - 1; k < N; k++) if (!isDone(L[k].id)) return L[k];
+    for (k = 0; k < N; k++) if (!isDone(L[k].id)) return L[k];
+    return null;
+  }
+
+  // ---------- 小さな道具 ----------
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function html(tag, cls, h) { var e = el(tag, cls); e.innerHTML = h; return e; }
+  function link(href, cls, text) { var a = el("a", cls, text); a.href = href; return a; }
+
+  function roundTo(v, d) { var f = Math.pow(10, d); return Math.round(v * f) / f; }
+  // 1万円以上は「約◯◯万円」(小数 d 桁)、それ未満は「◯,◯◯◯円」。ちょうどの値なら「約」をつけない
+  function fmtMan(yen, d) {
+    if (d === undefined) d = 1;
+    var a = Math.abs(yen), sign = yen < 0 ? "−" : "";
+    if (a < 0.5) return "0円";
+    if (a < MAN) {
+      var r = Math.round(a);
+      return sign + (Math.abs(r - a) < 0.01 ? "" : "約") + r.toLocaleString("ja-JP") + "円";
+    }
+    var v = roundTo(a / MAN, d);
+    var exact = Math.abs(v * MAN - a) < 1;
+    var dd = exact && v % 1 === 0 ? 0 : d;
+    return sign + (exact ? "" : "約") + v.toLocaleString("ja-JP", { minimumFractionDigits: dd, maximumFractionDigits: dd }) + "万円";
+  }
+  function fmtYen(v) { return Math.round(v).toLocaleString("ja-JP") + "円"; }
+  // 割合(0.24 → +24%)。1%未満は小数1桁
+  function fmtPct(x, signed) {
+    var p = x * 100, a = Math.abs(p);
+    var s = (a < 1 && a >= 0.05 ? a.toFixed(1) : String(Math.round(a))) + "%";
+    if (s === "0%" || s === "0.0%") return "0%";
+    if (x < 0) return "−" + s;
+    return (signed ? "+" : "") + s;
+  }
+  function statBox(label, num, sub, cls) {
+    return '<div class="stat-box"><div class="stat-label">' + label + '</div><div class="stat-num ' + (cls || "") + '">' + num + "</div>" +
+      (sub ? '<div class="stat-sub">' + sub + "</div>" : "") + "</div>";
+  }
+  function legend(items) {
+    var ul = el("ul", "legend");
+    ul.innerHTML = items.map(function (it) {
+      return '<li><span class="sw ' + (it.kind || "") + " " + it.c + '"></span>' + it.label + "</li>";
+    }).join("");
+    return ul;
+  }
+  // チップの選択。opts: [{ v, label }]
+  function chipGroup(label, opts, cur, onChange) {
+    var wrap = el("div", "ctl");
+    wrap.appendChild(el("div", "ctl-label", label));
+    var box = el("div", "chips");
+    box.setAttribute("role", "group");
+    box.setAttribute("aria-label", label);
+    opts.forEach(function (o) {
+      var b = el("button", "chip-btn", o.label);
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(o.v === cur));
+      b.addEventListener("click", function () {
+        box.querySelectorAll(".chip-btn").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+        onChange(o.v);
+      });
+      box.appendChild(b);
+    });
+    wrap.appendChild(box);
+    return wrap;
+  }
+  var uid = 0;
+  function rangeField(label, min, max, step, cur, fmt, onInput) {
+    var id = "rng-" + (++uid);
+    var f = el("div", "field stack");
+    var top = el("div", "field-top");
+    var lb = el("label", "", label); lb.htmlFor = id;
+    var val = el("span", "val", fmt(cur));
+    top.appendChild(lb); top.appendChild(val);
+    var inp = el("input");
+    inp.type = "range"; inp.id = id; inp.min = min; inp.max = max; inp.step = step; inp.value = cur;
+    inp.addEventListener("input", function () { var v = parseFloat(inp.value); val.textContent = fmt(v); onInput(v); });
+    f.appendChild(top); f.appendChild(inp);
+    return f;
+  }
+
+  // ---------- 線グラフ(index.html と同じ描き方: viewBox なし、幅は親の clientWidth) ----------
+  function svgEl(tag, attrs) {
+    var e = document.createElementNS(svgNS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function textWidth(str) {
+    var w = 0;
+    for (var i = 0; i < str.length; i++) w += str.charCodeAt(i) > 0x2000 ? 11 : 6.7;
+    return w;
+  }
+  function niceStep(raw) {
+    var p = Math.pow(10, Math.floor(Math.log10(raw)));
+    var f = raw / p;
+    var n = f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10;
+    return n * p;
+  }
+  function fmtAxis(v) {
+    var a = Math.abs(v), s;
+    if (a >= MAN) {
+      var n = a / MAN;
+      s = (Math.abs(n - Math.round(n)) < 1e-9 ? Math.round(n).toLocaleString("ja-JP") : String(Number(n.toFixed(2)))) + "万";
+    } else s = Math.round(a).toLocaleString("ja-JP");
+    return (v < 0 ? "−" : "") + s;
+  }
+  var ro = typeof ResizeObserver === "function" ? new ResizeObserver(function (entries) {
+    entries.forEach(function (en) { drawChart(en.target); });
+  }) : null;
+
+  // cfg: { xMax, xTicks: [{ v, label }], series: [{ ys, cls, dash, w }], zeroBase, aria }
+  function lineChart(wrap, cfg) {
+    wrap._cfg = cfg;
+    drawChart(wrap);
+    if (ro && !wrap._observed) { ro.observe(wrap); wrap._observed = true; }
+  }
+  function drawChart(wrap) {
+    var cfg = wrap._cfg;
+    if (!cfg) return;
+    var W = wrap.clientWidth, H = wrap.clientHeight;
+    if (!W || !H) return;
+    var l = 46, r = 10, tp = 10, b = 24;
+    var ph = H - tp - b;
+    var lo = Infinity, hi = -Infinity;
+    cfg.series.forEach(function (s) { s.ys.forEach(function (v) { if (isFinite(v)) { lo = Math.min(lo, v); hi = Math.max(hi, v); } }); });
+    if (cfg.zeroBase) lo = Math.min(0, lo);
+    if (!isFinite(lo)) { lo = 0; hi = 1; }
+    if (hi - lo < 1e-9) { hi = lo + Math.max(1, Math.abs(lo) * 0.1); if (!cfg.zeroBase) lo -= Math.max(1, Math.abs(lo) * 0.1); }
+    var step = niceStep((hi - lo) / 4);
+    var y0 = Math.floor(lo / step) * step, y1 = Math.ceil(hi / step) * step;
+    var ticks = [];
+    for (var tv = y0; tv <= y1 + step * 1e-6; tv += step) ticks.push(Math.abs(tv) < step * 1e-6 ? 0 : tv);
+    var labelW = 0;
+    ticks.forEach(function (t) { labelW = Math.max(labelW, textWidth(fmtAxis(t))); });
+    l = Math.max(40, Math.ceil(labelW) + 10);
+    var pw = W - l - r;
+    function X(t) { return l + (t / cfg.xMax) * pw; }
+    function Y(v) { return tp + (1 - (v - y0) / (y1 - y0)) * ph; }
+
+    var svg = svgEl("svg", { width: W, height: H, role: "img", "aria-label": cfg.aria || "" });
+    ticks.forEach(function (v) {
+      var yy = Y(v);
+      svg.appendChild(svgEl("line", { "class": "grid-line", x1: l, x2: W - r, y1: yy, y2: yy }));
+      var tx = svgEl("text", { x: l - 6, y: yy + 4, "text-anchor": "end" });
+      tx.textContent = fmtAxis(v);
+      svg.appendChild(tx);
+    });
+    cfg.xTicks.forEach(function (tk) {
+      var xx = X(tk.v);
+      var anchor = tk.v === 0 ? "start" : (tk.v === cfg.xMax ? "end" : "middle");
+      var t2 = svgEl("text", { x: xx, y: H - 6, "text-anchor": anchor });
+      t2.textContent = tk.label;
+      svg.appendChild(t2);
+      svg.appendChild(svgEl("line", { "class": "grid-line", x1: xx, x2: xx, y1: tp + ph, y2: tp + ph + 4 }));
+    });
+    cfg.series.forEach(function (s) {
+      var d = "";
+      s.ys.forEach(function (v, i) { d += (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1); });
+      if (d) svg.appendChild(svgEl("path", { "class": "ln " + s.cls + (s.dash ? " dash" : ""), d: d, "stroke-width": s.w || 2 }));
+      if (s.endDot && s.ys.length) {
+        var li = s.ys.length - 1;
+        svg.appendChild(svgEl("circle", { "class": s.endDot, cx: X(li), cy: Y(s.ys[li]), r: 3.5 }));
+      }
+    });
+    wrap.replaceChildren(svg);
+  }
+  function yearTicks(Y) {
+    var st = Y <= 5 ? 1 : Y <= 12 ? 2 : Y <= 25 ? 5 : 10;
+    var out = [];
+    for (var y = 0; y <= Y; y += st) out.push({ v: y, label: y + "年" });
+    if (out[out.length - 1].v !== Y) {
+      // 最後の目盛りが近すぎるときは、ひとつ前を消す
+      if (Y - out[out.length - 1].v < st * 0.6 && out.length > 1) out.pop();
+      out.push({ v: Y, label: Y + "年" });
+    }
+    return out;
+  }
+
+  // 範囲バーの位置(%)
+  function pos(v, lo, hi) { return (Math.max(0, Math.min(1, (v - lo) / (hi - lo))) * 100).toFixed(2) + "%"; }
+  function rangeAxis(lo, hi, marks) {
+    var ax = el("div", "range-axis");
+    ax.setAttribute("aria-hidden", "true");
+    marks.forEach(function (m) {
+      var s = el("span", "", fmtPct(m, m > 0));
+      s.style.left = pos(m, lo, hi);
+      ax.appendChild(s);
+    });
+    return ax;
+  }
+
+  // ---------- ミニ体験 ----------
+  var MINI = {};
+
+  // 1. インフレ
+  MINI.inflation = {
+    title: "100万円を預金に置いておくと?",
+    render: function (box) {
+      var s = { infl: 0.02, rate: 0.002, years: 20 };
+      var ctl = el("div", "mini-controls");
+      ctl.appendChild(chipGroup("物価の上がり方", [0, 0.01, 0.02, 0.03].map(function (v) { return { v: v, label: "年" + roundTo(v * 100, 3) + "%" }; }), s.infl, function (v) { s.infl = v; draw(); }));
+      ctl.appendChild(chipGroup("預金の金利(例)", [0.00001, 0.002, 0.01].map(function (v) { return { v: v, label: "年" + roundTo(v * 100, 3) + "%" }; }), s.rate, function (v) { s.rate = v; draw(); }));
+      ctl.appendChild(chipGroup("年数", [10, 20, 30].map(function (v) { return { v: v, label: v + "年" }; }), s.years, function (v) { s.years = v; draw(); }));
+      box.appendChild(ctl);
+      var out = el("div", "mini-out");
+      var stats = el("div", "stat-grid");
+      var chart = el("div", "chart-wrap");
+      out.appendChild(stats); out.appendChild(chart);
+      out.appendChild(legend([{ c: "c5", kind: "dashed", label: "通帳の金額" }, { c: "c1", label: "今の値段で買える量に直すと" }]));
+      box.appendChild(out);
+      box.appendChild(el("p", "hint mini-note", "※金利や物価の数字は例です。実際は時期や銀行によって変わります。"));
+      function draw() {
+        var book = [], real = [];
+        for (var y = 0; y <= s.years; y++) {
+          var b = 1e6 * Math.pow(1 + s.rate, y);
+          book.push(b); real.push(b / Math.pow(1 + s.infl, y));
+        }
+        var Y = s.years;
+        var rice = 100 * Math.pow(1 + s.infl, Y);
+        var rv = real[Y];
+        stats.innerHTML =
+          statBox("通帳の金額", fmtMan(book[Y]), Y + "年後") +
+          statBox("今の値段で買える量に直すと", fmtMan(rv) + "分", "", rv < 1e6 - 0.5 ? "neg" : "") +
+          statBox("100円のおにぎりは", fmtMan(rice), Y + "年後の値段");
+        lineChart(chart, {
+          xMax: Y, xTicks: yearTicks(Y), zeroBase: false,
+          series: [{ ys: book, cls: "s5", dash: true }, { ys: real, cls: "s1" }],
+          aria: "通帳の金額と、今の値段で買える量に直した金額の推移"
+        });
+      }
+      draw();
+    }
+  };
+
+  // 2. 1社か詰め合わせか
+  MINI.basket = {
+    title: "1社だけ? 100社の詰め合わせ?",
+    render: function (box) {
+      var CASES = {
+        half: { label: "株価が半分に", one: 500000, many: 995000, cls: "hit-bad" },
+        zero: { label: "つぶれて0円に", one: 0, many: 990000, cls: "hit-bad" },
+        double: { label: "株価が2倍に", one: 2000000, many: 1010000, cls: "hit-good" }
+      };
+      var cur = "half";
+      var ctl = el("div", "mini-controls");
+      ctl.appendChild(chipGroup("ある1社が…", Object.keys(CASES).map(function (k) { return { v: k, label: CASES[k].label }; }), cur, function (v) { cur = v; draw(); }));
+      box.appendChild(ctl);
+      var out = el("div", "mini-out");
+      var grid = el("div", "basket");
+      grid.setAttribute("role", "img");
+      for (var i = 0; i < 100; i++) grid.appendChild(el("span"));
+      out.appendChild(grid);
+      out.appendChild(el("p", "hint", "1マス = 1社。左上の1社に出来事が起きたとします。"));
+      var stats = el("div", "stat-grid cols-2");
+      out.appendChild(stats);
+      out.appendChild(el("p", "mini-line", "詰め合わせなら、1社の出来事の影響は小さくなる。そのかわり、大当たりの効果も小さくなる。"));
+      box.appendChild(out);
+      function draw() {
+        var c = CASES[cur];
+        grid.firstChild.className = c.cls;
+        grid.setAttribute("aria-label", "100社のうち1社が「" + c.label + "」");
+        stats.innerHTML =
+          statBox("1社だけ持っていたら", fmtMan(c.one), "100万円を1社に", c.one < 1e6 ? "neg" : "pos") +
+          statBox("100社に1万円ずつなら", fmtMan(c.many), "100万円を100社に", c.many < 1e6 ? "neg" : "pos");
+      }
+      draw();
+    }
+  };
+
+  // 3. 1年後のブレ
+  var SPREAD_ROWS = [
+    { key: "cash", name: "預金", desc: "年0.2%、ブレなし", c: "c5" },
+    { key: "bond", name: "債券", desc: "平均2%・ブレ5%", c: "c3" },
+    { key: "stock", name: "株式", desc: "平均6%・ブレ18%", c: "c2" }
+  ];
+  var MC_NO = 7; // 1000回の目安と、期間のミニ体験で使う相場番号(固定)
+  function oneYear(r, sigma, seed) {
+    var p = Sim.genPrices({ months: 12, r: r, sigma: sigma, seed: seed });
+    return p[12] / p[0] - 1;
+  }
+  function spreadTrials(no, n) {
+    var a = Sim.DEFAULT_ASSETS, res = { cash: [], bond: [], stock: [] };
+    for (var i = 0; i < n; i++) {
+      res.cash.push(Math.pow(1 + a.cashR, 1) - 1);
+      // 株と債券は別の乱数列(同じ番号だと同じ向きに動いてしまうため)
+      res.bond.push(oneYear(a.bondR, a.bondS, Sim.trialSeed(no, 500 + i)));
+      res.stock.push(oneYear(a.stockR, a.stockS, Sim.trialSeed(no, i)));
+    }
+    return res;
+  }
+  var spread1000 = null;
+  MINI.spread = {
+    title: "1年後、どうなった?",
+    render: function (box) {
+      var LO = -0.5, HI = 0.8;
+      var no = 1;
+      var ctl = el("div", "mini-controls");
+      var btn = el("button", "btn-primary", "1年を10回ためす");
+      btn.type = "button";
+      ctl.appendChild(btn);
+      box.appendChild(ctl);
+      var out = el("div", "mini-out");
+      var list = el("div", "range-list");
+      out.appendChild(list);
+      out.appendChild(rangeAxis(LO, HI, [LO, 0, 0.4, HI]));
+      var mc = el("p", "extra-line");
+      out.appendChild(mc);
+      box.appendChild(out);
+      box.appendChild(el("p", "hint mini-note", "※架空の設定です。点は1回分の1年後の成績(増えた・減った割合)。−50%〜+80%からはみ出した点は端に寄せています。"));
+
+      if (!spread1000) {
+        var big = spreadTrials(MC_NO, 1000);
+        spread1000 = { bond: Sim.summarize(big.bond), stock: Sim.summarize(big.stock) };
+      }
+      mc.textContent = "10回に8回はこの範囲(1000回ためした目安): 債券 約" + fmtPct(spread1000.bond.p10, true) + "〜" + fmtPct(spread1000.bond.p90, true) +
+        "、株式 約" + fmtPct(spread1000.stock.p10, true) + "〜" + fmtPct(spread1000.stock.p90, true);
+
+      function draw() {
+        var res = spreadTrials(no, 10);
+        list.innerHTML = "";
+        SPREAD_ROWS.forEach(function (row) {
+          var vals = res[row.key];
+          var wrap = el("div", "range-row");
+          var head = el("div", "range-head");
+          head.appendChild(html("span", "", "<b>" + row.name + "</b> <span class=\"c-faint\">(" + row.desc + ")</span>"));
+          wrap.appendChild(head);
+          var track = el("div", "range-track " + row.c);
+          track.setAttribute("role", "img");
+          track.setAttribute("aria-label", row.name + "の10回の結果: " + vals.map(function (v) { return fmtPct(v, true); }).join("、"));
+          var z = el("span", "range-zero"); z.style.left = pos(0, LO, HI); track.appendChild(z);
+          vals.forEach(function (v) {
+            var d = el("span", "range-dot pt"); d.style.left = pos(v, LO, HI); track.appendChild(d);
+          });
+          wrap.appendChild(track);
+          var down = vals.filter(function (v) { return v < 0; }).length;
+          var best = Math.max.apply(null, vals), worst = Math.min.apply(null, vals);
+          wrap.appendChild(el("div", "range-sub", "減った回: " + down + "回 / いちばん良い " + fmtPct(best, true) + " / いちばん悪い " + fmtPct(worst, true)));
+          list.appendChild(wrap);
+        });
+      }
+      btn.addEventListener("click", function () {
+        var n;
+        do { n = Math.floor(Math.random() * 99999) + 1; } while (n === no || n === MC_NO);
+        no = n;
+        draw();
+      });
+      draw();
+    }
+  };
+
+  // 5. 期間とブレ
+  var HORIZONS = [1, 5, 10, 20, 30];
+  var horizonCache = null;
+  function calcHorizon() {
+    var o = { initial: 1e6, monthly: 0, r: 0.06, sigma: 0.18, years: 30, fee: 0 };
+    var finals = HORIZONS.map(function () { return []; });
+    for (var i = 0; i < 1000; i++) {
+      var path = Sim.compoundPath(o, Sim.trialSeed(MC_NO, i));
+      HORIZONS.forEach(function (y, k) { finals[k].push(path[y]); });
+    }
+    return HORIZONS.map(function (y, k) {
+      var s = Sim.summarize(finals[k]);
+      function an(v) { return Math.pow(v / o.initial, 1 / y) - 1; }
+      return {
+        y: y, p10: an(s.p10), p50: an(s.p50), p90: an(s.p90),
+        loss: finals[k].filter(function (v) { return v < o.initial; }).length / finals[k].length
+      };
+    });
+  }
+  MINI.horizon = {
+    title: "期間で、結果のブレはどう変わる?",
+    render: function (box) {
+      var LO = -0.2, HI = 0.35;
+      box.appendChild(el("p", "mini-line", "100万円を最初に一度だけ投資(平均6%・ブレ18%、手数料なし)。1年・5年・10年・20年・30年で、それぞれ1000回ためします。"));
+      var out = el("div", "mini-out");
+      var status = el("p", "readout", "計算中…");
+      status.setAttribute("aria-live", "polite");
+      out.appendChild(status);
+      var list = el("div", "range-list");
+      out.appendChild(list);
+      box.appendChild(out);
+      box.appendChild(el("p", "hint mini-note", "※架空の設定(平均6%・ブレ18%)で1000回ためした結果です。バーは10回に8回がおさまる範囲、点は真ん中(中央値)。横軸は1年あたりの成績(−20%〜+35%)。毎年の上下があるぶん、真ん中は平均の6%より低めに出ます。"));
+      function draw(rows) {
+        status.hidden = true;
+        rows.forEach(function (r) {
+          var wrap = el("div", "range-row");
+          var head = el("div", "range-head");
+          head.appendChild(html("span", "", "<b>" + r.y + "年</b>"));
+          head.appendChild(el("span", "num", "元本割れ " + Math.round(r.loss * 100) + "%"));
+          wrap.appendChild(head);
+          var track = el("div", "range-track c1");
+          track.setAttribute("role", "img");
+          track.setAttribute("aria-label", r.y + "年: 1年あたり " + fmtPct(r.p10, true) + "〜" + fmtPct(r.p90, true) + "、元本割れ " + Math.round(r.loss * 100) + "%");
+          var z = el("span", "range-zero"); z.style.left = pos(0, LO, HI); track.appendChild(z);
+          var bar = el("span", "range-bar");
+          bar.style.left = pos(r.p10, LO, HI);
+          bar.style.width = "calc(" + pos(r.p90, LO, HI) + " - " + pos(r.p10, LO, HI) + ")";
+          track.appendChild(bar);
+          var dot = el("span", "range-dot"); dot.style.left = pos(r.p50, LO, HI); track.appendChild(dot);
+          wrap.appendChild(track);
+          wrap.appendChild(el("div", "range-sub", "1年あたり 約" + fmtPct(r.p10, true) + "〜" + fmtPct(r.p90, true)));
+          list.appendChild(wrap);
+        });
+        list.appendChild(rangeAxis(LO, HI, [LO, 0, 0.2, HI]));
+      }
+      if (horizonCache) { draw(horizonCache); return; }
+      setTimeout(function () {
+        horizonCache = calcHorizon();
+        if (box.isConnected) draw(horizonCache);
+      }, 30);
+    }
+  };
+
+  // 4. 複利と単利
+  MINI.compound = {
+    title: "100万円を複利と単利で比べる",
+    render: function (box) {
+      var s = { r: 5, years: 30 };
+      var ctl = el("div", "mini-controls");
+      ctl.appendChild(rangeField("年利", 1, 10, 0.5, s.r, function (v) { return v.toFixed(1) + "%"; }, function (v) { s.r = v; draw(); }));
+      ctl.appendChild(rangeField("年数", 1, 40, 1, s.years, function (v) { return v + "年"; }, function (v) { s.years = v; draw(); }));
+      box.appendChild(ctl);
+      var out = el("div", "mini-out");
+      var chart = el("div", "chart-wrap");
+      out.appendChild(chart);
+      out.appendChild(legend([{ c: "c1", label: "複利" }, { c: "c2", kind: "dashed", label: "単利" }, { c: "c5", kind: "dashed", label: "元本" }]));
+      var stats = el("div", "stat-grid");
+      out.appendChild(stats);
+      var extra = el("p", "extra-line");
+      out.appendChild(extra);
+      box.appendChild(out);
+      box.appendChild(el("p", "hint mini-note", "※毎年同じ割合で増える計算です(手数料・税金なし)。"));
+      function draw() {
+        var r = s.r / 100, Y = s.years, cp = [], sp = [], pr = [];
+        for (var y = 0; y <= Y; y++) {
+          cp.push(1e6 * Math.pow(1 + r, y));
+          sp.push(1e6 * (1 + r * y));
+          pr.push(1e6);
+        }
+        stats.innerHTML =
+          statBox("複利", fmtMan(cp[Y]), Y + "年後") +
+          statBox("単利", fmtMan(sp[Y]), Y + "年後") +
+          statBox("差", fmtMan(cp[Y] - sp[Y]), "複利 − 単利", "pos");
+        extra.textContent = "2倍になるまで: 72の法則で " + roundTo(72 / s.r, 1).toFixed(1) + "年、実際は 約" + (Math.log(2) / Math.log(1 + r)).toFixed(1) + "年";
+        lineChart(chart, {
+          xMax: Y, xTicks: yearTicks(Y), zeroBase: true,
+          series: [{ ys: pr, cls: "s5", dash: true, w: 1.5 }, { ys: sp, cls: "s2", dash: true }, { ys: cp, cls: "s1" }],
+          aria: "100万円を年" + s.r + "%で" + Y + "年増やしたときの、複利と単利の推移"
+        });
+      }
+      draw();
+    }
+  };
+
+  // 6. 4か月の積立
+  MINI.dca4 = {
+    title: "4か月、毎月1万円ずつ買ってみる",
+    render: function (box) {
+      var CASES = {
+        vback: { label: "下がって戻る", prices: [10000, 8000, 5000, 10000] },
+        up: { label: "上がり続ける", prices: [10000, 12000, 14000, 16000] },
+        down: { label: "下がり続ける", prices: [10000, 8000, 6000, 5000] }
+      };
+      var cur = "vback";
+      var ctl = el("div", "mini-controls");
+      ctl.appendChild(chipGroup("値段の動き", Object.keys(CASES).map(function (k) { return { v: k, label: CASES[k].label }; }), cur, function (v) { cur = v; draw(); }));
+      box.appendChild(ctl);
+      var out = el("div", "mini-out");
+      var tbl = el("table", "tbl");
+      out.appendChild(tbl);
+      var stats = el("div", "stat-grid");
+      out.appendChild(stats);
+      box.appendChild(out);
+      box.appendChild(el("p", "hint mini-note", "※わかりやすくするため、1口=その月の値段として計算しています。金額は4か月目の値段で評価。積立は毎月1万円、一括は最初に4万円。"));
+      function draw() {
+        var p = CASES[cur].prices;
+        // sim.js の simDca: 時点4の値段 = 4か月目の値段として評価
+        var res = Sim.simDca(40000, 4, p.concat([p[3]]));
+        var rows = "<thead><tr><th>月</th><th>値段</th><th>積立で買えた量</th></tr></thead><tbody>";
+        var total = 0;
+        p.forEach(function (px, i) {
+          var u = 10000 / px;
+          total += u;
+          rows += "<tr><td class=\"txt\">" + (i + 1) + "か月目</td><td>" + fmtYen(px) + "</td><td>" + u.toFixed(2) + "口</td></tr>";
+        });
+        rows += "<tr class=\"total\"><td class=\"txt\">合計</td><td>4万円分</td><td>" + total.toFixed(2) + "口</td></tr></tbody>";
+        tbl.innerHTML = rows;
+        var d = res.dcaFinal, l = res.lumpFinal;
+        var badge = ' <span class="badge">多い</span>';
+        stats.innerHTML =
+          statBox("積立の金額", fmtYen(d) + (d > l + 0.5 ? badge : ""), "毎月1万円 × 4回", d > l + 0.5 ? "pos" : "") +
+          statBox("一括の金額", fmtYen(l) + (l > d + 0.5 ? badge : ""), "最初に4万円", l > d + 0.5 ? "pos" : "") +
+          statBox("平均の買値", fmtYen(res.avgCost), "値段の平均 " + fmtYen(res.avgPrice));
+      }
+      draw();
+    }
+  };
+
+  // 7. アイス屋と傘屋
+  MINI.weather = {
+    title: "アイス屋と傘屋",
+    render: function (box) {
+      var SUN = { ice: 0.2, umb: -0.1 }, RAIN = { ice: -0.1, umb: 0.2 };
+      var days = [true, false, true, true, false]; // 最初の表示: 晴・雨・晴・晴・雨
+      box.appendChild(html("div", "rule-box",
+        "<b>晴れの年</b> … アイス屋 <span class=\"pos\">+20%</span> / 傘屋 <span class=\"neg\">−10%</span><br>" +
+        "<b>雨の年</b> … アイス屋 <span class=\"neg\">−10%</span> / 傘屋 <span class=\"pos\">+20%</span><br>100万円スタート。「半分ずつ」は毎年はじめに半分ずつへ戻します。"));
+      var ctl = el("div", "mini-controls");
+      ctl.style.marginTop = "12px";
+      var btn = el("button", "btn-primary", "5年分の天気を決める");
+      btn.type = "button";
+      ctl.appendChild(btn);
+      box.appendChild(ctl);
+      var out = el("div", "mini-out");
+      var tbl = el("table", "tbl");
+      tbl.setAttribute("aria-live", "polite");
+      out.appendChild(tbl);
+      out.appendChild(el("p", "mini-line", "アイス屋だけだと、5年とも晴れなら" + fmtMan(1e6 * Math.pow(1.2, 5)) + "、5年とも雨なら" + fmtMan(1e6 * Math.pow(0.9, 5)) + "。半分ずつは、天気に関係なくいつも" + fmtMan(1e6 * Math.pow(1.05, 5)) + "。"));
+      box.appendChild(out);
+      box.appendChild(el("p", "hint mini-note", "※わかりやすくした架空の例です。実際の株と債券は、こんなにきれいに逆には動きません。"));
+      function man(v) { return (v / MAN).toFixed(1); }
+      function draw() {
+        var ice = 1e6, umb = 1e6, half = 1e6;
+        var rows = "<thead><tr><th>年</th><th>天気</th><th>アイス屋だけ</th><th>傘屋だけ</th><th>半分ずつ</th></tr></thead><tbody>";
+        days.forEach(function (sun, i) {
+          var w = sun ? SUN : RAIN;
+          ice *= 1 + w.ice; umb *= 1 + w.umb;
+          half *= 1 + (w.ice + w.umb) / 2;
+          rows += "<tr><td class=\"txt\">" + (i + 1) + "年目</td><td class=\"txt\">" + (sun ? "☀ 晴れ" : "☂ 雨") + "</td><td>" + man(ice) + "</td><td>" + man(umb) + "</td><td>" + man(half) + "</td></tr>";
+        });
+        rows += "</tbody>";
+        tbl.innerHTML = rows;
+        var cap = el("caption", "hint");
+        cap.textContent = "その年の終わりの金額(万円)";
+        cap.style.captionSide = "bottom";
+        cap.style.textAlign = "left";
+        tbl.appendChild(cap);
+      }
+      btn.addEventListener("click", function () {
+        days = days.map(function () { return Math.random() < 0.5; });
+        draw();
+      });
+      draw();
+    }
+  };
+
+  // 8. 次の月を当てる
+  MINI.guess = {
+    title: "次の月、上がる? 下がる?",
+    render: function (box) {
+      var MONTHS = 34, SHOW = 24, Q = MONTHS - SHOW;
+      var g = { seed: 11, prices: null, shown: SHOW, right: 0 };
+      box.appendChild(el("p", "mini-line", "架空の相場(平均6%・ブレ18%)の24か月分を見て、次の月に上がるか下がるかを予想します。全部で10問。"));
+      var out = el("div", "mini-out");
+      var chart = el("div", "chart-wrap");
+      out.appendChild(chart);
+      var readout = el("p", "readout");
+      readout.setAttribute("aria-live", "polite");
+      out.appendChild(readout);
+      var btns = el("div", "btn-row");
+      var up = el("button", "btn-secondary", "上がる ↑"); up.type = "button";
+      var dn = el("button", "btn-secondary", "下がる ↓"); dn.type = "button";
+      btns.appendChild(up); btns.appendChild(dn);
+      out.appendChild(btns);
+      var result = el("div", "mini-out");
+      out.appendChild(result);
+      var again = el("button", "btn-small", "別の相場でもう一度"); again.type = "button";
+      again.style.alignSelf = "flex-start";
+      out.appendChild(again);
+      box.appendChild(out);
+      box.appendChild(el("p", "hint mini-note", "※架空の相場です。横軸は月(0〜34か月)。"));
+      function reset(seed) {
+        g.seed = seed;
+        g.prices = Sim.genPrices({ months: MONTHS, r: 0.06, sigma: 0.18, seed: seed });
+        g.shown = SHOW; g.right = 0;
+        readout.textContent = "24か月目まで見えています。25か月目は上がる? 下がる?";
+        result.innerHTML = "";
+        up.disabled = dn.disabled = false;
+        draw();
+      }
+      function draw() {
+        lineChart(chart, {
+          xMax: MONTHS, xTicks: [{ v: 0, label: "0" }, { v: 12, label: "12" }, { v: 24, label: "24" }, { v: MONTHS, label: "34か月" }],
+          zeroBase: false,
+          series: [{ ys: g.prices.slice(0, g.shown + 1), cls: "s1", endDot: "f1" }],
+          aria: "架空の相場の値段。" + g.shown + "か月目まで表示"
+        });
+      }
+      function answer(isUp) {
+        if (g.shown >= MONTHS) return;
+        var went = g.prices[g.shown + 1] > g.prices[g.shown];
+        var ok = went === isUp;
+        if (ok) g.right++;
+        g.shown++;
+        var qn = g.shown - SHOW;
+        readout.textContent = qn + "問目: " + (went ? "上がった" : "下がった") + " → " + (ok ? "○" : "×") +
+          (qn < Q ? "(次は" + (g.shown + 1) + "か月目)" : "");
+        draw();
+        if (g.shown >= MONTHS) {
+          up.disabled = dn.disabled = true;
+          result.innerHTML = '<div class="stat-grid cols-2">' + statBox("結果", Q + "問中 " + g.right + "問 正解") + "</div>" +
+            '<p class="extra-line">予想が当たるのは、だいたい半分くらい。この架空の相場は、過去の動きから先が読めないように作ってあります。</p>';
+        }
+      }
+      up.addEventListener("click", function () { answer(true); });
+      dn.addEventListener("click", function () { answer(false); });
+      again.addEventListener("click", function () {
+        var n;
+        do { n = Math.floor(Math.random() * 99999) + 1; } while (n === g.seed);
+        reset(n);
+      });
+      reset(g.seed);
+    }
+  };
+
+  // 9. 手数料と税金
+  MINI.cost = {
+    title: "手数料と税金で、どれくらい差がつく?",
+    render: function (box) {
+      var s = { monthly: 3, years: 20 };
+      var FEES = [0.001, 0.01, 0.02];
+      var ctl = el("div", "mini-controls");
+      ctl.appendChild(chipGroup("毎月の積立", [1, 3, 5].map(function (v) { return { v: v, label: v + "万円" }; }), s.monthly, function (v) { s.monthly = v; draw(); }));
+      ctl.appendChild(chipGroup("期間", [10, 20, 30].map(function (v) { return { v: v, label: v + "年" }; }), s.years, function (v) { s.years = v; draw(); }));
+      ctl.appendChild(el("p", "hint", "年率5%で増える計算(固定)。"));
+      box.appendChild(ctl);
+      var out = el("div", "mini-out");
+      var paid = el("p", "mini-line");
+      out.appendChild(paid);
+      var tbl = el("table", "tbl");
+      out.appendChild(tbl);
+      var extra = el("p", "extra-line");
+      out.appendChild(extra);
+      box.appendChild(out);
+      box.appendChild(el("p", "hint mini-note", "※毎年5%ずつ増える簡単な計算です。実際の成績は上下します。"));
+      function draw() {
+        // シミュレーターの「複利と長期」と同じ計算(値動きなし)
+        var res = FEES.map(function (f) {
+          return Sim.compoundDet({ initial: 0, monthly: s.monthly * MAN, r: 0.05, years: s.years, fee: f });
+        });
+        paid.innerHTML = "入れたお金 <b class=\"num\">" + fmtMan(res[0].principalFinal, 0) + "</b>";
+        var rows = "<thead><tr><th>手数料(年)</th><th>最後の金額</th><th>0.1%との差</th></tr></thead><tbody>";
+        res.forEach(function (r, i) {
+          var diff = r.final - res[0].final;
+          rows += "<tr><td class=\"txt\">" + roundTo(FEES[i] * 100, 1) + "%</td><td>" + fmtMan(r.final, 0) + "</td><td" + (i ? " class=\"neg\"" : "") + ">" + (i ? fmtMan(diff, 0) : "—") + "</td></tr>";
+        });
+        tbl.innerHTML = rows + "</tbody>";
+        var tx = Sim.afterTax(res[0].final, res[0].principalFinal);
+        extra.textContent = "手数料0.1%のとき、課税口座で最後に売ると税金 " + fmtMan(tx.tax, 0) + " → 手取り " + fmtMan(tx.net, 0) + "。NISAなら税金0円。";
+      }
+      draw();
+    }
+  };
+
+  // 10. チェックリスト
+  MINI.checklist = {
+    title: "始める前のチェック",
+    render: function (box) {
+      var out = el("div", "mini-out");
+      var list = el("div", "check-list");
+      var boxes = [];
+      CHECKS.forEach(function (c) {
+        var f = el("div", "field");
+        var lb = el("label", "check-label");
+        var cb = el("input");
+        cb.type = "checkbox";
+        cb.checked = state.checks.indexOf(c.id) >= 0;
+        cb.addEventListener("change", function () {
+          var i = state.checks.indexOf(c.id);
+          if (cb.checked && i < 0) state.checks.push(c.id);
+          if (!cb.checked && i >= 0) state.checks.splice(i, 1);
+          save();
+          update();
+        });
+        boxes.push(cb);
+        lb.appendChild(cb);
+        lb.appendChild(el("span", "", c.text));
+        f.appendChild(lb);
+        list.appendChild(f);
+      });
+      out.appendChild(list);
+      var foot = el("div", "check-foot");
+      var count = el("span", "progress-text");
+      count.setAttribute("aria-live", "polite");
+      var clear = el("button", "btn-small", "チェックを外す"); clear.type = "button";
+      foot.appendChild(count); foot.appendChild(clear);
+      out.appendChild(foot);
+      var ok = el("p", "auto-point good", "準備がととのいました。あせらず、自分のペースで。");
+      out.appendChild(ok);
+      box.appendChild(out);
+      box.appendChild(el("p", "hint mini-note", "チェックは、このブラウザにだけ保存されます。"));
+      function update() {
+        count.textContent = state.checks.length + " / " + CHECKS.length;
+        ok.hidden = state.checks.length < CHECKS.length;
+      }
+      clear.addEventListener("click", function () {
+        state.checks = [];
+        save();
+        boxes.forEach(function (cb) { cb.checked = false; });
+        update();
+      });
+      update();
+    }
+  };
+
+  // ---------- 図 ----------
+  var FIGURES = {
+    kinds: function () {
+      var KINDS = [
+        { name: "株式", how: "会社の持ち主の一部になる", get: "値上がり・配当", move: "大きい" },
+        { name: "債券", how: "国や会社にお金を貸す", get: "利息、満期に返ってくるお金", move: "小さめ" },
+        { name: "投資信託", how: "みんなのお金をまとめて、専門家が株や債券に投資", get: "中身しだい", move: "中身しだい" }
+      ];
+      var g = el("div", "kind-grid figure");
+      KINDS.forEach(function (k) {
+        var c = el("div", "kind-card");
+        c.appendChild(el("h4", "", k.name));
+        var dl = el("dl");
+        [["どうする", k.how], ["もらえるもの", k.get]].forEach(function (p) {
+          var w = el("div");
+          w.appendChild(el("dt", "", p[0])); w.appendChild(el("dd", "", p[1]));
+          dl.appendChild(w);
+        });
+        var w2 = el("div");
+        w2.appendChild(el("dt", "", "値動き"));
+        var dd = el("dd"); dd.appendChild(el("span", "chip", k.move));
+        w2.appendChild(dd);
+        dl.appendChild(w2);
+        c.appendChild(dl);
+        g.appendChild(c);
+      });
+      return g;
+    }
+  };
+
+  // ---------- 画面 ----------
+  var app = document.getElementById("app");
+  var hero = document.getElementById("hero");
+  var view = document.getElementById("view");
+  var mqPC = window.matchMedia("(min-width: 820px)");
+
+  function lessonHref(no) { return "#lesson-" + no; }
+  function progressEl() {
+    var p = el("div", "progress");
+    var track = el("div", "progress-track");
+    track.setAttribute("aria-hidden", "true");
+    var bar = el("div", "progress-bar");
+    bar.style.width = (doneCount() / N * 100) + "%";
+    track.appendChild(bar);
+    p.appendChild(track);
+    p.appendChild(el("span", "progress-text", doneCount() + " / " + N + " 読了"));
+    return p;
+  }
+
+  function renderTop() {
+    var v = el("div", "view-top");
+
+    var intro = el("section", "card course-intro");
+    intro.appendChild(el("h2", "", "このコースについて"));
+    var ul = el("ul");
+    ["投資をまったく知らない人向け。1レッスン5分ほど、全10レッスン(約50分)",
+      "順番に読むのがおすすめ。各レッスンに、小さな体験・ここだけ覚える・確認クイズがあります",
+      "読んだしるしは、このブラウザにだけ保存されます"].forEach(function (t) { ul.appendChild(el("li", "", t)); });
+    intro.appendChild(ul);
+    v.appendChild(intro);
+
+    v.appendChild(progressEl());
+
+    var next = resumeLesson();
+    var resume;
+    if (doneCount() === 0) resume = link(lessonHref(1), "btn-primary resume", "レッスン1からはじめる →");
+    else if (next) resume = link(lessonHref(next.no), "btn-primary resume", "続きから: レッスン" + next.no + " " + next.short + " →");
+    else resume = link(lessonHref(1), "btn-secondary resume", "もう一度レッスン1から");
+    v.appendChild(resume);
+
+    var ol = el("ol", "lesson-list");
+    ol.setAttribute("aria-label", "レッスンの一覧");
+    L.forEach(function (ls) {
+      var li = el("li");
+      var done = isDone(ls.id);
+      var a = link(lessonHref(ls.no), "lesson-row" + (done ? " is-done" : ""));
+      var num = el("span", "lesson-num", done ? "✓" : String(ls.no));
+      num.setAttribute("aria-hidden", "true");
+      a.appendChild(num);
+      var main = el("span", "lesson-main");
+      var tt = el("span", "lesson-title", "レッスン" + ls.no + " " + ls.title);
+      if (done) tt.appendChild(el("span", "sr-only", "(読了)"));
+      main.appendChild(tt);
+      main.appendChild(el("span", "lesson-summary", ls.summary));
+      var meta = el("span", "lesson-meta");
+      meta.appendChild(el("span", "chip", "約" + ls.minutes + "分"));
+      if (ls.tryTab && TAB_LABEL[ls.tryTab]) meta.appendChild(el("span", "chip", "シミュレーター: " + TAB_LABEL[ls.tryTab]));
+      main.appendChild(meta);
+      a.appendChild(main);
+      li.appendChild(a);
+      ol.appendChild(li);
+    });
+    v.appendChild(ol);
+
+    if (doneCount() === N) {
+      var sum = el("section", "card summary-card");
+      sum.appendChild(el("h2", "", "総まとめ: ここだけ覚える"));
+      L.forEach(function (ls) {
+        sum.appendChild(el("h3", "", "レッスン" + ls.no + " " + ls.title));
+        var u = el("ul");
+        ls.points.forEach(function (p) { u.appendChild(el("li", "", p)); });
+        sum.appendChild(u);
+      });
+      v.appendChild(sum);
+    }
+    view.replaceChildren(v);
+  }
+
+  // 目次
+  function fillToc(toc, cur) {
+    toc.replaceChildren();
+    var sm = el("summary");
+    sm.appendChild(el("span", "", "目次 ・ " + doneCount() + "/" + N + " 読了"));
+    var arrow = el("span", "arrow", "▾"); arrow.setAttribute("aria-hidden", "true");
+    sm.appendChild(arrow);
+    toc.appendChild(sm);
+    var head = el("div", "toc-head");
+    head.appendChild(el("span", "", "目次"));
+    head.appendChild(el("span", "progress-text", doneCount() + "/" + N + " 読了"));
+    toc.appendChild(head);
+    var ol = el("ol", "toc-list");
+    L.forEach(function (ls) {
+      var li = el("li");
+      var done = isDone(ls.id);
+      var a = link(lessonHref(ls.no), "toc-item" + (ls.no === cur ? " is-current" : "") + (done ? " is-done" : ""));
+      if (ls.no === cur) a.setAttribute("aria-current", "page");
+      var no = el("span", "toc-no", done ? "✓" : String(ls.no));
+      a.appendChild(no);
+      a.appendChild(el("span", "", ls.short));
+      if (done) a.setAttribute("aria-label", "レッスン" + ls.no + " " + ls.short + "(読了)");
+      a.addEventListener("click", function () { if (!mqPC.matches) toc.open = false; });
+      li.appendChild(a);
+      ol.appendChild(li);
+    });
+    toc.appendChild(ol);
+    toc.appendChild(link("#top", "toc-top", "← コースのトップ"));
+  }
+
+  function renderBody(ls, body, minis) {
+    ls.body.forEach(function (b) {
+      if (b.t === "p") body.appendChild(html("p", "", b.html));
+      else if (b.t === "h") body.appendChild(el("h3", "", b.text));
+      else if (b.t === "analogy" || b.t === "note") {
+        var d = el("div", b.t === "analogy" ? "analogy" : "note-box");
+        d.appendChild(el("span", "box-label", b.t === "analogy" ? "たとえば" : "ひとこと"));
+        d.appendChild(html("span", "", b.html));
+        body.appendChild(d);
+      } else if (b.t === "list") {
+        var ul = el("ul", b.plain ? "plain" : "bullets");
+        b.items.forEach(function (it) { ul.appendChild(el("li", "", it)); });
+        body.appendChild(ul);
+      } else if (b.t === "figure" && FIGURES[b.id]) {
+        body.appendChild(FIGURES[b.id]());
+      } else if (b.t === "mini" && MINI[ls.mini]) {
+        var sec = el("section", "mini");
+        sec.setAttribute("aria-label", "やってみよう: " + MINI[ls.mini].title);
+        sec.appendChild(el("p", "mini-tag", "やってみよう"));
+        sec.appendChild(el("h3", "mini-title", MINI[ls.mini].title));
+        body.appendChild(sec);
+        minis.push({ sec: sec, mini: MINI[ls.mini] });
+      }
+    });
+  }
+
+  function renderQuiz(ls) {
+    var sec = el("section", "quiz");
+    sec.appendChild(el("h3", "", "確認クイズ"));
+    ls.quiz.forEach(function (q, qi) {
+      var item = el("div", "quiz-item");
+      item.appendChild(el("p", "quiz-q", "Q" + (qi + 1) + ". " + q.q));
+      var ch = el("div", "choices");
+      var fb = el("p", "feedback");
+      fb.hidden = true;
+      fb.setAttribute("aria-live", "polite");
+      var again = el("button", "btn-small quiz-again", "もう一度");
+      again.type = "button";
+      again.hidden = true;
+      var btns = q.choices.map(function (c, i) {
+        var b = el("button", "choice-btn");
+        b.type = "button";
+        b.appendChild(el("span", "choice-key", KEYS[i]));
+        b.appendChild(el("span", "", c));
+        b.addEventListener("click", function () {
+          var ok = i === q.answer;
+          btns.forEach(function (x, j) {
+            x.disabled = true;
+            if (j === i) x.classList.add(ok ? "correct" : "wrong");
+            if (!ok && j === q.answer) x.classList.add("correct");
+          });
+          fb.className = "feedback " + (ok ? "good" : "bad");
+          fb.textContent = ok ? "正解! " + q.explain : "ざんねん。正解は「" + q.choices[q.answer] + "」。" + q.explain;
+          fb.hidden = false;
+          again.hidden = false;
+        });
+        ch.appendChild(b);
+        return b;
+      });
+      again.addEventListener("click", function () {
+        btns.forEach(function (x) { x.disabled = false; x.classList.remove("correct", "wrong"); });
+        fb.hidden = true;
+        again.hidden = true;
+        btns[0].focus();
+      });
+      item.appendChild(ch);
+      item.appendChild(fb);
+      item.appendChild(again);
+      sec.appendChild(item);
+    });
+    return sec;
+  }
+
+  function renderLinks(ls) {
+    var box = el("div", "lesson-links");
+    if (ls.no === N) {
+      var row = el("div", "btn-row");
+      row.appendChild(link("index.html", "btn-secondary try-link", "シミュレーターで自由に試す →"));
+      row.appendChild(link("reference.html", "btn-secondary", "投資用語帳 →"));
+      box.appendChild(row);
+    } else if (ls.tryTab && TAB_LABEL[ls.tryTab]) {
+      box.appendChild(link("index.html#" + ls.tryTab, "btn-secondary try-link", "シミュレーターで試す: " + TAB_LABEL[ls.tryTab] + " →"));
+      if (ls.tryText) box.appendChild(el("p", "hint", ls.tryText));
+    }
+    var terms = ls.terms.filter(function (id) { return TERM_BY_ID[id]; });
+    if (terms.length) {
+      var tl = el("div", "term-links");
+      tl.appendChild(el("span", "term-links-label", "この回の用語"));
+      terms.forEach(function (id) { tl.appendChild(link("reference.html#" + id, "term-chip", TERM_BY_ID[id].name)); });
+      box.appendChild(tl);
+    }
+    return box;
+  }
+
+  function renderLesson(no) {
+    var ls = L[no - 1];
+    var layout = el("div", "course-layout view-lesson");
+    var toc = el("details", "toc");
+    fillToc(toc, no);
+    toc.open = mqPC.matches;
+    layout.appendChild(toc);
+
+    var art = el("article", "card lesson");
+    art.setAttribute("aria-labelledby", "lesson-title");
+    var head = el("div", "lesson-head");
+    head.appendChild(el("p", "lesson-no", "LESSON " + no + " / " + N + " ・ 約" + ls.minutes + "分"));
+    var h2 = el("h2", "lesson-title", ls.title);
+    h2.id = "lesson-title";
+    h2.tabIndex = -1;
+    head.appendChild(h2);
+    head.appendChild(el("p", "lesson-lead", ls.summary));
+    art.appendChild(head);
+
+    var body = el("div", "lesson-body");
+    var minis = [];
+    renderBody(ls, body, minis);
+    art.appendChild(body);
+
+    var kp = el("aside", "keypoints");
+    kp.appendChild(el("h3", "", "ここだけ覚える"));
+    var ul = el("ul");
+    ls.points.forEach(function (p) { ul.appendChild(el("li", "", p)); });
+    kp.appendChild(ul);
+    art.appendChild(kp);
+
+    art.appendChild(renderQuiz(ls));
+    art.appendChild(renderLinks(ls));
+
+    var foot = el("div", "lesson-foot");
+    var tg = el("button", "done-toggle");
+    tg.type = "button";
+    function syncToggle() {
+      var d = isDone(ls.id);
+      tg.setAttribute("aria-pressed", String(d));
+      tg.textContent = d ? "✓ 読みました" : "読んだしるしをつける";
+    }
+    tg.addEventListener("click", function () {
+      setDone(ls.id, !isDone(ls.id));
+      syncToggle();
+      var open = toc.open;
+      fillToc(toc, no);
+      toc.open = open;
+    });
+    syncToggle();
+    foot.appendChild(tg);
+
+    var pager = el("nav", "pager");
+    pager.setAttribute("aria-label", "レッスンの移動");
+    var prev;
+    if (no === 1) prev = link("#top", "btn-secondary pager-prev", "← コースのトップ");
+    else {
+      var pl = L[no - 2];
+      prev = link(lessonHref(no - 1), "btn-secondary pager-prev");
+      prev.appendChild(el("span", "lbl-long", "← " + pl.no + ". " + pl.short));
+      prev.appendChild(el("span", "lbl-short", "← 前へ"));
+    }
+    var nx;
+    if (no === N) nx = link("#top", "btn-primary pager-next", "コースを終える →");
+    else {
+      var nl = L[no];
+      nx = link(lessonHref(no + 1), "btn-primary pager-next");
+      nx.appendChild(el("span", "lbl-long", "次: " + nl.no + ". " + nl.short + " →"));
+      nx.appendChild(el("span", "lbl-short", "次へ →"));
+    }
+    // 次へ進むときは、今のレッスンを読了にする
+    nx.addEventListener("click", function () { setDone(ls.id, true); });
+    pager.appendChild(prev);
+    pager.appendChild(nx);
+    foot.appendChild(pager);
+    art.appendChild(foot);
+
+    layout.appendChild(art);
+    view.replaceChildren(layout);
+    minis.forEach(function (m) { m.mini.render(m.sec); });
+    return h2;
+  }
+
+  function currentLesson() {
+    var m = /^#lesson-(\d+)$/.exec(location.hash);
+    if (!m) return 0;
+    var n = parseInt(m[1], 10);
+    return n >= 1 && n <= N ? n : 0;
+  }
+
+  function render(changed) {
+    if (ro) ro.disconnect();
+    var no = currentLesson();
+    app.classList.toggle("is-lesson", no > 0);
+    hero.classList.toggle("is-compact", no > 0);
+    var h2 = null;
+    if (no) {
+      state.last = no;
+      save();
+      h2 = renderLesson(no);
+      document.title = "レッスン" + no + " " + L[no - 1].title + " | 投資入門コース";
+    } else {
+      renderTop();
+      document.title = "投資入門コース | 投資シミュレーション道場";
+    }
+    if (changed) {
+      window.scrollTo(0, 0);
+      if (h2) h2.focus({ preventScroll: true });
+    }
+  }
+
+  function onMq() {
+    var toc = view.querySelector("details.toc");
+    if (toc) toc.open = mqPC.matches;
+  }
+  if (mqPC.addEventListener) mqPC.addEventListener("change", onMq);
+  else if (mqPC.addListener) mqPC.addListener(onMq);
+
+  window.addEventListener("hashchange", function () { render(true); });
+  render(false);
+})();
+</script>
+</body>
+</html>

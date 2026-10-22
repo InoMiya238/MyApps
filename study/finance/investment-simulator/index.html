@@ -43,6 +43,42 @@
     text-align: left;
   }
 
+  /* ---------- 入門コースへの案内 ---------- */
+  .course-banner {
+    background: var(--accent-soft);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 18px;
+  }
+  .course-banner .card-text { min-width: 0; }
+  .course-banner h2 { margin: 0 0 4px; }
+  .course-banner p { margin: 0; font-size: 14px; line-height: 1.7; color: var(--ink-muted); }
+  .course-banner .cb-progress {
+    margin-top: 4px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .course-banner .btn-primary {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none;
+    max-width: 100%;
+  }
+  .course-banner.is-compact { padding: 12px 18px; }
+  .course-banner.is-compact p { font-size: 13.5px; color: var(--ink); }
+  .course-banner.is-compact a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .course-banner.is-compact a:hover { text-decoration: underline; }
+  .lead-links { font-size: 13px; }
+  .lead-links a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .lead-links a:hover { text-decoration: underline; }
+
   /* ---------- タブ ---------- */
   .tabs {
     display: grid;
@@ -525,6 +561,9 @@
   }
   @media (max-width: 480px) {
     .card { padding: 18px 16px; }
+    .course-banner { flex-direction: column; align-items: stretch; }
+    .course-banner .btn-primary { width: 100%; }
+    .course-banner.is-compact { padding: 12px 16px; }
     .sim-actions { padding: 14px 14px; }
     .lbl-long { display: none; }
     .lbl-short { display: inline; }
@@ -549,22 +588,32 @@
     <h1>投資シミュレーション道場</h1>
     <p class="tagline">乱数で作った架空の相場で、積立・複利・分散・売買ルールを試して、投資の基本を体験します。</p>
     <nav class="site-nav" aria-label="投資シミュレーション道場のページ">
+      <a href="course.html">入門コース</a>
       <span aria-current="page">シミュレーター</span>
       <a href="reference.html">投資用語帳</a>
     </nav>
     <p class="notice">これは乱数で作った架空の相場による学習用のシミュレーションです。実際の値動きや将来の成果を示したり保証したりするものではなく、特定の商品や投資を勧めるものでもありません。税金・手数料・インフレは簡略化または省略しています。投資の判断はご自身の責任で行ってください。</p>
   </header>
 
+  <aside class="card course-banner" id="course-banner" aria-label="入門コースの案内">
+    <div class="card-text">
+      <h2>はじめての人は、入門コースから</h2>
+      <p>投資のしくみを10のレッスンで順番に学べます(1レッスン5分ほど)。</p>
+      <p class="cb-progress" id="cb-progress" hidden></p>
+    </div>
+    <a class="btn-primary" id="cb-link" href="course.html">入門コースをひらく →</a>
+  </aside>
+
   <div class="tabs" role="tablist" aria-label="シミュレーションの種類">
-    <button type="button" class="tab" role="tab" id="tab-dca" data-tab="dca" aria-controls="panel-dca" aria-selected="true">積立と一括</button>
-    <button type="button" class="tab" role="tab" id="tab-compound" data-tab="compound" aria-controls="panel-compound" aria-selected="false" tabindex="-1">複利と長期</button>
+    <button type="button" class="tab" role="tab" id="tab-compound" data-tab="compound" aria-controls="panel-compound" aria-selected="true">複利と長期</button>
+    <button type="button" class="tab" role="tab" id="tab-dca" data-tab="dca" aria-controls="panel-dca" aria-selected="false" tabindex="-1">積立と一括</button>
     <button type="button" class="tab" role="tab" id="tab-diversify" data-tab="diversify" aria-controls="panel-diversify" aria-selected="false" tabindex="-1">分散投資</button>
     <button type="button" class="tab" role="tab" id="tab-timing" data-tab="timing" aria-controls="panel-timing" aria-selected="false" tabindex="-1">売買ルール</button>
   </div>
 
-  <!-- ==================== タブ1 積立と一括 ==================== -->
-  <section class="panel" id="panel-dca" role="tabpanel" aria-labelledby="tab-dca">
-    <p class="lead">同じ金額を「最初に全部」買うのと「毎月少しずつ」買うのとで、結果がどう変わるかを比べます。</p>
+  <!-- ==================== タブ: 積立と一括 ==================== -->
+  <section class="panel" id="panel-dca" role="tabpanel" aria-labelledby="tab-dca" hidden>
+    <p class="lead">同じ金額を「最初に全部」買うのと「毎月少しずつ」買うのとで、結果がどう変わるかを比べます。<br><span class="lead-links">先に読む: <a href="course.html#lesson-6">レッスン6 積立と一括</a></span></p>
 
     <div class="card settings">
       <h2>設定</h2>
@@ -655,9 +704,9 @@
     </div>
   </section>
 
-  <!-- ==================== タブ2 複利と長期 ==================== -->
-  <section class="panel" id="panel-compound" role="tabpanel" aria-labelledby="tab-compound" hidden>
-    <p class="lead">毎月の積立が、複利で長い時間をかけてどう育つかを見ます。手数料や税金による差も確かめられます。</p>
+  <!-- ==================== タブ: 複利と長期 ==================== -->
+  <section class="panel" id="panel-compound" role="tabpanel" aria-labelledby="tab-compound">
+    <p class="lead">毎月の積立が、複利で長い時間をかけてどう育つかを見ます。手数料や税金による差も確かめられます。<br><span class="lead-links">先に読む: <a href="course.html#lesson-4">レッスン4 複利</a> ・ <a href="course.html#lesson-5">レッスン5 長く続けると</a> ・ <a href="course.html#lesson-9">レッスン9 手数料と税金</a></span></p>
 
     <div class="card settings">
       <h2>設定</h2>
@@ -739,9 +788,9 @@
     </div>
   </section>
 
-  <!-- ==================== タブ3 分散投資 ==================== -->
+  <!-- ==================== タブ: 分散投資 ==================== -->
   <section class="panel" id="panel-diversify" role="tabpanel" aria-labelledby="tab-diversify" hidden>
-    <p class="lead">株・債券・現金の配分を変えて、同じ相場での増え方と下がり方を比べます。</p>
+    <p class="lead">株・債券・現金の配分を変えて、同じ相場での増え方と下がり方を比べます。<br><span class="lead-links">先に読む: <a href="course.html#lesson-7">レッスン7 分散投資</a></span></p>
 
     <div class="card settings">
       <h2 class="term-host">資産配分<button type="button" class="term-btn" data-term="asset-allocation"><span>?</span></button></h2>
@@ -850,9 +899,9 @@
     </div>
   </section>
 
-  <!-- ==================== タブ4 売買ルール ==================== -->
+  <!-- ==================== タブ: 売買ルール ==================== -->
   <section class="panel" id="panel-timing" role="tabpanel" aria-labelledby="tab-timing" hidden>
-    <p class="lead">売り買いのルールを決めて、毎月買って放置する方法(基準)と比べます。</p>
+    <p class="lead">売り買いのルールを決めて、毎月買って放置する方法(基準)と比べます。<br><span class="lead-links">先に読む: <a href="course.html#lesson-8">レッスン8 タイミング</a></span></p>
 
     <div class="card settings">
       <h2>設定</h2>
@@ -981,26 +1030,58 @@
 
   <footer class="page-foot">
     学習用のシミュレーションです。実際の投資成果を保証しません。<br>
-    <a href="reference.html">投資用語帳 →</a>
+    <a href="course.html">← 入門コース</a> ・ <a href="reference.html">投資用語帳 →</a>
   </footer>
 </div>
 
 <script src="../../../shared/store.js"></script>
 <script src="terms.js"></script>
 <script src="sim.js"></script>
+<script src="lessons.js"></script>
+<script>
+// 入門コースの案内。進み具合は読むだけ(書きこまない)
+(function () {
+  "use strict";
+  if (typeof INVEST_LESSONS === "undefined") return;
+  var L = INVEST_LESSONS, N = L.length;
+  var raw = Store.load("investmentSimulatorCourse", null);
+  raw = raw && typeof raw === "object" ? raw : {};
+  var ids = L.map(function (l) { return l.id; });
+  var done = [];
+  if (Array.isArray(raw.done)) raw.done.forEach(function (id) { if (ids.indexOf(id) >= 0 && done.indexOf(id) < 0) done.push(id); });
+  var last = typeof raw.last === "number" && raw.last % 1 === 0 && raw.last >= 1 && raw.last <= N ? raw.last : 1;
+  if (!done.length) return;
+  var banner = document.getElementById("course-banner");
+  if (done.length >= N) {
+    banner.classList.add("is-compact");
+    banner.innerHTML = '<p>入門コース: 全' + N + 'レッスン読了 ・ <a href="course.html">見直す →</a></p>';
+    return;
+  }
+  // 続きから: last から先の最初の未読。なければ最初の未読(course.html と同じ決め方)
+  var next = null, k;
+  for (k = last - 1; k < N && !next; k++) if (done.indexOf(L[k].id) < 0) next = L[k];
+  for (k = 0; k < N && !next; k++) if (done.indexOf(L[k].id) < 0) next = L[k];
+  var a = document.getElementById("cb-link");
+  a.href = "course.html#lesson-" + next.no;
+  a.textContent = "続きから: レッスン" + next.no + " " + next.short + " →";
+  var pr = document.getElementById("cb-progress");
+  pr.textContent = done.length + " / " + N + " 読了";
+  pr.hidden = false;
+})();
+</script>
 <script>
 (function () {
   "use strict";
 
   var KEY = "investmentSimulatorSettings";
-  var TABS = ["dca", "compound", "diversify", "timing"];
+  var TABS = ["compound", "dca", "diversify", "timing"];
   var MAN = 10000;
   var OKU = 100000000;
   var svgNS = "http://www.w3.org/2000/svg";
 
   // ---------- 設定の初期値と、受け付ける値 ----------
   var DEFAULTS = {
-    tab: "dca",
+    tab: "compound",
     dca: { total: 120, years: 10, pattern: "random", r: 6, vol: 18 },
     compound: { initial: 0, monthly: 3, r: 5, years: 20, fee: 0.1, volOn: false, vol: 18, tax: false },
     diversify: { stock: 60, bond: 30, initial: 100, years: 10 },
@@ -1398,7 +1479,7 @@
     });
   }
 
-  // ==================== タブ1 積立と一括 ====================
+  // ==================== タブ: 積立と一括 ====================
   var dcaA = new LineChart($("dca-chart-a"), $("dca-ro-a"));
   var dcaB = new LineChart($("dca-chart-b"), $("dca-ro-b"));
   var dcaHist = new HistChart($("dca-hist"));
@@ -1487,7 +1568,7 @@
     dcaHist.render({ hist: m.hist, aria: "一括と積立の差の分布。一括の勝ち" + m.lumpWins + "回、積立の勝ち" + m.dcaWins + "回。" });
   }
 
-  // ==================== タブ2 複利と長期 ====================
+  // ==================== タブ: 複利と長期 ====================
   var cpChart = new LineChart($("cp-chart"), $("cp-ro"));
   var CP_BAND_SEED = 1;   // 帯は設定だけで決まる(相場番号に左右されない)
   var cpBandCache = null;
@@ -1614,7 +1695,7 @@
     $("cp-table").innerHTML = html + "</tbody>";
   }
 
-  // ==================== タブ3 分散投資 ====================
+  // ==================== タブ: 分散投資 ====================
   var dvChart = new LineChart($("dv-chart"), $("dv-ro"));
   var PORT_CLS = ["1", "2", "3", "5"];
 
@@ -1703,7 +1784,7 @@
     $("dv-mc").hidden = false;
   }
 
-  // ==================== タブ4 売買ルール ====================
+  // ==================== タブ: 売買ルール ====================
   var tmA = new LineChart($("tm-chart-a"), $("tm-ro-a"));
   var tmB = new LineChart($("tm-chart-b"), $("tm-ro-b"));
   var tmHist = new HistChart($("tm-hist"));
