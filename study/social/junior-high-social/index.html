@@ -796,6 +796,11 @@
 <script src="data.js"></script>
 <script src="data-g1.js"></script>
 <script src="data-g1-2.js"></script>
+<script src="data-g2.js"></script>
+<script src="data-g2-2.js"></script>
+<script src="data-g3.js"></script>
+<script src="data-g3-2.js"></script>
+<script src="data-g3-3.js"></script>
 <script>
 (function () {
   "use strict";
@@ -846,7 +851,7 @@
     document.getElementById("tagline").textContent = span + "の" + n + "単元を、4択クイズで学び直します。単元ごとの正答率が残るので、苦手がわかります。";
     if (grades.length === 1) {
       selectGradeBtn.textContent = "すべて選ぶ";
-      document.getElementById("gradeNote").textContent = "いまは" + span + "の" + n + "単元(地理・歴史)です。中2・中3はあとから追加します。";
+      document.getElementById("gradeNote").textContent = "いまは" + span + "の" + n + "単元です。";
     } else {
       selectGradeBtn.textContent = "この学年をすべて選ぶ";
     }
@@ -1234,6 +1239,14 @@
   // フォントが読みこまれると幅が変わるので、はみ出しを見直す
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitChoices);
   window.addEventListener("resize", fitChoices);
+  // 解説が出てスクロールバーが現れたときなど、窓の大きさが変わらずに幅だけ変わる場合も見直す
+  if (window.ResizeObserver) {
+    var lastQuizWidth = 0;
+    new ResizeObserver(function (entries) {
+      var w = Math.round(entries[0].contentRect.width);
+      if (w !== lastQuizWidth) { lastQuizWidth = w; fitChoices(); }
+    }).observe(quizScreen);
+  }
 
   // ---------- 結果画面 ----------
   function showResult() {

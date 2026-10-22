@@ -16,6 +16,8 @@
   --bad: #A33B28;
   --bad-soft: #F6E1DC;
   --shadow: rgba(27, 36, 22, 0.10);
+  --fig-lit: #F2E3A0;
+  --fig-shade: #3B3A2C;
 }
 
 /* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
@@ -37,6 +39,8 @@
     --bad: #E8917A;
     --bad-soft: #3A241E;
     --shadow: rgba(0, 0, 0, 0.4);
+    --fig-lit: #E6D27E;
+    --fig-shade: #14130C;
   }
 }
 
@@ -58,4 +62,6 @@
   --bad: #E8917A;
   --bad-soft: #3A241E;
   --shadow: rgba(0, 0, 0, 0.4);
+  --fig-lit: #E6D27E;
+  --fig-shade: #14130C;
 }

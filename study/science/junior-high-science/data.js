@@ -1,6 +1,6 @@
 // 中学理科道場: 学年・分野・単元の定義と、学年別ファイル(data-g1.js など)が中身を登録するための入れ物。
 // 表・公式・図などの表示部品を組み立てる関数も、このファイルに置く。
-// 読み込む順番: shared/store.js → data.js → data-g1.js → data-g2.js
+// 読み込む順番: shared/store.js → data.js → data-g1.js → data-g2.js → data-g3.js
 //
 // ■ 単元の中身の登録(学年別ファイルに書く。分野ごとに1つの IIFE にまとめる)
 //   JHS.register("単元ID", {
@@ -120,7 +120,8 @@ var JHS = (function () {
 
   var GRADES = [
     { id: "g1", short: "中1", name: "中学1年" },
-    { id: "g2", short: "中2", name: "中学2年" }
+    { id: "g2", short: "中2", name: "中学2年" },
+    { id: "g3", short: "中3", name: "中学3年" }
   ];
 
   // 分野。設定画面の小見出し、要点帳の目次、成績の「分野ごとの正答率」は、この順に並ぶ
@@ -160,7 +161,25 @@ var JHS = (function () {
     { id: "g2-pressure-weather", grade: "g2", area: "地学", name: "圧力と気象観測", sub: "圧力・大気圧・天気図の記号" },
     { id: "g2-clouds-humidity", grade: "g2", area: "地学", name: "雲のでき方と湿度", sub: "飽和水蒸気量・露点・湿度" },
     { id: "g2-fronts", grade: "g2", area: "地学", name: "前線と天気の変化", sub: "高気圧と低気圧・気団・前線" },
-    { id: "g2-japan-weather", grade: "g2", area: "地学", name: "日本の天気", sub: "季節風・四季の天気・台風" }
+    { id: "g2-japan-weather", grade: "g2", area: "地学", name: "日本の天気", sub: "季節風・四季の天気・台風" },
+
+    { id: "g3-cell-division", grade: "g3", area: "生物", name: "細胞分裂と成長", sub: "体細胞分裂・染色体" },
+    { id: "g3-reproduction", grade: "g3", area: "生物", name: "生物のふえ方", sub: "無性生殖・有性生殖・減数分裂" },
+    { id: "g3-heredity", grade: "g3", area: "生物", name: "遺伝の規則性", sub: "顕性形質・分離の法則・DNA" },
+    { id: "g3-evolution", grade: "g3", area: "生物", name: "生物の進化", sub: "脊椎動物の出現・相同器官" },
+    { id: "g3-ecosystems", grade: "g3", area: "生物", name: "生態系と自然環境", sub: "食物連鎖・分解者・物質の循環" },
+    { id: "g3-ions", grade: "g3", area: "化学", name: "水溶液とイオン", sub: "電解質・原子の成り立ち・電離" },
+    { id: "g3-batteries", grade: "g3", area: "化学", name: "化学変化と電池", sub: "イオンへのなりやすさ・ダニエル電池" },
+    { id: "g3-acids-alkalis", grade: "g3", area: "化学", name: "酸・アルカリと中和", sub: "pH・中和と塩" },
+    { id: "g3-pressure-buoyancy", grade: "g3", area: "物理", name: "水圧と浮力" },
+    { id: "g3-force-composition", grade: "g3", area: "物理", name: "力の合成と分解" },
+    { id: "g3-motion", grade: "g3", area: "物理", name: "物体の運動", sub: "速さ・記録タイマー・慣性・作用と反作用" },
+    { id: "g3-work-power", grade: "g3", area: "物理", name: "仕事と仕事率", sub: "仕事の原理" },
+    { id: "g3-energy", grade: "g3", area: "物理", name: "エネルギー", sub: "力学的エネルギー・変換効率・エネルギー資源" },
+    { id: "g3-daily-motion", grade: "g3", area: "地学", name: "天体の1日の動き", sub: "地球の自転・天球・日周運動" },
+    { id: "g3-annual-motion", grade: "g3", area: "地学", name: "天体の1年の動きと季節", sub: "公転・年周運動・南中高度" },
+    { id: "g3-moon-venus", grade: "g3", area: "地学", name: "月と金星の見え方", sub: "満ち欠け・日食と月食" },
+    { id: "g3-solar-system", grade: "g3", area: "地学", name: "太陽系と宇宙", sub: "太陽・惑星・銀河系" }
   ];
 
   var byId = {};
@@ -448,10 +467,12 @@ var JHS = (function () {
       s += '<line class="fig-grid" x1="' + X + '" y1="' + g.top + '" x2="' + X + '" y2="' + g.bottom + '"/>' +
         txt(g.X(v), g.bottom + 15, num(v, dx), { cls: "fig-num", anchor: "middle" });
     });
+    // x軸とy軸の最小値がどちらも0なら、原点の数字が重ならないよう、y軸の「0」は書かない(x軸の「0」だけ残す)
+    var bothZero = o.x.min === 0 && o.y.min === 0;
     ticks(o.y).forEach(function (v) {
       var Y = px(g.Y(v));
       s += '<line class="fig-grid" x1="' + g.left + '" y1="' + Y + '" x2="' + g.right + '" y2="' + Y + '"/>' +
-        txt(g.left - 6, g.Y(v) + 4, num(v, dy), { cls: "fig-num", anchor: "end" });
+        (bothZero && v === 0 ? "" : txt(g.left - 6, g.Y(v) + 4, num(v, dy), { cls: "fig-num", anchor: "end" }));
     });
     s += '<path class="fig-axis" d="M' + g.left + " " + g.top + "V" + g.bottom + "H" + g.right + '"/>';
 

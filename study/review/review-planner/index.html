@@ -277,7 +277,7 @@
   <header class="hero">
     <p class="eyebrow">REVIEW</p>
     <h1>復習プランナー</h1>
-    <p class="tagline">中学5教科・化学基礎・将棋・IT(Git・Linux・SQL・正規表現)の道場で解いた単元を、忘れかけた頃にもう一度出題します。道場で解くと、ここに自動で記録されます。</p>
+    <p class="tagline">中学5教科・英単語帳・化学基礎・世界地図・将棋・IT(Git・Linux・SQL・正規表現・Web)・AI理論の道場で解いた単元を、忘れかけた頃にもう一度出題します。道場で解くと、ここに自動で記録されます。</p>
   </header>
 
   <section class="card" aria-labelledby="todayHeading">
@@ -316,13 +316,17 @@
 <script src="../../math/junior-high-math/data.js"></script>
 <script src="../../japanese/junior-high-japanese/data.js"></script>
 <script src="../../english/junior-high-english/data.js"></script>
+<script src="../../english/junior-high-english/vocab.js"></script>
 <script src="../../science/junior-high-science/data.js"></script>
 <script src="../../science/chemistry-lab/data.js"></script>
 <script src="../../social/junior-high-social/data.js"></script>
+<script src="../../geography/world-map-dojo/data.js"></script>
 <script src="../../it/git-basics/data.js"></script>
 <script src="../../it/linux-basics/data.js"></script>
 <script src="../../it/sql-basics/data.js"></script>
 <script src="../../it/regex-basics/data.js"></script>
+<script src="../../it/web-basics/data.js"></script>
+<script src="../../ai/ai-theory-lab/data.js"></script>
 <script>
 (function () {
   "use strict";
@@ -334,20 +338,26 @@
     { app: "math", label: "数学", ns: nsOf("JHM"), href: "../../math/junior-high-math/index.html" },
     { app: "japanese", label: "国語", ns: nsOf("JHJ"), href: "../../japanese/junior-high-japanese/index.html" },
     { app: "english", label: "英語", ns: nsOf("JHE"), href: "../../english/junior-high-english/index.html" },
+    { app: "english-vocab", label: "英単語", ns: nsOf("JHV"), href: "../../english/junior-high-english/vocab.html", dojo: "英単語帳" },
     { app: "science", label: "理科", ns: nsOf("JHS"), href: "../../science/junior-high-science/index.html" },
     { app: "chemistry", label: "化学基礎", ns: nsOf("CHEM"), href: "../../science/chemistry-lab/index.html", dojo: "化学基礎道場" },
     { app: "social", label: "社会", ns: nsOf("JHSO"), href: "../../social/junior-high-social/index.html" },
+    { app: "worldmap", label: "世界地図", ns: nsOf("WMAP"), href: "../../geography/world-map-dojo/index.html", dojo: "世界地図道場" },
     { app: "shogi", label: "将棋", ns: null, href: "../../shogi/shogi-dojo/index.html", dojo: "将棋道場" },
     { app: "git", label: "Git", ns: nsOf("GITD"), href: "../../it/git-basics/index.html", dojo: "Git道場" },
     { app: "linux", label: "Linux", ns: nsOf("LNX"), href: "../../it/linux-basics/index.html", dojo: "Linux道場" },
     { app: "sql", label: "SQL", ns: nsOf("SQLD"), href: "../../it/sql-basics/index.html", dojo: "SQL道場" },
-    { app: "regex", label: "正規表現", ns: nsOf("RGX"), href: "../../it/regex-basics/index.html", dojo: "正規表現道場" }
+    { app: "regex", label: "正規表現", ns: nsOf("RGX"), href: "../../it/regex-basics/index.html", dojo: "正規表現道場" },
+    { app: "web", label: "Web", ns: nsOf("WEBD"), href: "../../it/web-basics/index.html", dojo: "Web道場" },
+    { app: "ai", label: "AI理論", ns: nsOf("AITL"), href: "../../ai/ai-theory-lab/index.html", dojo: "AI理論道場" }
   ];
   var SHOGI_CATS = [
     { id: "castles", name: "囲い" },
     { id: "openings", name: "戦法" },
     { id: "tesuji", name: "手筋" },
-    { id: "terms", name: "用語" }
+    { id: "terms", name: "用語" },
+    // 1手詰めは別のページ(tsume.html)。成績は shogiDojoTsume に問題ごとに入っている
+    { id: "tsume1", name: "1手詰め", page: "../../shogi/shogi-dojo/tsume.html", statsKey: "shogiDojoTsume" }
   ];
   var subjectOf = {};
   SUBJECTS.forEach(function (s, i) { s.order = i; subjectOf[s.app] = s; });
@@ -358,7 +368,9 @@
     if (app === "shogi") {
       for (var i = 0; i < SHOGI_CATS.length; i++) {
         if (SHOGI_CATS[i].id === unitId) {
-          return { name: SHOGI_CATS[i].name, meta: "", order: i, href: s.href + "?cat=" + encodeURIComponent(unitId), known: true };
+          var page = SHOGI_CATS[i].page;
+          return { name: SHOGI_CATS[i].name, meta: "", order: i,
+            href: page ? page + "?unit=" + encodeURIComponent(unitId) : s.href + "?cat=" + encodeURIComponent(unitId), known: true };
         }
       }
     } else if (s.ns && typeof s.ns.unit === "function") {
@@ -392,7 +404,12 @@
           var raw = Store.load("shogiDojoStats", null);
           var byCat = raw && typeof raw === "object" && raw.byCat && typeof raw.byCat === "object" ? raw.byCat : {};
           SHOGI_CATS.forEach(function (c) {
-            if (byCat[c.id] && typeof byCat[c.id] === "object" && cleanNum(byCat[c.id].total) > 0) ids.push(c.id);
+            if (c.statsKey) {
+              // 1手詰め: どれか1問でも挑戦していれば取り込む
+              var t = Store.load(c.statsKey, null);
+              var tItems = t && typeof t === "object" && t.items && typeof t.items === "object" ? t.items : {};
+              if (Object.keys(tItems).some(function (k) { return tItems[k] && typeof tItems[k] === "object" && cleanNum(tItems[k].tries) > 0; })) ids.push(c.id);
+            } else if (byCat[c.id] && typeof byCat[c.id] === "object" && cleanNum(byCat[c.id].total) > 0) ids.push(c.id);
           });
         } else if (s.ns && typeof s.ns.loadStats === "function") {
           var stats = s.ns.loadStats();

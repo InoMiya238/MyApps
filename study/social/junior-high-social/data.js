@@ -1,6 +1,7 @@
 // 中学社会道場: 学年・分野・単元の定義と、中身のファイル(data-g1.js など)が登録するための入れ物。
 // 表などの表示部品を組み立てる関数も、このファイルに置く。
-// 読み込む順番: shared/store.js → data.js → data-g1.js(地理) → data-g1-2.js(歴史)
+// 読み込む順番: shared/store.js → data.js → data-g1.js(中1地理) → data-g1-2.js(中1歴史)
+//   → data-g2.js(中2地理) → data-g2-2.js(中2歴史) → data-g3.js(中3歴史) → data-g3-2.js(中3公民・政治) → data-g3-3.js(中3公民・経済と国際)
 //
 // ■ 学年を足すとき(中2・中3)
 //   1. 下の GRADES に学年を、UNITS に単元を足す(ID は "g2-…")。分野が増えるときは AREAS にも足す。
@@ -94,11 +95,13 @@ var JHSO = (function () {
   var COUNTS = [5, 10, 20];
 
   var GRADES = [
-    { id: "g1", short: "中1", name: "中学1年" }
+    { id: "g1", short: "中1", name: "中学1年" },
+    { id: "g2", short: "中2", name: "中学2年" },
+    { id: "g3", short: "中3", name: "中学3年" }
   ];
 
   // 分野。設定画面の小見出し、要点帳の目次、成績の「分野ごとの正答率」は、この順に並ぶ
-  var AREAS = ["地理", "歴史"];
+  var AREAS = ["地理", "歴史", "公民"];
 
   // ID は保存データのキーなので変えない。
   // name は短い名前(一覧・出題ラベル・目次)、sub は補足(要点帳の見出しの下)。
@@ -118,7 +121,48 @@ var JHSO = (function () {
     { id: "g1-asuka-nara", grade: "g1", area: "歴史", name: "飛鳥・奈良時代" },
     { id: "g1-heian", grade: "g1", area: "歴史", name: "平安時代" },
     { id: "g1-kamakura", grade: "g1", area: "歴史", name: "鎌倉時代" },
-    { id: "g1-muromachi", grade: "g1", area: "歴史", name: "室町時代" }
+    { id: "g1-muromachi", grade: "g1", area: "歴史", name: "室町時代" },
+
+    { id: "g2-japan-nature", grade: "g2", area: "地理", name: "日本の地形と気候", sub: "山地・川・平野・海流・気候区分・自然災害" },
+    { id: "g2-japan-population-resources", grade: "g2", area: "地理", name: "日本の人口と資源・エネルギー", sub: "人口ピラミッド・過疎と過密・発電" },
+    { id: "g2-japan-industry-transport", grade: "g2", area: "地理", name: "日本の産業と交通・通信", sub: "農業・漁業・工業・商業とサービス業・交通網" },
+    { id: "g2-kyushu", grade: "g2", area: "地理", name: "九州地方" },
+    { id: "g2-chugoku-shikoku", grade: "g2", area: "地理", name: "中国・四国地方" },
+    { id: "g2-kinki", grade: "g2", area: "地理", name: "近畿地方" },
+    { id: "g2-chubu", grade: "g2", area: "地理", name: "中部地方" },
+    { id: "g2-kanto", grade: "g2", area: "地理", name: "関東地方" },
+    { id: "g2-tohoku", grade: "g2", area: "地理", name: "東北地方" },
+    { id: "g2-hokkaido", grade: "g2", area: "地理", name: "北海道地方" },
+    { id: "g2-topographic-map", grade: "g2", area: "地理", name: "地形図の読み取り", sub: "縮尺・等高線・地図記号" },
+    { id: "g2-europe-expansion", grade: "g2", area: "歴史", name: "ヨーロッパの世界進出", sub: "ルネサンス・宗教改革・大航海時代・鉄砲とキリスト教" },
+    { id: "g2-azuchi-momoyama", grade: "g2", area: "歴史", name: "天下統一と桃山文化", sub: "織田信長・豊臣秀吉" },
+    { id: "g2-edo-establishment", grade: "g2", area: "歴史", name: "江戸幕府の成立と鎖国" },
+    { id: "g2-edo-reforms", grade: "g2", area: "歴史", name: "産業の発達と幕府の改革", sub: "元禄文化・三大改革・化政文化" },
+    { id: "g2-western-revolutions", grade: "g2", area: "歴史", name: "欧米の近代化", sub: "市民革命・産業革命・アジアへの進出" },
+    { id: "g2-opening-japan", grade: "g2", area: "歴史", name: "開国と江戸幕府の滅亡" },
+    { id: "g2-meiji-restoration", grade: "g2", area: "歴史", name: "明治維新" },
+    { id: "g2-constitution", grade: "g2", area: "歴史", name: "立憲制国家の成立", sub: "自由民権運動・大日本帝国憲法" },
+    { id: "g2-sino-russo-wars", grade: "g2", area: "歴史", name: "日清・日露戦争と近代産業", sub: "条約改正・産業革命・近代文化" },
+
+    { id: "g3-wwi", grade: "g3", area: "歴史", name: "第一次世界大戦と国際協調" },
+    { id: "g3-taisho-democracy", grade: "g3", area: "歴史", name: "大正デモクラシー" },
+    { id: "g3-depression", grade: "g3", area: "歴史", name: "世界恐慌と日本の中国侵略" },
+    { id: "g3-wwii", grade: "g3", area: "歴史", name: "第二次世界大戦と日本" },
+    { id: "g3-postwar", grade: "g3", area: "歴史", name: "戦後の改革と日本の独立", sub: "占領と民主化・冷戦・国際社会への復帰" },
+    { id: "g3-contemporary", grade: "g3", area: "歴史", name: "高度経済成長と現代の世界" },
+    { id: "g3-modern-society", grade: "g3", area: "公民", name: "現代社会と私たち", sub: "少子高齢化・情報化・グローバル化・文化・対立と合意" },
+    { id: "g3-constitution", grade: "g3", area: "公民", name: "日本国憲法の基本原則" },
+    { id: "g3-human-rights", grade: "g3", area: "公民", name: "基本的人権" },
+    { id: "g3-democracy-elections", grade: "g3", area: "公民", name: "民主政治と選挙", sub: "選挙の原則・選挙制度・政党・世論" },
+    { id: "g3-diet-cabinet", grade: "g3", area: "公民", name: "国会と内閣" },
+    { id: "g3-courts", grade: "g3", area: "公民", name: "裁判所と三権分立" },
+    { id: "g3-local-government", grade: "g3", area: "公民", name: "地方自治" },
+    { id: "g3-consumers-market", grade: "g3", area: "公民", name: "消費生活と市場経済", sub: "消費者の権利・流通・価格のはたらき" },
+    { id: "g3-production-labor", grade: "g3", area: "公民", name: "生産と企業・労働" },
+    { id: "g3-finance", grade: "g3", area: "公民", name: "金融と景気", sub: "銀行・日本銀行・為替" },
+    { id: "g3-public-finance", grade: "g3", area: "公民", name: "財政と社会保障" },
+    { id: "g3-international", grade: "g3", area: "公民", name: "国際社会と国際連合" },
+    { id: "g3-global-issues", grade: "g3", area: "公民", name: "地球規模の課題", sub: "環境・資源とエネルギー・貧困・持続可能な社会" }
   ];
 
   var byId = {};
