@@ -1,4 +1,4 @@
-// 復習プランナーの記録。中学5教科・化学基礎・将棋・IT(Git・Linux・SQL・正規表現)の道場が、回答のたびに Review.record を呼ぶ。
+// 復習プランナーの記録。中学5教科・英単語帳・化学基礎・世界地図・将棋・IT(Git・Linux・SQL・正規表現・Web)・AI理論の道場が、回答のたびに Review.record を呼ぶ。
 // 道場を足すときは、APPS に名前を足し、復習プランナー(study/review/review-planner/index.html)の SUBJECTS にも足す。
 // 読み込む順番: shared/store.js → shared/review.js
 // 保存キーは "reviewPlannerLog"(各道場の成績キーとは別。道場の成績には触らない)。
@@ -28,7 +28,7 @@ var Review = (function () {
   var INTERVALS = [1, 3, 7, 14, 30, 60];
   var MAX_STAGE = INTERVALS.length - 1;
   var MIN_ANSWERS = 3;
-  var APPS = ["math", "japanese", "english", "science", "social", "chemistry", "shogi", "git", "linux", "sql", "regex"];
+  var APPS = ["math", "japanese", "english", "english-vocab", "science", "social", "worldmap", "chemistry", "shogi", "git", "linux", "sql", "regex", "web", "ai"];
 
   // ---------- 日付(YYYY-MM-DD、ローカル時刻) ----------
   function pad(n) { return (n < 10 ? "0" : "") + n; }
