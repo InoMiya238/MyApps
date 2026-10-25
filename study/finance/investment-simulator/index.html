@@ -598,7 +598,7 @@
   <aside class="card course-banner" id="course-banner" aria-label="入門コースの案内">
     <div class="card-text">
       <h2>はじめての人は、入門コースから</h2>
-      <p>投資のしくみを10のレッスンで順番に学べます(1レッスン5分ほど)。</p>
+      <p>「金利とは何か」から投資のしくみまで、15のレッスンで順番に学べます(1レッスン5分ほど)。</p>
       <p class="cb-progress" id="cb-progress" hidden></p>
     </div>
     <a class="btn-primary" id="cb-link" href="course.html">入門コースをひらく →</a>
@@ -613,7 +613,7 @@
 
   <!-- ==================== タブ: 積立と一括 ==================== -->
   <section class="panel" id="panel-dca" role="tabpanel" aria-labelledby="tab-dca" hidden>
-    <p class="lead">同じ金額を「最初に全部」買うのと「毎月少しずつ」買うのとで、結果がどう変わるかを比べます。<br><span class="lead-links">先に読む: <a href="course.html#lesson-6">レッスン6 積立と一括</a></span></p>
+    <p class="lead">同じ金額を「最初に全部」買うのと「毎月少しずつ」買うのとで、結果がどう変わるかを比べます。<br><span class="lead-links">先に読む: <a href="course.html#lesson-11">レッスン11 積立と一括</a></span></p>
 
     <div class="card settings">
       <h2>設定</h2>
@@ -706,7 +706,7 @@
 
   <!-- ==================== タブ: 複利と長期 ==================== -->
   <section class="panel" id="panel-compound" role="tabpanel" aria-labelledby="tab-compound">
-    <p class="lead">毎月の積立が、複利で長い時間をかけてどう育つかを見ます。手数料や税金による差も確かめられます。<br><span class="lead-links">先に読む: <a href="course.html#lesson-4">レッスン4 複利</a> ・ <a href="course.html#lesson-5">レッスン5 長く続けると</a> ・ <a href="course.html#lesson-9">レッスン9 手数料と税金</a></span></p>
+    <p class="lead">毎月の積立が、複利で長い時間をかけてどう育つかを見ます。手数料や税金による差も確かめられます。<br><span class="lead-links">先に読む: <a href="course.html#lesson-9">レッスン9 複利</a> ・ <a href="course.html#lesson-10">レッスン10 長く続けると</a> ・ <a href="course.html#lesson-14">レッスン14 手数料と税金</a></span></p>
 
     <div class="card settings">
       <h2>設定</h2>
@@ -790,7 +790,7 @@
 
   <!-- ==================== タブ: 分散投資 ==================== -->
   <section class="panel" id="panel-diversify" role="tabpanel" aria-labelledby="tab-diversify" hidden>
-    <p class="lead">株・債券・現金の配分を変えて、同じ相場での増え方と下がり方を比べます。<br><span class="lead-links">先に読む: <a href="course.html#lesson-7">レッスン7 分散投資</a></span></p>
+    <p class="lead">株・債券・現金の配分を変えて、同じ相場での増え方と下がり方を比べます。<br><span class="lead-links">先に読む: <a href="course.html#lesson-12">レッスン12 分散投資</a></span></p>
 
     <div class="card settings">
       <h2 class="term-host">資産配分<button type="button" class="term-btn" data-term="asset-allocation"><span>?</span></button></h2>
@@ -901,7 +901,7 @@
 
   <!-- ==================== タブ: 売買ルール ==================== -->
   <section class="panel" id="panel-timing" role="tabpanel" aria-labelledby="tab-timing" hidden>
-    <p class="lead">売り買いのルールを決めて、毎月買って放置する方法(基準)と比べます。<br><span class="lead-links">先に読む: <a href="course.html#lesson-8">レッスン8 タイミング</a></span></p>
+    <p class="lead">売り買いのルールを決めて、毎月買って放置する方法(基準)と比べます。<br><span class="lead-links">先に読む: <a href="course.html#lesson-13">レッスン13 タイミング</a></span></p>
 
     <div class="card settings">
       <h2>設定</h2>
@@ -1049,7 +1049,10 @@
   var ids = L.map(function (l) { return l.id; });
   var done = [];
   if (Array.isArray(raw.done)) raw.done.forEach(function (id) { if (ids.indexOf(id) >= 0 && done.indexOf(id) < 0) done.push(id); });
-  var last = typeof raw.last === "number" && raw.last % 1 === 0 && raw.last >= 1 && raw.last <= N ? raw.last : 1;
+  // 最後に開いたレッスン: lastId。古い形の last(10レッスンの時期の番号)は読まない
+  var lastId = "";
+  if (typeof raw.lastId === "string" && ids.indexOf(raw.lastId) >= 0) lastId = raw.lastId;
+  var from = Math.max(0, ids.indexOf(lastId));
   if (!done.length) return;
   var banner = document.getElementById("course-banner");
   if (done.length >= N) {
@@ -1059,7 +1062,7 @@
   }
   // 続きから: last から先の最初の未読。なければ最初の未読(course.html と同じ決め方)
   var next = null, k;
-  for (k = last - 1; k < N && !next; k++) if (done.indexOf(L[k].id) < 0) next = L[k];
+  for (k = from; k < N && !next; k++) if (done.indexOf(L[k].id) < 0) next = L[k];
   for (k = 0; k < N && !next; k++) if (done.indexOf(L[k].id) < 0) next = L[k];
   var a = document.getElementById("cb-link");
   a.href = "course.html#lesson-" + next.no;

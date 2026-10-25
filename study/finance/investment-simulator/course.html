@@ -196,8 +196,17 @@
   .lesson-row .lesson-title { font-size: 15.5px; font-weight: 600; line-height: 1.5; margin-top: 4px; }
   .lesson-summary { font-size: 13.5px; color: var(--ink-muted); line-height: 1.6; }
   .lesson-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+  .part-block { display: flex; flex-direction: column; gap: 10px; }
+  .part-head { padding: 6px 2px 0; }
+  .part-no { margin: 0; font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.12em; color: var(--accent); }
+  .part-head h2 { margin: 2px 0 4px; font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; line-height: 1.4; }
+  .part-desc { margin: 0; font-size: 13.5px; line-height: 1.65; color: var(--ink-muted); }
+  .skip-note { margin: -6px 0 0; font-size: 13.5px; line-height: 1.7; color: var(--ink-muted); text-align: center; }
+  .skip-note a { color: var(--accent); font-weight: 600; }
+  .summary-card .summary-part { font-family: var(--font-display); font-size: 16px; font-weight: 600; margin: 24px 0 0; padding-top: 14px; border-top: 1px solid var(--border); }
+  .summary-card .summary-part:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
   .summary-card h3 { font-size: 15px; font-weight: 600; margin: 18px 0 6px; }
-  .summary-card h3:first-of-type { margin-top: 0; }
+  .summary-card .summary-part + h3 { margin-top: 10px; }
   .summary-card ul { margin: 0; padding-left: 1.2em; }
   .summary-card li { font-size: 14px; line-height: 1.7; }
 
@@ -228,6 +237,15 @@
     font-weight: 700;
   }
   .toc-head .progress-text { font-size: 12px; }
+  .toc-part {
+    margin: 10px 0 2px;
+    padding: 0 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--ink-faint);
+    line-height: 1.5;
+  }
+  .toc-part:first-child { margin-top: 0; }
   .toc-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
   .toc-item {
     display: flex;
@@ -464,6 +482,17 @@
   .range-axis span:first-child { transform: none; }
   .range-axis span:last-child { transform: translateX(-100%); }
 
+  /* お金の流れ(銀行) */
+  .flow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; gap: 6px; }
+  .flow-node { background: var(--surface-2); border-radius: 12px; padding: 10px 6px; text-align: center; font-weight: 700; font-size: 14px; line-height: 1.4; min-width: 0; }
+  .flow-node small { display: block; font-size: 11px; font-weight: 500; color: var(--ink-muted); margin-top: 2px; }
+  .flow-node.is-bank { background: var(--accent-soft); color: var(--accent); }
+  .flow-link { display: flex; flex-direction: column; gap: 4px; text-align: center; font-size: 11.5px; line-height: 1.35; min-width: 0; }
+  .flow-link .fwd { color: var(--ink-muted); }
+  .flow-link .back { color: var(--good); font-weight: 700; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .flow .v-only { display: none; }
+  .formula { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 14px; line-height: 1.7; background: var(--surface-2); border-radius: 10px; padding: 10px 12px; overflow-wrap: anywhere; }
+
   /* 10×10 マス */
   .basket { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; max-width: 240px; }
   .basket span { aspect-ratio: 1; border-radius: 3px; background: var(--surface-2); }
@@ -585,7 +614,7 @@
     .toc > summary .arrow { color: var(--ink-faint); transition: transform 0.15s ease; }
     .toc[open] > summary .arrow { transform: rotate(180deg); }
     .toc .toc-head { display: none; }
-    .toc[open] .toc-list { padding: 0 8px; border-top: 1px solid var(--border); padding-top: 6px; }
+    .toc[open] .toc-body { padding: 8px 8px 0; border-top: 1px solid var(--border); }
     .toc-top { margin: 6px 16px 0; padding-bottom: 12px; }
     .lesson { padding: 18px 16px; }
     .lesson-head h2.lesson-title { font-size: 22px; }
@@ -603,6 +632,10 @@
     .tbl { font-size: 0.78rem; }
     .tbl th, .tbl td { padding: 6px 4px; }
     .lesson-row { padding: 12px 14px; gap: 4px 12px; }
+    .flow { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+    .flow-link { flex-direction: row; justify-content: center; gap: 14px; padding: 2px 0; }
+    .flow .h-only { display: none; }
+    .flow .v-only { display: inline; }
   }
 </style>
 </head>
@@ -613,7 +646,7 @@
   <header class="hero" id="hero">
     <p class="eyebrow">INVESTMENT · 入門コース</p>
     <h1>投資入門コース</h1>
-    <p class="tagline">投資のことをまったく知らない人のための10のレッスン。身近なたとえと小さな体験で、しくみを順番に学びます。</p>
+    <p class="tagline">お金や投資のことをまったく知らない人のための15のレッスン。「金利とは何か」から始めて、身近なたとえと小さな体験で、投資のしくみを順番に学びます。</p>
     <nav class="site-nav" aria-label="投資シミュレーション道場のページ">
       <span aria-current="page">入門コース</span>
       <a href="index.html">シミュレーター</a>
@@ -641,6 +674,7 @@
   var KEY = "investmentSimulatorCourse";
   var L = INVEST_LESSONS;
   var N = L.length;
+  var PARTS = L.parts || [];
   var TAB_LABEL = { compound: "複利と長期", dca: "積立と一括", diversify: "分散投資", timing: "売買ルール" };
   var KEYS = ["A", "B", "C", "D"];
   var svgNS = "http://www.w3.org/2000/svg";
@@ -661,7 +695,9 @@
   INVEST_TERMS.forEach(function (t) { TERM_BY_ID[t.id] = t; });
 
   // ---------- 保存 ----------
-  // { done: [id…], last: 1〜10(0 = まだ), checks: [id…] }
+  // { done: [id…], lastId: 最後に開いたレッスンの id(""= まだ), checks: [id…] }
+  // 古い形(10レッスンの時期)の last: 1〜10 は読まない。続きは最初の未読(新しい第1部)から
+  var LESSON_IDS = L.map(function (l) { return l.id; });
   function uniqKnown(arr, known) {
     if (!Array.isArray(arr)) return [];
     var out = [];
@@ -670,10 +706,11 @@
   }
   function sanitize(raw) {
     raw = raw && typeof raw === "object" ? raw : {};
-    var last = raw.last;
+    var lastId = "";
+    if (typeof raw.lastId === "string" && LESSON_IDS.indexOf(raw.lastId) >= 0) lastId = raw.lastId;
     return {
-      done: uniqKnown(raw.done, L.map(function (l) { return l.id; })),
-      last: typeof last === "number" && last % 1 === 0 && last >= 1 && last <= N ? last : 0,
+      done: uniqKnown(raw.done, LESSON_IDS),
+      lastId: lastId,
       checks: uniqKnown(raw.checks, CHECKS.map(function (c) { return c.id; }))
     };
   }
@@ -687,10 +724,10 @@
     save();
   }
   function doneCount() { return state.done.length; }
-  // 続きから読むレッスン: last から先の最初の未読。なければ最初の未読
+  // 続きから読むレッスン: 最後に開いたレッスンから先の最初の未読。なければ最初の未読
   function resumeLesson() {
-    var from = state.last || 1, k;
-    for (k = from - 1; k < N; k++) if (!isDone(L[k].id)) return L[k];
+    var from = Math.max(0, LESSON_IDS.indexOf(state.lastId)), k;
+    for (k = from; k < N; k++) if (!isDone(L[k].id)) return L[k];
     for (k = 0; k < N; k++) if (!isDone(L[k].id)) return L[k];
     return null;
   }
@@ -772,6 +809,8 @@
     inp.type = "range"; inp.id = id; inp.min = min; inp.max = max; inp.step = step; inp.value = cur;
     inp.addEventListener("input", function () { var v = parseFloat(inp.value); val.textContent = fmt(v); onInput(v); });
     f.appendChild(top); f.appendChild(inp);
+    // あとから値を変える(チップでまとめて設定するときなど)
+    f.setValue = function (v) { inp.value = v; val.textContent = fmt(v); };
     return f;
   }
 
@@ -888,7 +927,297 @@
   // ---------- ミニ体験 ----------
   var MINI = {};
 
-  // 1. インフレ
+  // 金額の表示: 1億円以上は「◯億円」
+  function fmtBig(yen) { return yen >= 1e8 && yen % 1e8 === 0 ? (yen / 1e8).toLocaleString("ja-JP") + "億円" : fmtMan(yen); }
+  // 割合(%)の表示。0.2 → "0.2%"
+  function pctLabel(pct) { return String(roundTo(pct, 2)) + "%"; }
+  // 月数 → 「◯年◯か月」
+  function fmtMonths(m) {
+    var y = Math.floor(m / 12), r = m % 12;
+    return (y ? y + "年" : "") + (r ? r + "か月" : (y ? "" : "0か月"));
+  }
+  // 月の横軸(年ごとの目盛り)
+  function monthTicks(months) {
+    var Y = months / 12;
+    var st = Y <= 5 ? 1 : Y <= 12 ? 2 : Y <= 25 ? 5 : 10;
+    var out = [{ v: 0, label: "0" }];
+    for (var y = st; y * 12 <= months; y += st) {
+      if (months - y * 12 < st * 12 * 0.4 && y * 12 !== months) break; // 右端に近すぎる目盛りは出さない
+      out.push({ v: y * 12, label: y + "年" });
+    }
+    return out;
+  }
+
+  // 第1部 1. 利息の計算
+  MINI.interest = {
+    title: "利息を計算してみる",
+    render: function (box) {
+      var s = { amount: 1e6, pct: 0.2, years: 1 };
+      var ctl = el("div", "mini-controls");
+      ctl.appendChild(chipGroup("金額", [1e4, 1e5, 1e6].map(function (v) { return { v: v, label: fmtMan(v) }; }), s.amount, function (v) { s.amount = v; draw(); }));
+      ctl.appendChild(chipGroup("年利(例)", [0.2, 1, 3, 15].map(function (v) { return { v: v, label: "年" + pctLabel(v) }; }), s.pct, function (v) { s.pct = v; draw(); }));
+      ctl.appendChild(chipGroup("期間", [1, 5].map(function (v) { return { v: v, label: v + "年" }; }), s.years, function (v) { s.years = v; draw(); }));
+      box.appendChild(ctl);
+      var out = el("div", "mini-out");
+      var formula = el("p", "formula");
+      formula.setAttribute("aria-live", "polite");
+      var stats = el("div", "stat-grid cols-2");
+      out.appendChild(formula); out.appendChild(stats);
+      box.appendChild(out);
+      box.appendChild(el("p", "hint mini-note", "※税金は考えていません。5年は、毎年同じ額の利息がつく計算(単利)です。増えた利息にもまた利息がつく「複利」は、レッスン9で学びます。年15%は、借りるときの金利の例です(レッスン3)。"));
+      function draw() {
+        var perYear = Math.round(s.amount * s.pct / 100);
+        var total = perYear * s.years;
+        var f = fmtMan(s.amount) + " × " + pctLabel(s.pct) + " = " + fmtYen(perYear) + (s.years > 1 ? "(1年分)" : "");
+        if (s.years > 1) f += "<br>" + fmtYen(perYear) + " × " + s.years + "年 = " + fmtYen(total);
+        formula.innerHTML = f;
+        stats.innerHTML =
+          statBox("預けた(貸した)場合", "+" + fmtYen(total), s.years + "年で受け取る利息<br>合計 " + fmtYen(s.amount + total) + " になる", "pos") +
+          statBox("借りた場合", "−" + fmtYen(total), s.years + "年で払う利息<br>合計 " + fmtYen(s.amount + total) + " を返す", "neg");
+      }
+      draw();
+    }
+  };
+
+  // 第1部 2. 銀行のお金の流れ
+  MINI.bank = {
+    title: "お金の流れを見る",
+    render: function (box) {
+      var s = { dep: 0.2, loan: 2, total: 1e8 };
+      var flow = el("div", "flow");
+      flow.setAttribute("role", "img");
+      function node(name, sub, cls) {
+        var d = el("div", "flow-node" + (cls ? " " + cls : ""), name);
+        d.appendChild(el("small", "", sub));
+        return d;
+      }
+      function linkBox(label) {
+        var d = el("div", "flow-link");
+        d.innerHTML = '<span class="fwd"><span class="h-only">' + label + ' →</span><span class="v-only">↓ ' + label + '</span></span>' +
+          '<span class="back"><span class="h-only">← </span><span class="v-only">↑ </span>利息 <span class="rate"></span></span>';
+        return d;
+      }
+      var l1 = linkBox("預ける"), l2 = linkBox("貸す");
+      flow.appendChild(node("預金者", "お金を預ける人"));
+      flow.appendChild(l1);
+      flow.appendChild(node("銀行", "なかだち", "is-bank"));
+      flow.appendChild(l2);
+      flow.appendChild(node("借り手", "会社・家を買う人など"));
+      box.appendChild(flow);
+      var ctl = el("div", "mini-controls");
+      ctl.style.marginTop = "12px";
+      ctl.appendChild(rangeField("預金の金利(銀行が払う)", 0, 1, 0.05, s.dep, function (v) { return "年" + pctLabel(v); }, function (v) { s.dep = v; draw(); }));
+      ctl.appendChild(rangeField("貸し出しの金利(銀行が受け取る)", 0.5, 5, 0.1, s.loan, function (v) { return "年" + pctLabel(v); }, function (v) { s.loan = v; draw(); }));
+      ctl.appendChild(chipGroup("集めた預金", [1e8, 1e9].map(function (v) { return { v: v, label: fmtBig(v) }; }), s.total, function (v) { s.total = v; draw(); }));
+      box.appendChild(ctl);
+      var out = el("div", "mini-out");
+      var stats = el("div", "stat-grid");
+      var line = el("p", "extra-line");
+      line.setAttribute("aria-live", "polite");
+      out.appendChild(stats); out.appendChild(line);
+      box.appendChild(out);
+      box.appendChild(el("p", "hint mini-note", "※集めた預金を全部、1年間貸し出したとする簡単な計算です。実際の銀行は、この差から人件費やお店・システムの費用、返してもらえなかったときの損なども払います。金利の数字は例です。"));
+      function draw() {
+        l1.querySelector(".rate").textContent = "年" + pctLabel(s.dep);
+        l2.querySelector(".rate").textContent = "年" + pctLabel(s.loan);
+        flow.setAttribute("aria-label", "預金者が銀行に預け、銀行が借り手に貸す。預金の金利は年" + pctLabel(s.dep) + "、貸し出しの金利は年" + pctLabel(s.loan));
+        var paid = Math.round(s.total * s.dep / 100);
+        var got = Math.round(s.total * s.loan / 100);
+        var diff = got - paid;
+        var gap = roundTo(s.loan - s.dep, 2);
+        stats.innerHTML =
+          statBox("預金者に払う利息", fmtMan(paid), "1年分") +
+          statBox("借り手から受け取る利息", fmtMan(got), "1年分") +
+          statBox("差(利ざや)", (diff < 0 ? "−" : "") + fmtMan(Math.abs(diff)), "銀行の取り分", diff < 0 ? "neg" : "pos");
+        line.textContent = diff >= 0
+          ? "金利の差は 年" + pctLabel(gap) + "。" + fmtBig(s.total) + " × " + pctLabel(gap) + " = " + fmtMan(diff) + " が、1年の利ざやです。"
+          : "預金の金利のほうが高いと、銀行は貸すほど損をします。ふつう、貸し出しの金利は預金の金利より高く決められています。";
+      }
+      draw();
+    }
+  };
+
+  // 第1部 3. リボ払い(元利定額: 毎月「残高 × 年利 ÷ 12」を足してから返済。1円未満は切り捨て)
+  var REVO_RATE = 0.15, REVO_MAX = 600;
+  function revolvePlan(principal, pay) {
+    var bal = principal, months = 0, interest = 0, path = [principal];
+    var first = Math.floor(principal * REVO_RATE / 12);
+    if (pay <= first) {
+      // 返済が利息以下: 10年分だけ残高の動きを出す
+      for (var k = 0; k < 120; k++) {
+        var it = Math.floor(bal * REVO_RATE / 12);
+        bal = bal + it - pay;
+        path.push(bal);
+      }
+      return { never: true, first: first, path: path, balance: bal };
+    }
+    while (bal > 0 && months < REVO_MAX) {
+      var i = Math.floor(bal * REVO_RATE / 12);
+      interest += i;
+      bal += i;
+      bal -= Math.min(pay, bal);
+      months++;
+      path.push(bal);
+    }
+    return { never: false, first: first, months: months, interest: interest, paid: principal + interest, path: path };
+  }
+  MINI.borrow = {
+    title: "リボ払いで買い物をすると?",
+    render: function (box) {
+      var s = { amount: 300000, pay: 5000 };
+      var ctl = el("div", "mini-controls");
+      ctl.appendChild(chipGroup("買い物の金額(借りた額)", [100000, 300000, 500000].map(function (v) { return { v: v, label: fmtMan(v) }; }), s.amount, function (v) { s.amount = v; draw(); }));
+      ctl.appendChild(chipGroup("毎月の返済", [5000, 10000, 20000].map(function (v) { return { v: v, label: fmtMan(v) }; }), s.pay, function (v) { s.pay = v; draw(); }));
+      ctl.appendChild(el("p", "hint", "金利は年15%(例)。"));
+      box.appendChild(ctl);
+      var out = el("div", "mini-out");
+      var first = el("p", "mini-line");
+      var stats = el("div", "stat-grid");
+      var chart = el("div", "chart-wrap");
+      var warn = el("p", "extra-line");
+      warn.setAttribute("aria-live", "polite");
+      out.appendChild(first); out.appendChild(stats); out.appendChild(warn); out.appendChild(chart);
+      out.appendChild(legend([{ c: "c2", label: "残っている借金(残高)" }]));
+      box.appendChild(out);
+      box.appendChild(el("p", "hint mini-note", "※しくみを簡単にした計算です(毎月、残高 × 年15% ÷ 12 の利息を足してから返済。1円未満は切り捨て)。実際の計算方法は会社によってちがいます。"));
+      function draw() {
+        var r = revolvePlan(s.amount, s.pay);
+        var down = s.pay - r.first;
+        first.innerHTML = "最初の月の利息: " + fmtMan(s.amount) + " × 15% ÷ 12 = <b class=\"num\">" + fmtYen(r.first) + "</b>。" +
+          (down > 0 ? "返済" + fmtYen(s.pay) + "のうち、借金が減るのは" + fmtYen(down) + "だけです。" : "返済" + fmtYen(s.pay) + "では、利息も払いきれません。");
+        if (r.never) {
+          stats.innerHTML =
+            statBox("返し終わるまで", "終わらない", "", "neg") +
+            statBox("10年後の残高", fmtYen(r.balance), "借りた額 " + fmtYen(s.amount), "neg") +
+            statBox("10年で返したお金", fmtYen(s.pay * 120), "毎月" + fmtYen(s.pay) + " × 120回");
+          warn.hidden = false;
+          warn.textContent = "毎月の返済(" + fmtYen(s.pay) + ")が月の利息(" + fmtYen(r.first) + ")以下なので、いつまでも返し終わりません。";
+        } else {
+          stats.innerHTML =
+            statBox("返し終わるまで", fmtMonths(r.months), r.months + "回の返済") +
+            statBox("払う利息の合計", fmtYen(r.interest), "借りた額の約" + Math.round(r.interest / s.amount * 100) + "%", "neg") +
+            statBox("返すお金の合計", fmtYen(r.paid), "借りた額 + 利息");
+          warn.hidden = true;
+        }
+        var M = r.path.length - 1;
+        lineChart(chart, {
+          xMax: M, xTicks: monthTicks(M), zeroBase: true,
+          series: [{ ys: r.path, cls: "s2" }],
+          aria: fmtMan(s.amount) + "を毎月" + fmtYen(s.pay) + "ずつ返したときの残高の推移"
+        });
+      }
+      draw();
+    }
+  };
+
+  // 第1部 5. 株価が動くしくみ(とても単純な模型)
+  var STOCK_START = 1000, STOCK_ROUNDS = 20;
+  function nextStockPrice(price, buy, sell) {
+    if (buy + sell === 0) return price;
+    return Math.round(price * (1 + (buy - sell) / (buy + sell) * 0.1));
+  }
+  MINI.company = {
+    title: "株価が動くしくみ",
+    render: function (box) {
+      var NEWS = {
+        none: { label: "ニュースなし", buy: 50, sell: 50 },
+        hit: { label: "新商品がヒット", buy: 80, sell: 20 },
+        bad: { label: "業績が悪化", buy: 20, sell: 80 }
+      };
+      var s = { buy: 50, sell: 50, prices: [STOCK_START] };
+      var ctl = el("div", "mini-controls");
+      var fBuy = rangeField("買いたい人", 0, 100, 1, s.buy, function (v) { return v + "人"; }, function (v) { s.buy = v; syncNews(); preview(); });
+      var fSell = rangeField("売りたい人", 0, 100, 1, s.sell, function (v) { return v + "人"; }, function (v) { s.sell = v; syncNews(); preview(); });
+      var newsCtl = chipGroup("ニュースが出ると、人数が変わる", Object.keys(NEWS).map(function (k) { return { v: k, label: NEWS[k].label }; }), "none", function (k) {
+        s.buy = NEWS[k].buy; s.sell = NEWS[k].sell;
+        fBuy.setValue(s.buy); fSell.setValue(s.sell);
+        preview();
+      });
+      // スライダーで人数を変えたら、合うニュースのチップだけを押された表示にする
+      function syncNews() {
+        var btns = newsCtl.querySelectorAll(".chip-btn");
+        Object.keys(NEWS).forEach(function (k, i) {
+          btns[i].setAttribute("aria-pressed", String(NEWS[k].buy === s.buy && NEWS[k].sell === s.sell));
+        });
+      }
+      ctl.appendChild(newsCtl);
+      ctl.appendChild(fBuy); ctl.appendChild(fSell);
+      box.appendChild(ctl);
+      var out = el("div", "mini-out");
+      var readout = el("p", "readout");
+      readout.setAttribute("aria-live", "polite");
+      var btns = el("div", "btn-row");
+      var step = el("button", "btn-primary", "1回すすめる"); step.type = "button";
+      var reset = el("button", "btn-secondary", "最初の値段にもどす"); reset.type = "button";
+      btns.appendChild(step); btns.appendChild(reset);
+      var stats = el("div", "stat-grid cols-2");
+      var chart = el("div", "chart-wrap");
+      out.appendChild(readout); out.appendChild(btns); out.appendChild(stats); out.appendChild(chart);
+      box.appendChild(out);
+      box.appendChild(el("p", "hint mini-note", "※しくみを見るための、とても単純な模型です(次の値段 = 今の値段 × (1 + (買いたい人 − 売りたい人) ÷ (買いたい人 + 売りたい人) × 0.1))。実際の株価は、もっとたくさんの理由で、予想できない動き方をします。"));
+      function cur() { return s.prices[s.prices.length - 1]; }
+      function preview() {
+        var p = cur(), np = nextStockPrice(p, s.buy, s.sell);
+        if (s.prices.length > STOCK_ROUNDS) readout.textContent = STOCK_ROUNDS + "回すすめました。「最初の値段にもどす」で、やり直せます。";
+        else readout.textContent = "このまま1回すすめると: " + fmtYen(p) + " → " + fmtYen(np) + "(" + (np === p ? "±0%" : fmtPct((np - p) / p, true)) + ")";
+      }
+      function draw() {
+        var p = cur();
+        stats.innerHTML =
+          statBox("今の株価", fmtYen(p), (s.prices.length - 1) + "回目") +
+          statBox("最初からの変化", p === STOCK_START ? "±0%" : fmtPct((p - STOCK_START) / STOCK_START, true), "最初 " + fmtYen(STOCK_START), p > STOCK_START ? "pos" : p < STOCK_START ? "neg" : "");
+        step.disabled = s.prices.length > STOCK_ROUNDS;
+        lineChart(chart, {
+          xMax: STOCK_ROUNDS, xTicks: [0, 5, 10, 15, 20].map(function (v) { return { v: v, label: v === STOCK_ROUNDS ? v + "回" : String(v) }; }),
+          zeroBase: false,
+          series: [{ ys: s.prices.slice(), cls: "s1", endDot: "f1" }],
+          aria: "株価の動き。" + (s.prices.length - 1) + "回目まで"
+        });
+        preview();
+      }
+      step.addEventListener("click", function () {
+        if (s.prices.length > STOCK_ROUNDS) return;
+        s.prices.push(nextStockPrice(cur(), s.buy, s.sell));
+        draw();
+      });
+      reset.addEventListener("click", function () { s.prices = [STOCK_START]; draw(); });
+      draw();
+    }
+  };
+
+  // 第2部 6. 預金と、平均年4%で増えるもの
+  MINI.grow = {
+    title: "100万円を置いておくと、どれくらい差がつく?",
+    render: function (box) {
+      var s = { years: 20 };
+      var DEP = 0.002, GROW = 0.04;
+      var ctl = el("div", "mini-controls");
+      ctl.appendChild(chipGroup("年数", [10, 20, 30].map(function (v) { return { v: v, label: v + "年" }; }), s.years, function (v) { s.years = v; draw(); }));
+      box.appendChild(ctl);
+      var out = el("div", "mini-out");
+      var stats = el("div", "stat-grid cols-2");
+      var chart = el("div", "chart-wrap");
+      out.appendChild(stats); out.appendChild(chart);
+      out.appendChild(legend([{ c: "c1", label: "平均年4%で増えるもの(毎年同じだけ増えたとき)" }, { c: "c5", kind: "dashed", label: "預金(年0.2%)" }]));
+      box.appendChild(out);
+      box.appendChild(el("p", "hint mini-note", "※税金・手数料は考えていません。数字は例です。年4%のほうは、実際には上がる年も下がる年もあり、この金額になるとはかぎりません。元本を下回ることもあります(レッスン8・10)。"));
+      function draw() {
+        var Y = s.years, dep = [], grow = [];
+        for (var y = 0; y <= Y; y++) { dep.push(1e6 * Math.pow(1 + DEP, y)); grow.push(1e6 * Math.pow(1 + GROW, y)); }
+        stats.innerHTML =
+          statBox("預金(年0.2%)", fmtMan(dep[Y]), Y + "年後") +
+          statBox("平均年4%で増えるもの", fmtMan(grow[Y]), Y + "年後(毎年同じだけ増えたとき)", "pos");
+        lineChart(chart, {
+          xMax: Y, xTicks: yearTicks(Y), zeroBase: true,
+          series: [{ ys: dep, cls: "s5", dash: true }, { ys: grow, cls: "s1" }],
+          aria: "100万円を預金と平均年4%で増えるものに" + Y + "年置いたときの推移"
+        });
+      }
+      draw();
+    }
+  };
+
+  // 第1部 4. インフレ
   MINI.inflation = {
     title: "100万円を預金に置いておくと?",
     render: function (box) {
@@ -1448,13 +1777,48 @@
     return p;
   }
 
+  function partOf(no) {
+    for (var i = 0; i < PARTS.length; i++) if (PARTS[i].no === no) return PARTS[i];
+    return null;
+  }
+  function partLabel(pt) { return "第" + pt.no + "部 " + pt.title; }
+  function lessonsOf(pt) { return L.filter(function (ls) { return ls.part === pt.no; }); }
+  // 部がないとき(古い lessons.js)は、全部を1つの部として扱う
+  function partGroups() {
+    if (!PARTS.length) return [{ part: null, lessons: L }];
+    return PARTS.map(function (pt) { return { part: pt, lessons: lessonsOf(pt) }; });
+  }
+
+  function lessonRow(ls) {
+    var li = el("li");
+    var done = isDone(ls.id);
+    var a = link(lessonHref(ls.no), "lesson-row" + (done ? " is-done" : ""));
+    var num = el("span", "lesson-num", done ? "✓" : String(ls.no));
+    num.setAttribute("aria-hidden", "true");
+    a.appendChild(num);
+    var main = el("span", "lesson-main");
+    var tt = el("span", "lesson-title", "レッスン" + ls.no + " " + ls.title);
+    if (done) tt.appendChild(el("span", "sr-only", "(読了)"));
+    main.appendChild(tt);
+    main.appendChild(el("span", "lesson-summary", ls.summary));
+    var meta = el("span", "lesson-meta");
+    meta.appendChild(el("span", "chip", "約" + ls.minutes + "分"));
+    if (ls.tryTab && TAB_LABEL[ls.tryTab]) meta.appendChild(el("span", "chip", "シミュレーター: " + TAB_LABEL[ls.tryTab]));
+    main.appendChild(meta);
+    a.appendChild(main);
+    li.appendChild(a);
+    return li;
+  }
+
   function renderTop() {
     var v = el("div", "view-top");
+    var minutes = L.reduce(function (sum, ls) { return sum + ls.minutes; }, 0);
 
     var intro = el("section", "card course-intro");
     intro.appendChild(el("h2", "", "このコースについて"));
     var ul = el("ul");
-    ["投資をまったく知らない人向け。1レッスン5分ほど、全10レッスン(約50分)",
+    ["お金や投資をまったく知らない人向け。「金利とは何か」から始めます",
+      "1レッスン5分ほど、全" + N + "レッスン(約" + minutes + "分)。" + (PARTS.length ? PARTS.length + "つの部に分かれています" : ""),
       "順番に読むのがおすすめ。各レッスンに、小さな体験・ここだけ覚える・確認クイズがあります",
       "読んだしるしは、このブラウザにだけ保存されます"].forEach(function (t) { ul.appendChild(el("li", "", t)); });
     intro.appendChild(ul);
@@ -1469,38 +1833,45 @@
     else resume = link(lessonHref(1), "btn-secondary resume", "もう一度レッスン1から");
     v.appendChild(resume);
 
-    var ol = el("ol", "lesson-list");
-    ol.setAttribute("aria-label", "レッスンの一覧");
-    L.forEach(function (ls) {
-      var li = el("li");
-      var done = isDone(ls.id);
-      var a = link(lessonHref(ls.no), "lesson-row" + (done ? " is-done" : ""));
-      var num = el("span", "lesson-num", done ? "✓" : String(ls.no));
-      num.setAttribute("aria-hidden", "true");
-      a.appendChild(num);
-      var main = el("span", "lesson-main");
-      var tt = el("span", "lesson-title", "レッスン" + ls.no + " " + ls.title);
-      if (done) tt.appendChild(el("span", "sr-only", "(読了)"));
-      main.appendChild(tt);
-      main.appendChild(el("span", "lesson-summary", ls.summary));
-      var meta = el("span", "lesson-meta");
-      meta.appendChild(el("span", "chip", "約" + ls.minutes + "分"));
-      if (ls.tryTab && TAB_LABEL[ls.tryTab]) meta.appendChild(el("span", "chip", "シミュレーター: " + TAB_LABEL[ls.tryTab]));
-      main.appendChild(meta);
-      a.appendChild(main);
-      li.appendChild(a);
-      ol.appendChild(li);
+    var p2 = partOf(2), p2first = p2 ? lessonsOf(p2)[0] : null;
+    if (p2first) {
+      var skip = el("p", "skip-note", "投資のことをすでに少し知っている人は、第2部から読んでもかまいません。");
+      skip.appendChild(document.createTextNode(" "));
+      skip.appendChild(link(lessonHref(p2first.no), "", partLabel(p2) + "へ →"));
+      v.appendChild(skip);
+    }
+
+    partGroups().forEach(function (g) {
+      var block = el("section", "part-block");
+      var ol = el("ol", "lesson-list");
+      if (g.part) {
+        var hid = "part-" + g.part.no;
+        var head = el("div", "part-head");
+        head.appendChild(el("p", "part-no", "PART " + g.part.no));
+        var h = el("h2", "", partLabel(g.part));
+        h.id = hid;
+        head.appendChild(h);
+        head.appendChild(el("p", "part-desc", g.part.desc));
+        block.appendChild(head);
+        block.setAttribute("aria-labelledby", hid);
+        ol.setAttribute("aria-labelledby", hid);
+      } else ol.setAttribute("aria-label", "レッスンの一覧");
+      g.lessons.forEach(function (ls) { ol.appendChild(lessonRow(ls)); });
+      block.appendChild(ol);
+      v.appendChild(block);
     });
-    v.appendChild(ol);
 
     if (doneCount() === N) {
       var sum = el("section", "card summary-card");
       sum.appendChild(el("h2", "", "総まとめ: ここだけ覚える"));
-      L.forEach(function (ls) {
-        sum.appendChild(el("h3", "", "レッスン" + ls.no + " " + ls.title));
-        var u = el("ul");
-        ls.points.forEach(function (p) { u.appendChild(el("li", "", p)); });
-        sum.appendChild(u);
+      partGroups().forEach(function (g) {
+        if (g.part) sum.appendChild(el("p", "summary-part", partLabel(g.part)));
+        g.lessons.forEach(function (ls) {
+          sum.appendChild(el("h3", "", "レッスン" + ls.no + " " + ls.title));
+          var u = el("ul");
+          ls.points.forEach(function (p) { u.appendChild(el("li", "", p)); });
+          sum.appendChild(u);
+        });
       });
       v.appendChild(sum);
     }
@@ -1519,21 +1890,32 @@
     head.appendChild(el("span", "", "目次"));
     head.appendChild(el("span", "progress-text", doneCount() + "/" + N + " 読了"));
     toc.appendChild(head);
-    var ol = el("ol", "toc-list");
-    L.forEach(function (ls) {
-      var li = el("li");
-      var done = isDone(ls.id);
-      var a = link(lessonHref(ls.no), "toc-item" + (ls.no === cur ? " is-current" : "") + (done ? " is-done" : ""));
-      if (ls.no === cur) a.setAttribute("aria-current", "page");
-      var no = el("span", "toc-no", done ? "✓" : String(ls.no));
-      a.appendChild(no);
-      a.appendChild(el("span", "", ls.short));
-      if (done) a.setAttribute("aria-label", "レッスン" + ls.no + " " + ls.short + "(読了)");
-      a.addEventListener("click", function () { if (!mqPC.matches) toc.open = false; });
-      li.appendChild(a);
-      ol.appendChild(li);
+    var bodyBox = el("div", "toc-body");
+    partGroups().forEach(function (g) {
+      var ol = el("ol", "toc-list");
+      if (g.part) {
+        var pid = "toc-part-" + g.part.no;
+        var ph = el("p", "toc-part", partLabel(g.part));
+        ph.id = pid;
+        bodyBox.appendChild(ph);
+        ol.setAttribute("aria-labelledby", pid);
+      }
+      g.lessons.forEach(function (ls) {
+        var li = el("li");
+        var done = isDone(ls.id);
+        var a = link(lessonHref(ls.no), "toc-item" + (ls.no === cur ? " is-current" : "") + (done ? " is-done" : ""));
+        if (ls.no === cur) a.setAttribute("aria-current", "page");
+        var no = el("span", "toc-no", done ? "✓" : String(ls.no));
+        a.appendChild(no);
+        a.appendChild(el("span", "", ls.short));
+        if (done) a.setAttribute("aria-label", "レッスン" + ls.no + " " + ls.short + "(読了)");
+        a.addEventListener("click", function () { if (!mqPC.matches) toc.open = false; });
+        li.appendChild(a);
+        ol.appendChild(li);
+      });
+      bodyBox.appendChild(ol);
     });
-    toc.appendChild(ol);
+    toc.appendChild(bodyBox);
     toc.appendChild(link("#top", "toc-top", "← コースのトップ"));
   }
 
@@ -1642,7 +2024,8 @@
     var art = el("article", "card lesson");
     art.setAttribute("aria-labelledby", "lesson-title");
     var head = el("div", "lesson-head");
-    head.appendChild(el("p", "lesson-no", "LESSON " + no + " / " + N + " ・ 約" + ls.minutes + "分"));
+    var pt = partOf(ls.part);
+    head.appendChild(el("p", "lesson-no", "LESSON " + no + " / " + N + (pt ? " ・ 第" + pt.no + "部" : "") + " ・ 約" + ls.minutes + "分"));
     var h2 = el("h2", "lesson-title", ls.title);
     h2.id = "lesson-title";
     h2.tabIndex = -1;
@@ -1728,7 +2111,7 @@
     hero.classList.toggle("is-compact", no > 0);
     var h2 = null;
     if (no) {
-      state.last = no;
+      state.lastId = L[no - 1].id;
       save();
       h2 = renderLesson(no);
       document.title = "レッスン" + no + " " + L[no - 1].title + " | 投資入門コース";
