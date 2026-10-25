@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>オーダー図鑑</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  body { padding-bottom: 72px; }
+
+  .app { max-width: 780px; gap: 24px; }
+
+  header.top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .title-block h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 28px;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .title-block p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 14px;
+    max-width: 46ch;
+    line-height: 1.6;
+  }
+
+  nav.top-nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px var(--shadow);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  nav.top-nav a:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--shadow);
+  }
+
+  .intro {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--ink-muted);
+  }
+
+  .intro b { color: var(--ink); }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .tab:hover { border-color: var(--accent); color: var(--ink); }
+
+  .tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .tab .unit {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    opacity: 0.75;
+  }
+
+  .scale-overview {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 10px 4px;
+    overflow-x: auto;
+  }
+
+  .scale-dot {
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-faint);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .scale-dot:hover { border-color: var(--accent); color: var(--accent); }
+
+  .timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-left: 26px;
+  }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--border), var(--accent), var(--border));
+    opacity: 0.6;
+  }
+
+  .item {
+    position: relative;
+    padding: 14px 0;
+    scroll-margin-top: 20px;
+  }
+
+  .item::before {
+    content: "";
+    position: absolute;
+    left: -26px;
+    top: 22px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 1.5px var(--accent);
+  }
+
+  .item-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px var(--shadow);
+  }
+
+  .item-emoji {
+    flex: 0 0 auto;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+
+  .item-body { flex: 1 1 auto; min-width: 0; }
+
+  .item-name {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 2px;
+  }
+
+  .item-note {
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .item-vals {
+    flex: 0 0 auto;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+  }
+
+  .item-exp {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--accent);
+    background: var(--good-soft);
+    padding: 3px 9px;
+    border-radius: 8px;
+  }
+
+  .item-value {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
+
+
+  .unit-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: -10px;
+  }
+
+  .unit-row .label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-faint);
+    margin-right: 4px;
+  }
+
+  .unit-chip {
+    padding: 6px 11px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .unit-chip:hover { border-color: var(--accent); color: var(--ink); }
+  .unit-chip.active { background: var(--good-soft); border-color: var(--accent); color: var(--accent); }
+
+  .unit-hint {
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    margin: -14px 0 0;
+    line-height: 1.6;
+  }
+
+  .converter {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0 16px;
+    scroll-margin-top: 12px;
+  }
+
+  .converter summary {
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 14px 0;
+    list-style: none;
+  }
+
+  .converter summary::-webkit-details-marker { display: none; }
+  .converter summary::after { content: " ▾"; color: var(--ink-faint); }
+  .converter[open] summary::after { content: " ▴"; }
+
+  .conv-body { padding-bottom: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+  .conv-input {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .conv-input input, .conv-input select {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    padding: 9px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    min-width: 0;
+  }
+
+  .conv-input input { flex: 1 1 auto; width: 100%; }
+  .conv-input select { flex: 0 0 auto; font-family: var(--font-body); }
+  .conv-input input:focus, .conv-input select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .conv-note { font-size: 12px; color: var(--ink-faint); margin: 0; line-height: 1.6; }
+  .conv-error { font-size: 13px; color: var(--bad); margin: 0; }
+
+  .conv-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .conv-table td { padding: 7px 4px; border-top: 1px solid var(--border); vertical-align: top; }
+  .conv-table td.u { color: var(--ink-muted); white-space: nowrap; width: 1%; padding-right: 12px; }
+  .conv-table td.v { font-family: var(--font-mono); font-weight: 600; word-break: break-all; }
+  .conv-table td.v small { display: block; font-family: var(--font-body); font-weight: 500; color: var(--ink-faint); font-size: 12px; }
+  .conv-table tr.same td { color: var(--accent); }
+  .conv-table .nw { white-space: nowrap; }
+
+  .item-card { cursor: pointer; transition: border-color 0.15s ease; }
+  .item-card:hover { border-color: var(--accent); }
+
+  .item-friendly {
+    font-size: 12.5px;
+    color: var(--accent);
+    font-weight: 600;
+    margin: 3px 0 0;
+  }
+
+  .item-exp { white-space: nowrap; }
+  .item-exp .u { font-size: 12px; font-weight: 600; margin-left: 2px; }
+
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-faint);
+    padding-top: 8px;
+  }
+
+  @media (max-width: 480px) {
+    .item-note { display: none; }
+    .item-exp { font-size: 14px; }
+    .item-card { padding: 12px; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="top">
+    <div class="title-block">
+      <h1>オーダー図鑑</h1>
+      <p>いろいろなモノの大きさ・重さ・時間・数を、10のべき乗(桁)のスケールで並べて眺めながら「桁の感覚」を身につけるページです。</p>
+    </div>
+    <nav class="top-nav"><a href="quiz.html">クイズに挑戦 →</a></nav>
+  </header>
+
+  <div class="intro">
+    <b>オーダー(桁)</b>とは、数の大きさを 10 の何乗かでざっくり捉えたものです。例えば地球から太陽までの距離 1.5×10⁸ km は <b>10⁸ km</b> のオーダーです。同じ距離を m で表すと 1.5×10¹¹ m(<b>10¹¹ m</b>)になるように、桁は<b>単位によって変わります</b>。タブでジャンルを、その下で単位を選んでみましょう。
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="unit-row" id="unitRow"></div>
+  <p class="unit-hint" id="unitHint"></p>
+
+  <details class="converter" id="converter">
+    <summary>🔁 単位変換</summary>
+    <div class="conv-body">
+      <div class="conv-input">
+        <input id="convValue" type="text" inputmode="decimal" autocomplete="off" aria-label="変換する値">
+        <select id="convUnit" aria-label="単位"></select>
+      </div>
+      <p class="conv-note">「1.5e11」「1.5×10^11」は 1.5×10¹¹ のこと。「150000000」のように普通の数でも入力できます。下のカードを押すと、その値がここに入ります。</p>
+      <div id="convResult"></div>
+    </div>
+  </details>
+
+  <div class="scale-overview" id="scaleOverview"></div>
+  <div class="timeline" id="timeline"></div>
+
+  <footer>オーダー図鑑 — 数値は代表的な概算値です</footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+  const tabsEl = document.getElementById("tabs");
+  const unitRowEl = document.getElementById("unitRow");
+  const unitHintEl = document.getElementById("unitHint");
+  const overviewEl = document.getElementById("scaleOverview");
+  const timelineEl = document.getElementById("timeline");
+  const converterEl = document.getElementById("converter");
+  const convValueEl = document.getElementById("convValue");
+  const convUnitEl = document.getElementById("convUnit");
+  const convResultEl = document.getElementById("convResult");
+  const categories = Object.keys(OOM_DATA);
+  let current = categories[0];
+  // ジャンルごとに選んだ単位。"auto" は項目ごとの身近な単位
+  const unitChoice = {};
+  categories.forEach((k) => (unitChoice[k] = "auto"));
+
+  function unitSuffix(u) {
+    return u.id === "one" ? "" : u.label;
+  }
+
+  function displayUnit(catKey, item) {
+    const choice = unitChoice[catKey];
+    return choice === "auto" ? naturalUnit(catKey, item) : unitOf(catKey, choice);
+  }
+
+  function renderTabs() {
+    tabsEl.innerHTML = categories
+      .map((key) => {
+        const cat = OOM_DATA[key];
+        const active = key === current ? "active" : "";
+        return `<button class="tab ${active}" data-cat="${key}">${cat.icon} ${cat.label}</button>`;
+      })
+      .join("");
+    tabsEl.querySelectorAll(".tab").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        current = btn.dataset.cat;
+        renderAll();
+      });
+    });
+  }
+
+  function renderUnits() {
+    const cat = OOM_DATA[current];
+    const choice = unitChoice[current];
+    const chips = [{ id: "auto", label: "おすすめ" }, ...cat.units];
+    unitRowEl.innerHTML =
+      `<span class="label">単位</span>` +
+      chips
+        .map((u) => `<button class="unit-chip ${u.id === choice ? "active" : ""}" data-unit="${u.id}" title="${u.name || "項目ごとに身近な単位で表す"}">${u.label}</button>`)
+        .join("");
+    unitRowEl.querySelectorAll(".unit-chip").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        unitChoice[current] = btn.dataset.unit;
+        renderUnits();
+        renderList();
+      });
+    });
+    const autoHint = {
+      length: "小さいものは nm・μm、遠い距離は km",
+      mass: "軽いものは mg・g、重いものは t",
+      time: "短い時間はミリ秒、長い時間は日・年",
+      quantity: "大きい数は「1億2000万」のように万・億・兆",
+    };
+    const base = unitOf(current, null);
+    unitHintEl.textContent =
+      choice === "auto"
+        ? `おすすめ: 項目ごとに、ふだん使う単位で表します(${autoHint[current]} など)。上の丸い一覧は${base.id === "one" ? "" : ` ${base.label} での`}桁です。`
+        : `すべて ${unitOf(current, choice).name} で表します。単位を変えると、桁(10の何乗)も変わります。`;
+  }
+
+  function renderList() {
+    const items = [...OOM_DATA[current].items].sort((a, b) => a.value - b.value);
+    const choice = unitChoice[current];
+    const fixed = choice !== "auto" ? unitOf(current, choice) : null;
+    const baseUnit = unitOf(current, null);
+    const dotUnit = fixed || baseUnit;
+
+    overviewEl.innerHTML = items
+      .map((it, i) => `<div class="scale-dot" data-target="item-${i}" title="${it.name}">${formatExp(expIn(it, dotUnit)).replace("10", "")}</div>`)
+      .join("");
+
+    timelineEl.innerHTML = items
+      .map((it, i) => {
+        const u = displayUnit(current, it);
+        const v = it.value / u.factor;
+        const friendly = friendlyText(current, it);
+        const shown = formatValue(v, u);
+        return `
+      <div class="item" id="item-${i}">
+        <div class="item-card" data-index="${i}" title="単位変換に入れる">
+          <div class="item-emoji">${it.emoji}</div>
+          <div class="item-body">
+            <p class="item-name">${it.name}</p>
+            <p class="item-note">${it.note}</p>
+            ${friendly !== shown ? `<p class="item-friendly">≈ ${friendly}</p>` : ""}
+          </div>
+          <div class="item-vals">
+            <span class="item-exp">${formatExp(expIn(it, u))}<span class="u">${unitSuffix(u)}</span></span>
+            <span class="item-value">${shown}</span>
+          </div>
+        </div>
+      </div>`;
+      })
+      .join("");
+
+    overviewEl.querySelectorAll(".scale-dot").forEach((dot) => {
+      dot.addEventListener("click", () => {
+        document.getElementById(dot.dataset.target)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
+
+    timelineEl.querySelectorAll(".item-card").forEach((card) => {
+      card.addEventListener("click", () => {
+        const it = items[Number(card.dataset.index)];
+        const u = displayUnit(current, it);
+        convUnitEl.value = u.id;
+        convValueEl.value = plainInput(it.value / u.factor);
+        converterEl.open = true;
+        renderConverter();
+        converterEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+  }
+
+  // 入力欄に入れる表記(大きすぎ・小さすぎは 1.5e11 の形)
+  function plainInput(x) {
+    const { m, e } = splitSci(x);
+    if (e >= -3 && e < 7) return String(Number((m * Math.pow(10, e)).toPrecision(3)));
+    return m + "e" + e;
+  }
+
+  function fillConverterUnits() {
+    const cat = OOM_DATA[current];
+    convUnitEl.innerHTML = cat.units.map((u) => `<option value="${u.id}">${u.label === "そのまま" ? "個" : u.label}</option>`).join("");
+    const base = unitOf(current, null);
+    convUnitEl.value = base.id;
+    const sample = { length: "1.5e11", mass: "6e24", time: "86400", quantity: "120000000" };
+    convValueEl.value = sample[current] || "1";
+  }
+
+  // "1.5e11" "1.5×10^11" "1.5×10¹¹" "150,000,000" などを読む
+  function parseInput(text) {
+    const sup = { "⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9", "⁻": "-" };
+    let t = String(text)
+      .trim()
+      .replace(/[０-９．ｅＥ＋－]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+      .replace(/[,，\s]/g, "")
+      .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, (run) => "^" + run.split("").map((c) => sup[c]).join(""));
+    t = t.replace(/^\+/, "");
+    if (/^(\d+\.?\d*|\.\d+)(e[+-]?\d+)?$/i.test(t)) return Number(t);
+    const m = t.match(/^(?:(\d+\.?\d*|\.\d+)[×xX*])?10\^(-?\d+)$/);
+    if (m) return (m[1] ? Number(m[1]) : 1) * Math.pow(10, Number(m[2]));
+    return NaN;
+  }
+
+  function renderConverter() {
+    const x = parseInput(convValueEl.value);
+    if (!(x > 0) || !isFinite(x)) {
+      convResultEl.innerHTML = `<p class="conv-error">0より大きい数を入力してください。</p>`;
+      return;
+    }
+    const from = unitOf(current, convUnitEl.value);
+    const baseValue = x * from.factor;
+    convResultEl.innerHTML = `<table class="conv-table">${OOM_DATA[current].units
+      .map((u) => {
+        const v = baseValue / u.factor;
+        const label0 = u.id === "one" ? "そのまま" : u.name;
+        if (!(v > 0) || !isFinite(v)) return `<tr><td class="u">${label0}</td><td class="v"><small>大きすぎる(小さすぎる)ため表せません</small></td></tr>`;
+        const ja = ["man", "oku", "cho"].includes(u.id) ? null : formatJa(v);
+        const label = u.id === "one" ? "そのまま" : u.name;
+        const sub = (ja ? withUnit(ja, u) + "・" : "") + `<span class="nw">桁は ${formatExp(orderOf(v))}</span>`;
+        return `<tr class="${u.id === from.id ? "same" : ""}"><td class="u">${label}</td><td class="v">${formatValue(v, u)}<small>${sub}</small></td></tr>`;
+      })
+      .join("")}</table>`;
+  }
+
+  function renderAll() {
+    renderTabs();
+    renderUnits();
+    fillConverterUnits();
+    renderConverter();
+    renderList();
+  }
+
+  convValueEl.addEventListener("input", renderConverter);
+  convUnitEl.addEventListener("change", renderConverter);
+  renderAll();
+</script>
+</body>
+</html>
