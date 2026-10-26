@@ -1,0 +1,111 @@
+/* Python道場 の色。変数名は学習シリーズ共通(shared/base.css を参照)。
+   Pythonらしい青(--accent)と黄(--accent-2)。--accent-2 は飾り(下線・目印)だけに使い、文字色には使わない。
+   --code-* はPythonのコード表示(.py-block / .py-input / .out-block)だけで使う。ライトでも暗い画面にする。 */
+:root {
+  color-scheme: light;
+  --bg: #EEF2F7;
+  --surface: #FFFFFF;
+  --surface-2: #E3E9F2;
+  --border: #C9D3E2;
+  --ink: #14202E;
+  --ink-muted: #435369;
+  --ink-faint: #59677E;
+  --accent: #2B649E;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E0EAF6;
+  --accent-2: #F2C230;
+  --good: #1F6B45;
+  --good-soft: #DCEFE4;
+  --bad: #A8372A;
+  --bad-soft: #F7E0DB;
+  --shadow: rgba(20, 32, 46, 0.10);
+  --code-bg: #101B2B;
+  --code-border: #24364F;
+  --code-ink: #DDE6F2;
+  --code-muted: #8A9AB3;
+  --code-kw: #7DB6F5;
+  --code-fn: #D3AEFF;
+  --code-str: #A6DBA0;
+  --code-num: #F5AE7E;
+  --code-blank: #FFD43B;
+  --code-blank-bg: #3D3517;
+  --code-caret: #FFD43B;
+  --code-good: #8EDCA6;
+  --code-bad: #FF9B8A;
+  --code-out-bg: #0A121E;
+  --code-out-ink: #C9D5E6;
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0B111B;
+    --surface: #121B29;
+    --surface-2: #1A2638;
+    --border: #2A3B53;
+    --ink: #E3EAF4;
+    --ink-muted: #A9B6C9;
+    --ink-faint: #8D9AB0;
+    --accent: #80B6EC;
+    --accent-ink: #0A1422;
+    --accent-soft: #1A2D47;
+    --accent-2: #FFD43B;
+    --good: #86CFA0;
+    --good-soft: #183024;
+    --bad: #EE8E78;
+    --bad-soft: #3A221D;
+    --shadow: rgba(0, 0, 0, 0.45);
+    --code-bg: #070D16;
+    --code-border: #273A55;
+    --code-ink: #D8E2F0;
+    --code-muted: #8696B0;
+    --code-kw: #7DB6F5;
+    --code-fn: #D3AEFF;
+    --code-str: #A6DBA0;
+    --code-num: #F5AE7E;
+    --code-blank: #FFD43B;
+    --code-blank-bg: #3D3517;
+    --code-caret: #FFD43B;
+    --code-good: #8EDCA6;
+    --code-bad: #FF9B8A;
+    --code-out-bg: #04080F;
+    --code-out-ink: #C4D0E2;
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0B111B;
+  --surface: #121B29;
+  --surface-2: #1A2638;
+  --border: #2A3B53;
+  --ink: #E3EAF4;
+  --ink-muted: #A9B6C9;
+  --ink-faint: #8D9AB0;
+  --accent: #80B6EC;
+  --accent-ink: #0A1422;
+  --accent-soft: #1A2D47;
+  --accent-2: #FFD43B;
+  --good: #86CFA0;
+  --good-soft: #183024;
+  --bad: #EE8E78;
+  --bad-soft: #3A221D;
+  --shadow: rgba(0, 0, 0, 0.45);
+  --code-bg: #070D16;
+  --code-border: #273A55;
+  --code-ink: #D8E2F0;
+  --code-muted: #8696B0;
+  --code-kw: #7DB6F5;
+  --code-fn: #D3AEFF;
+  --code-str: #A6DBA0;
+  --code-num: #F5AE7E;
+  --code-blank: #FFD43B;
+  --code-blank-bg: #3D3517;
+  --code-caret: #FFD43B;
+  --code-good: #8EDCA6;
+  --code-bad: #FF9B8A;
+  --code-out-bg: #04080F;
+  --code-out-ink: #C4D0E2;
+}

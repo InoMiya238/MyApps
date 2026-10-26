@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Python文法帳</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 900px; gap: 24px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 56ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent-2);
+  }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- コードの部品(index.html と同じ内容。変えるときは両方を直す) ---------- */
+  .py-block,
+  .py-input,
+  .out-block {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--code-ink);
+    min-width: 0;
+  }
+  .py-block,
+  .out-block {
+    margin: 0;
+    white-space: pre;
+    overflow-x: auto;
+    tab-size: 4;
+  }
+  .out-block {
+    background: var(--code-out-bg);
+    color: var(--code-out-ink);
+    border-style: dashed;
+  }
+  .out-block .out-label {
+    display: block;
+    margin-bottom: 2px;
+    font-family: var(--font-body);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--code-muted);
+    user-select: none;
+  }
+  .out-block .out-none { color: var(--code-muted); font-style: italic; }
+  .py-block .kw { color: var(--code-kw); font-weight: 600; }
+  .py-block .fn { color: var(--code-fn); }
+  .py-block .str { color: var(--code-str); }
+  .py-block .num { color: var(--code-num); }
+  .py-block .cm { color: var(--code-muted); font-style: italic; }
+  .py-block .blank {
+    color: var(--code-blank);
+    background: var(--code-blank-bg);
+    border-radius: 4px;
+    padding: 0 3px;
+    font-weight: 700;
+    outline: 1px dashed var(--code-blank);
+    outline-offset: -1px;
+  }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    background: var(--surface-2);
+    color: var(--ink);
+    padding: 1px 5px;
+    border-radius: 5px;
+    overflow-wrap: anywhere;
+  }
+  code.nw { white-space: nowrap; }
+  /* 打つ記号を見たまま覚えられるように、合字(== を1文字に見せるなど)を切る */
+  .py-block, .out-block, .py-input, code, kbd, .ans-pre, .choice-btn { font-variant-ligatures: none; }
+  /* ---------- コードの部品 ここまで ---------- */
+
+  /* ---------- Controls bar ---------- */
+  .controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 16px;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 20px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .search-box {
+    flex: 1 1 320px;
+    min-width: 0;
+    padding: 8px 12px;
+  }
+  .search-box:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .search-box label { display: flex; align-items: center; gap: 1ch; cursor: text; }
+  .search-box .p { flex: none; color: var(--code-blank); font-weight: 600; user-select: none; }
+  .search-box input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    outline: none;
+    padding: 2px 0;
+    color: var(--code-ink);
+    caret-color: var(--code-caret);
+    font: inherit;
+    font-size: 16px;
+  }
+  .search-box input::placeholder { color: var(--code-muted); opacity: 1; }
+  .search-box input::-webkit-search-cancel-button { filter: grayscale(1); }
+  .bar-side {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-left: auto;
+  }
+  .hit-count {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+  .quiz-link {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-radius: 9px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  /* ---------- 進め方 ---------- */
+  .guide {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent-2);
+    border-radius: 14px;
+    padding: 16px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .guide[hidden] { display: none; }
+  .guide h2 {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+  .guide ol {
+    margin: 0;
+    padding-left: 1.3em;
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    line-height: 1.8;
+  }
+  .guide li { overflow-wrap: anywhere; }
+  .guide .py-block { margin: 6px 0 2px; font-size: 13px; padding: 8px 12px; }
+
+  /* ---------- TOC ---------- */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .toc[hidden] { display: none; }
+  .toc-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    margin: 0 0 10px;
+  }
+  .toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 24px;
+    font-size: 13.5px;
+  }
+  .toc li { min-width: 0; display: flex; gap: 8px; align-items: baseline; }
+  .toc li .no {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .toc a { color: var(--ink); text-decoration: none; font-weight: 600; overflow-wrap: anywhere; }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+  .toc .pending { font-size: 11px; color: var(--ink-faint); font-weight: 500; }
+
+  .no-hit {
+    margin: 0;
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 14px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+  }
+  .no-hit[hidden] { display: none; }
+
+  /* ---------- 単元の区切り ---------- */
+  .grade-section { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 16px; }
+  .grade-section[hidden] { display: none; }
+  .grade-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .grade-head h2 {
+    margin: 0;
+    min-width: 0;
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .grade-head h2 .no {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .grade-head .dojo-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .grade-head .dojo-link:hover { text-decoration: underline; }
+  .section-lead {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    line-height: 1.75;
+  }
+  .section-foot { display: flex; justify-content: flex-end; }
+  .section-foot .dojo-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .section-foot .dojo-link:hover { text-decoration: underline; }
+
+  /* ---------- 文法のカード ---------- */
+  .study-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .study-card {
+    min-width: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-margin-top: 16px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .study-card[hidden] { display: none; }
+  .study-card.is-target { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 1px 2px var(--shadow); }
+  .card-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+  }
+  .study-card h3 {
+    margin: 0;
+    min-width: 0;
+    font-family: var(--font-mono);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--accent);
+    overflow-wrap: anywhere;
+  }
+  .study-card .tag {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--accent);
+    background: var(--surface-2);
+    padding: 3px 9px;
+    border-radius: 999px;
+    overflow-wrap: anywhere;
+  }
+  .study-card p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+  .sub-title {
+    margin: 4px 0 0;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+  }
+  .example { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .example + .example { margin-top: 6px; }
+  .study-card .py-block,
+  .study-card .out-block { font-size: 13px; padding: 10px 12px; }
+  .note-list {
+    margin: 0;
+    padding: 10px 12px 10px 28px;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 8px 8px 0;
+    color: var(--ink);
+    font-size: 12.5px;
+    line-height: 1.7;
+  }
+  .note-list li { overflow-wrap: anywhere; }
+  .note-list li + li { margin-top: 4px; }
+
+  footer.cta {
+    text-align: center;
+    padding: 8px 0 0;
+  }
+  footer.cta p {
+    margin: 10px 0 0;
+    color: var(--ink-muted);
+    font-size: 13px;
+  }
+
+  @media (max-width: 700px) {
+    .study-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .controls-bar { padding: 14px 16px; }
+    .search-box { flex-basis: 100%; }
+    .bar-side { margin-left: 0; width: 100%; justify-content: space-between; }
+    .guide { padding: 14px 16px; }
+    .toc { padding: 16px; }
+    .toc ol { grid-template-columns: 1fr; gap: 6px; }
+    .study-card { padding: 16px; }
+    .py-block, .py-input, .out-block { font-size: 13px; padding: 10px 12px; }
+    .study-card .py-block, .study-card .out-block { font-size: 12.5px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">PYTHON REFERENCE</p>
+    <h1>Python文法帳</h1>
+    <p class="tagline">道場の16単元で出てくる書き方を、意味・例・出力・注意でまとめた早見帳です。ここで読んで、道場で打って覚えます。</p>
+    <nav class="site-nav" aria-label="Python道場のページ">
+      <a href="index.html">道場</a>
+      <span aria-current="page">文法帳</span>
+    </nav>
+  </header>
+
+  <section class="controls-bar" aria-label="絞り込み">
+    <div class="py-input search-box">
+      <label>
+        <span class="p" aria-hidden="true">&gt;&gt;&gt;</span>
+        <input type="search" id="searchInput" placeholder="書き方・意味で検索" aria-label="書き方・意味で絞り込み(例: range)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
+      </label>
+    </div>
+    <div class="bar-side">
+      <span class="hit-count" id="hitCount" role="status" aria-live="polite"></span>
+      <a class="quiz-link" href="index.html">道場で練習する →</a>
+    </div>
+  </section>
+
+  <section class="guide" id="guide" aria-labelledby="guideHeading">
+    <h2 id="guideHeading">進め方</h2>
+    <ol>
+      <li>01 から 16 の順に進みます。各単元は、この文法帳で読む → 道場で打つ、のくり返しです。</li>
+      <li>道場は「入力」が基本です。コードを読んで、出力や空欄を自分の手で打ちこみます。</li>
+      <li>例のコードは、自分のPCの Python で実行して確かめると身につきます。</li>
+      <li>11 以降は NumPy・pandas・scikit-learn・PyTorch を使います。自分のPCに入れて試すとよいでしょう。
+        <pre class="py-block" id="pipLine"></pre>
+      </li>
+    </ol>
+  </section>
+
+  <nav class="toc" id="toc" aria-label="目次">
+    <p class="toc-title">目次</p>
+    <ol id="tocList"></ol>
+  </nav>
+
+  <p class="no-hit" id="noHit" hidden>見つかりませんでした。別のことばで試してください。</p>
+
+  <div id="sections" style="display: contents"></div>
+
+  <footer class="cta">
+    <a class="quiz-link" href="index.html">道場で練習する →</a>
+    <p>道場では、単元を選んで、打ちこむ入力か4つの選択肢で練習できます。正答率は単元ごとに残ります。</p>
+  </footer>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var tocList = document.getElementById("tocList");
+  var toc = document.getElementById("toc");
+  var guide = document.getElementById("guide");
+  var sections = document.getElementById("sections");
+  var searchInput = document.getElementById("searchInput");
+  var hitCount = document.getElementById("hitCount");
+  var noHit = document.getElementById("noHit");
+  var entries = [];   // { card 要素, 検索用の文字 }
+  var sectionEls = [];
+
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function codeEl(text) { return el("code", /^\S{1,16}$/.test(text) ? "nw" : "", text); }
+  function richEl(tag, className, s) {
+    var e = el(tag, className);
+    String(s).split("`").forEach(function (part, i) {
+      if (!part) return;
+      e.appendChild(i % 2 === 1 ? codeEl(part) : document.createTextNode(part));
+    });
+    return e;
+  }
+  function appendCode(parent, code) {
+    PYD.tokenize(code).forEach(function (tk) {
+      if (!tk.t) { parent.appendChild(document.createTextNode(tk.s)); return; }
+      parent.appendChild(el("span", tk.t, tk.s));
+    });
+  }
+  function codeBlockEl(code) {
+    var pre = el("pre", "py-block");
+    appendCode(pre, code);
+    return pre;
+  }
+  // 出力の枠。"" なら「出力なし」
+  function outBlockEl(out) {
+    var pre = el("pre", "out-block");
+    pre.appendChild(el("span", "out-label", "出力"));
+    if (out === "") pre.appendChild(el("span", "out-none", "(何も出力されない)"));
+    else pre.appendChild(document.createTextNode(out));
+    return pre;
+  }
+
+  appendCode(document.getElementById("pipLine"), "pip install numpy pandas scikit-learn torch");
+
+  // ---------- 文法のカード ----------
+  function buildCard(c) {
+    var card = el("article", "study-card");
+    card.id = "card-" + c.id;
+    var head = el("div", "card-head");
+    head.appendChild(el("h3", "", c.name));
+    if (c.read) head.appendChild(el("span", "tag", c.read));
+    card.appendChild(head);
+    card.appendChild(richEl("p", "", c.desc || ""));
+    var words = [c.name, c.read || "", (c.desc || "").replace(/`/g, "")];
+
+    if (Array.isArray(c.examples) && c.examples.length > 0) {
+      card.appendChild(el("p", "sub-title", "例"));
+      c.examples.forEach(function (ex) {
+        var box = el("div", "example");
+        box.appendChild(codeBlockEl(ex[0]));
+        if (typeof ex[1] === "string") box.appendChild(outBlockEl(ex[1]));
+        card.appendChild(box);
+        words.push(ex[0], ex[1] || "");
+      });
+    }
+    if (Array.isArray(c.notes) && c.notes.length > 0) {
+      card.appendChild(el("p", "sub-title", "注意"));
+      var ul = el("ul", "note-list");
+      c.notes.forEach(function (n) {
+        ul.appendChild(richEl("li", "", n));
+        words.push(n.replace(/`/g, ""));
+      });
+      card.appendChild(ul);
+    }
+    return { el: card, text: words.join("\n").toLowerCase() };
+  }
+
+  PYD.UNITS.forEach(function (u) {
+    var list = PYD.cards(u.id);
+    var ready = PYD.isRegistered(u.id) && list.length > 0;
+
+    var li = el("li");
+    li.appendChild(el("span", "no", u.no));
+    var a = el("a", "", u.name);
+    a.href = "#unit-" + u.id;
+    li.appendChild(a);
+    if (!ready) li.appendChild(el("span", "pending", "準備中"));
+    tocList.appendChild(li);
+
+    var sec = el("section", "grade-section");
+    sec.id = "unit-" + u.id;
+    var head = el("div", "grade-head");
+    var h2 = el("h2");
+    h2.appendChild(el("span", "no", u.no));
+    h2.appendChild(document.createTextNode(u.name));
+    head.appendChild(h2);
+    sec.appendChild(head);
+    sec.appendChild(el("p", "section-lead", ready ? "主な語: " + u.keys : "この単元は準備中です。"));
+    var grid = el("div", "study-grid");
+    list.forEach(function (cd) {
+      var built = buildCard(cd);
+      grid.appendChild(built.el);
+      entries.push({ el: built.el, text: built.text + "\n" + u.name.toLowerCase() });
+    });
+    sec.appendChild(grid);
+    if (ready) {
+      var foot = el("div", "section-foot");
+      var dojo = el("a", "dojo-link", "この単元を道場で解く →");
+      dojo.href = "index.html?unit=" + encodeURIComponent(u.id);
+      foot.appendChild(dojo);
+      sec.appendChild(foot);
+    }
+    sections.appendChild(sec);
+    sectionEls.push(sec);
+  });
+
+  // ---------- 絞り込み ----------
+  function applyFilter() {
+    var word = searchInput.value.trim().toLowerCase();
+    var hits = 0;
+    entries.forEach(function (e) {
+      var on = !word || e.text.indexOf(word) >= 0;
+      e.el.hidden = !on;
+      if (on) hits++;
+    });
+    sectionEls.forEach(function (sec) {
+      sec.hidden = !!word && !sec.querySelector(".study-card:not([hidden])");
+    });
+    toc.hidden = !!word;
+    guide.hidden = !!word;
+    noHit.hidden = hits > 0;
+    hitCount.textContent = hits + "件";
+  }
+  searchInput.addEventListener("input", function (e) {
+    if (e.isComposing) return;   // 日本語の変換中は、確定まで待つ
+    applyFilter();
+  });
+  searchInput.addEventListener("compositionend", applyFilter);
+  applyFilter();
+
+  // #card-print などで開かれたとき、描き終えてからそのカードへ移動して目立たせる
+  function focusHash() {
+    var id = "";
+    try { id = decodeURIComponent(location.hash.slice(1)); } catch (e) { /* こわれたアンカーは無視 */ }
+    document.querySelectorAll(".is-target").forEach(function (c) { c.classList.remove("is-target"); });
+    if (!id) return;
+    var target = document.getElementById(id);
+    if (!target || !sections.contains(target)) return;
+    if (target.hidden || (target.closest(".grade-section") || target).hidden) {
+      searchInput.value = "";
+      applyFilter();
+    }
+    if (target.classList.contains("study-card")) target.classList.add("is-target");
+    target.scrollIntoView({ block: "start" });
+  }
+  window.addEventListener("hashchange", focusHash);
+  focusHash();
+  if (location.hash && document.fonts && document.fonts.ready) document.fonts.ready.then(focusHash);
+})();
+</script>
+</body>
+</html>
