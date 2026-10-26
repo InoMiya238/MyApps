@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>電子工作の計算ツール</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 720px; gap: 22px; }
+  .tagline { max-width: 48ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] { color: var(--ink); font-weight: 600; border-bottom: 2px solid var(--accent); }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .toc { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .toc a {
+    font-size: 13px; font-weight: 600; color: var(--ink-muted); text-decoration: none;
+    border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px; background: var(--surface);
+  }
+  .toc a:hover { color: var(--accent); border-color: var(--accent); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    scroll-margin-top: 16px;
+    min-width: 0;
+  }
+  .card h2 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; margin: 0 0 6px; }
+  .card h3 { margin: 18px 0 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.09em; color: var(--ink-faint); }
+  .lead { margin: 0 0 14px; font-size: 0.86rem; line-height: 1.7; color: var(--ink-muted); }
+  .lead code, .hint code, .result code { font-family: var(--font-mono); font-size: 0.92em; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; }
+
+  .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+  .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .field > span { font-size: 12.5px; font-weight: 600; color: var(--ink-muted); }
+  .with-unit { display: flex; gap: 6px; min-width: 0; }
+  input[type="text"], select {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 9px 10px;
+    min-width: 0;
+  }
+  input[type="text"] { flex: 1; width: 100%; }
+  select { flex: none; cursor: pointer; }
+  .unit { flex: none; align-self: center; min-width: 2.2em; font-family: var(--font-mono); font-size: 15px; color: var(--ink-muted); }
+  .field select.wide { width: 100%; }
+  input[aria-invalid="true"] { border-color: var(--bad); }
+
+  .seg { display: inline-flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .seg label {
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    border: 1px solid var(--border); border-radius: 9px; padding: 7px 12px; font-size: 14px; font-weight: 600; color: var(--ink-muted);
+  }
+  .seg label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
+  .seg input { accent-color: var(--accent); margin: 0; }
+
+  .result {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 0.92rem;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+  .result.is-error { background: var(--bad-soft); color: var(--bad); font-weight: 600; }
+  .result.is-idle { background: var(--surface-2); color: var(--ink-muted); }
+  .result .big { font-family: var(--font-mono); font-size: 1.35rem; font-weight: 700; color: var(--accent); }
+  .result .warn { color: var(--bad); font-weight: 600; }
+  .result .sub { color: var(--ink-muted); font-size: 0.84rem; }
+  .res-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.84rem; }
+  .res-table th, .res-table td { padding: 6px 6px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+  .res-table th { font-size: 11px; color: var(--ink-faint); font-weight: 600; }
+  .res-table td.num { font-family: var(--font-mono); white-space: nowrap; }
+  .hint { font-size: 0.78rem; color: var(--ink-faint); margin: 10px 0 0; line-height: 1.6; }
+
+  .btn {
+    font-family: var(--font-body); cursor: pointer; border-radius: 9px; padding: 9px 14px; font-size: 13px; font-weight: 600;
+    background: none; border: 1.5px solid var(--border); color: var(--ink-muted); min-height: 40px;
+  }
+  .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+  .band-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+  .band-fig { margin-top: 14px; }
+  .r-list { display: flex; flex-direction: column; gap: 8px; }
+  .r-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .r-row .no { flex: none; width: 28px; font-family: var(--font-mono); font-size: 12px; color: var(--accent); font-weight: 700; }
+  .r-row .del { flex: none; min-height: 40px; padding: 6px 10px; }
+
+  /* ---------- 図(data.js の FIGS。index.html・reference.html・calc.html で同じ内容。変えるときは3つとも直す) ---------- */
+  .fig {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 8px;
+    min-width: 0;
+  }
+  .fig[hidden] { display: none; }
+  .fig-svg { display: block; width: 100%; max-width: 360px; height: auto; margin: 0 auto; color: var(--ink); overflow: visible; }
+  .fig-svg text { fill: currentColor; stroke: none; font-family: var(--font-body); font-size: 12px; font-weight: 600; }
+  .fig-svg text.t-s { font-size: 11.5px; }
+  @media (max-width: 480px) { .fig { padding: 8px 2px; } }
+  .fig-svg text.t-l { font-size: 15px; }
+  .fig-svg text.t-xl { font-size: 26px; font-family: var(--font-display); }
+  .fig-svg text.t-m { font-family: var(--font-mono); font-size: 12px; }
+  .fig-svg .fi { fill: currentColor; }
+  .fig-svg .ac { stroke: var(--accent); }
+  .fig-svg .fi.ac, .fig-svg text.ac { fill: var(--accent); }
+  .fig-svg .mu { stroke: var(--ink-faint); }
+  .fig-svg text.mu { fill: var(--ink-faint); }
+  /* 色のクラス(.mu .ac .gd .bd)は線にも色をつけるので、文字では線を消す */
+  .fig-svg text.mu, .fig-svg text.ac, .fig-svg text.gd, .fig-svg text.bd { stroke: none; }
+  .fig-svg .gd { stroke: var(--good); }
+  .fig-svg text.gd { fill: var(--good); }
+  .fig-svg .bd { stroke: var(--bad); }
+  .fig-svg text.bd { fill: var(--bad); }
+  .fig-svg .thin { stroke-width: 1.2; }
+  .fig-svg .thick { stroke-width: 4; }
+  .fig-svg .dash { stroke-dasharray: 4 4; }
+  .fig-svg .bgf { fill: var(--surface); }
+  .fig-svg .s2f { fill: var(--surface-2); }
+  .fig-svg .softf { fill: var(--accent-soft); }
+  .fig-svg .water { fill: var(--water-soft); stroke: none; }
+  .fig-svg .water-ln { stroke: var(--water); }
+  .fig-svg .solder { fill: var(--solder); }
+  .fig-svg .strip { stroke: var(--accent); stroke-width: 9; opacity: 0.3; }
+  .fig-svg .rbody { fill: var(--band-body); }
+  .fig-svg .band { stroke: var(--band-edge); stroke-width: 1; }
+  .fig-svg .b-black { fill: var(--band-black); }
+  .fig-svg .b-brown { fill: var(--band-brown); }
+  .fig-svg .b-red { fill: var(--band-red); }
+  .fig-svg .b-orange { fill: var(--band-orange); }
+  .fig-svg .b-yellow { fill: var(--band-yellow); }
+  .fig-svg .b-green { fill: var(--band-green); }
+  .fig-svg .b-blue { fill: var(--band-blue); }
+  .fig-svg .b-violet { fill: var(--band-violet); }
+  .fig-svg .b-gray { fill: var(--band-gray); }
+  .fig-svg .b-white { fill: var(--band-white); }
+  .fig-svg .b-gold { fill: var(--band-gold); }
+  .fig-svg .b-silver { fill: var(--band-silver); }
+  /* ---------- 図 ここまで ---------- */
+
+  @media (max-width: 480px) {
+    .card { padding: 18px 16px; }
+    .fields { grid-template-columns: 1fr; }
+    .band-grid { grid-template-columns: 1fr 1fr; }
+    .res-table th, .res-table td { padding: 5px 3px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">ELECTRONICS CALCULATOR</p>
+    <h1>電子工作の計算ツール</h1>
+    <p class="tagline">オームの法則、LEDの電流制限抵抗、抵抗のカラーコード、合成抵抗を計算します。入力するとすぐに答えが出ます。</p>
+    <nav class="site-nav" aria-label="電子工作道場のページ">
+      <a href="index.html">道場</a>
+      <a href="reference.html">教科書</a>
+      <span aria-current="page">計算ツール</span>
+    </nav>
+  </header>
+
+  <nav class="toc" aria-label="計算の種類">
+    <a href="#ohm">オームの法則</a>
+    <a href="#led">LEDの抵抗</a>
+    <a href="#color">カラーコード</a>
+    <a href="#combine">合成抵抗</a>
+  </nav>
+
+  <!-- ============ オームの法則 ============ -->
+  <section class="card" id="ohm" aria-labelledby="ohmTitle">
+    <h2 id="ohmTitle">オームの法則</h2>
+    <p class="lead">電圧 V・電流 I・抵抗 R のうち<b>2つ</b>を入れると、残りの1つと電力 P を計算します。<code>V = I × R</code>、<code>P = V × I</code></p>
+    <div class="fields">
+      <label class="field"><span>電圧 V</span>
+        <span class="with-unit"><input type="text" inputmode="decimal" id="ohmV" autocomplete="off" placeholder="例: 5"><select id="ohmVu" aria-label="電圧の単位"><option value="1">V</option><option value="0.001">mV</option></select></span>
+      </label>
+      <label class="field"><span>電流 I</span>
+        <span class="with-unit"><input type="text" inputmode="decimal" id="ohmI" autocomplete="off" placeholder="例: 20"><select id="ohmIu" aria-label="電流の単位"><option value="0.001">mA</option><option value="1">A</option><option value="0.000001">μA</option></select></span>
+      </label>
+      <label class="field"><span>抵抗 R</span>
+        <span class="with-unit"><input type="text" inputmode="decimal" id="ohmR" autocomplete="off" placeholder="例: 150"><select id="ohmRu" aria-label="抵抗の単位"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select></span>
+      </label>
+    </div>
+    <div class="btn-row"><button type="button" class="btn" id="ohmClear">入力を消す</button></div>
+    <div class="result is-idle" id="ohmOut" role="status" aria-live="polite"></div>
+  </section>
+
+  <!-- ============ LED ============ -->
+  <section class="card" id="led" aria-labelledby="ledTitle">
+    <h2 id="ledTitle">LEDの電流制限抵抗</h2>
+    <p class="lead"><code>R = (電源電圧 − Vf) ÷ 電流</code> で抵抗を求め、売っている値(E12・E24)で一つ上の値と、抵抗の消費電力を出します。</p>
+    <div class="fields">
+      <label class="field"><span>電源電圧</span>
+        <span class="with-unit"><input type="text" inputmode="decimal" id="ledV" autocomplete="off" value="5"><span class="unit">V</span></span>
+      </label>
+      <label class="field"><span>LEDの色(Vf の目安)</span>
+        <select class="wide" id="ledPreset">
+          <option value="2.0">赤(約2.0V)</option>
+          <option value="2.0">黄(約2.0V)</option>
+          <option value="2.1">緑・黄緑(約2.1V)</option>
+          <option value="3.1">青(約3.0〜3.2V)</option>
+          <option value="3.1">白(約3.0〜3.2V)</option>
+          <option value="">自分で入力</option>
+        </select>
+      </label>
+      <label class="field"><span>順方向電圧 Vf</span>
+        <span class="with-unit"><input type="text" inputmode="decimal" id="ledVf" autocomplete="off" value="2.0"><span class="unit">V</span></span>
+      </label>
+      <label class="field"><span>流す電流</span>
+        <span class="with-unit"><input type="text" inputmode="decimal" id="ledI" autocomplete="off" value="10"><span class="unit">mA</span></span>
+      </label>
+    </div>
+    <p class="hint">色ごとの Vf は目安です(同じ色でも品種でちがいます)。正しい値は、使うLEDのデータシートで確かめてください。純緑のLEDは約3V のものがあります。</p>
+    <div class="result is-idle" id="ledOut" role="status" aria-live="polite"></div>
+  </section>
+
+  <!-- ============ カラーコード ============ -->
+  <section class="card" id="color" aria-labelledby="colorTitle">
+    <h2 id="colorTitle">抵抗のカラーコード</h2>
+    <p class="lead">色を選ぶと抵抗値と許容差を、値を入れると色の帯を表示します。許容差の帯を右にして、左から読みます。</p>
+
+    <h3>色 → 抵抗値</h3>
+    <div class="seg" role="radiogroup" aria-label="帯の数">
+      <label><input type="radio" name="bandCount" value="4" checked>4本帯</label>
+      <label><input type="radio" name="bandCount" value="5">5本帯</label>
+    </div>
+    <div class="band-grid" id="bandSelects"></div>
+    <div class="fig band-fig" id="bandFig"></div>
+    <div class="result" id="bandOut" role="status" aria-live="polite"></div>
+
+    <h3>抵抗値 → 色</h3>
+    <div class="fields">
+      <label class="field"><span>抵抗値</span>
+        <span class="with-unit"><input type="text" inputmode="decimal" id="revV" autocomplete="off" value="4.7"><select id="revU" aria-label="抵抗の単位"><option value="1">Ω</option><option value="1000" selected>kΩ</option><option value="1000000">MΩ</option></select></span>
+      </label>
+      <label class="field"><span>帯の数</span>
+        <select class="wide" id="revCount"><option value="4">4本帯(2けた)</option><option value="5">5本帯(3けた)</option></select>
+      </label>
+      <label class="field"><span>許容差</span>
+        <select class="wide" id="revTol"></select>
+      </label>
+    </div>
+    <div class="fig band-fig" id="revFig" hidden></div>
+    <div class="result" id="revOut" role="status" aria-live="polite"></div>
+  </section>
+
+  <!-- ============ 合成抵抗 ============ -->
+  <section class="card" id="combine" aria-labelledby="combTitle">
+    <h2 id="combTitle">合成抵抗</h2>
+    <p class="lead">直列は <code>R1 + R2 + …</code>、並列は <code>1 ÷ (1/R1 + 1/R2 + …)</code> で計算します。空の行は計算に入れません。</p>
+    <div class="seg" role="radiogroup" aria-label="つなぎ方">
+      <label><input type="radio" name="combMode" value="series" checked>直列</label>
+      <label><input type="radio" name="combMode" value="parallel">並列</label>
+    </div>
+    <div class="r-list" id="rList"></div>
+    <div class="btn-row"><button type="button" class="btn" id="rAdd">抵抗を追加</button></div>
+    <div class="result is-idle" id="combOut" role="status" aria-live="polite"></div>
+  </section>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var E12 = [10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68, 82];
+  var E24 = [10, 11, 12, 13, 15, 16, 18, 20, 22, 24, 27, 30, 33, 36, 39, 43, 47, 51, 56, 62, 68, 75, 82, 91];
+  var RATINGS = [[0.125, "1/8W"], [0.25, "1/4W"], [0.5, "1/2W"], [1, "1W"], [2, "2W"], [5, "5W"], [10, "10W"]];
+  var PREFIX = [["G", 1e9], ["M", 1e6], ["k", 1e3], ["", 1], ["m", 1e-3], ["μ", 1e-6], ["n", 1e-9], ["p", 1e-12]];
+
+  function $(id) { return document.getElementById(id); }
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  // 入力の文字 → 数。空なら null、読めなければ NaN。全角の数字・小数点も受けつけ、カンマ(3けたの区切り)は無視する
+  function parseNum(s) {
+    s = String(s).trim().replace(/[０-９．－]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/[,，]/g, "");
+    if (s === "") return null;
+    if (!/^[-+]?(\d+\.?\d*|\.\d+)(e[-+]?\d+)?$/i.test(s)) return NaN;
+    return Number(s);
+  }
+  // 3けたの有効数字と接頭辞で表す(例: 0.0136, "A" → "13.6mA")
+  function fmt(v, unit) {
+    if (!isFinite(v)) return "–";
+    if (v === 0) return "0" + unit;
+    var a = Math.abs(v);
+    for (var i = 0; i < PREFIX.length; i++) {
+      var p = PREFIX[i], x = Number((a / p[1]).toPrecision(3));
+      if (x >= 1 && x < 1000) return (v < 0 ? "-" : "") + String(x) + p[0] + unit;
+      if (x >= 1000 && i > 0) return (v < 0 ? "-" : "") + String(Number((a / PREFIX[i - 1][1]).toPrecision(3))) + PREFIX[i - 1][0] + unit;
+    }
+    return String(Number(v.toPrecision(3))) + unit;
+  }
+  function setOut(box, state, nodes) {
+    box.className = "result" + (state ? " is-" + state : "");
+    box.innerHTML = "";
+    (Array.isArray(nodes) ? nodes : [nodes]).forEach(function (n) {
+      box.appendChild(typeof n === "string" ? el("div", "", n) : n);
+    });
+  }
+  function line(parts) {
+    var d = el("div");
+    parts.forEach(function (p) { d.appendChild(typeof p === "string" ? document.createTextNode(p) : p); });
+    return d;
+  }
+  function round6(v) { return Number(v.toPrecision(6)); }
+  // E系列で、r 以上のいちばん小さい値
+  function nextUp(r, series) {
+    var e = Math.floor(Math.log10(r));
+    for (var k = e - 1; k <= e + 1; k++) {
+      for (var i = 0; i < series.length; i++) {
+        var v = round6(series[i] * Math.pow(10, k - 1));
+        if (v >= r * (1 - 1e-9)) return v;
+      }
+    }
+    return NaN;
+  }
+  function inSeries(v, series) {
+    if (!(v > 0)) return false;
+    var e = Math.floor(Math.log10(v)), s = round6(v / Math.pow(10, e - 1));
+    return series.indexOf(s) >= 0;
+  }
+  function rating(p) {
+    for (var i = 0; i < RATINGS.length; i++) if (RATINGS[i][0] >= p * 2) return RATINGS[i][1];
+    return "10W 超(回路を見直す)";
+  }
+  // 1p〜1T の外は、表示も現実の部品も扱えないので計算しない
+  function outOfRange(list) {
+    return list.some(function (v) { return !isFinite(v) || v > 1e12 || v < 1e-12; });
+  }
+  var RANGE_MSG = "値が大きすぎるか小さすぎて計算できません。単位と桁を確かめてください。";
+  function mark(input, bad) { input.setAttribute("aria-invalid", bad ? "true" : "false"); }
+
+  // ---------- オームの法則 ----------
+  var ohmIn = { V: $("ohmV"), I: $("ohmI"), R: $("ohmR") };
+  var ohmUnit = { V: $("ohmVu"), I: $("ohmIu"), R: $("ohmRu") };
+  var ohmName = { V: "電圧", I: "電流", R: "抵抗" };
+  function calcOhm() {
+    var val = {}, filled = [], out = $("ohmOut");
+    var bad = null;
+    ["V", "I", "R"].forEach(function (k) {
+      var n = parseNum(ohmIn[k].value);
+      mark(ohmIn[k], false);
+      if (n === null) return;
+      filled.push(k);
+      if (isNaN(n)) { mark(ohmIn[k], true); bad = bad || ohmName[k] + "が数として読めません。"; return; }
+      if (n <= 0) { mark(ohmIn[k], true); bad = bad || ohmName[k] + "には 0 より大きい値を入れてください。"; return; }
+      val[k] = n * Number(ohmUnit[k].value);
+    });
+    if (bad) return setOut(out, "error", bad);
+    if (filled.length < 2) return setOut(out, "idle", filled.length === 0 ? "3つのうち2つを入れてください。" : "あと1つ入れてください(求めたい欄は空のまま)。");
+    if (filled.length === 3) return setOut(out, "error", "3つとも入っています。求めたい欄を1つ空にしてください。");
+    var V = val.V, I = val.I, R = val.R, ans;
+    if (V === undefined) { V = I * R; ans = ["電圧 V = I × R = ", el("span", "big", fmt(V, "V"))]; }
+    else if (I === undefined) { I = V / R; ans = ["電流 I = V ÷ R = ", el("span", "big", fmt(I, "A"))]; }
+    else { R = V / I; ans = ["抵抗 R = V ÷ I = ", el("span", "big", fmt(R, "Ω"))]; }
+    var P = V * I;
+    if (outOfRange([V, I, R, P])) return setOut(out, "error", RANGE_MSG);
+    var r = rating(P);
+    setOut(out, "", [
+      line(ans),
+      line(["電力 P = V × I = ", el("span", "big", fmt(P, "W"))]),
+      el("div", "sub", "V = " + fmt(V, "V") + "、I = " + fmt(I, "A") + "、R = " + fmt(R, "Ω") + (r.indexOf("超") >= 0 ? "。抵抗器1本で扱える電力を超えるので、回路を見直してください。" : "。抵抗器なら、定格は " + r + " 以上が目安(電力の2倍の余裕)。"))
+    ]);
+  }
+  ["V", "I", "R"].forEach(function (k) {
+    ohmIn[k].addEventListener("input", calcOhm);
+    ohmUnit[k].addEventListener("change", calcOhm);
+  });
+  $("ohmClear").addEventListener("click", function () {
+    ["V", "I", "R"].forEach(function (k) { ohmIn[k].value = ""; });
+    calcOhm();
+    ohmIn.V.focus();
+  });
+
+  // ---------- LED ----------
+  var ledV = $("ledV"), ledVf = $("ledVf"), ledI = $("ledI"), ledPreset = $("ledPreset");
+  function calcLed() {
+    var out = $("ledOut");
+    var vcc = parseNum(ledV.value), vf = parseNum(ledVf.value), ma = parseNum(ledI.value);
+    [ledV, ledVf, ledI].forEach(function (x) { mark(x, false); });
+    var checks = [[ledV, vcc, "電源電圧"], [ledVf, vf, "Vf"], [ledI, ma, "電流"]];
+    for (var i = 0; i < checks.length; i++) {
+      var c = checks[i];
+      if (c[1] === null) { mark(c[0], true); return setOut(out, "error", c[2] + "を入れてください。"); }
+      if (isNaN(c[1])) { mark(c[0], true); return setOut(out, "error", c[2] + "が数として読めません。"); }
+      if (c[1] <= 0) { mark(c[0], true); return setOut(out, "error", c[2] + "には 0 より大きい値を入れてください。"); }
+    }
+    if (vf >= vcc) {
+      mark(ledVf, true);
+      return setOut(out, "error", "Vf(" + vf + "V)が電源電圧(" + vcc + "V)以上なので、LEDは光りません。抵抗では解決できないので、電源電圧を上げるか、Vf の低いLEDを使います。");
+    }
+    var I = ma / 1000, drop = vcc - vf, R = drop / I;
+    var nodes = [
+      line(["計算値 R = (" + ledV.value.trim() + "V − " + ledVf.value.trim() + "V) ÷ " + fmt(I, "A") + " = ", el("span", "big", fmt(R, "Ω"))])
+    ];
+    var table = el("table", "res-table");
+    var thead = el("tr");
+    ["", "抵抗値", "電流", "抵抗の電力", "推奨定格"].forEach(function (h) { thead.appendChild(el("th", "", h)); });
+    table.appendChild(thead);
+    [["計算値", R], ["E12", nextUp(R, E12)], ["E24", nextUp(R, E24)]].forEach(function (row) {
+      var r = row[1], i2 = drop / r, p = i2 * i2 * r;
+      var tr = el("tr");
+      tr.appendChild(el("td", "", row[0]));
+      tr.appendChild(el("td", "num", fmt(r, "Ω")));
+      tr.appendChild(el("td", "num", fmt(i2, "A")));
+      tr.appendChild(el("td", "num", fmt(p, "W")));
+      tr.appendChild(el("td", "num", rating(p)));
+      table.appendChild(tr);
+    });
+    nodes.push(table);
+    nodes.push(el("div", "sub", "E12・E24 は、計算値以上でいちばん近い値です(電流は少し減り、安全側)。推奨定格は、抵抗の電力の2倍以上になる定格です。"));
+    if (ma > 20) nodes.push(el("div", "warn", "注意: よくある砲弾型LEDの最大電流(20mA 程度)を超えています。データシートで確かめてください。"));
+    if (drop < 0.5) nodes.push(el("div", "warn", "注意: 電源電圧と Vf の差が小さいので、Vf のばらつきで電流(明るさ)が大きく変わります。"));
+    setOut(out, "", nodes);
+  }
+  ledPreset.addEventListener("change", function () {
+    if (ledPreset.value) ledVf.value = ledPreset.value;
+    else ledVf.focus();
+    calcLed();
+  });
+  ledVf.addEventListener("input", function () {
+    if (ledPreset.value !== ledVf.value.trim()) ledPreset.value = "";
+    calcLed();
+  });
+  ledV.addEventListener("input", calcLed);
+  ledI.addEventListener("input", calcLed);
+
+  // ---------- カラーコード ----------
+  var BANDS = ELEC.BANDS;
+  var DIGITS = BANDS.filter(function (b) { return b.digit !== null; });
+  var MULTS = BANDS.filter(function (b) { return b.mult !== null; });
+  var TOLS = BANDS.filter(function (b) { return b.tol !== null; }).sort(function (a, b) { return a.tol === 5 ? -1 : b.tol === 5 ? 1 : 0; });
+  function multText(b) {
+    var labels = { "-2": "×0.01", "-1": "×0.1", "0": "×1", "1": "×10", "2": "×100", "3": "×1k", "4": "×10k", "5": "×100k", "6": "×1M", "7": "×10M", "8": "×100M", "9": "×1G" };
+    return labels[String(b.mult)];
+  }
+  var bandState = { 4: ["brown", "black", "red", "gold"], 5: ["brown", "black", "black", "brown", "brown"] };
+  function bandCount() { return document.querySelector('input[name="bandCount"]:checked').value === "5" ? 5 : 4; }
+  function bandSelectList(n) {
+    var roles = [];
+    for (var i = 0; i < n - 2; i++) roles.push(["数字 " + (i + 1) + "本目", DIGITS, function (b) { return b.name + " " + b.digit; }]);
+    roles.push(["乗数 " + (n - 1) + "本目", MULTS, function (b) { return b.name + " " + multText(b); }]);
+    roles.push(["許容差 " + n + "本目", TOLS, function (b) { return b.name + " ±" + b.tol + "%"; }]);
+    return roles;
+  }
+  function renderBandSelects() {
+    var n = bandCount(), box = $("bandSelects");
+    box.innerHTML = "";
+    bandSelectList(n).forEach(function (role, i) {
+      var lab = el("label", "field");
+      lab.appendChild(el("span", "", role[0]));
+      var sel = el("select", "wide");
+      role[1].forEach(function (b) {
+        var o = el("option", "", role[2](b));
+        o.value = b.id;
+        sel.appendChild(o);
+      });
+      sel.value = bandState[n][i];
+      sel.addEventListener("change", function () { bandState[n][i] = sel.value; calcBands(); });
+      lab.appendChild(sel);
+      box.appendChild(lab);
+    });
+    calcBands();
+  }
+  function calcBands() {
+    var n = bandCount(), colors = bandState[n], out = $("bandOut");
+    $("bandFig").innerHTML = ELEC.bandsSvg(colors);
+    var num = 0;
+    for (var i = 0; i < n - 2; i++) num = num * 10 + ELEC.band(colors[i]).digit;
+    var m = ELEC.band(colors[n - 2]).mult, tol = ELEC.band(colors[n - 1]).tol;
+    var v = round6(num * Math.pow(10, m));
+    var lo = round6(v * (1 - tol / 100)), hi = round6(v * (1 + tol / 100));
+    var nodes = [
+      line([el("span", "big", fmt(v, "Ω") + " ±" + tol + "%")]),
+      el("div", "sub", "読み方: " + colors.slice(0, n - 2).map(function (c) { return ELEC.band(c).digit; }).join("") + " × 10^" + m + " = " + fmt(v, "Ω") + "(" + v + "Ω)。実際の値は " + fmt(lo, "Ω") + "〜" + fmt(hi, "Ω") + " のどれか。")
+    ];
+    if (v === 0) nodes = [el("div", "warn", "数字がすべて 0(黒)なので 0Ω です。ふつうの抵抗器にはない組み合わせです。")];
+    else {
+      var series = inSeries(v, E12) ? "E12 にある値です。" : inSeries(v, E24) ? "E24 にある値です(E12 にはない)。" : "E12・E24 にはない値です(E96 など、精度の高い系列の値かもしれません)。";
+      nodes.push(el("div", "sub", series));
+      if (colors[0] === "black") nodes.push(el("div", "warn", "1本目が黒の抵抗器はふつうありません。向きが逆かもしれません(許容差の帯を右にして読みます)。"));
+    }
+    setOut(out, "", nodes);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('input[name="bandCount"]'), function (r) { r.addEventListener("change", renderBandSelects); });
+
+  // 値 → 色
+  var revV = $("revV"), revU = $("revU"), revCount = $("revCount"), revTol = $("revTol");
+  TOLS.forEach(function (b) {
+    var o = el("option", "", b.name + " ±" + b.tol + "%");
+    o.value = b.id;
+    revTol.appendChild(o);
+  });
+  function calcRev() {
+    var out = $("revOut"), fig = $("revFig"), n = Number(revCount.value), digits = n - 2;
+    var x = parseNum(revV.value);
+    mark(revV, false);
+    fig.hidden = true;
+    if (x === null) { mark(revV, true); return setOut(out, "error", "抵抗値を入れてください。"); }
+    if (isNaN(x)) { mark(revV, true); return setOut(out, "error", "抵抗値が数として読めません。"); }
+    if (x <= 0) { mark(revV, true); return setOut(out, "error", "抵抗値には 0 より大きい値を入れてください。"); }
+    var v = x * Number(revU.value), lo = Math.pow(10, digits - 1), hiLim = Math.pow(10, digits), found = null;
+    for (var e = -2; e <= 9; e++) {
+      var s = v / Math.pow(10, e), r = Math.round(s);
+      if (r >= lo && r < hiLim && Math.abs(s - r) <= 1e-6 * r) { found = { num: r, e: e }; break; }
+    }
+    if (!found) {
+      mark(revV, true);
+      var min = lo * 0.01, max = (hiLim - 1) * 1e9;
+      if (v < min || v > max) return setOut(out, "error", n + "本帯で表せるのは " + fmt(min, "Ω") + "〜" + fmt(max, "Ω") + " です。");
+      return setOut(out, "error", n + "本帯で表せるのは、数字が" + digits + "けたの値です(例: " + (n === 4 ? "4.7kΩ、220Ω" : "4.99kΩ、1.02kΩ") + ")。" + (n === 4 ? "5本帯を選ぶか、" : "") + "値を見直してください。");
+    }
+    var colors = String(found.num).split("").map(function (d) { return DIGITS[Number(d)].id; });
+    colors.push(MULTS.filter(function (b) { return b.mult === found.e; })[0].id);
+    colors.push(revTol.value);
+    fig.innerHTML = ELEC.bandsSvg(colors);
+    fig.hidden = false;
+    var nodes = [
+      line([el("span", "big", colors.map(function (c) { return ELEC.band(c).name; }).join(" "))]),
+      el("div", "sub", fmt(v, "Ω") + " = " + found.num + " × 10^" + found.e + "Ω。")
+    ];
+    if (n === 4 && !inSeries(v, E24)) nodes.push(el("div", "sub", "この値は E12・E24 にないので、売られていないことが多い値です。"));
+    setOut(out, "", nodes);
+  }
+  [revV].forEach(function (x) { x.addEventListener("input", calcRev); });
+  [revU, revCount, revTol].forEach(function (x) { x.addEventListener("change", calcRev); });
+
+  // ---------- 合成抵抗 ----------
+  var rList = $("rList"), rows = [], MAX_ROWS = 10;
+  function addRow(value, unit) {
+    if (rows.length >= MAX_ROWS) return;
+    var row = el("div", "r-row");
+    var no = el("span", "no");
+    var input = el("input");
+    input.type = "text";
+    input.inputMode = "decimal";
+    input.autocomplete = "off";
+    input.value = value || "";
+    var sel = el("select");
+    [["1", "Ω"], ["1000", "kΩ"], ["1000000", "MΩ"]].forEach(function (u) {
+      var o = el("option", "", u[1]);
+      o.value = u[0];
+      sel.appendChild(o);
+    });
+    sel.value = unit || "1";
+    var del = el("button", "btn del", "×");
+    del.type = "button";
+    var rec = { row: row, no: no, input: input, sel: sel, del: del };
+    del.addEventListener("click", function () {
+      if (rows.length <= 2) return;
+      rows.splice(rows.indexOf(rec), 1);
+      rList.removeChild(row);
+      renumber();
+      calcComb();
+    });
+    input.addEventListener("input", calcComb);
+    sel.addEventListener("change", calcComb);
+    row.appendChild(no); row.appendChild(input); row.appendChild(sel); row.appendChild(del);
+    rList.appendChild(row);
+    rows.push(rec);
+    renumber();
+  }
+  function renumber() {
+    rows.forEach(function (r, i) {
+      r.no.textContent = "R" + (i + 1);
+      r.input.setAttribute("aria-label", "R" + (i + 1) + " の値");
+      r.sel.setAttribute("aria-label", "R" + (i + 1) + " の単位");
+      r.del.setAttribute("aria-label", "R" + (i + 1) + " を消す");
+      r.del.disabled = rows.length <= 2;
+    });
+    $("rAdd").disabled = rows.length >= MAX_ROWS;
+  }
+  function combMode() { return document.querySelector('input[name="combMode"]:checked').value; }
+  function calcComb() {
+    var out = $("combOut"), vals = [], err = null;
+    rows.forEach(function (r, i) {
+      mark(r.input, false);
+      var n = parseNum(r.input.value);
+      if (n === null) return;
+      if (isNaN(n) || n <= 0) { mark(r.input, true); err = err || "R" + (i + 1) + " には 0 より大きい数を入れてください。"; return; }
+      vals.push(n * Number(r.sel.value));
+    });
+    if (err) return setOut(out, "error", err);
+    if (vals.length < 2) return setOut(out, "idle", "抵抗の値を2つ以上入れてください。");
+    var total, how;
+    if (combMode() === "series") {
+      total = vals.reduce(function (a, b) { return a + b; }, 0);
+      how = vals.map(function (v) { return fmt(v, "Ω"); }).join(" + ");
+    } else {
+      total = 1 / vals.reduce(function (a, b) { return a + 1 / b; }, 0);
+      how = "1 ÷ (" + vals.map(function (v) { return "1/" + fmt(v, "Ω"); }).join(" + ") + ")";
+    }
+    if (outOfRange(vals.concat([total]))) return setOut(out, "error", RANGE_MSG);
+    setOut(out, "", [
+      line([(combMode() === "series" ? "直列" : "並列") + "の合成抵抗 = ", el("span", "big", fmt(total, "Ω"))]),
+      el("div", "sub", how + " = " + fmt(total, "Ω") + "(" + round6(total) + "Ω)")
+    ]);
+  }
+  $("rAdd").addEventListener("click", function () {
+    addRow("", "1");
+    rows[rows.length - 1].input.focus();
+    calcComb();
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('input[name="combMode"]'), function (r) { r.addEventListener("change", calcComb); });
+
+  // ---------- はじめの表示 ----------
+  addRow("100", "1");
+  addRow("220", "1");
+  calcOhm();
+  calcLed();
+  renderBandSelects();
+  calcRev();
+  calcComb();
+})();
+</script>
+</body>
+</html>

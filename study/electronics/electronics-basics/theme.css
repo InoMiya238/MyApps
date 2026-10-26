@@ -1,0 +1,125 @@
+/* 電子工作道場 の色。変数名は学習シリーズ共通(shared/base.css を参照)。基板(PCB)の緑を基調に、アクセントは銅色。
+   --code-* はコードの表示(.code-block)と用語の検索欄だけで使う。ライトでも暗い(基板色の)画面にする。
+   --lv-* は難易度の印(.lv-tag・難易度の絞り込み・難易度ごとの正答率)で使う。basic = 基礎 / std = 標準 / pro = 応用。
+   --water* --solder は図(.fig-svg)の水・はんだの色。
+   --band-* は抵抗のカラーコードの色。部品の実物の色なので、ライト・ダークで変えない。 */
+:root {
+  color-scheme: light;
+  --bg: #EDF3EE;
+  --surface: #FFFFFF;
+  --surface-2: #DFEAE2;
+  --border: #C3D5C8;
+  --ink: #11241A;
+  --ink-muted: #3C5345;
+  --ink-faint: #53685A;
+  --accent: #A3521C;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #F7E7D9;
+  --good: #1F6B45;
+  --good-soft: #DCEFE4;
+  --bad: #A8372A;
+  --bad-soft: #F7E0DB;
+  --shadow: rgba(17,36,26,.10);
+  --code-bg: #0F2A1C;
+  --code-border: #24503A;
+  --code-ink: #DDF1E3;
+  --code-muted: #8FB59C;
+  --code-kw: #F0B27A;
+  --code-caret: #F0B27A;
+  --lv-basic: #1A5E96;
+  --lv-basic-soft: #E0ECF8;
+  --lv-std: #765600;
+  --lv-std-soft: #F6EDCF;
+  --lv-pro: #9C2B62;
+  --lv-pro-soft: #F8E1EC;
+  --water: #2366A8;
+  --water-soft: #CFE3F6;
+  --solder: #A9B1B8;
+
+  --band-black: #1B1B1B;
+  --band-brown: #7A4523;
+  --band-red: #D1302B;
+  --band-orange: #EE7B1C;
+  --band-yellow: #F4D01C;
+  --band-green: #2E9A47;
+  --band-blue: #2C62C9;
+  --band-violet: #8A4DC9;
+  --band-gray: #8D8D8D;
+  --band-white: #F8F8F8;
+  --band-gold: #C8A13A;
+  --band-silver: #B9BDC3;
+  --band-body: #E8D4A6;
+  --band-edge: #3A3020;
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0B1510;
+    --surface: #111F17;
+    --surface-2: #192C21;
+    --border: #294333;
+    --ink: #E1EEE5;
+    --ink-muted: #A8C2B1;
+    --ink-faint: #89A593;
+    --accent: #E6A26B;
+    --accent-ink: #2A1405;
+    --accent-soft: #3A2616;
+    --good: #86CFA0;
+    --good-soft: #183024;
+    --bad: #EE8E78;
+    --bad-soft: #3A221D;
+    --shadow: rgba(0,0,0,.45);
+    --code-bg: #07130C;
+    --code-border: #22402E;
+    --code-ink: #D6EEDC;
+    --code-muted: #86A991;
+    --code-kw: #F0B27A;
+    --code-caret: #F0B27A;
+    --lv-basic: #8CC4F2;
+    --lv-basic-soft: #13283D;
+    --lv-std: #E5C765;
+    --lv-std-soft: #2E2812;
+    --lv-pro: #F29AC4;
+    --lv-pro-soft: #3A1A2B;
+    --water: #7DB8F0;
+    --water-soft: #173452;
+    --solder: #8E979F;
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0B1510;
+  --surface: #111F17;
+  --surface-2: #192C21;
+  --border: #294333;
+  --ink: #E1EEE5;
+  --ink-muted: #A8C2B1;
+  --ink-faint: #89A593;
+  --accent: #E6A26B;
+  --accent-ink: #2A1405;
+  --accent-soft: #3A2616;
+  --good: #86CFA0;
+  --good-soft: #183024;
+  --bad: #EE8E78;
+  --bad-soft: #3A221D;
+  --shadow: rgba(0,0,0,.45);
+  --code-bg: #07130C;
+  --code-border: #22402E;
+  --code-ink: #D6EEDC;
+  --code-muted: #86A991;
+  --code-kw: #F0B27A;
+  --code-caret: #F0B27A;
+  --lv-basic: #8CC4F2;
+  --lv-basic-soft: #13283D;
+  --lv-std: #E5C765;
+  --lv-std-soft: #2E2812;
+  --lv-pro: #F29AC4;
+  --lv-pro-soft: #3A1A2B;
+  --water: #7DB8F0;
+  --water-soft: #173452;
+  --solder: #8E979F;
+}
