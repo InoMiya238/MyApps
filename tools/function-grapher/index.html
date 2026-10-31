@@ -243,12 +243,16 @@
     .func-remove { font-size: 20px; padding: 6px 8px; }
     #helpText { display: none; }
   }
+  .page-links { align-self: stretch; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 0 16px; }
 </style>
 </head>
 <body>
 <div id="app">
   <header>
-    <a class="back-link" href="../../index.html">← ページ一覧</a>
+    <nav class="page-links" aria-label="ページの移動">
+      <a class="back-link" href="../../index.html">← ページ一覧</a>
+      <a class="back-link" href="../../study/review/habit-planner/index.html">習慣プランナー →</a>
+    </nav>
     <h1>関数グラフ描画ツール</h1>
     <p>1変数関数・2変数関数・陰関数・合成関数に対応。マウスホイールでズーム、ドラッグでパンできます。</p>
   </header>

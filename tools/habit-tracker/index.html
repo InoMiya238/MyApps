@@ -379,12 +379,16 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition: none !important; animation: none !important; }
   }
+  .page-links { align-self: stretch; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 0 16px; }
 </style>
 </head>
 <body>
 
 <main class="app">
-  <a class="back-link" href="../../index.html">← ページ一覧</a>
+  <nav class="page-links" aria-label="ページの移動">
+    <a class="back-link" href="../../index.html">← ページ一覧</a>
+    <a class="back-link" href="../../study/review/habit-planner/index.html">習慣プランナー →</a>
+  </nav>
   <header class="header">
     <h1>習慣トラッカー</h1>
     <div class="theme-group" role="group" aria-label="表示テーマ">
