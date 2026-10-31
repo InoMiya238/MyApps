@@ -675,7 +675,10 @@
 <body>
 
 <div class="app">
-  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <nav class="page-links" aria-label="ページの移動">
+    <a class="back-link" href="../../../index.html">← ページ一覧</a>
+    <a class="back-link" href="../../../study/review/habit-planner/index.html">習慣プランナー →</a>
+  </nav>
   <header class="hero">
     <p class="eyebrow" id="eyebrow">JUNIOR HIGH SOCIAL STUDIES · 中1 全15単元</p>
     <h1>中学社会道場</h1>
@@ -833,6 +836,39 @@
   var grades = JHSO.activeGrades();   // 単元のある学年。1つだけなら学年タブを出さない
   var currentGrade = grades.length > 0 ? grades[0].id : "g1";
   var count = 10;
+  // ?count=<N>(1〜50の整数)で開いたとき(習慣プランナーから): このページを開いているあいだの出題数。保存済みの設定には書き込まない
+  var URL_COUNT = (function () {
+    var raw = null;
+    try { raw = new URLSearchParams(location.search).get("count"); } catch (e) { raw = null; }
+    return raw !== null && /^[0-9]+$/.test(raw) && Number(raw) >= 1 && Number(raw) <= 50 ? Number(raw) : null;
+  })();
+  var habitCount = null;   // URL_COUNT で出題しているあいだだけ入る。出題数の欄でほかの数を選んだら null に戻る
+  var savedCount = 10;     // habitCount で始めたときに保存する出題数(保存済みの設定の値のまま)
+  var unitNoteText = "";   // ?unit= の案内文(出題数の案内と並べて出す)
+
+  function renderPreselectNote() {
+    var parts = [];
+    if (unitNoteText) parts.push(unitNoteText);
+    if (habitCount) parts.push("習慣プランナーから: " + habitCount + "問で出題します。");
+    preselectNote.textContent = parts.join(" ");
+    preselectNote.hidden = parts.length === 0;
+  }
+  // 設定を読み終えたあとに呼ぶ。欄に指定の数がなければ、一時的な選択肢を足す
+  function applyUrlCount() {
+    savedCount = count;
+    if (!URL_COUNT) return;
+    unitNoteText = preselectNote.hidden ? "" : preselectNote.textContent;
+    habitCount = URL_COUNT;
+    count = URL_COUNT;
+    var opts = Array.prototype.slice.call(countSelect.options);
+    if (!opts.some(function (o) { return Number(o.value) === URL_COUNT; })) {
+      var opt = document.createElement("option");
+      opt.value = String(URL_COUNT);
+      opt.textContent = URL_COUNT + "問(習慣プランナー)";
+      countSelect.insertBefore(opt, opts.filter(function (o) { return Number(o.value) > URL_COUNT; })[0] || null);
+    }
+    renderPreselectNote();
+  }
   var session = null;
 
   function readyUnits(gradeId) {
@@ -887,6 +923,7 @@
       preselectNote.textContent = "「" + u.name + "」だけを選びました。";
       preselectNote.hidden = false;
     }
+    applyUrlCount();
   })();
 
   function pct(correct, total) { return total > 0 ? Math.round((correct / total) * 100) + "%" : "–"; }
@@ -1067,7 +1104,9 @@
   });
   countSelect.addEventListener("change", function () {
     var n = Number(countSelect.value);
-    count = JHSO.COUNTS.indexOf(n) >= 0 ? n : 10;
+    habitCount = URL_COUNT && n === URL_COUNT ? URL_COUNT : null;
+    count = habitCount || (JHSO.COUNTS.indexOf(n) >= 0 ? n : 10);
+    if (!preselectNote.hidden) renderPreselectNote();
     renderStartBar();
   });
   weakBtn.addEventListener("click", function () {
@@ -1091,7 +1130,7 @@
     var questions = JHSO.buildQuiz(ids, count);
     if (questions.length === 0) return;
     // 開始したときに、選択と出題数を保存する
-    JHSO.saveSettings({ units: ids, count: count, grade: currentGrade });
+    JHSO.saveSettings({ units: ids, count: habitCount ? savedCount : count, grade: currentGrade });
     preselectNote.hidden = true;
     session = { questions: questions, index: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, results: [] };
     showScreen("quiz");

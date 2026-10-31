@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>重力の違い | 宇宙シミュレーター</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  [hidden] { display: none !important; }
+  .app { gap: 22px; }
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] { color: var(--ink); font-weight: 600; border-bottom: 2px solid var(--accent); }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+  .card h3 {
+    margin: 18px 0 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+  }
+  .hint { font-size: 0.78rem; color: var(--ink-faint); margin: 10px 0 0; line-height: 1.6; }
+  button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    padding: 12px 20px;
+  }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary { background: var(--surface-2); color: var(--ink); font-weight: 600; }
+  .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .btn-row button { flex: 1 1 140px; }
+  select, input[type="search"], input[type="date"], input[type="number"] {
+    font-family: var(--font-body);
+    font-size: 16px;
+    min-height: 44px;
+    padding: 8px 10px;
+    border-radius: 9px;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    min-width: 0;
+  }
+  button:focus-visible, select:focus-visible, a:focus-visible, input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .mode-tabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; }
+  .mode-tab {
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.15s ease;
+  }
+  .mode-tab:hover { border-color: var(--accent); color: var(--ink); }
+  .mode-tab[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+  .u { font-family: var(--font-body); font-size: .92em; margin-left: .18em; }
+  .given { display: grid; grid-template-columns: auto auto; justify-content: center; gap: 4px 14px; margin: 0; padding: 10px 14px; background: var(--surface-2); border-radius: 10px; font-size: 14.5px; color: var(--ink); }
+  .given dt { color: var(--ink-muted); }
+  .given dd { margin: 0; font-weight: 600; text-align: right; }
+  .legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 12px 0 0; padding: 0; list-style: none; font-size: 12.5px; color: var(--ink-muted); }
+  .legend li { display: flex; align-items: center; gap: 6px; }
+  .legend svg { width: 16px; height: 16px; flex: none; }
+  .readout { justify-content: start; grid-template-columns: auto 1fr; }
+  .readout dd { text-align: left; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12.5px; font-weight: 700; border: 1px solid currentColor; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: 0; flex: none; }
+
+  /* ---------- 入力 ---------- */
+  input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex: none;
+    margin: 0;
+  }
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 34px;
+    margin: 2px 0 0;
+    background: transparent;
+    cursor: pointer;
+    --p: 50%;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--accent) 0, var(--accent) var(--p), var(--surface-2) var(--p), var(--surface-2) 100%);
+    box-shadow: inset 0 0 0 1px var(--border);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    margin-top: -10px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--surface);
+    box-shadow: 0 0 0 1px var(--accent), 0 1px 3px var(--shadow);
+  }
+  input[type="range"]:focus-visible { outline-offset: 0; }
+  .field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .field:last-child { border-bottom: none; }
+  .field.stack { flex-direction: column; align-items: stretch; gap: 0; }
+  .field-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .field-label { font-size: 0.92rem; min-width: 0; }
+  .field-label label { cursor: pointer; }
+  .check-label { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.92rem; min-height: 44px; }
+  .val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .formula {
+    margin: 2px 0 6px;
+    padding: 8px 10px;
+    border-radius: 9px;
+    background: var(--surface-2);
+    font-size: 0.86rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  /* ---------- シミュレーターの部品(宇宙シミュレーター共通) ---------- */
+  .lab { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); gap: 22px; align-items: start; }
+  .lab > .fig { position: sticky; top: 16px; min-width: 0; display: flex; flex-direction: column; gap: 22px; }
+  .side { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+  .card.stage { padding: 0; overflow: hidden; background: var(--space-bg); position: relative; }
+  .stage-view { position: relative; }
+  .stage canvas { display: block; width: 100%; }
+  .stage canvas.drag { touch-action: none; }
+  .stage-label {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--space-ink);
+    pointer-events: none;
+  }
+  .stage-label.r { left: auto; right: 12px; text-align: right; }
+  .stage-legend { margin: 0; padding: 10px 12px; background: var(--surface); }
+  .playbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .btn-play { width: 48px; height: 48px; padding: 0; border-radius: 50%; font-size: 17px; line-height: 1; flex: none; }
+  .btn-icon { min-width: 44px; height: 44px; padding: 0 8px; font-size: 14px; flex: none; }
+  .date-out { font-family: var(--font-mono); font-weight: 600; font-variant-numeric: tabular-nums; flex: 1 1 10em; min-width: 0; }
+  .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; }
+  .seg button {
+    min-width: 0;
+    min-height: 44px;
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-weight: 600;
+    font-size: 13.5px;
+    transition: all 0.15s ease;
+  }
+  .seg button:hover { border-color: var(--accent); color: var(--ink); }
+  .seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .big-out { font-family: var(--font-mono); font-size: clamp(28px, 7vw, 40px); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 760px) {
+    .lab { grid-template-columns: minmax(0, 1fr); }
+    .lab > .fig { position: static; }
+  }
+  @media (max-width: 480px) {
+    .card { padding: 18px 14px; }
+    .stage { border-radius: 12px; }
+  }
+  .app { max-width: 1080px; }
+
+  /* ---------- 天体を選ぶ ---------- */
+  .pick-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-bottom: 14px; }
+  .pick-top .seg { flex: 1 1 16em; }
+  .pick-top .seg-label { font-size: 0.92rem; font-weight: 600; }
+  .chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+  .body-chip { display: flex; align-items: center; justify-content: center; gap: 2px; position: relative; padding: 8px 4px; }
+  .body-chip .dot { margin-right: 4px; box-shadow: 0 0 0 1px var(--border); }
+  .body-chip .tag {
+    position: absolute;
+    top: -7px;
+    right: -5px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 20px;
+    background: var(--accent-2);
+    color: var(--surface);
+  }
+  .body-chip.in-other { border-style: dashed; border-color: var(--accent-2); }
+
+  /* ---------- 図 ---------- */
+  .stages { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+  .stage canvas.tall { aspect-ratio: 3 / 5; }
+  .stage-label { right: 12px; }
+  .stage-label b { font-family: var(--font-body); font-size: 14px; }
+  .stage-label .note { display: block; font-family: var(--font-body); font-size: 11px; color: var(--space-ink-muted); }
+
+  /* ---------- くらべる ---------- */
+  .weight-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .weight-row label { font-size: 14px; font-weight: 600; }
+  .weight-row input { width: 7em; }
+  .cmp { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr); font-size: 14px; }
+  .cmp > div { padding: 8px 6px; border-bottom: 1px solid var(--border); min-width: 0; }
+  .cmp .h { font-weight: 700; display: flex; align-items: center; gap: 2px; }
+  .cmp .k { color: var(--ink-muted); font-size: 13px; }
+  .cmp .v { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; overflow-wrap: anywhere; }
+  .cmp .v small { display: block; font-family: var(--font-body); font-weight: 400; font-size: 11.5px; color: var(--ink-muted); }
+  .cmp .h.v { justify-content: flex-end; font-family: var(--font-body); }
+  .cmp > div:nth-last-child(-n+3) { border-bottom: none; }
+  .formula sup { font-size: .7em; }
+  .act-row button { flex: 1 1 120px; padding: 12px 10px; }
+  .formula .res { font-weight: 700; }
+
+  @media (max-width: 760px) {
+    .stages { gap: 10px; }
+  }
+  @media (max-width: 400px) {
+    .cmp { font-size: 13px; }
+    .cmp .k { font-size: 12px; }
+    .cmp > div { padding: 7px 3px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <nav class="page-links" aria-label="ページの移動">
+    <a class="back-link" href="../../../index.html">← 一覧へ</a>
+    <a class="back-link" href="../../../study/review/habit-planner/index.html">習慣プランナー →</a>
+  </nav>
+  <header class="hero">
+    <p class="eyebrow">ASTRONOMY SIMULATOR · 重力の違い</p>
+    <h1>重力の違い</h1>
+    <p class="tagline">2つの天体を選んで、ボールの落ち方とジャンプの高さをくらべます。体重の感じ方や脱出速度もわかります。</p>
+    <nav class="site-nav" aria-label="宇宙シミュレーターのページ">
+      <a href="index.html">入口</a>
+      <a href="orbits.html">惑星の公転</a>
+      <a href="moon.html">月の満ち欠け</a>
+      <a href="eclipse.html">日食・月食</a>
+      <span aria-current="page">重力の違い</span>
+      <a href="sky.html">星空</a>
+    </nav>
+  </header>
+
+  <section class="card">
+    <h2>天体を選ぶ</h2>
+    <div class="pick-top">
+      <span class="seg-label" id="segLabel">入れる場所</span>
+      <div class="seg" role="group" aria-labelledby="segLabel">
+        <button type="button" data-slot="a" aria-pressed="true" id="slotA"></button>
+        <button type="button" data-slot="b" aria-pressed="false" id="slotB"></button>
+      </div>
+    </div>
+    <div class="chips" id="chips"></div>
+  </section>
+
+  <div class="lab">
+    <div class="fig">
+      <div class="stages">
+        <div class="card stage">
+          <div class="stage-view">
+            <canvas id="cvA" class="tall" role="img" aria-label="天体Aでボールが落ちるようす"></canvas>
+            <span class="stage-label" id="lblA"></span>
+          </div>
+        </div>
+        <div class="card stage">
+          <div class="stage-view">
+            <canvas id="cvB" class="tall" role="img" aria-label="天体Bでボールが落ちるようす"></canvas>
+            <span class="stage-label" id="lblB"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="side">
+      <section class="card">
+        <h2>動かす</h2>
+        <div class="field stack">
+          <div class="field-top">
+            <span class="field-label"><label for="hIn">落とす高さ</label></span>
+            <span class="val" id="hVal"></span>
+          </div>
+          <input type="range" id="hIn" min="1" max="20" step="0.5">
+        </div>
+        <div class="btn-row act-row">
+          <button type="button" class="btn-primary" id="dropBtn">ボールを落とす</button>
+          <button type="button" class="btn-secondary" id="jumpBtn">ジャンプ</button>
+        </div>
+        <p class="hint">2つの天体で同時に、実際の時間の速さで動きます。ジャンプは、地球でちょうど 0.5 m 跳べる勢い(初速 3.13 m/s)で跳んだ場合です。高さの目盛りは、図に入るように自動で変わります。空気の抵抗は考えていません。</p>
+        <p class="hint" id="sunNote" hidden>太陽には固い地面がありません。仮に表面(光球)があるとして計算しています。</p>
+        <p class="hint" id="gasNote" hidden>木星〜海王星には固い地面がありません。雲の上(1気圧の高さ)を表面とした値です。</p>
+      </section>
+
+      <section class="card">
+        <h2>くらべる</h2>
+        <div class="weight-row">
+          <label for="wIn">あなたの体重</label>
+          <input type="number" id="wIn" min="1" max="500" step="0.1" inputmode="decimal">
+          <span>kg</span>
+        </div>
+        <div class="cmp" id="cmp"></div>
+        <p class="hint">重さの感じ方は「地球の上で、何kgの物を持ったときと同じ重さに感じるか」です(表面重力の比 g ÷ 9.80 で計算)。体(質量)そのものはどの天体でも変わりません。</p>
+      </section>
+
+      <section class="card">
+        <h2>g = GM / r²</h2>
+        <p class="hint" style="margin: 0 0 10px">表面重力 g は、万有引力定数 G = 6.674×10⁻¹¹ N·m²/kg²、天体の質量 M(kg)、半径 r(m)で決まります。</p>
+        <div class="formula" id="fA"></div>
+        <div class="formula" id="fB"></div>
+        <p class="hint">半径は赤道半径です。地球の値は、赤道半径で計算し自転による遠心力を含まないため 9.80 m/s² になります。ふだん使う標準重力 9.80665 m/s² は、計算や単位のために決めた基準の値です。このページの重さの感じ方とジャンプは、地球の値 9.80 m/s² を基準にしています。</p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  const Ast = window.Astro;
+  const KEY = "astronomySimulatorSettings";
+  const G0 = Ast.body("earth").gravity;     // 地球の表面重力(GM/r²、9.80 m/s²)。体重とジャンプの基準
+  const V0 = Math.sqrt(2 * G0 * 0.5);       // 地球でちょうど 0.5 m 跳べる初速
+  const BODIES = Ast.BODIES;
+  const GAS = ["jupiter", "saturn", "uranus", "neptune"];
+
+  // ---------- 保存(読み込み→マージ→保存) ----------
+  function loadAll() {
+    const v = Store.load(KEY, {});
+    return v && typeof v === "object" && !Array.isArray(v) ? v : {};
+  }
+  function savePart(part) {
+    const all = loadAll();
+    const cur = all.gravity && typeof all.gravity === "object" ? all.gravity : {};
+    all.gravity = Object.assign(cur, part);
+    Store.save(KEY, all);
+  }
+  const saved = loadAll().gravity || {};
+  const isBody = (id) => BODIES.some((b) => b.id === id);
+  const numIn = (v, lo, hi, d) => (typeof v === "number" && isFinite(v) && v >= lo && v <= hi ? v : d);
+
+  const S = {
+    a: isBody(saved.a) ? saved.a : "earth",
+    b: isBody(saved.b) ? saved.b : "moon",
+    slot: "a",
+    weight: numIn(saved.weight, 1, 500, 50),
+    height: numIn(saved.height, 1, 20, 10),
+    anim: null,    // { kind: "drop" | "jump", t0 }
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const body = (id) => Ast.body(id);
+  const colorVar = (id) => (id === "sun" ? "sun" : id === "moon" ? "moon" : "pl-" + id);
+
+  // ---------- 色 ----------
+  const VARS = ["space-bg", "space-bg-2", "space-ink", "space-ink-muted", "grid", "test-body", "orbit-hl"]
+    .concat(BODIES.map((b) => colorVar(b.id)));
+  const C = {};
+  function readColors() {
+    const cs = getComputedStyle(document.documentElement);
+    for (const v of VARS) C[v] = cs.getPropertyValue("--" + v).trim();
+  }
+  readColors();
+
+  function fit(cv) {
+    const r = cv.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+    const ctx = cv.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx, w: r.width, h: r.height };
+  }
+
+  // ---------- 物理 ----------
+  const g = (id) => body(id).gravity;
+  const jumpH = (id) => V0 * V0 / (2 * g(id));
+  const dropT = (id, h) => Math.sqrt(2 * h / g(id));
+  const jumpT = (id) => 2 * V0 / g(id);
+  // 高さ y(m)と経過時間、終わったか
+  function motion(id, t) {
+    const gg = g(id);
+    if (!S.anim || S.anim.kind === "drop") {
+      const T = dropT(id, S.height);
+      if (!S.anim) return { y: S.height, t: 0, done: false };
+      const tt = Math.min(t, T);
+      return { y: Math.max(0, S.height - gg * tt * tt / 2), t: tt, done: t >= T, T };
+    }
+    const T = jumpT(id);
+    const tt = Math.min(t, T);
+    return { y: Math.max(0, V0 * tt - gg * tt * tt / 2), t: tt, done: t >= T, T };
+  }
+
+  // 目盛りの最大(1, 2, 2.5, 5 × 10ⁿ)
+  function niceCeil(x) {
+    const p = Math.pow(10, Math.floor(Math.log10(x)));
+    for (const m of [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (m * p >= x - 1e-12) return m * p;
+    return 10 * p;
+  }
+  function niceStep(x) {
+    const p = Math.pow(10, Math.floor(Math.log10(x)));
+    for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= x) return m * p;
+    return 10 * p;
+  }
+  function scaleMax() {
+    if (S.anim && S.anim.kind === "jump") return niceCeil(Math.max(jumpH(S.a), jumpH(S.b)) * 1.15);
+    return niceCeil(S.height * 1.08);
+  }
+  function fmtM(m) {
+    if (m < 0.1) return (m * 100).toFixed(m < 0.01 ? 2 : 1) + " cm";
+    if (m < 10) return m.toFixed(2) + " m";
+    return m.toFixed(1) + " m";
+  }
+  function fmtTick(m, step) {
+    if (step < 0.1) return (m * 100).toFixed(Number.isInteger(Math.round(step * 1e6) / 1e4) ? 0 : 1) + " cm";
+    const d = step >= 1 ? (Number.isInteger(step) ? 0 : 1) : (Number.isInteger(Math.round(step * 1e6) / 1e5) ? 1 : 2);
+    return m.toFixed(d) + " m";
+  }
+
+  function drawStage(cv, id, t) {
+    const { ctx, w, h } = fit(cv);
+    const bg = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, Math.hypot(w, h) / 2);
+    bg.addColorStop(0, C["space-bg"]);
+    bg.addColorStop(1, C["space-bg-2"]);
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, w, h);
+
+    const groundH = Math.round(h * 0.1);
+    const groundY = h - groundH;
+    const top = 76;
+    const ballR = Math.max(5, Math.min(8, w * 0.035));
+    const max = scaleMax();
+    const ppm = (groundY - top - ballR * 2) / max;
+    const fontMono = getComputedStyle(document.body).getPropertyValue("--font-mono");
+
+    // 目盛り
+    const step = niceStep(max / 5);
+    ctx.font = "10.5px " + fontMono;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "bottom";
+    for (let v = step; v <= max + 1e-9; v += step) {
+      const y = groundY - v * ppm;
+      ctx.strokeStyle = C.grid;
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+      ctx.fillStyle = C["space-ink-muted"];
+      ctx.fillText(fmtTick(v, step), 6, y - 2);
+    }
+
+    // 地面(天体の色)
+    ctx.fillStyle = C[colorVar(id)];
+    ctx.fillRect(0, groundY, w, groundH);
+
+    const m = motion(id, t);
+    const bx = Math.max(56, w * 0.4);
+    // 落とす高さ / ジャンプの最高点
+    const markH = S.anim && S.anim.kind === "jump" ? jumpH(id) : S.height;
+    const my = groundY - markH * ppm - ballR;
+    ctx.setLineDash([3, 4]);
+    ctx.strokeStyle = C["orbit-hl"];
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(bx - 18, my); ctx.lineTo(bx + 18, my); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // ボール
+    const by = groundY - m.y * ppm - ballR;
+    ctx.beginPath();
+    ctx.arc(bx, by, ballR, 0, Math.PI * 2);
+    ctx.fillStyle = C["test-body"];
+    ctx.fill();
+
+    // 時間・高さ
+    ctx.fillStyle = C["space-ink"];
+    ctx.textAlign = "right";
+    ctx.textBaseline = "bottom";
+    ctx.font = "600 " + (w < 220 ? 11 : 12.5) + "px " + fontMono;
+    const lines = [];
+    if (S.anim && S.anim.kind === "jump") lines.push("最高 " + fmtM(jumpH(id)));
+    if (S.anim) lines.push((m.done ? "着地 " : "") + m.t.toFixed(2) + " 秒");
+    else lines.push(fmtM(S.height) + " から");
+    lines.forEach((s, i) => ctx.fillText(s, w - 8, groundY - 6 - (lines.length - 1 - i) * 16));
+    return m.done;
+  }
+
+  function labelHTML(slot, id) {
+    const b = body(id);
+    return "<b>" + slot.toUpperCase() + ": " + b.name + "</b><br>g = " + b.gravity.toFixed(2) + " m/s²" +
+      (id === "sun" ? '<span class="note">※仮に表面があるとして</span>' : "");
+  }
+
+  let raf = 0;
+  function draw() {
+    const t = S.anim ? (performance.now() - S.anim.t0) / 1000 : 0;
+    const d1 = drawStage($("cvA"), S.a, t);
+    const d2 = drawStage($("cvB"), S.b, t);
+    return d1 && d2;
+  }
+  function loop() {
+    const done = draw();
+    raf = done ? 0 : requestAnimationFrame(loop);
+  }
+  function start(kind) {
+    S.anim = { kind, t0: performance.now() };
+    if (!raf) raf = requestAnimationFrame(loop);
+  }
+  function stop() {
+    if (raf) cancelAnimationFrame(raf);
+    raf = 0;
+    S.anim = null;
+    draw();
+  }
+
+  // ---------- 表示の更新 ----------
+  function sci(x, digits) {
+    const SUP = { "-": "⁻", 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" };
+    const e = Math.floor(Math.log10(Math.abs(x)));
+    const m = x / Math.pow(10, e);
+    return m.toFixed(digits) + "×10" + String(e).split("").map((c) => SUP[c]).join("");
+  }
+  function formula(id) {
+    const b = body(id);
+    const r = b.radius * 1000;
+    const val = Ast.G * b.mass / (r * r);
+    return "<b>" + b.name + "</b>: g = " + sci(Ast.G, 3) + " × " + sci(b.mass, 3) + " ÷ (" + sci(r, 3) + ")²" +
+      ' ≈ <span class="res">' + (val < 100 ? val.toFixed(2) : val.toFixed(0)) + " m/s²</span>";
+  }
+  function chipName(id) {
+    return '<span class="dot" style="background: var(--' + colorVar(id) + ')"></span>' + body(id).name;
+  }
+
+  function updateAll() {
+    // 入れる場所
+    $("slotA").innerHTML = "A: " + body(S.a).name;
+    $("slotB").innerHTML = "B: " + body(S.b).name;
+    $("slotA").setAttribute("aria-pressed", String(S.slot === "a"));
+    $("slotB").setAttribute("aria-pressed", String(S.slot === "b"));
+    // チップ
+    const cur = S[S.slot], other = S[S.slot === "a" ? "b" : "a"];
+    document.querySelectorAll(".body-chip").forEach((c) => {
+      const id = c.dataset.id;
+      c.setAttribute("aria-pressed", String(id === cur));
+      c.classList.toggle("in-other", id === other && id !== cur);
+      const tags = (id === S.a ? "A" : "") + (id === S.b ? "B" : "");
+      const tag = c.querySelector(".tag");
+      tag.textContent = tags;
+      tag.hidden = !tags;
+    });
+    $("lblA").innerHTML = labelHTML("a", S.a);
+    $("lblB").innerHTML = labelHTML("b", S.b);
+    $("hIn").value = S.height;
+    $("hIn").style.setProperty("--p", ((S.height - 1) / 19 * 100).toFixed(2) + "%");
+    $("hVal").textContent = S.height.toFixed(1) + " m";
+    $("sunNote").hidden = !(S.a === "sun" || S.b === "sun");
+    $("gasNote").hidden = !(GAS.includes(S.a) || GAS.includes(S.b));
+    updateCmp();
+    $("fA").innerHTML = formula(S.a);
+    $("fB").innerHTML = formula(S.b);
+  }
+
+  function updateCmp() {
+    const earthG = body("earth").gravity;
+    const cell = (cls, html) => '<div class="' + cls + '">' + html + "</div>";
+    const col = (f) => cell("v", f(S.a)) + cell("v", f(S.b));
+    const w = S.weight;
+    const rows = [
+      cell("h", "") + cell("h v", chipName(S.a)) + cell("h v", chipName(S.b)),
+      cell("k", "重さの感じ方") + col((id) => (w * g(id) / G0).toFixed(1) + " kg<small>相当</small>"),
+      cell("k", "ジャンプの高さ") + col((id) => fmtM(jumpH(id))),
+      cell("k", "落下時間") + col((id) => dropT(id, S.height).toFixed(2) + " 秒<small>" + S.height.toFixed(1) + " m から</small>"),
+      cell("k", "脱出速度") + col((id) => body(id).escape.toFixed(id === "pluto" || id === "moon" ? 2 : 1) + " km/s"),
+      cell("k", "表面重力") + col((id) => g(id).toFixed(2) + " m/s²<small>地球の " + (g(id) / earthG).toFixed(g(id) / earthG < 10 ? 2 : 1) + " 倍</small>"),
+    ];
+    $("cmp").innerHTML = rows.join("");
+  }
+
+  // ---------- 操作 ----------
+  $("chips").innerHTML = BODIES.map((b) =>
+    '<button type="button" class="mode-tab body-chip" data-id="' + b.id + '" aria-pressed="false">' +
+    chipName(b.id) + '<span class="tag" hidden></span></button>').join("");
+  $("chips").addEventListener("click", (e) => {
+    const c = e.target.closest(".body-chip");
+    if (!c) return;
+    S[S.slot] = c.dataset.id;
+    savePart({ a: S.a, b: S.b });
+    stop();
+    updateAll();
+  });
+  document.querySelectorAll("[data-slot]").forEach((b) => b.addEventListener("click", () => {
+    S.slot = b.dataset.slot;
+    updateAll();
+  }));
+  $("hIn").addEventListener("input", () => {
+    S.height = +$("hIn").value;
+    savePart({ height: S.height });
+    stop();
+    updateAll();
+  });
+  $("wIn").value = S.weight;
+  $("wIn").addEventListener("input", () => {
+    const v = parseFloat($("wIn").value);
+    if (!(v >= 1 && v <= 500)) return;
+    S.weight = v;
+    savePart({ weight: v });
+    updateCmp();
+  });
+  $("wIn").addEventListener("change", () => { $("wIn").value = S.weight; });
+  $("dropBtn").addEventListener("click", () => start("drop"));
+  $("jumpBtn").addEventListener("click", () => start("jump"));
+
+  // 色の切り替え・大きさの変化
+  function redraw() { readColors(); draw(); }
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  if (mq.addEventListener) mq.addEventListener("change", redraw);
+  new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  const ro = new ResizeObserver(() => draw());
+  ro.observe($("cvA"));
+
+  updateAll();
+  draw();
+})();
+</script>
+</body>
+</html>

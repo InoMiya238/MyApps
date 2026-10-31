@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>星空 | 宇宙シミュレーター</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  [hidden] { display: none !important; }
+  .app { gap: 22px; }
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] { color: var(--ink); font-weight: 600; border-bottom: 2px solid var(--accent); }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+  .card h3 {
+    margin: 18px 0 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+  }
+  .hint { font-size: 0.78rem; color: var(--ink-faint); margin: 10px 0 0; line-height: 1.6; }
+  button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    padding: 12px 20px;
+  }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary { background: var(--surface-2); color: var(--ink); font-weight: 600; }
+  .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .btn-row button { flex: 1 1 140px; }
+  select, input[type="search"], input[type="date"], input[type="number"] {
+    font-family: var(--font-body);
+    font-size: 16px;
+    min-height: 44px;
+    padding: 8px 10px;
+    border-radius: 9px;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    min-width: 0;
+  }
+  button:focus-visible, select:focus-visible, a:focus-visible, input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .mode-tabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; }
+  .mode-tab {
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.15s ease;
+  }
+  .mode-tab:hover { border-color: var(--accent); color: var(--ink); }
+  .mode-tab[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+  .u { font-family: var(--font-body); font-size: .92em; margin-left: .18em; }
+  .given { display: grid; grid-template-columns: auto auto; justify-content: center; gap: 4px 14px; margin: 0; padding: 10px 14px; background: var(--surface-2); border-radius: 10px; font-size: 14.5px; color: var(--ink); }
+  .given dt { color: var(--ink-muted); }
+  .given dd { margin: 0; font-weight: 600; text-align: right; }
+  .legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 12px 0 0; padding: 0; list-style: none; font-size: 12.5px; color: var(--ink-muted); }
+  .legend li { display: flex; align-items: center; gap: 6px; }
+  .legend svg { width: 16px; height: 16px; flex: none; }
+  .readout { justify-content: start; grid-template-columns: auto 1fr; }
+  .readout dd { text-align: left; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12.5px; font-weight: 700; border: 1px solid currentColor; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: 0; flex: none; }
+
+  /* ---------- 入力 ---------- */
+  input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex: none;
+    margin: 0;
+  }
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 34px;
+    margin: 2px 0 0;
+    background: transparent;
+    cursor: pointer;
+    --p: 50%;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--accent) 0, var(--accent) var(--p), var(--surface-2) var(--p), var(--surface-2) 100%);
+    box-shadow: inset 0 0 0 1px var(--border);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    margin-top: -10px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--surface);
+    box-shadow: 0 0 0 1px var(--accent), 0 1px 3px var(--shadow);
+  }
+  input[type="range"]:focus-visible { outline-offset: 0; }
+  .field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .field:last-child { border-bottom: none; }
+  .field.stack { flex-direction: column; align-items: stretch; gap: 0; }
+  .field-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .field-label { font-size: 0.92rem; min-width: 0; }
+  .field-label label { cursor: pointer; }
+  .check-label { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.92rem; min-height: 44px; }
+  .val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .formula {
+    margin: 2px 0 6px;
+    padding: 8px 10px;
+    border-radius: 9px;
+    background: var(--surface-2);
+    font-size: 0.86rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  /* ---------- シミュレーターの部品(宇宙シミュレーター共通) ---------- */
+  .lab { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); gap: 22px; align-items: start; }
+  .lab > .fig { position: sticky; top: 16px; min-width: 0; display: flex; flex-direction: column; gap: 22px; }
+  .side { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+  .card.stage { padding: 0; overflow: hidden; background: var(--space-bg); position: relative; }
+  .stage-view { position: relative; }
+  .stage canvas { display: block; width: 100%; }
+  .stage canvas.drag { touch-action: none; }
+  .stage-label {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--space-ink);
+    pointer-events: none;
+  }
+  .stage-label.r { left: auto; right: 12px; text-align: right; }
+  .stage-legend { margin: 0; padding: 10px 12px; background: var(--surface); }
+  .playbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .btn-play { width: 48px; height: 48px; padding: 0; border-radius: 50%; font-size: 17px; line-height: 1; flex: none; }
+  .btn-icon { min-width: 44px; height: 44px; padding: 0 8px; font-size: 14px; flex: none; }
+  .date-out { font-family: var(--font-mono); font-weight: 600; font-variant-numeric: tabular-nums; flex: 1 1 10em; min-width: 0; }
+  .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; }
+  .seg button {
+    min-width: 0;
+    min-height: 44px;
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-weight: 600;
+    font-size: 13.5px;
+    transition: all 0.15s ease;
+  }
+  .seg button:hover { border-color: var(--accent); color: var(--ink); }
+  .seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .big-out { font-family: var(--font-mono); font-size: clamp(28px, 7vw, 40px); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 760px) {
+    .lab { grid-template-columns: minmax(0, 1fr); }
+    .lab > .fig { position: static; }
+  }
+  @media (max-width: 480px) {
+    .card { padding: 18px 14px; }
+    .stage { border-radius: 12px; }
+  }
+  .app { max-width: 1080px; }
+
+  /* ---------- 星空 ---------- */
+  #skyCanvas { aspect-ratio: 1; touch-action: pan-y; cursor: pointer; }
+  #skyCanvas.zoomed { touch-action: none; cursor: grab; }
+  .stage-label.halo { text-shadow: 0 0 3px var(--space-bg), 0 0 3px var(--space-bg), 0 0 2px var(--space-bg); }
+  .place-label { top: auto; bottom: 10px; }
+  @media (max-width: 480px) {
+    .stage-view .stage-label { font-size: 11px; top: 6px; left: 8px; }
+    .stage-view .stage-label.place-label { top: auto; bottom: 6px; }
+  }
+  .zoom-btns { position: absolute; right: 10px; bottom: 10px; display: flex; gap: 6px; }
+  .zoom-btns button { width: 44px; height: 44px; padding: 0; border-radius: 10px; font-size: 18px; font-weight: 700; background: var(--surface-2); color: var(--ink); opacity: .92; }
+  .fig-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 12px; background: var(--surface); }
+  .fig-bar .seg { flex: 1 1 200px; }
+  .fig-bar .hint { margin: 0; flex: 1 1 100%; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .row2 label, .stack-label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--ink-muted); font-weight: 600; min-width: 0; }
+  .row2 input, .stack-label select, .stack-label input { width: 100%; }
+  .ctrl .playbar { margin-bottom: 6px; }
+  .ctrl .seg { margin-top: 12px; }
+  .date-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 0; }
+  .date-row label { font-size: 0.92rem; }
+  .date-row input { flex: 0 1 12em; }
+  .checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0 12px; }
+  .sel-empty { margin: 0; font-size: 14px; color: var(--ink-faint); }
+  .sel-card .given { font-size: 14px; }
+  .ticks { position: relative; height: 16px; margin: 0 13px; font-size: 11px; color: var(--ink-faint); }
+  .ticks span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <nav class="page-links" aria-label="ページの移動">
+    <a class="back-link" href="../../../index.html">← 一覧へ</a>
+    <a class="back-link" href="../../../study/review/habit-planner/index.html">習慣プランナー →</a>
+  </nav>
+  <header class="hero">
+    <p class="eyebrow">ASTRONOMY SIMULATOR · 星空</p>
+    <h1>星空</h1>
+    <p class="tagline">日本の各地から見た、今夜の星・星座・惑星・月の位置を描きます。日時を進めると、星が東から昇って西へ沈むようすがわかります。</p>
+    <nav class="site-nav" aria-label="宇宙シミュレーターのページ">
+      <a href="index.html">入口</a>
+      <a href="orbits.html">惑星の公転</a>
+      <a href="moon.html">月の満ち欠け</a>
+      <a href="eclipse.html">日食・月食</a>
+      <a href="gravity.html">重力の違い</a>
+      <span aria-current="page">星空</span>
+    </nav>
+  </header>
+
+  <div class="lab">
+    <div class="fig">
+      <section class="card stage" aria-label="星空の図">
+        <div class="stage-view">
+          <canvas id="skyCanvas" role="img" aria-label="空全体を見上げた図。中心が真上、円のふちが地平線"></canvas>
+          <p class="stage-label halo" id="timeLabel">—</p>
+          <p class="stage-label halo place-label" id="placeLabel">—</p>
+          <div class="zoom-btns">
+            <button type="button" id="zoomOut" aria-label="縮小">−</button>
+            <button type="button" id="zoomIn" aria-label="拡大">+</button>
+          </div>
+        </div>
+        <div class="fig-bar">
+          <div class="seg" role="group" aria-label="図の向き">
+            <button type="button" data-orient="S" aria-pressed="true">南が下</button>
+            <button type="button" data-orient="N" aria-pressed="false">北が下</button>
+          </div>
+          <p class="hint">空を見上げた図なので、地図とは東西が逆です(南を下にすると東が左)。月・太陽・惑星・星の大きさは誇張しています。星をタップすると名前が出ます。</p>
+        </div>
+      </section>
+    </div>
+
+    <div class="side">
+      <section class="card ctrl" aria-labelledby="timeTitle">
+        <h2 id="timeTitle">日時</h2>
+        <div class="playbar">
+          <button type="button" class="btn-primary btn-play" id="playBtn" aria-label="再生">▶</button>
+          <button type="button" class="btn-secondary btn-icon" id="nowBtn">今</button>
+          <span class="date-out" id="dateOut">—</span>
+        </div>
+        <div class="field stack">
+          <div class="field-top">
+            <span class="field-label"><label for="timeRange">時刻(日本時間)</label></span>
+            <span class="val" id="timeVal">21:00</span>
+          </div>
+          <input type="range" id="timeRange" min="0" max="1440" step="10" value="1260">
+          <div class="ticks" aria-hidden="true">
+            <span style="left:0%">0時</span>
+            <span style="left:25%">6時</span>
+            <span style="left:50%">12時</span>
+            <span style="left:75%">18時</span>
+            <span style="left:100%">24時</span>
+          </div>
+        </div>
+        <div class="date-row">
+          <label for="dateInput">日付</label>
+          <input type="date" id="dateInput" min="1900-01-01" max="2100-12-31">
+        </div>
+        <div class="seg" role="group" aria-label="再生の速さ">
+          <button type="button" data-speed="1" aria-pressed="false">1分/秒</button>
+          <button type="button" data-speed="10" aria-pressed="true">10分/秒</button>
+          <button type="button" data-speed="60" aria-pressed="false">1時間/秒</button>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="placeTitle">
+        <h2 id="placeTitle">観測地</h2>
+        <label class="stack-label">場所
+          <select id="citySel">
+            <option value="sapporo">札幌</option>
+            <option value="sendai">仙台</option>
+            <option value="tokyo">東京</option>
+            <option value="nagoya">名古屋</option>
+            <option value="osaka">大阪</option>
+            <option value="hiroshima">広島</option>
+            <option value="fukuoka">福岡</option>
+            <option value="naha">那覇</option>
+            <option value="custom">緯度経度を入れる</option>
+          </select>
+        </label>
+        <div class="row2">
+          <label>北緯(°)<input type="number" id="latIn" min="-90" max="90" step="0.01" inputmode="decimal"></label>
+          <label>東経(°)<input type="number" id="lonIn" min="-180" max="180" step="0.01" inputmode="decimal"></label>
+        </div>
+        <p class="hint">南緯・西経はマイナスで入れます。時刻はどこでも日本時間で表示します。</p>
+      </section>
+
+      <section class="card" aria-labelledby="showTitle">
+        <h2 id="showTitle">表示</h2>
+        <div class="checks">
+          <label class="check-label"><input type="checkbox" data-opt="lines" checked>星座線</label>
+          <label class="check-label"><input type="checkbox" data-opt="conNames" checked>星座名</label>
+          <label class="check-label"><input type="checkbox" data-opt="starNames" checked>星の名前</label>
+          <label class="check-label"><input type="checkbox" data-opt="planets" checked>惑星</label>
+          <label class="check-label"><input type="checkbox" data-opt="ticks" checked>方位の目盛り</label>
+        </div>
+      </section>
+
+      <section class="card sel-card" aria-labelledby="selTitle" aria-live="polite">
+        <h2 id="selTitle">選んだ星</h2>
+        <p class="sel-empty" id="selEmpty">図の星や惑星をタップすると、ここに名前と位置が出ます。</p>
+        <dl class="given readout" id="selList" hidden></dl>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="data.js"></script>
+<script src="stars.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  const KEY = "astronomySimulatorSettings";
+  const DEG = Math.PI / 180;
+  const JST = 9 * 3600000;
+  const D = window.SKY_DATA;
+
+  const CITIES = {
+    sapporo: { name: "札幌", lat: 43.06, lon: 141.35 },
+    sendai: { name: "仙台", lat: 38.27, lon: 140.87 },
+    tokyo: { name: "東京", lat: 35.68, lon: 139.69 },
+    nagoya: { name: "名古屋", lat: 35.18, lon: 136.91 },
+    osaka: { name: "大阪", lat: 34.69, lon: 135.50 },
+    hiroshima: { name: "広島", lat: 34.39, lon: 132.46 },
+    fukuoka: { name: "福岡", lat: 33.59, lon: 130.40 },
+    naha: { name: "那覇", lat: 26.21, lon: 127.68 },
+  };
+  const PLANETS = ["mercury", "venus", "mars", "jupiter", "saturn", "uranus", "neptune"];
+  // 惑星の等級の目安(H + 5log(rΔ) + 位相の項)。土星の環の傾きは入れていない
+  const PMAG = {
+    mercury: [-0.42, (i) => 0.0380 * i - 0.000273 * i * i + 0.000002 * i * i * i],
+    venus: [-4.40, (i) => 0.0009 * i + 0.000239 * i * i - 0.00000065 * i * i * i],
+    mars: [-1.52, (i) => 0.016 * i],
+    jupiter: [-9.40, (i) => 0.005 * i],
+    saturn: [-8.88, (i) => 0.044 * i],
+    uranus: [-7.19, () => 0],
+    neptune: [-6.87, () => 0],
+  };
+  const DIR16 = ["北", "北北東", "北東", "東北東", "東", "東南東", "南東", "南南東", "南", "南南西", "南西", "西南西", "西", "西北西", "北西", "北北西"];
+
+  // ---------- 保存 ----------
+  function loadAll() {
+    const s = Store.load(KEY, {});
+    return s && typeof s === "object" && !Array.isArray(s) ? s : {};
+  }
+  function saveMine(part) {
+    const all = loadAll();
+    const mine = all.sky && typeof all.sky === "object" ? all.sky : {};
+    all.sky = Object.assign({}, mine, part);
+    Store.save(KEY, all);
+  }
+
+  // ---------- 色 ----------
+  const COLOR_NAMES = ["space-bg", "space-bg-2", "space-ink", "space-ink-muted", "grid", "star", "const-line", "const-label",
+    "horizon", "sky-day", "sky-civil", "sky-nautical", "sky-astro", "sky-night", "sun", "sun-glow", "moon", "moon-dark",
+    "pl-mercury", "pl-venus", "pl-mars", "pl-jupiter", "pl-saturn", "pl-uranus", "pl-neptune", "accent-2"];
+  const C = {};
+  function readColors() {
+    const cs = getComputedStyle(document.documentElement);
+    for (const n of COLOR_NAMES) C[n] = cs.getPropertyValue("--" + n).trim();
+  }
+  function parseColor(c) {
+    c = c.trim();
+    if (c[0] === "#") {
+      let h = c.slice(1);
+      if (h.length === 3) h = h.split("").map((x) => x + x).join("");
+      return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16), 1];
+    }
+    const m = c.match(/[\d.]+/g) || [0, 0, 0];
+    return [+m[0], +m[1], +m[2], m[3] === undefined ? 1 : +m[3]];
+  }
+  function mix(c1, c2, t) {
+    const a = parseColor(c1), b = parseColor(c2);
+    const v = a.map((x, i) => x + (b[i] - x) * t);
+    return "rgba(" + Math.round(v[0]) + "," + Math.round(v[1]) + "," + Math.round(v[2]) + "," + v[3].toFixed(3) + ")";
+  }
+  // 太陽高度 → 空の色(間は補間)
+  function skyColor(h) {
+    const st = [[2, "sky-day"], [-3, "sky-civil"], [-9, "sky-nautical"], [-15, "sky-astro"], [-18, "sky-night"]];
+    if (h >= st[0][0]) return C["sky-day"];
+    for (let i = 1; i < st.length; i++) {
+      if (h >= st[i][0]) {
+        const t = (st[i - 1][0] - h) / (st[i - 1][0] - st[i][0]);
+        return mix(C[st[i - 1][1]], C[st[i][1]], t);
+      }
+    }
+    return C["sky-night"];
+  }
+  const FONT = () => getComputedStyle(document.body).fontFamily;
+
+  // ---------- 状態 ----------
+  const saved = loadAll().sky || {};
+  const optsDefault = { lines: true, conNames: true, starNames: true, planets: true, ticks: true };
+  const state = {
+    t: Date.now(),
+    city: CITIES[saved.city] || saved.city === "custom" ? saved.city : "tokyo",
+    lat: 35.68, lon: 139.69,
+    orient: saved.orient === "N" ? "N" : "S",
+    speed: [1, 10, 60].indexOf(saved.speed) >= 0 ? saved.speed : 10,
+    opts: Object.assign({}, optsDefault, saved.opts && typeof saved.opts === "object" ? saved.opts : {}),
+    playing: false,
+    z: 1, panX: 0, panY: 0,
+    sel: null,
+  };
+  if (state.city !== "custom") { state.lat = CITIES[state.city].lat; state.lon = CITIES[state.city].lon; }
+  else if (isFinite(saved.lat) && isFinite(saved.lon)) { state.lat = clampLat(saved.lat); state.lon = clampLon(saved.lon); }
+  function clampLat(v) { return Math.max(-90, Math.min(90, Number(v))); }
+  function clampLon(v) { return Math.max(-180, Math.min(180, Number(v))); }
+
+  // ---------- 時刻(日本時間) ----------
+  function jst(t) {
+    const d = new Date(t + JST);
+    return { y: d.getUTCFullYear(), mo: d.getUTCMonth() + 1, d: d.getUTCDate(), h: d.getUTCHours(), mi: d.getUTCMinutes(), wd: d.getUTCDay() };
+  }
+  const p2 = (n) => String(n).padStart(2, "0");
+  function jstMidnight(t) { const j = jst(t); return Date.UTC(j.y, j.mo - 1, j.d) - JST; }
+  function sunAltAt(t) {
+    const date = new Date(t);
+    const s = Astro.sun(date);
+    return Astro.toHorizontal(s.ra, s.dec, state.lat, Astro.siderealTime(date, state.lon)).alt;
+  }
+
+  // ---------- 位置の計算 ----------
+  function vec(alt, az) {
+    const ca = Math.cos(alt * DEG);
+    return [ca * Math.sin(az * DEG), ca * Math.cos(az * DEG), Math.sin(alt * DEG)]; // 東・北・上
+  }
+  function fromVec(v) {
+    const n = Math.hypot(v[0], v[1], v[2]);
+    return { alt: Math.asin(v[2] / n) / DEG, az: ((Math.atan2(v[0], v[1]) / DEG) + 360) % 360 };
+  }
+  function angSep(ra1, de1, ra2, de2) {
+    const c = Math.sin(de1 * DEG) * Math.sin(de2 * DEG) + Math.cos(de1 * DEG) * Math.cos(de2 * DEG) * Math.cos((ra1 - ra2) * DEG);
+    return Math.acos(Math.max(-1, Math.min(1, c))) / DEG;
+  }
+  function nearestCon(ra, dec) {
+    let best = null, bd = 1e9;
+    for (const s of D.stars) {
+      const d = angSep(ra, dec, s.ra, s.dec);
+      if (d < bd) { bd = d; best = s; }
+    }
+    return best ? best.conName : "—";
+  }
+  function planetInfo(id, date) {
+    const g = Astro.geocentric(id, date);
+    const hp = Astro.heliocentric(id, date), he = Astro.heliocentric("earth", date);
+    const r = hp.r, R = he.r, delta = g.dist;
+    const cosI = (r * r + delta * delta - R * R) / (2 * r * delta);
+    const i = Math.acos(Math.max(-1, Math.min(1, cosI))) / DEG;
+    const mag = PMAG[id][0] + 5 * Math.log10(r * delta) + PMAG[id][1](i);
+    return { ra: g.ra, dec: g.dec, mag, dist: delta };
+  }
+
+  // 星座名の位置(星座線に使う星の向きの平均)
+  const conCenters = D.constellations.map((c) => {
+    let ids = [];
+    c.lines.forEach((l) => { ids = ids.concat(l); });
+    if (!ids.length) ids = D.stars.filter((s) => s.con === c.id).map((s) => s.id);
+    let x = 0, y = 0, z = 0;
+    for (const id of ids) {
+      const s = D.starById[id];
+      x += Math.cos(s.dec * DEG) * Math.cos(s.ra * DEG);
+      y += Math.cos(s.dec * DEG) * Math.sin(s.ra * DEG);
+      z += Math.sin(s.dec * DEG);
+    }
+    return { id: c.id, name: c.name.replace(/(.*?座).*/, "$1"), hasLines: c.lines.length > 0,
+      ra: (Math.atan2(y, x) / DEG + 360) % 360, dec: Math.atan2(z, Math.hypot(x, y)) / DEG };
+  });
+
+  // ---------- 描画 ----------
+  const canvas = document.getElementById("skyCanvas");
+  const ctx = canvas.getContext("2d");
+  const view = { W: 1, R: 1, cx: 0, cy: 0, k: 1 };
+  let hits = [];
+
+  function resize() {
+    const r = canvas.getBoundingClientRect();
+    if (r.width < 2) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    view.W = r.width;
+    canvas.width = Math.round(r.width * dpr); canvas.height = Math.round(r.width * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
+  function geom() {
+    const W = view.W;
+    const margin = Math.max(30, W * 0.07);
+    view.R = (W / 2 - margin) * state.z;
+    view.cx = W / 2 + state.panX; view.cy = W / 2 + state.panY;
+    view.k = Math.max(0.78, Math.min(1.25, W / 540));
+  }
+  // 等距離方位図法(天頂が中心、半径は 90°−高度 に比例)
+  function proj(alt, az) {
+    const r = view.R * (90 - alt) / 90;
+    const s = state.orient === "S" ? 1 : -1;
+    return { x: view.cx - s * r * Math.sin(az * DEG), y: view.cy - s * r * Math.cos(az * DEG) };
+  }
+  function text(t, x, y, color, day) {
+    if (day) { ctx.lineWidth = 3; ctx.strokeStyle = C["space-bg"]; ctx.lineJoin = "round"; ctx.strokeText(t, x, y); }
+    ctx.fillStyle = color; ctx.fillText(t, x, y);
+  }
+  // 名前は地平線の円で切れないよう、あとでまとめて描く。右寄りの天体は名前を左側に出す
+  let labels = [];
+  function label(t, x, y, color, opt) {
+    labels.push(Object.assign({ t, x, y, color }, opt));
+  }
+  /* 優先順位の高いもの(惑星・月・太陽 3 > 1等星の名前 2 > 星座名 1 > その他 0)から置き、
+     すでに置いた名前と重なるもの、地平線の円からはみ出すものは出さない */
+  function flushLabels(day) {
+    const placed = [];
+    const inCircle = (x, y) => Math.hypot(x - view.cx, y - view.cy) <= view.R - 2;
+    const order = labels.map((L, i) => [L, i]).sort((a, b) => (b[0].pri || 0) - (a[0].pri || 0) || a[1] - b[1]);
+    for (const [L] of order) {
+      ctx.font = L.font;
+      const tw = ctx.measureText(L.t).width, th = parseFloat(L.font.split(" ")[1]) + 2;
+      const cands = [];
+      if (L.align === "center") {
+        for (const [dx, dy] of [[0, 0], [0, -28], [0, 16], [0, -44], [-36, -14], [36, -14]]) cands.push({ align: "center", x: L.x + dx, y: L.y + dy });
+      } else {
+        const left = { align: "left", x: L.x, y: L.y }, right = { align: "right", x: L.x - (L.dx || 0) * 2, y: L.y };
+        if (L.x > view.cx + view.R * 0.55) cands.push(right, left); else cands.push(left, right);
+      }
+      let ok = null;
+      for (const c of cands) {
+        const x0 = c.align === "center" ? c.x - tw / 2 : c.align === "right" ? c.x - tw : c.x;
+        const box = { x0: x0 - 1, y0: c.y - th / 2, x1: x0 + tw + 1, y1: c.y + th / 2 };
+        if (!inCircle(box.x0, box.y0) || !inCircle(box.x1, box.y0) || !inCircle(box.x0, box.y1) || !inCircle(box.x1, box.y1)) continue;
+        if (placed.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0)) continue;
+        ok = c; placed.push(box); break;
+      }
+      if (!ok) continue;
+      ctx.globalAlpha = L.alpha === undefined ? 1 : L.alpha;
+      ctx.textAlign = ok.align; ctx.textBaseline = "middle";
+      text(L.t, ok.x, ok.y, L.color, !L.plain && (day || L.halo));
+    }
+    ctx.globalAlpha = 1;
+    labels = [];
+  }
+  function phaseDisk(x, y, r, illum, towardX, towardY) {
+    const ang = Math.atan2(towardY, towardX);
+    const k = 1 - 2 * illum; // 明暗の境目の楕円の横幅
+    ctx.save();
+    ctx.translate(x, y); ctx.rotate(ang);
+    ctx.fillStyle = C["moon-dark"];
+    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.moon;
+    ctx.beginPath();
+    const N = 40;
+    for (let i = 0; i <= N; i++) { const p = -Math.PI / 2 + Math.PI * i / N; ctx.lineTo(r * Math.cos(p), r * Math.sin(p)); }
+    for (let i = N; i >= 0; i--) { const p = -Math.PI / 2 + Math.PI * i / N; ctx.lineTo(r * k * Math.cos(p), r * Math.sin(p)); }
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+
+  function draw() {
+    if (view.W < 2) return; // 大きさが決まる前は描かない
+    geom();
+    const W = view.W, k = view.k;
+    const date = new Date(state.t);
+    const lst = Astro.siderealTime(date, state.lon);
+    const hz = (ra, dec) => Astro.toHorizontal(ra, dec, state.lat, lst);
+    const sun = Astro.sun(date), sunH = hz(sun.ra, sun.dec);
+    const day = sunH.alt > -6;
+    const fs = Math.round(11.5 * Math.max(0.95, Math.min(1.1, k)));
+    hits = [];
+    labels = [];
+
+    // 星の見える限界の等級と、線の濃さ
+    let lim, lineAlpha, starAlpha = 1;
+    if (sunH.alt > 0) { lim = 0; lineAlpha = 0.3; starAlpha = 0.6; }
+    else if (sunH.alt > -18) { lim = 1 + (-sunH.alt / 18) * 3.5; lineAlpha = 0.35 + 0.65 * (-sunH.alt / 18); }
+    else { lim = 99; lineAlpha = 1; }
+
+    ctx.fillStyle = C["space-bg"];
+    ctx.fillRect(0, 0, W, W);
+
+    // 空(地平線の円の中)
+    ctx.save();
+    ctx.beginPath(); ctx.arc(view.cx, view.cy, view.R, 0, Math.PI * 2);
+    ctx.fillStyle = skyColor(sunH.alt); ctx.fill();
+    ctx.clip();
+
+    // 高度30°・60°の円
+    ctx.strokeStyle = C.grid; ctx.lineWidth = 1;
+    for (const a of [30, 60]) { ctx.beginPath(); ctx.arc(view.cx, view.cy, view.R * (90 - a) / 90, 0, Math.PI * 2); ctx.stroke(); }
+
+    // 星の地平座標
+    const pos = {};
+    for (const s of D.stars) {
+      const h = hz(s.ra, s.dec);
+      pos[s.id] = { h, p: proj(h.alt, h.az) };
+    }
+
+    // 星座線
+    if (state.opts.lines) {
+      ctx.strokeStyle = C["const-line"]; ctx.lineWidth = 1.1; ctx.globalAlpha = lineAlpha;
+      ctx.beginPath();
+      for (const c of D.constellations) for (const l of c.lines) {
+        for (let i = 1; i < l.length; i++) {
+          const a = pos[l[i - 1]], b = pos[l[i]];
+          if (a.h.alt < -20 && b.h.alt < -20) continue;
+          if (a.h.alt < 0 && b.h.alt < 0) continue;
+          ctx.moveTo(a.p.x, a.p.y); ctx.lineTo(b.p.x, b.p.y);
+        }
+      }
+      ctx.stroke(); ctx.globalAlpha = 1;
+    }
+
+    // 星
+    ctx.fillStyle = C.star;
+    for (const s of D.stars) {
+      const q = pos[s.id];
+      if (q.h.alt < 0 || s.mag > lim + 0.3) continue;
+      const fade = s.mag > lim ? 0.35 : 1;
+      const r = Math.max(0.7, (4.6 - s.mag) * 0.62) * k;
+      ctx.globalAlpha = starAlpha * fade * (s.mag > 4 ? 0.75 : 1);
+      ctx.beginPath(); ctx.arc(q.p.x, q.p.y, r, 0, Math.PI * 2); ctx.fill();
+      hits.push({ x: q.p.x, y: q.p.y, kind: "star", id: s.id, pri: 0 });
+    }
+    ctx.globalAlpha = 1;
+
+    ctx.font = "600 " + fs + "px " + FONT();
+    ctx.textBaseline = "middle";
+    // 星座名
+    if (state.opts.conNames) {
+      ctx.textAlign = "center";
+      for (const c of conCenters) {
+        if (!c.hasLines && state.z < 1.5) continue;
+        const h = hz(c.ra, c.dec);
+        if (h.alt < 4) continue;
+        const p = proj(h.alt, h.az);
+        label(c.name, p.x, p.y + 14, C["const-label"], { align: "center", alpha: sunH.alt > 0 ? 0.35 : Math.max(0.45, lineAlpha), font: ctx.font, plain: sunH.alt > 0, pri: 1 });
+      }
+    }
+    // 星の名前
+    if (state.opts.starNames) {
+      ctx.font = "500 " + (fs - 0.5) + "px " + FONT();
+      ctx.textAlign = "left";
+      const magMax = state.z >= 1.5 ? 2.0 : 1.5;
+      for (const s of D.stars) {
+        if (!s.name) continue;
+        if (s.mag > magMax && s.id !== "UMi-alp") continue;
+        const q = pos[s.id];
+        if (q.h.alt < 0 || s.mag > lim) continue;
+        label(s.id === "UMi-alp" ? "北極星" : s.name, q.p.x + 5 * k, q.p.y - 6, C["space-ink-muted"], { dx: 5 * k, font: ctx.font, pri: s.mag <= 1.5 || s.id === "UMi-alp" ? 2 : 0 });
+      }
+    }
+
+    // 惑星
+    ctx.font = "600 " + fs + "px " + FONT();
+    if (state.opts.planets) {
+      for (const id of PLANETS) {
+        const pi = planetInfo(id, date);
+        const h = hz(pi.ra, pi.dec);
+        if (h.alt < 0) continue;
+        const p = proj(h.alt, h.az);
+        const r = Math.max(2.6, Math.min(5, (3 - pi.mag) * 0.7)) * k;
+        ctx.globalAlpha = pi.mag > lim ? 0.5 : 1;
+        ctx.fillStyle = C["pl-" + id];
+        ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = 1;
+        label(Astro.planet(id).name, p.x + r + 4, p.y, C["pl-" + id], { dx: r + 4, font: ctx.font, alpha: pi.mag > lim ? 0.6 : 1, pri: 3 });
+        hits.push({ x: p.x, y: p.y, kind: "planet", id, pri: 6 });
+      }
+    }
+
+    // 月
+    const mo = Astro.moon(date), moH = hz(mo.ra, mo.dec);
+    if (moH.alt > -2) {
+      const ph = Astro.moonPhase(date);
+      const mp = proj(moH.alt, moH.az);
+      // 月から見た太陽の向き(大円に沿って少し進めた点を投影する)
+      const m = vec(moH.alt, moH.az), s = vec(sunH.alt, sunH.az);
+      const dot = m[0] * s[0] + m[1] * s[1] + m[2] * s[2];
+      let t = [s[0] - dot * m[0], s[1] - dot * m[1], s[2] - dot * m[2]];
+      const tn = Math.hypot(t[0], t[1], t[2]) || 1;
+      t = t.map((x) => x / tn);
+      const e = 2 * DEG;
+      const q = fromVec([m[0] * Math.cos(e) + t[0] * Math.sin(e), m[1] * Math.cos(e) + t[1] * Math.sin(e), m[2] * Math.cos(e) + t[2] * Math.sin(e)]);
+      const qp = proj(q.alt, q.az);
+      const r = 8 * k;
+      phaseDisk(mp.x, mp.y, r, ph.illum, qp.x - mp.x, qp.y - mp.y);
+      ctx.strokeStyle = C["space-ink-muted"]; ctx.globalAlpha = 0.5; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(mp.x, mp.y, r, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1;
+      label("月", mp.x + r + 4, mp.y, C["space-ink"], { dx: r + 4, font: ctx.font, pri: 3 });
+      hits.push({ x: mp.x, y: mp.y, kind: "moon", id: "moon", pri: 8 });
+    }
+    // 太陽
+    if (sunH.alt > -1) {
+      const sp = proj(sunH.alt, sunH.az);
+      const r = 9 * k;
+      const g = ctx.createRadialGradient(sp.x, sp.y, r, sp.x, sp.y, r * 3);
+      g.addColorStop(0, C["sun-glow"]); g.addColorStop(1, "transparent");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sp.x, sp.y, r * 3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = C.sun; ctx.beginPath(); ctx.arc(sp.x, sp.y, r, 0, Math.PI * 2); ctx.fill();
+      label("太陽", sp.x + r + 4, sp.y, C["space-ink"], { dx: r + 4, font: ctx.font, halo: true, pri: 3 });
+      hits.push({ x: sp.x, y: sp.y, kind: "sun", id: "sun", pri: 8 });
+    }
+
+    // 選んだ天体の印
+    const sel = selectedPos(date, lst);
+    if (sel && sel.h.alt > -1) {
+      const p = proj(sel.h.alt, sel.h.az);
+      ctx.strokeStyle = C["accent-2"]; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 11 * k, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.restore();
+    flushLabels(day);
+
+    // 地平線と方位
+    ctx.strokeStyle = C.horizon; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(view.cx, view.cy, view.R, 0, Math.PI * 2); ctx.stroke();
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    for (let i = 0; i < 16; i++) {
+      const az = i * 22.5;
+      const main = i % 4 === 0, mid = i % 2 === 0;
+      const a = proj(0, az);
+      const ux = (a.x - view.cx) / view.R, uy = (a.y - view.cy) / view.R;
+      if (state.opts.ticks || main) {
+        const len = main ? 9 : mid ? 7 : 5;
+        ctx.strokeStyle = C.horizon; ctx.lineWidth = main ? 2 : 1.2;
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(a.x + ux * len, a.y + uy * len); ctx.stroke();
+      }
+      if (main) {
+        ctx.font = "700 " + (fs + 2) + "px " + FONT();
+        ctx.fillStyle = i === 8 ? C.sun : C["space-ink"];
+        ctx.fillText(DIR16[i], a.x + ux * 17, a.y + uy * 17);
+      } else if (mid && state.opts.ticks) {
+        ctx.font = "500 " + (fs - 1.5) + "px " + FONT();
+        ctx.fillStyle = C["space-ink-muted"];
+        ctx.fillText(DIR16[i], a.x + ux * 17, a.y + uy * 17);
+      }
+    }
+
+    // 文字の表示
+    const j = jst(state.t);
+    const sa = Math.round(sunH.alt);
+    document.getElementById("timeLabel").innerHTML = j.mo + "/" + j.d + " " + j.h + ":" + p2(j.mi) + " JST<br>太陽高度 " + (sa < 0 ? "−" + (-sa) : sa) + "°";
+    updateSelInfo(date, lst);
+  }
+
+  let drawQueued = false;
+  function requestDraw() {
+    if (drawQueued) return;
+    drawQueued = true;
+    requestAnimationFrame(() => { drawQueued = false; draw(); });
+  }
+
+  // ---------- 選んだ天体 ----------
+  function selectedPos(date, lst) {
+    if (!state.sel) return null;
+    const hz = (ra, dec) => Astro.toHorizontal(ra, dec, state.lat, lst);
+    const s = state.sel;
+    if (s.kind === "star") { const st = D.starById[s.id]; return { h: hz(st.ra, st.dec), ra: st.ra, dec: st.dec }; }
+    if (s.kind === "planet") { const p = planetInfo(s.id, date); return { h: hz(p.ra, p.dec), ra: p.ra, dec: p.dec, mag: p.mag, dist: p.dist }; }
+    if (s.kind === "moon") { const m = Astro.moon(date); return { h: hz(m.ra, m.dec), ra: m.ra, dec: m.dec }; }
+    if (s.kind === "sun") { const m = Astro.sun(date); return { h: hz(m.ra, m.dec), ra: m.ra, dec: m.dec }; }
+    return null;
+  }
+  const fmtMag = (m) => (m < 0 ? "−" + (-m).toFixed(1) : m.toFixed(1)) + "等";
+  function fmtAlt(a) { return a < 0 ? "地平線の下(" + "−" + Math.abs(a).toFixed(1) + "°)" : a.toFixed(1) + "°"; }
+  function fmtAz(az) { return DIR16[Math.round(az / 22.5) % 16] + "(" + Math.round(az) + "°)"; }
+  let lastSelHtml = "";
+  function updateSelInfo(date, lst) {
+    const list = document.getElementById("selList"), empty = document.getElementById("selEmpty");
+    const p = selectedPos(date, lst);
+    if (!p) { list.hidden = true; empty.hidden = false; return; }
+    const rows = [];
+    const s = state.sel;
+    if (s.kind === "star") {
+      const st = D.starById[s.id];
+      const nm = st.name ? st.name : st.conName + " " + st.label + "星";
+      rows.push(["名前", nm]);
+      if (st.wa) rows.push(["和名", st.wa]);
+      if (st.name) rows.push(["符号", st.conName + " " + st.label + "星"]);
+      rows.push(["星座", st.conName]);
+      rows.push(["等級", fmtMag(st.mag)]);
+    } else if (s.kind === "planet") {
+      rows.push(["名前", Astro.planet(s.id).name]);
+      rows.push(["星座", nearestCon(p.ra, p.dec) + "付近"]);
+      rows.push(["等級", "約" + fmtMag(p.mag)]);
+      rows.push(["地球から", p.dist.toFixed(2) + " au"]);
+    } else if (s.kind === "moon") {
+      const ph = Astro.moonPhase(date);
+      rows.push(["名前", "月"]);
+      rows.push(["星座", nearestCon(p.ra, p.dec) + "付近"]);
+      rows.push(["月齢", ph.age.toFixed(1) + "日(輝面率" + Math.round(ph.illum * 100) + "%)"]);
+    } else {
+      rows.push(["名前", "太陽"]);
+      rows.push(["星座", nearestCon(p.ra, p.dec) + "付近"]);
+      rows.push(["等級", "−26.7等"]);
+    }
+    rows.push(["高度", fmtAlt(p.h.alt)]);
+    rows.push(["方位", fmtAz(p.h.az)]);
+    const html = rows.map((r) => "<dt>" + r[0] + "</dt><dd>" + r[1] + "</dd>").join("");
+    if (html !== lastSelHtml) { list.innerHTML = html; lastSelHtml = html; }
+    list.hidden = false; empty.hidden = true;
+  }
+
+  // ---------- 日時の操作 ----------
+  const $ = (id) => document.getElementById(id);
+  const timeRange = $("timeRange"), dateInput = $("dateInput");
+  const WD = ["日", "月", "火", "水", "木", "金", "土"];
+  function setP(input) { input.style.setProperty("--p", (input.value - input.min) / (input.max - input.min) * 100 + "%"); }
+  // state.base: 選んでいる日付(日本時間の0時)。時刻スライダーはこの日の 0:00〜24:00 を動かす
+  function syncTimeUI(fromSlider) {
+    const j = jst(state.t);
+    if (fromSlider) {
+      const v = parseInt(timeRange.value, 10);
+      $("timeVal").textContent = Math.floor(v / 60) + ":" + p2(v % 60);
+    } else {
+      state.base = jstMidnight(state.t);
+      timeRange.value = Math.round((j.h * 60 + j.mi) / 10) * 10;
+      $("timeVal").textContent = j.h + ":" + p2(j.mi);
+    }
+    setP(timeRange);
+    const b = jst(state.base);
+    const ds = b.y + "-" + p2(b.mo) + "-" + p2(b.d);
+    if (dateInput.value !== ds && document.activeElement !== dateInput) dateInput.value = ds;
+    $("dateOut").textContent = j.y + "/" + j.mo + "/" + j.d + "(" + WD[j.wd] + ") " + j.h + ":" + p2(j.mi);
+  }
+  function changed(fromSlider) { syncTimeUI(fromSlider); requestDraw(); }
+
+  const playBtn = $("playBtn");
+  let last = 0;
+  function setPlaying(on) {
+    state.playing = on;
+    playBtn.textContent = on ? "❚❚" : "▶";
+    playBtn.setAttribute("aria-label", on ? "一時停止" : "再生");
+    if (on) { last = 0; requestAnimationFrame(tick); }
+  }
+  function tick(ts) {
+    if (!state.playing) return;
+    if (last) {
+      const dt = Math.min(0.1, (ts - last) / 1000);
+      state.t += dt * state.speed * 60000;
+      syncTimeUI(false); draw();
+    }
+    last = ts;
+    requestAnimationFrame(tick);
+  }
+  playBtn.addEventListener("click", () => setPlaying(!state.playing));
+  $("nowBtn").addEventListener("click", () => { setPlaying(false); state.t = Date.now(); changed(); });
+  timeRange.addEventListener("input", () => {
+    setPlaying(false);
+    state.t = state.base + parseInt(timeRange.value, 10) * 60000;
+    changed(true);
+  });
+  dateInput.addEventListener("change", () => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateInput.value);
+    if (!m) return;
+    setPlaying(false);
+    state.base = Date.UTC(+m[1], +m[2] - 1, +m[3]) - JST;
+    state.t = state.base + parseInt(timeRange.value, 10) * 60000;
+    changed(true);
+  });
+  const speedBtns = document.querySelectorAll("[data-speed]");
+  function syncSpeed() { speedBtns.forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.speed === state.speed))); }
+  speedBtns.forEach((b) => b.addEventListener("click", () => { state.speed = +b.dataset.speed; saveMine({ speed: state.speed }); syncSpeed(); }));
+
+  // ---------- 観測地 ----------
+  const citySel = $("citySel"), latIn = $("latIn"), lonIn = $("lonIn");
+  function syncPlace() {
+    citySel.value = state.city;
+    if (document.activeElement !== latIn) latIn.value = state.lat;
+    if (document.activeElement !== lonIn) lonIn.value = state.lon;
+    const nm = state.city !== "custom" ? CITIES[state.city].name : "指定した場所";
+    const f = (v, a, b) => (v >= 0 ? a : b) + Math.abs(v).toFixed(1) + "°";
+    $("placeLabel").innerHTML = nm + "<br>" + f(state.lat, "北緯", "南緯") + " " + f(state.lon, "東経", "西経");
+  }
+  citySel.addEventListener("change", () => {
+    state.city = citySel.value;
+    if (state.city !== "custom") { state.lat = CITIES[state.city].lat; state.lon = CITIES[state.city].lon; }
+    saveMine({ city: state.city, lat: state.lat, lon: state.lon });
+    syncPlace(); requestDraw();
+  });
+  function onLatLon() {
+    const la = parseFloat(latIn.value), lo = parseFloat(lonIn.value);
+    if (!isFinite(la) || !isFinite(lo) || la < -90 || la > 90 || lo < -180 || lo > 180) return;
+    state.lat = la; state.lon = lo; state.city = "custom";
+    saveMine({ city: "custom", lat: la, lon: lo });
+    syncPlace(); requestDraw();
+  }
+  latIn.addEventListener("input", onLatLon);
+  lonIn.addEventListener("input", onLatLon);
+  latIn.addEventListener("blur", syncPlace);
+  lonIn.addEventListener("blur", syncPlace);
+
+  // ---------- 表示 ----------
+  document.querySelectorAll("[data-opt]").forEach((cb) => {
+    cb.checked = !!state.opts[cb.dataset.opt];
+    cb.addEventListener("change", () => {
+      state.opts[cb.dataset.opt] = cb.checked;
+      saveMine({ opts: state.opts });
+      requestDraw();
+    });
+  });
+  const orientBtns = document.querySelectorAll("[data-orient]");
+  function syncOrient() { orientBtns.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.orient === state.orient))); }
+  orientBtns.forEach((b) => b.addEventListener("click", () => {
+    state.orient = b.dataset.orient;
+    saveMine({ orient: state.orient });
+    syncOrient(); requestDraw();
+  }));
+
+  // ---------- 拡大・移動・タップ ----------
+  function clampPan() {
+    const m = (state.z - 1) * view.W / 2;
+    state.panX = Math.max(-m, Math.min(m, state.panX));
+    state.panY = Math.max(-m, Math.min(m, state.panY));
+    canvas.classList.toggle("zoomed", state.z > 1.001);
+  }
+  function zoomAt(sx, sy, z2) {
+    z2 = Math.max(1, Math.min(2, z2));
+    const W = view.W;
+    const bx = (sx - W / 2 - state.panX) / state.z, by = (sy - W / 2 - state.panY) / state.z;
+    state.z = z2;
+    state.panX = sx - W / 2 - bx * z2; state.panY = sy - W / 2 - by * z2;
+    clampPan(); requestDraw();
+  }
+  function local(e) { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+  canvas.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const p = local(e);
+    zoomAt(p.x, p.y, state.z * Math.exp(-e.deltaY * 0.0015));
+  }, { passive: false });
+  $("zoomIn").addEventListener("click", () => zoomAt(view.W / 2, view.W / 2, state.z * 1.25));
+  $("zoomOut").addEventListener("click", () => zoomAt(view.W / 2, view.W / 2, state.z / 1.25));
+
+  const pointers = new Map();
+  let gesture = null;
+  canvas.addEventListener("pointerdown", (e) => {
+    const p = local(e);
+    pointers.set(e.pointerId, p);
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* なにもしない */ }
+    if (pointers.size === 1) gesture = { start: p, last: p, moved: false };
+    else if (pointers.size === 2) {
+      const [a, b] = [...pointers.values()];
+      gesture = { pinch: true, d0: Math.hypot(a.x - b.x, a.y - b.y), z0: state.z, mid: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, moved: true };
+    }
+  });
+  canvas.addEventListener("pointermove", (e) => {
+    if (!pointers.has(e.pointerId) || !gesture) return;
+    const p = local(e);
+    pointers.set(e.pointerId, p);
+    if (gesture.pinch && pointers.size >= 2) {
+      const [a, b] = [...pointers.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+      state.panX += mid.x - gesture.mid.x; state.panY += mid.y - gesture.mid.y;
+      gesture.mid = mid;
+      zoomAt(mid.x, mid.y, gesture.z0 * d / Math.max(10, gesture.d0));
+    } else if (!gesture.pinch) {
+      if (Math.hypot(p.x - gesture.start.x, p.y - gesture.start.y) > 8) gesture.moved = true;
+      if (gesture.moved && state.z > 1.001) {
+        state.panX += p.x - gesture.last.x; state.panY += p.y - gesture.last.y;
+        clampPan(); requestDraw();
+      }
+      gesture.last = p;
+    }
+  });
+  function endPointer(e) {
+    if (!pointers.has(e.pointerId)) return;
+    pointers.delete(e.pointerId);
+    if (gesture && !gesture.pinch && !gesture.moved && e.type === "pointerup") pick(local(e));
+    if (pointers.size === 0) gesture = null;
+    else if (gesture && gesture.pinch) gesture = { start: [...pointers.values()][0], last: [...pointers.values()][0], moved: true };
+  }
+  canvas.addEventListener("pointerup", endPointer);
+  canvas.addEventListener("pointercancel", endPointer);
+  function pick(p) {
+    let best = null, bd = 22;
+    for (const h of hits) {
+      const d = Math.hypot(h.x - p.x, h.y - p.y) - (h.pri ? 4 : 0);
+      if (d < bd) { bd = d; best = h; }
+    }
+    state.sel = best ? { kind: best.kind, id: best.id } : null;
+    lastSelHtml = "";
+    requestDraw();
+  }
+
+  // ---------- 開始 ----------
+  readColors();
+  function recolor() { readColors(); requestDraw(); }
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", recolor);
+  new MutationObserver(recolor).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  new ResizeObserver(resize).observe(canvas);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(requestDraw);
+
+  // 初めの日時: 暗ければ今、明るければ今日の21時(日本時間)
+  // テスト・リンク用: ?date=2026-01-20&time=22:00&lat=35.68&lon=139.69
+  const q = new URLSearchParams(location.search);
+  if (q.has("lat") && q.has("lon") && isFinite(parseFloat(q.get("lat"))) && isFinite(parseFloat(q.get("lon")))) {
+    state.city = "custom"; state.lat = clampLat(parseFloat(q.get("lat"))); state.lon = clampLon(parseFloat(q.get("lon")));
+  }
+  const qd = /^(\d{4})-(\d{2})-(\d{2})$/.exec(q.get("date") || "");
+  const qt = /^(\d{1,2}):(\d{2})$/.exec(q.get("time") || "");
+  if (qd) {
+    state.t = Date.UTC(+qd[1], +qd[2] - 1, +qd[3]) - JST + (qt ? (+qt[1] * 60 + +qt[2]) * 60000 : 21 * 3600000);
+  } else if (sunAltAt(state.t) > -12) {
+    state.t = jstMidnight(state.t) + 21 * 3600000;
+  }
+  if (q.get("sel")) {
+    const id = q.get("sel");
+    state.sel = D.starById[id] ? { kind: "star", id } : PLANETS.indexOf(id) >= 0 ? { kind: "planet", id } : id === "moon" || id === "sun" ? { kind: id, id } : null;
+  }
+  syncSpeed(); syncOrient(); syncPlace(); syncTimeUI(false);
+  requestDraw();
+})();
+</script>
+</body>
+</html>

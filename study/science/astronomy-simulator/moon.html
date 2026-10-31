@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>月の満ち欠け | 宇宙シミュレーター</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  [hidden] { display: none !important; }
+  .app { gap: 22px; }
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] { color: var(--ink); font-weight: 600; border-bottom: 2px solid var(--accent); }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+  .card h3 {
+    margin: 18px 0 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+  }
+  .hint { font-size: 0.78rem; color: var(--ink-faint); margin: 10px 0 0; line-height: 1.6; }
+  button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    padding: 12px 20px;
+  }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary { background: var(--surface-2); color: var(--ink); font-weight: 600; }
+  .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .btn-row button { flex: 1 1 140px; }
+  select, input[type="search"], input[type="date"], input[type="number"] {
+    font-family: var(--font-body);
+    font-size: 16px;
+    min-height: 44px;
+    padding: 8px 10px;
+    border-radius: 9px;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    min-width: 0;
+  }
+  button:focus-visible, select:focus-visible, a:focus-visible, input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .mode-tabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; }
+  .mode-tab {
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.15s ease;
+  }
+  .mode-tab:hover { border-color: var(--accent); color: var(--ink); }
+  .mode-tab[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+  .u { font-family: var(--font-body); font-size: .92em; margin-left: .18em; }
+  .given { display: grid; grid-template-columns: auto auto; justify-content: center; gap: 4px 14px; margin: 0; padding: 10px 14px; background: var(--surface-2); border-radius: 10px; font-size: 14.5px; color: var(--ink); }
+  .given dt { color: var(--ink-muted); }
+  .given dd { margin: 0; font-weight: 600; text-align: right; }
+  .legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 12px 0 0; padding: 0; list-style: none; font-size: 12.5px; color: var(--ink-muted); }
+  .legend li { display: flex; align-items: center; gap: 6px; }
+  .legend svg { width: 16px; height: 16px; flex: none; }
+  .readout { justify-content: start; grid-template-columns: auto 1fr; }
+  .readout dd { text-align: left; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12.5px; font-weight: 700; border: 1px solid currentColor; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: 0; flex: none; }
+
+  /* ---------- 入力 ---------- */
+  input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex: none;
+    margin: 0;
+  }
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 34px;
+    margin: 2px 0 0;
+    background: transparent;
+    cursor: pointer;
+    --p: 50%;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--accent) 0, var(--accent) var(--p), var(--surface-2) var(--p), var(--surface-2) 100%);
+    box-shadow: inset 0 0 0 1px var(--border);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    margin-top: -10px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--surface);
+    box-shadow: 0 0 0 1px var(--accent), 0 1px 3px var(--shadow);
+  }
+  input[type="range"]:focus-visible { outline-offset: 0; }
+  .field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .field:last-child { border-bottom: none; }
+  .field.stack { flex-direction: column; align-items: stretch; gap: 0; }
+  .field-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .field-label { font-size: 0.92rem; min-width: 0; }
+  .field-label label { cursor: pointer; }
+  .check-label { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.92rem; min-height: 44px; }
+  .val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .formula {
+    margin: 2px 0 6px;
+    padding: 8px 10px;
+    border-radius: 9px;
+    background: var(--surface-2);
+    font-size: 0.86rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  /* ---------- シミュレーターの部品(宇宙シミュレーター共通) ---------- */
+  .lab { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); gap: 22px; align-items: start; }
+  .lab > .fig { position: sticky; top: 16px; min-width: 0; display: flex; flex-direction: column; gap: 22px; }
+  .side { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+  .card.stage { padding: 0; overflow: hidden; background: var(--space-bg); position: relative; }
+  .stage-view { position: relative; }
+  .stage canvas { display: block; width: 100%; }
+  .stage canvas.drag { touch-action: none; }
+  .stage-label {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--space-ink);
+    pointer-events: none;
+  }
+  .stage-label.r { left: auto; right: 12px; text-align: right; }
+  .stage-legend { margin: 0; padding: 10px 12px; background: var(--surface); }
+  .playbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .btn-play { width: 48px; height: 48px; padding: 0; border-radius: 50%; font-size: 17px; line-height: 1; flex: none; }
+  .btn-icon { min-width: 44px; height: 44px; padding: 0 8px; font-size: 14px; flex: none; }
+  .date-out { font-family: var(--font-mono); font-weight: 600; font-variant-numeric: tabular-nums; flex: 1 1 10em; min-width: 0; }
+  .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; }
+  .seg button {
+    min-width: 0;
+    min-height: 44px;
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-weight: 600;
+    font-size: 13.5px;
+    transition: all 0.15s ease;
+  }
+  .seg button:hover { border-color: var(--accent); color: var(--ink); }
+  .seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .big-out { font-family: var(--font-mono); font-size: clamp(28px, 7vw, 40px); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 760px) {
+    .lab { grid-template-columns: minmax(0, 1fr); }
+    .lab > .fig { position: static; }
+  }
+  @media (max-width: 480px) {
+    .card { padding: 18px 14px; }
+    .stage { border-radius: 12px; }
+  }
+  .app { max-width: 1080px; }
+
+  /* ---------- 月の満ち欠け ---------- */
+  #topCanvas { aspect-ratio: 4 / 3; }
+  .look { container-type: inline-size; }
+  .look-row { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .phase-stage { width: 220px; max-width: 100%; flex: none; border-radius: 14px; border: 1px solid var(--border); }
+  .phase-stage canvas { aspect-ratio: 1; }
+  .nums { min-width: 0; width: 100%; display: flex; flex-direction: column; gap: 10px; }
+  .age-line { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 12px; justify-content: center; }
+  .age-cap { font-size: 12px; color: var(--ink-faint); font-weight: 600; letter-spacing: .06em; }
+  .big-out .u { font-size: .45em; font-weight: 600; color: var(--ink-muted); }
+  .badge { color: var(--accent); background: var(--accent-soft); }
+  .nums .given { font-size: 14px; }
+  .nums .given dd.wide { text-align: left; font-weight: 500; line-height: 1.5; }
+  .stage-legend .sw { width: 14px; height: 14px; border-radius: 50%; display: inline-block; flex: none; }
+  .sw.sun { background: var(--sun); }
+  .sw.earth { background: var(--earth); }
+  .sw.moon { background: linear-gradient(to right, var(--moon) 50%, var(--moon-dark) 50%); box-shadow: inset 0 0 0 1px var(--space-ink-muted); }
+  .sw.orbit { background: none; border: 2px dashed var(--orbit-hl); }
+  .ctrl .seg { margin-top: 14px; }
+  .ctrl .playbar { margin-top: 12px; }
+  .ticks { position: relative; height: 16px; margin: 0 13px; font-size: 11px; color: var(--ink-faint); }
+  .ticks span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+
+  @media (max-width: 760px) {
+    #topCanvas { aspect-ratio: 1; }
+    .look-row { flex-direction: row; align-items: center; }
+    .phase-stage { width: 160px; }
+  }
+  @container (max-width: 329px) {
+    .look-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <nav class="page-links" aria-label="ページの移動">
+    <a class="back-link" href="../../../index.html">← 一覧へ</a>
+    <a class="back-link" href="../../../study/review/habit-planner/index.html">習慣プランナー →</a>
+  </nav>
+  <header class="hero">
+    <p class="eyebrow">ASTRONOMY SIMULATOR · 月の満ち欠け</p>
+    <h1>月の満ち欠け</h1>
+    <p class="tagline">月をドラッグして地球のまわりを回すと、地球から見た月の形と、見える時間が変わります。月齢と名前、月の出・月の入りの目安も出します。</p>
+    <nav class="site-nav" aria-label="宇宙シミュレーターのページ">
+      <a href="index.html">入口</a>
+      <a href="orbits.html">惑星の公転</a>
+      <span aria-current="page">月の満ち欠け</span>
+      <a href="eclipse.html">日食・月食</a>
+      <a href="gravity.html">重力の違い</a>
+      <a href="sky.html">星空</a>
+    </nav>
+  </header>
+
+  <div class="lab">
+    <div class="fig">
+      <section class="card stage" aria-label="北極の上から見た地球と月">
+        <div class="stage-view">
+          <canvas id="topCanvas" class="drag" role="img" aria-label="北極の上から見た図。左から太陽の光が来ている。月をドラッグして動かせる"></canvas>
+          <p class="stage-label">北極の上から見た図</p>
+          <p class="stage-label r">大きさ・距離は<br>縮めて描いています</p>
+        </div>
+        <ul class="legend stage-legend" aria-label="図の見方">
+          <li><span class="sw sun"></span>太陽の光</li>
+          <li><span class="sw earth"></span>地球(右半分が夜)</li>
+          <li><span class="sw moon"></span>月(太陽側が明るい)</li>
+          <li><span class="sw orbit"></span>月の通り道</li>
+        </ul>
+      </section>
+    </div>
+
+    <div class="side">
+      <section class="card look" aria-labelledby="lookTitle">
+        <h2 id="lookTitle">地球から見た月</h2>
+        <div class="look-row">
+          <div class="card stage phase-stage">
+            <canvas id="phaseCanvas" role="img" aria-label="地球から見た月の形"></canvas>
+          </div>
+          <div class="nums">
+            <div class="age-line">
+              <span class="age-cap">月齢</span>
+              <span class="big-out" id="ageOut">0.0<span class="u">日</span></span>
+              <span class="badge" id="nameOut">新月</span>
+            </div>
+            <dl class="given readout">
+              <dt>輝面率</dt><dd id="illumOut">0%</dd>
+              <dt>月の出</dt><dd id="riseOut">6:00ごろ</dd>
+              <dt>南中</dt><dd id="transitOut">12:00ごろ</dd>
+              <dt>月の入り</dt><dd id="setOut">18:00ごろ</dd>
+              <dt>見ごろ</dt><dd class="wide" id="seeOut">—</dd>
+            </dl>
+          </div>
+        </div>
+        <p class="hint" id="lookHint">時刻は目安です。月の出・南中・月の入りは月齢1日ごとに約50分ずつ遅くなります。季節や場所によって1〜2時間ずれることがあります。</p>
+      </section>
+
+      <section class="card ctrl" aria-labelledby="ctrlTitle">
+        <h2 id="ctrlTitle">操作</h2>
+        <div class="field stack">
+          <div class="field-top">
+            <span class="field-label"><label for="ageRange">月齢</label></span>
+            <span class="val" id="ageVal">0.0日</span>
+          </div>
+          <input type="range" id="ageRange" min="0" max="29.5" step="0.1" value="0">
+          <div class="ticks" aria-hidden="true">
+            <span style="left:0%">新月</span>
+            <span style="left:25.08%">上弦</span>
+            <span style="left:50.07%">満月</span>
+            <span style="left:74.92%">下弦</span>
+          </div>
+        </div>
+        <div class="playbar">
+          <button type="button" class="btn-primary btn-play" id="playBtn" aria-label="再生">▶</button>
+          <button type="button" class="btn-secondary btn-icon" id="todayBtn">今日の月</button>
+          <span class="date-out" id="dateOut">1秒 = 2日</span>
+        </div>
+        <div class="seg" role="group" aria-label="見る場所">
+          <button type="button" data-hemi="N" aria-pressed="true">北半球(日本)</button>
+          <button type="button" data-hemi="S" aria-pressed="false">南半球</button>
+        </div>
+        <p class="hint">南半球では、空を見上げる向き(北の空に月が出る)が逆になるので、月の左右が入れかわって見えます。</p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  const KEY = "astronomySimulatorSettings";
+  const SYN = Astro.MOON.synodic;
+
+  // ---------- 保存(各ページは自分の項目だけ書きかえる) ----------
+  function loadAll() {
+    const s = Store.load(KEY, {});
+    return s && typeof s === "object" && !Array.isArray(s) ? s : {};
+  }
+  function saveMine(part) {
+    const all = loadAll();
+    const mine = all.moon && typeof all.moon === "object" ? all.moon : {};
+    all.moon = Object.assign({}, mine, part);
+    Store.save(KEY, all);
+  }
+
+  // ---------- 色 ----------
+  const COLOR_NAMES = ["space-bg", "space-bg-2", "space-ink", "space-ink-muted", "orbit", "orbit-hl",
+    "sun", "sun-glow", "earth", "moon", "moon-dark", "umbra", "grid"];
+  const C = {};
+  function readColors() {
+    const cs = getComputedStyle(document.documentElement);
+    for (const n of COLOR_NAMES) C[n] = cs.getPropertyValue("--" + n).trim();
+  }
+
+  // ---------- canvas(devicePixelRatio を考えて描く) ----------
+  function makeStage(canvas, draw) {
+    const st = { canvas, ctx: canvas.getContext("2d"), w: 1, h: 1, draw };
+    function resize() {
+      const r = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 3);
+      st.w = Math.max(1, r.width); st.h = Math.max(1, r.height);
+      canvas.width = Math.round(st.w * dpr); canvas.height = Math.round(st.h * dpr);
+      st.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      draw(st);
+    }
+    new ResizeObserver(resize).observe(canvas);
+    st.redraw = () => draw(st);
+    return st;
+  }
+  function spaceBg(st) {
+    const { ctx, w, h } = st;
+    const g = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, Math.hypot(w, h) / 2);
+    g.addColorStop(0, C["space-bg"]);
+    g.addColorStop(1, C["space-bg-2"]);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  // ---------- 状態 ----------
+  const saved = loadAll().moon || {};
+  const state = {
+    age: 0,
+    hemi: saved.hemi === "S" ? "S" : "N",
+    playing: false,
+    todayLabel: "",
+  };
+  const qAge = parseFloat(new URLSearchParams(location.search).get("age"));
+  state.age = isFinite(qAge) ? ((qAge % SYN) + SYN) % SYN : Astro.moonPhase(new Date()).age;
+  if (!isFinite(qAge)) state.todayLabel = todayText();
+
+  const elong = () => state.age / SYN * 360; // 太陽からの離角(0=新月)
+  const DEG = Math.PI / 180;
+
+  function todayText() {
+    const d = new Date();
+    return (d.getMonth() + 1) + "月" + d.getDate() + "日の月";
+  }
+
+  // ---------- 上面図 ----------
+  function topGeom(st) {
+    const { w, h } = st;
+    const R = Math.min(w * 0.33, h * 0.38);
+    const cx = w / 2 + w * 0.06, cy = h / 2 + h * 0.02;
+    return { R, cx, cy, re: Math.max(14, R * 0.2), rm: Math.max(9, R * 0.075) };
+  }
+  function moonXY(g, E) {
+    // 北極の上から見て反時計回り。E=0(新月)は太陽側=左、E=90(上弦)は下
+    return { x: g.cx - g.R * Math.cos(E * DEG), y: g.cy + g.R * Math.sin(E * DEG) };
+  }
+  function arrow(ctx, x1, y1, x2, y2, head) {
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    const a = Math.atan2(y2 - y1, x2 - x1);
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - head * Math.cos(a - 0.45), y2 - head * Math.sin(a - 0.45));
+    ctx.lineTo(x2 - head * Math.cos(a + 0.45), y2 - head * Math.sin(a + 0.45));
+    ctx.closePath(); ctx.fill();
+  }
+  function drawTop(st) {
+    const { ctx, w, h } = st;
+    spaceBg(st);
+    const g = topGeom(st);
+    const fs = Math.max(11, Math.min(13, w / 46));
+
+    // 太陽の光
+    ctx.strokeStyle = C.sun; ctx.fillStyle = C.sun; ctx.lineWidth = 2;
+    const ax2 = Math.max(40, g.cx - g.R - g.rm - 18);
+    const n = 5;
+    for (let i = 0; i < n; i++) {
+      const y = g.cy + (i - (n - 1) / 2) * (g.R * 0.42);
+      if (y < 34 || y > h - 10) continue;
+      ctx.globalAlpha = 0.75;
+      arrow(ctx, 8, y, ax2, y, 8);
+    }
+    ctx.globalAlpha = 1;
+    ctx.font = "600 " + fs + "px " + getComputedStyle(document.body).fontFamily;
+    ctx.textAlign = "left"; ctx.textBaseline = "bottom";
+    const ty = g.cy - g.R * 0.84 - 8;
+    ctx.fillText("太陽の光", 8, ty > 44 ? ty : h - 8);
+
+    // 月の通り道
+    ctx.strokeStyle = C["orbit-hl"]; ctx.lineWidth = 1.5; ctx.setLineDash([5, 5]);
+    ctx.globalAlpha = 0.7;
+    ctx.beginPath(); ctx.arc(g.cx, g.cy, g.R, 0, Math.PI * 2); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+    // 公転の向き(反時計回り)の矢印を2か所
+    ctx.fillStyle = C["orbit-hl"];
+    for (const E of [45, 225]) {
+      const p = moonXY(g, E), q = moonXY(g, E + 6);
+      const a = Math.atan2(q.y - p.y, q.x - p.x);
+      ctx.beginPath();
+      ctx.moveTo(q.x + 7 * Math.cos(a), q.y + 7 * Math.sin(a));
+      ctx.lineTo(q.x + 7 * Math.cos(a + 2.5), q.y + 7 * Math.sin(a + 2.5));
+      ctx.lineTo(q.x + 7 * Math.cos(a - 2.5), q.y + 7 * Math.sin(a - 2.5));
+      ctx.closePath(); ctx.fill();
+    }
+
+    // 新月・上弦・満月・下弦の目印
+    ctx.fillStyle = C["space-ink-muted"];
+    ctx.font = "500 " + (fs - 1) + "px " + getComputedStyle(document.body).fontFamily;
+    ctx.textBaseline = "middle";
+    const marks = [[0, "新月"], [90, "上弦"], [180, "満月"], [270, "下弦"]];
+    for (const [E, t] of marks) {
+      const p = moonXY(g, E);
+      if (E === 0 || E === 180) {
+        const tw = ctx.measureText(t).width;
+        ctx.textAlign = "center";
+        ctx.fillText(t, Math.max(tw / 2 + 4, Math.min(w - tw / 2 - 4, p.x)), p.y - g.rm - 12);
+      } else {
+        ctx.textAlign = "right";
+        ctx.fillText(t, p.x - g.rm - 8, E === 90 ? p.y + 10 : p.y - 10);
+      }
+    }
+
+    // 地球(左=昼、右=夜)
+    ctx.fillStyle = C.earth;
+    ctx.beginPath(); ctx.arc(g.cx, g.cy, g.re, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.umbra;
+    ctx.beginPath(); ctx.arc(g.cx, g.cy, g.re, -Math.PI / 2, Math.PI / 2, false); ctx.closePath(); ctx.fill();
+    // 自転の向き
+    ctx.strokeStyle = C["space-ink-muted"]; ctx.fillStyle = C["space-ink-muted"]; ctx.lineWidth = 1.3;
+    const rr = g.re + 6;
+    ctx.beginPath(); ctx.arc(g.cx, g.cy, rr, -Math.PI * 0.85, -Math.PI * 0.6, false); ctx.stroke();
+    {
+      const a0 = -Math.PI * 0.85, px = g.cx + rr * Math.cos(a0), py = g.cy + rr * Math.sin(a0);
+      const ta = a0 - Math.PI / 2; // 反時計回りの接線
+      ctx.beginPath();
+      ctx.moveTo(px + 6 * Math.cos(ta), py + 6 * Math.sin(ta));
+      ctx.lineTo(px + 5 * Math.cos(ta + 2.4), py + 5 * Math.sin(ta + 2.4));
+      ctx.lineTo(px + 5 * Math.cos(ta - 2.4), py + 5 * Math.sin(ta - 2.4));
+      ctx.closePath(); ctx.fill();
+    }
+    // 時刻の目盛り(地球上の場所が、太陽に対してどこにあるか)
+    ctx.fillStyle = C["space-ink"];
+    ctx.font = "600 " + (fs - 1) + "px " + getComputedStyle(document.body).fontFamily;
+    const lr = g.re + 12;
+    ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.fillText("正午", g.cx - lr, g.cy);
+    ctx.textAlign = "left"; ctx.fillText("真夜中", g.cx + lr, g.cy);
+    ctx.textAlign = "center"; ctx.textBaseline = "top"; ctx.fillText("夕方", g.cx, g.cy + lr - 2);
+    ctx.textBaseline = "bottom"; ctx.fillText("明け方", g.cx, g.cy - lr + 2);
+
+    // 地球と月を結ぶ線(見る向き)
+    const E = elong();
+    const m = moonXY(g, E);
+    ctx.strokeStyle = C["space-ink-muted"]; ctx.globalAlpha = 0.35; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(g.cx, g.cy); ctx.lineTo(m.x, m.y); ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // 月(太陽側=左半分が明るい)
+    ctx.fillStyle = C["moon-dark"];
+    ctx.beginPath(); ctx.arc(m.x, m.y, g.rm, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.moon;
+    ctx.beginPath(); ctx.arc(m.x, m.y, g.rm, Math.PI / 2, Math.PI * 1.5, false); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = C["space-ink"]; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(m.x, m.y, g.rm + 3, 0, Math.PI * 2); ctx.stroke();
+  }
+
+  // ---------- 地球から見た形 ----------
+  // illum: 輝面率、waxing: 右側が明るいか(北半球の満ちていく月)
+  function drawPhaseShape(ctx, cx, cy, r, E, rightLit) {
+    ctx.fillStyle = C["moon-dark"];
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+    const k = Math.cos(E * DEG); // 明暗の境目の楕円の横幅(1=新月、-1=満月)
+    const s = rightLit ? 1 : -1;
+    ctx.fillStyle = C.moon;
+    ctx.beginPath();
+    const N = 64;
+    for (let i = 0; i <= N; i++) { // 明るい側のふち(上→下)
+      const phi = -Math.PI / 2 + Math.PI * i / N;
+      const x = cx + s * r * Math.cos(phi), y = cy + r * Math.sin(phi);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    for (let i = N; i >= 0; i--) { // 明暗の境目(下→上)
+      const phi = -Math.PI / 2 + Math.PI * i / N;
+      ctx.lineTo(cx + s * r * k * Math.cos(phi), cy + r * Math.sin(phi));
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = C["space-ink-muted"]; ctx.globalAlpha = 0.45; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+  function drawPhase(st) {
+    const { ctx, w, h } = st;
+    spaceBg(st);
+    const E = elong();
+    const waxing = E < 180;
+    const rightLit = state.hemi === "N" ? waxing : !waxing;
+    drawPhaseShape(ctx, w / 2, h / 2, Math.min(w, h) * 0.36, E, rightLit);
+    ctx.fillStyle = C["space-ink-muted"];
+    ctx.font = "500 11px " + getComputedStyle(document.body).fontFamily;
+    ctx.textAlign = "center"; ctx.textBaseline = "bottom";
+    ctx.fillText(state.hemi === "N" ? "北半球で見た形" : "南半球で見た形", w / 2, h - 6);
+  }
+
+  // ---------- 名前・時刻・見ごろ ----------
+  function moonName(a) {
+    if (a < 1 || a >= 28.5) return "新月";
+    if (a < 2) return "二日月(繊月)";
+    if (a < 4) return "三日月";
+    if (a < 6.4) return "五日月";
+    if (a < 8.4) return "上弦の月";
+    if (a < 11.5) return "十日夜の月";
+    if (a < 13.5) return "十三夜の月";
+    if (a < 14.2) return "小望月";
+    if (a < 15.4) return "満月(十五夜)";
+    if (a < 16.4) return "十六夜の月";
+    if (a < 17.4) return "立待月";
+    if (a < 18.4) return "居待月";
+    if (a < 19.4) return "寝待月";
+    if (a < 20.9) return "更待月";
+    if (a < 23) return "下弦の月";
+    return "有明月";
+  }
+  function seeing(a) {
+    if (a < 1 || a >= 28.5) return "見えない(太陽と同じ方向にある)";
+    if (a < 4) return "日の入り後の西の低い空";
+    if (a < 6.4) return "夕方の西〜南西の空";
+    if (a < 8.4) return "夕方に南の空。真夜中ごろ西に沈む";
+    if (a < 14.2) return "夕方の南東〜南の空。夜半すぎまで";
+    if (a < 15.4) return "一晩中。夕方に東、真夜中に南、明け方に西";
+    if (a < 17.4) return "宵に東から昇り、真夜中すぎに南の空";
+    if (a < 19.4) return "夜になってから東から昇り、未明に南の空";
+    if (a < 20.9) return "夜ふけに東から昇り、明け方に南の空";
+    if (a < 23) return "真夜中に東から昇り、明け方に南の空";
+    if (a < 26) return "明け方の東〜南東の空";
+    return "日の出前の東の低い空";
+  }
+  function clock(hours) {
+    let m = Math.round(hours * 6) * 10; // 10分単位
+    m = ((m % 1440) + 1440) % 1440;
+    return Math.floor(m / 60) + ":" + String(m % 60).padStart(2, "0") + "ごろ";
+  }
+
+  // ---------- 表示の更新 ----------
+  const $ = (id) => document.getElementById(id);
+  const ageRange = $("ageRange");
+  function setP(input) {
+    const p = (input.value - input.min) / (input.max - input.min) * 100;
+    input.style.setProperty("--p", p + "%");
+  }
+  function update(fromSlider) {
+    const a = state.age;
+    const E = elong();
+    if (!fromSlider) ageRange.value = Math.min(29.5, Math.round(a * 10) / 10);
+    setP(ageRange);
+    $("ageVal").textContent = a.toFixed(1) + "日";
+    $("ageOut").firstChild.nodeValue = a.toFixed(1);
+    $("nameOut").textContent = moonName(a);
+    $("illumOut").textContent = Math.round((1 - Math.cos(E * DEG)) / 2 * 100) + "%";
+    const transit = 12 + a * 24 / SYN; // 新月は正午に南中、1日ごとに約49分遅れる
+    $("riseOut").textContent = clock(transit - 6);
+    $("transitOut").textContent = clock(transit);
+    $("setOut").textContent = clock(transit + 6);
+    let see = seeing(a);
+    if (state.hemi === "S") see = see.replace(/南/g, "北");
+    $("seeOut").textContent = see;
+    document.querySelector('.nums .given dt:nth-of-type(3)').textContent = state.hemi === "S" ? "南中(北の空)" : "南中";
+    $("dateOut").textContent = state.todayLabel ? state.todayLabel + "(計算値)" : "1秒 = 2日";
+    topSt.redraw(); phase.redraw();
+  }
+
+  // ---------- 再生 ----------
+  const playBtn = $("playBtn");
+  let last = 0;
+  function setPlaying(on) {
+    state.playing = on;
+    playBtn.textContent = on ? "❚❚" : "▶";
+    playBtn.setAttribute("aria-label", on ? "一時停止" : "再生");
+    if (on) { last = 0; state.todayLabel = ""; requestAnimationFrame(tick); }
+  }
+  function tick(t) {
+    if (!state.playing) return;
+    if (last) {
+      const dt = Math.min(0.1, (t - last) / 1000);
+      state.age = (state.age + dt * 2) % SYN; // 1秒 = 2日
+      update(false);
+    }
+    last = t;
+    requestAnimationFrame(tick);
+  }
+  playBtn.addEventListener("click", () => setPlaying(!state.playing));
+  $("todayBtn").addEventListener("click", () => {
+    setPlaying(false);
+    state.age = Astro.moonPhase(new Date()).age;
+    state.todayLabel = todayText();
+    update(false);
+  });
+  ageRange.addEventListener("input", () => {
+    setPlaying(false);
+    state.todayLabel = "";
+    state.age = parseFloat(ageRange.value);
+    update(true);
+  });
+
+  // 北半球/南半球
+  const hemiBtns = document.querySelectorAll("[data-hemi]");
+  function syncHemi() {
+    hemiBtns.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.hemi === state.hemi)));
+  }
+  hemiBtns.forEach((b) => b.addEventListener("click", () => {
+    state.hemi = b.dataset.hemi;
+    saveMine({ hemi: state.hemi });
+    syncHemi(); update(false);
+  }));
+
+  // ---------- 月のドラッグ ----------
+  const topCanvas = $("topCanvas");
+  let dragging = false;
+  function local(e) {
+    const r = topCanvas.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+  function setFromPoint(p) {
+    const g = topGeom(topSt);
+    const dx = p.x - g.cx, dy = p.y - g.cy;
+    if (Math.hypot(dx, dy) < 4) return;
+    let E = Math.atan2(dy, -dx) / DEG;
+    E = ((E % 360) + 360) % 360;
+    state.age = Math.min(E / 360 * SYN, SYN - 0.0001);
+    state.todayLabel = "";
+    update(false);
+  }
+  topCanvas.addEventListener("pointerdown", (e) => {
+    const p = local(e), g = topGeom(topSt);
+    const m = moonXY(g, elong());
+    const nearMoon = Math.hypot(p.x - m.x, p.y - m.y) < Math.max(28, g.rm + 16);
+    const nearOrbit = Math.abs(Math.hypot(p.x - g.cx, p.y - g.cy) - g.R) < 28;
+    if (!nearMoon && !nearOrbit) return;
+    dragging = true;
+    setPlaying(false);
+    topCanvas.setPointerCapture(e.pointerId);
+    setFromPoint(p);
+    e.preventDefault();
+  });
+  topCanvas.addEventListener("pointermove", (e) => { if (dragging) setFromPoint(local(e)); });
+  const endDrag = () => { dragging = false; };
+  topCanvas.addEventListener("pointerup", endDrag);
+  topCanvas.addEventListener("pointercancel", endDrag);
+
+  // ---------- 色の切りかえ ----------
+  readColors();
+  const topSt = makeStage(topCanvas, drawTop);
+  const phase = makeStage($("phaseCanvas"), drawPhase);
+  function recolor() { readColors(); topSt.redraw(); phase.redraw(); }
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", recolor);
+  new MutationObserver(recolor).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { topSt.redraw(); phase.redraw(); });
+
+  syncHemi();
+  update(false);
+})();
+</script>
+</body>
+</html>

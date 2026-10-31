@@ -1,0 +1,117 @@
+/* 宇宙シミュレーター の色。変数名は学習シリーズ共通(shared/base.css を参照)。
+   --accent-2 試験天体などの2つめの強調色
+   --space-* canvas の宇宙背景と、その上の文字(ライトでも暗い)
+   --orbit / --orbit-hl / --grid 軌道線・選んだ軌道・目盛り線
+   --sector-a / --sector-b 面積速度の扇形
+   --sun* --earth --moon* 天体 / --pl-* 惑星の色
+   --umbra --penumbra --blood-moon --corona 影と食
+   --star --const-line --const-label --horizon 星空
+   --sky-* 太陽高度ごとの空の色 */
+:root {
+  color-scheme: light;
+  --bg: #EEF1F8;
+  --surface: #FFFFFF;
+  --surface-2: #E1E6F2;
+  --border: #C7CFE2;
+  --ink: #141B2E;
+  --ink-muted: #46506A;
+  --ink-faint: #5A6582;
+  --accent: #2B4C9B;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #DDE5F7;
+  --accent-2: #A6531B;
+  --good: #2C6A30;
+  --good-soft: #E0F0DD;
+  --bad: #A63A2A;
+  --bad-soft: #F7E1DC;
+  --shadow: rgba(20,27,46,.10);
+
+  --space-bg: #0A1024;
+  --space-bg-2: #141D3A;
+  --space-ink: #E6EAF5;
+  --space-ink-muted: #A8B2CC;
+  --orbit: rgba(168,178,204,.42);
+  --orbit-hl: #9DB4FF;
+  --grid: rgba(168,178,204,.18);
+  --sector-a: rgba(110,160,255,.40);
+  --sector-b: rgba(255,170,100,.40);
+  --test-body: #FFA46B;
+  --sun: #FFC94A;
+  --sun-glow: rgba(255,201,74,.30);
+  --earth: #4C9BE8;
+  --moon: #DCD8CC;
+  --moon-dark: #262C3D;
+  --umbra: rgba(0,0,0,.72);
+  --penumbra: rgba(0,0,0,.32);
+  --blood-moon: #B5452F;
+  --corona: #F4EEDC;
+  --pl-mercury: #A9A39A;
+  --pl-venus: #E3C27A;
+  --pl-earth: #4C9BE8;
+  --pl-mars: #DB6440;
+  --pl-jupiter: #D8A877;
+  --pl-saturn: #E6CF8E;
+  --pl-uranus: #8FD6DE;
+  --pl-neptune: #6286E8;
+  --pl-pluto: #C9B8A6;
+  --star: #F4F6FF;
+  --const-line: rgba(140,170,255,.50);
+  --const-label: #9DB4FF;
+  --horizon: #A8B2CC;
+  --sky-day: #4A86CC;
+  --sky-civil: #2C4A86;
+  --sky-nautical: #18264F;
+  --sky-astro: #0F1733;
+  --sky-night: #070B1A;
+  --ground: #3B4A2E;
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0A0E1A;
+    --surface: #131A2C;
+    --surface-2: #1D2640;
+    --border: #2F3A58;
+    --ink: #E6EAF5;
+    --ink-muted: #AEB8D2;
+    --ink-faint: #8E99B6;
+    --accent: #9DB4FF;
+    --accent-ink: #0B1433;
+    --accent-soft: #1C2A52;
+    --accent-2: #FFB27A;
+    --good: #86D18F;
+    --good-soft: #1A3020;
+    --bad: #EE927C;
+    --bad-soft: #3B231E;
+    --shadow: rgba(0,0,0,.45);
+    --space-bg: #050816;
+    --space-bg-2: #0E1530;
+    --moon-dark: #222838;
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0A0E1A;
+  --surface: #131A2C;
+  --surface-2: #1D2640;
+  --border: #2F3A58;
+  --ink: #E6EAF5;
+  --ink-muted: #AEB8D2;
+  --ink-faint: #8E99B6;
+  --accent: #9DB4FF;
+  --accent-ink: #0B1433;
+  --accent-soft: #1C2A52;
+  --accent-2: #FFB27A;
+  --good: #86D18F;
+  --good-soft: #1A3020;
+  --bad: #EE927C;
+  --bad-soft: #3B231E;
+  --shadow: rgba(0,0,0,.45);
+  --space-bg: #050816;
+  --space-bg-2: #0E1530;
+  --moon-dark: #222838;
+}
