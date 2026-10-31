@@ -118,6 +118,9 @@
   }
   .card .more a { color: var(--ink-muted); font-weight: 600; text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
   .card .more a:hover { color: var(--ink); }
+  /* 習慣プランナー(一番上のおすすめ) */
+  .card.featured { border: 1.5px solid var(--accent); }
+  .card.featured h3 a { color: var(--accent); }
   a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 
   @media (max-width: 480px) {
@@ -134,30 +137,29 @@
   </header>
 
   <section class="group">
-    <div class="group-head"><h2>学習</h2><span>STUDY</span></div>
+    <div class="group-head"><h2>毎日の学習</h2><span>DAILY</span></div>
+    <p class="subject">まずはここから</p>
+    <div class="cards">
+      <article class="card featured">
+        <h3><a href="study/review/habit-planner/index.html">習慣プランナー</a></h3>
+        <p>続けたい道場・練習ページ・自由な習慣を登録すると、今日やるメニューとおすすめ単元を毎日並べ、連続達成日数とカレンダーで記録する。</p>
+      </article>
+      <article class="card">
+        <h3><a href="study/review/review-planner/index.html">復習プランナー</a></h3>
+        <p>道場で解いた単元を記録し、忘れかけた頃に復習する単元を知らせる。</p>
+      </article>
+    </div>
+  </section>
 
-    <p class="subject">音楽</p>
+  <section class="group">
+    <div class="group-head"><h2>中学の教科</h2><span>SCHOOL</span></div>
+    <p class="subject">国語</p>
     <div class="cards">
       <article class="card">
-        <h3><a href="study/music/guitar-beginner-course/index.html">ギター入門コース</a></h3>
-        <p>チューニング・構え方からTAB譜、コード、ストローク、コード進行、指板の音名、ペンタトニックまでを16のレッスンで順番に学ぶ。メトロノームとコードの音つき。</p>
+        <h3><a href="study/japanese/junior-high-japanese/index.html">中学国語道場</a></h3>
+        <p>中1〜中3の文法・漢字・語句・古典の28単元を、4択クイズで学び直す。分野ごとの正答率で苦手がわかる。</p>
         <div class="more">
-          <a href="study/music/guitar-beginner-course/chords.html">コード帳</a>
-        </div>
-      </article>
-      <article class="card">
-        <h3><a href="study/music/fretboard-note-quiz/index.html">指板ノート道場</a></h3>
-        <p>ギターの指板で、ハイライトされた位置の音名を答える練習。</p>
-        <div class="more">
-          <a href="study/music/fretboard-note-quiz/reference.html">指板ノート帳</a>
-          <a href="study/music/fretboard-note-quiz/pentatonic.html">ペンタトニックスケール帳</a>
-        </div>
-      </article>
-      <article class="card">
-        <h3><a href="study/music/staff-notation-quiz/index.html">五線譜ノート道場</a></h3>
-        <p>音の高さ(音名)と音の長さ(リズム)を切り替えて、楽譜を読む練習。</p>
-        <div class="more">
-          <a href="study/music/staff-notation-quiz/reference.html">音符の読み方帳</a>
+          <a href="study/japanese/junior-high-japanese/reference.html">中学国語の要点帳</a>
         </div>
       </article>
     </div>
@@ -165,24 +167,10 @@
     <p class="subject">数学</p>
     <div class="cards">
       <article class="card">
-        <h3><a href="study/math/mental-math-trainer/index.html">暗算道場</a></h3>
-        <p>暗算のテクニックを、四則演算と組み合わせて実戦形式で練習。</p>
-        <div class="more">
-          <a href="study/math/mental-math-trainer/reference.html">暗算テクニック帳</a>
-        </div>
-      </article>
-      <article class="card">
         <h3><a href="study/math/junior-high-math/index.html">中学数学道場</a></h3>
         <p>中1〜中3の22単元を、4択クイズで学び直す。単元ごとの正答率で苦手がわかる。</p>
         <div class="more">
           <a href="study/math/junior-high-math/reference.html">中学数学の要点帳</a>
-        </div>
-      </article>
-      <article class="card">
-        <h3><a href="study/math/order-of-magnitude/index.html">オーダー図鑑</a></h3>
-        <p>原子から銀河まで、長さ・重さ・時間・数を10の何乗かで並べて眺める。単位の切り替えと単位変換つき。</p>
-        <div class="more">
-          <a href="study/math/order-of-magnitude/quiz.html">オーダークイズ</a>
         </div>
       </article>
       <article class="card">
@@ -193,15 +181,18 @@
           <a href="study/math/prime-numbers/tools.html">素数の計算ツール</a>
         </div>
       </article>
-    </div>
-
-    <p class="subject">国語</p>
-    <div class="cards">
       <article class="card">
-        <h3><a href="study/japanese/junior-high-japanese/index.html">中学国語道場</a></h3>
-        <p>中1〜中3の文法・漢字・語句・古典の28単元を、4択クイズで学び直す。分野ごとの正答率で苦手がわかる。</p>
+        <h3><a href="study/math/mental-math-trainer/index.html">暗算道場</a></h3>
+        <p>暗算のテクニックを、四則演算と組み合わせて実戦形式で練習。</p>
         <div class="more">
-          <a href="study/japanese/junior-high-japanese/reference.html">中学国語の要点帳</a>
+          <a href="study/math/mental-math-trainer/reference.html">暗算テクニック帳</a>
+        </div>
+      </article>
+      <article class="card">
+        <h3><a href="study/math/order-of-magnitude/index.html">オーダー図鑑</a></h3>
+        <p>原子から銀河まで、長さ・重さ・時間・数を10の何乗かで並べて眺める。単位の切り替えと単位変換つき。</p>
+        <div class="more">
+          <a href="study/math/order-of-magnitude/quiz.html">オーダークイズ</a>
         </div>
       </article>
     </div>
@@ -214,17 +205,6 @@
         <div class="more">
           <a href="study/english/junior-high-english/reference.html">中学英語の要点帳</a>
           <a href="study/english/junior-high-english/vocab.html">中学英単語帳</a>
-        </div>
-      </article>
-    </div>
-
-    <p class="subject">韓国語</p>
-    <div class="cards">
-      <article class="card">
-        <h3><a href="study/korean/korean-basics/index.html">韓国語入門道場</a></h3>
-        <p>ハングルの母音・子音・パッチムの読み方から、あいさつ・数字・基本単語・フレーズまで9単元を、音声つきの4択で練習。</p>
-        <div class="more">
-          <a href="study/korean/korean-basics/reference.html">ハングル表・単語帳</a>
         </div>
       </article>
     </div>
@@ -247,6 +227,17 @@
           <a href="study/science/chemistry-lab/equation.html">反応式の組み立て</a>
         </div>
       </article>
+      <article class="card">
+        <h3><a href="study/science/astronomy-simulator/index.html">宇宙シミュレーター</a></h3>
+        <p>惑星の公転とケプラーの法則、月の満ち欠け、日食・月食、天体ごとの重力の違いを、動かして学ぶ。日本の各地から見た星空も再現する。</p>
+        <div class="more">
+          <a href="study/science/astronomy-simulator/orbits.html">惑星の公転</a>
+          <a href="study/science/astronomy-simulator/moon.html">月の満ち欠け</a>
+          <a href="study/science/astronomy-simulator/eclipse.html">日食・月食</a>
+          <a href="study/science/astronomy-simulator/gravity.html">重力の違い</a>
+          <a href="study/science/astronomy-simulator/sky.html">星空</a>
+        </div>
+      </article>
     </div>
 
     <p class="subject">社会</p>
@@ -266,30 +257,17 @@
         </div>
       </article>
     </div>
+  </section>
 
-    <p class="subject">将棋</p>
+  <section class="group">
+    <div class="group-head"><h2>語学・IT・教養</h2><span>SKILLS</span></div>
+    <p class="subject">韓国語</p>
     <div class="cards">
       <article class="card">
-        <h3><a href="study/shogi/shogi-dojo/index.html">将棋道場</a></h3>
-        <p>囲い・戦法・手筋・用語を盤面図つきの4択クイズで覚え、駒を動かして解く1手詰めで練習。</p>
+        <h3><a href="study/korean/korean-basics/index.html">韓国語入門道場</a></h3>
+        <p>ハングルの母音・子音・パッチムの読み方から、あいさつ・数字・基本単語・フレーズまで9単元を、音声つきの4択で練習。</p>
         <div class="more">
-          <a href="study/shogi/shogi-dojo/castles.html">囲い図鑑</a>
-          <a href="study/shogi/shogi-dojo/openings.html">戦法帳</a>
-          <a href="study/shogi/shogi-dojo/tesuji.html">手筋帳</a>
-          <a href="study/shogi/shogi-dojo/glossary.html">用語帳</a>
-          <a href="study/shogi/shogi-dojo/tsume.html">1手詰め</a>
-        </div>
-      </article>
-    </div>
-
-    <p class="subject">お金・投資</p>
-    <div class="cards">
-      <article class="card">
-        <h3><a href="study/finance/investment-simulator/course.html">投資入門コース</a></h3>
-        <p>金利とは何か、から投資のしくみまでを15のレッスンで学び、架空の相場で積立と一括・複利・分散投資・売買ルールを試して比べる。</p>
-        <div class="more">
-          <a href="study/finance/investment-simulator/index.html">投資シミュレーション道場</a>
-          <a href="study/finance/investment-simulator/reference.html">投資用語帳</a>
+          <a href="study/korean/korean-basics/reference.html">ハングル表・単語帳</a>
         </div>
       </article>
     </div>
@@ -297,31 +275,17 @@
     <p class="subject">IT</p>
     <div class="cards">
       <article class="card">
-        <h3><a href="study/it/linux-basics/index.html">Linux道場</a></h3>
-        <p>ファイル操作・権限・パイプなどLinuxの基本コマンドを、4択とコマンド入力で練習する。</p>
-        <div class="more">
-          <a href="study/it/linux-basics/reference.html">Linuxコマンド帳</a>
-        </div>
-      </article>
-      <article class="card">
-        <h3><a href="study/it/sql-basics/index.html">SQL道場</a></h3>
-        <p>SELECT・WHERE・集計・JOINなどSQLの基本を、本屋のデータベースを使った4択と穴埋めで練習する。</p>
-        <div class="more">
-          <a href="study/it/sql-basics/reference.html">SQL構文帳</a>
-        </div>
-      </article>
-      <article class="card">
-        <h3><a href="study/it/regex-basics/index.html">正規表現道場</a></h3>
-        <p>文字クラス・くり返し・グループ・置換・先読みなど正規表現の基本を、JavaScriptで実際に動かしながら4択と穴埋めで練習する。</p>
-        <div class="more">
-          <a href="study/it/regex-basics/reference.html">正規表現記法帳</a>
-        </div>
-      </article>
-      <article class="card">
         <h3><a href="study/it/web-basics/index.html">Web道場</a></h3>
         <p>URL・HTTP・HTML・CSS・JavaScriptから、Cookie・セキュリティ・CORS・キャッシュ・表示速度まで、Webのしくみを基礎・標準・実務の難易度つき4択で練習する。</p>
         <div class="more">
           <a href="study/it/web-basics/reference.html">Web用語帳</a>
+        </div>
+      </article>
+      <article class="card">
+        <h3><a href="study/it/linux-basics/index.html">Linux道場</a></h3>
+        <p>ファイル操作・権限・パイプなどLinuxの基本コマンドを、4択とコマンド入力で練習する。</p>
+        <div class="more">
+          <a href="study/it/linux-basics/reference.html">Linuxコマンド帳</a>
         </div>
       </article>
       <article class="card">
@@ -336,6 +300,20 @@
         <p>print・変数からクラス・NumPy・pandas・scikit-learnを経て、PyTorchでモデルを作って学習させるまでを、コードを打ち込む穴埋め・出力当てで練習する。</p>
         <div class="more">
           <a href="study/it/python-basics/reference.html">Python文法帳</a>
+        </div>
+      </article>
+      <article class="card">
+        <h3><a href="study/it/sql-basics/index.html">SQL道場</a></h3>
+        <p>SELECT・WHERE・集計・JOINなどSQLの基本を、本屋のデータベースを使った4択と穴埋めで練習する。</p>
+        <div class="more">
+          <a href="study/it/sql-basics/reference.html">SQL構文帳</a>
+        </div>
+      </article>
+      <article class="card">
+        <h3><a href="study/it/regex-basics/index.html">正規表現道場</a></h3>
+        <p>文字クラス・くり返し・グループ・置換・先読みなど正規表現の基本を、JavaScriptで実際に動かしながら4択と穴埋めで練習する。</p>
+        <div class="more">
+          <a href="study/it/regex-basics/reference.html">正規表現記法帳</a>
         </div>
       </article>
       <article class="card">
@@ -371,15 +349,59 @@
       </article>
     </div>
 
-    <p class="subject">復習</p>
+    <p class="subject">お金・投資</p>
     <div class="cards">
       <article class="card">
-        <h3><a href="study/review/review-planner/index.html">復習プランナー</a></h3>
-        <p>中学5教科・化学基礎・将棋・IT・AI理論・電子工作の道場で解いた単元を記録し、忘れかけた頃に復習する単元を知らせる。</p>
+        <h3><a href="study/finance/investment-simulator/course.html">投資入門コース</a></h3>
+        <p>金利とは何か、から投資のしくみまでを15のレッスンで学び、架空の相場で積立と一括・複利・分散投資・売買ルールを試して比べる。</p>
+        <div class="more">
+          <a href="study/finance/investment-simulator/index.html">投資シミュレーション道場</a>
+          <a href="study/finance/investment-simulator/reference.html">投資用語帳</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="group">
+    <div class="group-head"><h2>趣味</h2><span>HOBBY</span></div>
+    <p class="subject">将棋</p>
+    <div class="cards">
+      <article class="card">
+        <h3><a href="study/shogi/shogi-dojo/index.html">将棋道場</a></h3>
+        <p>囲い・戦法・手筋・用語を盤面図つきの4択クイズで覚え、駒を動かして解く1手詰めで練習。</p>
+        <div class="more">
+          <a href="study/shogi/shogi-dojo/castles.html">囲い図鑑</a>
+          <a href="study/shogi/shogi-dojo/openings.html">戦法帳</a>
+          <a href="study/shogi/shogi-dojo/tesuji.html">手筋帳</a>
+          <a href="study/shogi/shogi-dojo/glossary.html">用語帳</a>
+          <a href="study/shogi/shogi-dojo/tsume.html">1手詰め</a>
+        </div>
+      </article>
+    </div>
+
+    <p class="subject">音楽</p>
+    <div class="cards">
+      <article class="card">
+        <h3><a href="study/music/guitar-beginner-course/index.html">ギター入門コース</a></h3>
+        <p>チューニング・構え方からTAB譜、コード、ストローク、コード進行、指板の音名、ペンタトニックまでを16のレッスンで順番に学ぶ。メトロノームとコードの音つき。</p>
+        <div class="more">
+          <a href="study/music/guitar-beginner-course/chords.html">コード帳</a>
+        </div>
       </article>
       <article class="card">
-        <h3><a href="study/review/habit-planner/index.html">習慣プランナー</a></h3>
-        <p>続けたい道場・練習ページ・自由な習慣を登録すると、今日やるメニューとおすすめ単元を毎日並べ、連続達成日数とカレンダーで記録する。</p>
+        <h3><a href="study/music/fretboard-note-quiz/index.html">指板ノート道場</a></h3>
+        <p>ギターの指板で、ハイライトされた位置の音名を答える練習。</p>
+        <div class="more">
+          <a href="study/music/fretboard-note-quiz/reference.html">指板ノート帳</a>
+          <a href="study/music/fretboard-note-quiz/pentatonic.html">ペンタトニックスケール帳</a>
+        </div>
+      </article>
+      <article class="card">
+        <h3><a href="study/music/staff-notation-quiz/index.html">五線譜ノート道場</a></h3>
+        <p>音の高さ(音名)と音の長さ(リズム)を切り替えて、楽譜を読む練習。</p>
+        <div class="more">
+          <a href="study/music/staff-notation-quiz/reference.html">音符の読み方帳</a>
+        </div>
       </article>
     </div>
   </section>
