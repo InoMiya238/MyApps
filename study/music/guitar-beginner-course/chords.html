@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>コード帳 | ギター入門コース</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 960px; gap: 22px; }
+  [hidden] { display: none !important; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 48ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+  button:focus-visible, a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- 絞り込み ---------- */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip-btn {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight: 600;
+    min-height: 38px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .chip-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .count { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--ink-muted); }
+  .how { margin: 0; font-size: 13.5px; line-height: 1.7; color: var(--ink-muted); text-align: center; }
+  .how a { color: var(--accent); font-weight: 600; }
+
+  /* ---------- コード一覧 ---------- */
+  .level-block { display: flex; flex-direction: column; gap: 10px; }
+  .level-head { margin: 4px 2px 0; font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; }
+  .level-desc { margin: -6px 2px 0; font-size: 13px; color: var(--ink-muted); line-height: 1.6; }
+  .chord-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+
+  /* ---------- コードカード(index.html と同じ) ---------- */
+  .chord-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 10px 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    box-shadow: 0 1px 2px var(--shadow);
+    scroll-margin-top: 16px;
+  }
+  .chord-card.is-ringing { animation: ring 0.6s ease; }
+  .chord-card.is-target { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  @keyframes ring { 0% { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); } 100% { border-color: var(--border); box-shadow: 0 1px 2px var(--shadow); } }
+  .chord-tap {
+    font-family: var(--font-body);
+    background: none;
+    border: none;
+    color: var(--ink);
+    padding: 4px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .chord-tap:hover { background: var(--surface-2); }
+  .chord-name { font-family: var(--font-display); font-size: 26px; font-weight: 700; line-height: 1.2; }
+  .chord-sub { font-family: var(--font-body); font-size: 12px; font-weight: 600; color: var(--ink-muted); margin-left: 4px; }
+  .chord-read { font-size: 11.5px; color: var(--ink-faint); }
+  .chord-svg { display: block; width: 100%; max-width: 150px; height: auto; margin-top: 4px; }
+  .chord-hint { font-size: 11px; color: var(--accent); font-weight: 600; }
+  .chord-strings { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px; }
+  .string-btn {
+    font-family: var(--font-mono);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    border-radius: 7px;
+    min-height: 38px;
+    padding: 2px 0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.15;
+  }
+  .string-btn:disabled { cursor: default; background: none; color: var(--ink-faint); }
+  .string-no { font-size: 9.5px; color: var(--ink-faint); }
+  .string-note { font-size: 12px; font-weight: 700; }
+  .chord-note { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--ink-muted); }
+  .chord-tones { margin: 0; font-size: 12px; color: var(--ink-faint); }
+  .chord-tones b { font-family: var(--font-mono); color: var(--ink-muted); }
+
+  .legend {
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--ink-muted);
+  }
+  .legend b { color: var(--ink); }
+  .legend a { color: var(--accent); font-weight: 600; }
+
+  .page-foot {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    line-height: 1.8;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .page-foot a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .page-foot a:hover { text-decoration: underline; }
+
+  @media (max-width: 480px) {
+    body { padding: 24px 12px 56px; }
+    .chord-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .chord-card { padding: 8px 6px 10px; }
+    .chord-name { font-size: 22px; }
+    .filter-bar { padding: 12px; }
+    .chip-btn { padding: 6px 11px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">GUITAR · CHORD BOOK</p>
+    <h1>コード帳</h1>
+    <p class="tagline">ギター入門コースで使う、基本のコードの押さえ方。ダイアグラムをタップするとジャラーンと鳴り、下のボタンで1本ずつ音を確かめられます。</p>
+    <nav class="site-nav" aria-label="ギターのページ">
+      <a href="index.html">コース</a>
+      <span aria-current="page">コード帳</span>
+      <a href="../fretboard-note-quiz/index.html">指板ノート道場</a>
+      <a href="../fretboard-note-quiz/pentatonic.html">ペンタトニック</a>
+      <a href="../staff-notation-quiz/index.html">五線譜ノート道場</a>
+    </nav>
+  </header>
+
+  <section class="filter-bar" aria-label="絞り込み">
+    <div class="chips" id="filters" role="group" aria-label="むずかしさで絞り込む"></div>
+    <span class="count" id="count" aria-live="polite"></span>
+  </section>
+
+  <p class="legend">
+    <b>見方</b>: 縦の線が弦(左が6弦、右が1弦)、上の太い線がナット。●の数字は指番号(1 人差し指・2 中指・3 薬指・4 小指)。
+    <b>○</b>は開放弦、<b>×</b>は鳴らさない弦。くわしくは<a href="index.html#lesson-4">レッスン4</a>。
+  </p>
+
+  <main id="list"></main>
+
+  <footer class="page-foot">
+    音はブラウザの中でつくっています。音が出ないときは、端末のマナーモードと音量を確かめてください。<br>
+    <a href="index.html">ギター入門コース →</a>
+  </footer>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="guitar.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var KEY = "guitarBeginnerCourseChords";
+  var G = Guitar;
+  var LEVEL_DESC = {
+    easy: "指が少なく、押さえやすいコード。まずはここから(レッスン7)。",
+    basic: "よく使うコード。指を立てて、開放弦をつぶさないように(レッスン8)。",
+    barre: "人差し指で何本かの弦をまとめて押さえるコード。はじめは簡易Fから(レッスン12)。"
+  };
+  var FILTERS = [{ id: "all", label: "すべて" }].concat(G.LEVELS);
+  var ids = FILTERS.map(function (f) { return f.id; });
+
+  var saved = Store.load(KEY, null);
+  var state = { filter: saved && ids.indexOf(saved.filter) >= 0 ? saved.filter : "all" };
+
+  // ハッシュで指定されたコードがあるときは、絞り込みを「すべて」にして見せる
+  var target = /^#chord-([A-Za-z0-9]+)$/.exec(location.hash);
+  if (target && G.chord(target[1])) state.filter = "all";
+
+  var filters = document.getElementById("filters");
+  var list = document.getElementById("list");
+  var count = document.getElementById("count");
+
+  FILTERS.forEach(function (f) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip-btn";
+    b.textContent = f.label;
+    b.dataset.id = f.id;
+    b.addEventListener("click", function () {
+      state.filter = f.id;
+      Store.save(KEY, state);
+      render();
+    });
+    filters.appendChild(b);
+  });
+
+  function render() {
+    filters.querySelectorAll(".chip-btn").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.id === state.filter));
+    });
+    list.replaceChildren();
+    var shown = 0;
+    G.LEVELS.forEach(function (lv) {
+      if (state.filter !== "all" && state.filter !== lv.id) return;
+      var chords = G.CHORDS.filter(function (c) { return c.level === lv.id; });
+      if (!chords.length) return;
+      var sec = document.createElement("section");
+      sec.className = "level-block";
+      var h = document.createElement("h2");
+      h.className = "level-head";
+      h.id = "level-" + lv.id;
+      h.textContent = lv.label;
+      sec.setAttribute("aria-labelledby", h.id);
+      sec.appendChild(h);
+      var p = document.createElement("p");
+      p.className = "level-desc";
+      p.textContent = LEVEL_DESC[lv.id];
+      sec.appendChild(p);
+      var grid = document.createElement("div");
+      grid.className = "chord-grid";
+      chords.forEach(function (c) {
+        var card = G.chordCard(c, { note: true, id: "chord-" + c.id });
+        var tones = document.createElement("p");
+        tones.className = "chord-tones";
+        tones.appendChild(document.createTextNode("構成音: "));
+        var b = document.createElement("b");
+        b.textContent = G.chordTones(c).join(" ");
+        tones.appendChild(b);
+        card.appendChild(tones);
+        grid.appendChild(card);
+        shown++;
+      });
+      sec.appendChild(grid);
+      list.appendChild(sec);
+    });
+    count.textContent = shown + " コード";
+  }
+  render();
+
+  if (target) {
+    var card = document.getElementById("chord-" + target[1]);
+    if (card) {
+      card.classList.add("is-target");
+      card.scrollIntoView({ block: "start" });
+    }
+  }
+})();
+</script>
+</body>
+</html>

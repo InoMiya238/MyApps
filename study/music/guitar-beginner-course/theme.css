@@ -1,0 +1,117 @@
+/* ギター入門コース の色。変数名は学習シリーズ共通(shared/base.css を参照)。
+   指板ノート道場(../fretboard-note-quiz/theme.css)の色をもとに、コースの部品用の変数を足している。
+   --wood-a 〜 --tone2-core: 指板の図(指板ノート道場と同じ)。
+   --body-a --body-b --body-edge: ギター全体図のボディ。
+   --diagram-*: コードダイアグラム。--beat-*: メトロノームの拍の表示。 */
+:root {
+  color-scheme: light;
+  --bg: #F5EFE3;
+  --surface: #FFFFFF;
+  --surface-2: #EDE4D2;
+  --border: #DED2B8;
+  --ink: #2B211A;
+  --ink-muted: #6B5D4F;
+  --ink-faint: #857762;
+  --accent: #9A6526;
+  --accent-ink: #FFFCF6;
+  --accent-soft: #F3E6D2;
+  --good: #3F7457;
+  --good-soft: #E1EEE3;
+  --bad: #AC4634;
+  --bad-soft: #F5E3DD;
+  --shadow: rgba(43, 33, 26, 0.12);
+  /* 指板(指板ノート道場と同じ) */
+  --wood-a: #3B2417;
+  --wood-b: #2A1810;
+  --fret-wire: #D6D0C1;
+  --nut: #C9A24B;
+  --inlay: #F0E8D8;
+  --string-steel: #DEDACC;
+  --string-bronze: #C6A464;
+  --marker-glow: #FFC169;
+  --marker-core: #FFF4E0;
+  --tone2: #6FA0A6;
+  --tone2-core: #EAF4F4;
+  /* ギター全体図 */
+  --body-a: #D9A066;
+  --body-b: #B97A3F;
+  --body-edge: #6E4524;
+  /* コードダイアグラム・TAB譜 */
+  --diagram-line: #6B5D4F;
+  --diagram-nut: #2B211A;
+  --diagram-dot: #9A6526;
+  --diagram-dot-ink: #FFFCF6;
+  --tab-line: #B9AC95;
+  /* メトロノーム */
+  --beat-off: #E3D8C2;
+  --beat-on: #9A6526;
+  --beat-accent: #AC4634;
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #17110C;
+    --surface: #221A13;
+    --surface-2: #2C2218;
+    --border: #3B2E1F;
+    --ink: #F1E7D6;
+    --ink-muted: #B9A98E;
+    --ink-faint: #9A8A71;
+    --accent: #DDAB5C;
+    --accent-ink: #201505;
+    --accent-soft: #33261A;
+    --good: #7DB694;
+    --good-soft: #223229;
+    --bad: #E08669;
+    --bad-soft: #3A241E;
+    --shadow: rgba(0, 0, 0, 0.4);
+    --tone2: #7FB8BE;
+    --tone2-core: #16292B;
+    --body-a: #9C6A3C;
+    --body-b: #7A4E28;
+    --body-edge: #D9B88A;
+    --diagram-line: #B9A98E;
+    --diagram-nut: #F1E7D6;
+    --diagram-dot: #DDAB5C;
+    --diagram-dot-ink: #201505;
+    --tab-line: #5A4A37;
+    --beat-off: #3B2E1F;
+    --beat-on: #DDAB5C;
+    --beat-accent: #E08669;
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定(上と同じ値) */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #17110C;
+  --surface: #221A13;
+  --surface-2: #2C2218;
+  --border: #3B2E1F;
+  --ink: #F1E7D6;
+  --ink-muted: #B9A98E;
+  --ink-faint: #9A8A71;
+  --accent: #DDAB5C;
+  --accent-ink: #201505;
+  --accent-soft: #33261A;
+  --good: #7DB694;
+  --good-soft: #223229;
+  --bad: #E08669;
+  --bad-soft: #3A241E;
+  --shadow: rgba(0, 0, 0, 0.4);
+  --tone2: #7FB8BE;
+  --tone2-core: #16292B;
+  --body-a: #9C6A3C;
+  --body-b: #7A4E28;
+  --body-edge: #D9B88A;
+  --diagram-line: #B9A98E;
+  --diagram-nut: #F1E7D6;
+  --diagram-dot: #DDAB5C;
+  --diagram-dot-ink: #201505;
+  --tab-line: #5A4A37;
+  --beat-off: #3B2E1F;
+  --beat-on: #DDAB5C;
+  --beat-accent: #E08669;
+}
