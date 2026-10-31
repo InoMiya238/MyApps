@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>素数テクニック帳</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 900px; gap: 24px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 56ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+  a:focus-visible,
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- コード・難易度の部品(色分けなし。index.html と同じ内容。変えるときは両方を直す) ---------- */
+  .code-stack { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 10px;
+    overflow: hidden;
+    min-width: 0;
+    text-align: left;
+  }
+  .code-cap {
+    padding: 5px 14px;
+    border-bottom: 1px solid var(--code-border);
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--code-muted);
+    overflow-wrap: anywhere;
+  }
+  .code-body {
+    margin: 0;
+    padding: 12px 14px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--code-ink);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    background: var(--surface-2);
+    color: var(--ink);
+    padding: 1px 5px;
+    border-radius: 5px;
+    overflow-wrap: anywhere;
+  }
+  code.nw { white-space: nowrap; }
+
+  .lv-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex: none;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    white-space: nowrap;
+  }
+  .lv-tag.lv-basic { color: var(--lv-basic); background: var(--lv-basic-soft); }
+  .lv-tag.lv-std { color: var(--lv-std); background: var(--lv-std-soft); }
+  .lv-tag.lv-pro { color: var(--lv-pro); background: var(--lv-pro-soft); }
+
+  .lv-filter {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .lv-check {
+    min-width: 0;
+    min-height: 48px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 6px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    user-select: none;
+    transition: all 0.15s ease;
+  }
+  .lv-check input {
+    flex: none;
+    margin: 0;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .lv-check input:focus-visible { outline: none; }
+  .lv-check:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .lv-mark { font-size: 11px; letter-spacing: 0.02em; }
+  .lv-check[data-level="basic"] .lv-mark { color: var(--lv-basic); }
+  .lv-check[data-level="std"] .lv-mark { color: var(--lv-std); }
+  .lv-check[data-level="pro"] .lv-mark { color: var(--lv-pro); }
+  .lv-check.checked { color: var(--ink); }
+  .lv-check.checked[data-level="basic"] { border-color: var(--lv-basic); background: var(--lv-basic-soft); }
+  .lv-check.checked[data-level="std"] { border-color: var(--lv-std); background: var(--lv-std-soft); }
+  .lv-check.checked[data-level="pro"] { border-color: var(--lv-pro); background: var(--lv-pro-soft); }
+  .lv-count {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--ink-faint);
+  }
+  /* ---------- コード・難易度の部品 ここまで ---------- */
+
+
+
+  /* ---------- Controls bar ---------- */
+  .controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 16px;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 20px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .search-box {
+    flex: 1 1 260px;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 1ch;
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-family: var(--font-mono);
+    color: var(--code-ink);
+    cursor: text;
+  }
+  .search-box:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .search-box .p { flex: none; color: var(--code-kw); font-weight: 600; user-select: none; }
+  .search-box input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    outline: none;
+    padding: 2px 0;
+    color: var(--code-ink);
+    caret-color: var(--code-caret);
+    font: inherit;
+    font-size: 16px;
+  }
+  .search-box input::placeholder { color: var(--code-muted); opacity: 1; }
+  .search-box input::-webkit-search-cancel-button { filter: grayscale(1); }
+  .controls-bar .lv-filter { flex: 1 1 330px; min-width: 0; }
+  .bar-side {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-left: auto;
+  }
+  .hit-count {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+  .quiz-link {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-radius: 9px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  /* ---------- TOC ---------- */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .toc[hidden] { display: none; }
+  .toc-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    margin: 0 0 10px;
+  }
+  .toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 24px;
+    font-size: 13.5px;
+  }
+  .toc li { min-width: 0; display: flex; gap: 8px; align-items: center; }
+  .toc li[hidden] { display: none; }
+  .toc li .no {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .toc a { flex: 1; min-width: 0; color: var(--ink); text-decoration: none; font-weight: 600; overflow-wrap: anywhere; }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+  .toc .lv-tag { margin-left: auto; }
+
+  .no-hit {
+    margin: 0;
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 14px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+  }
+  .no-hit[hidden] { display: none; }
+
+  /* ---------- 単元の区切り ---------- */
+  .grade-section { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 16px; }
+  .grade-section[hidden] { display: none; }
+  .grade-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .grade-head h2 {
+    margin: 0;
+    min-width: 0;
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+  }
+  .grade-head h2 .no {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .grade-head .dojo-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .grade-head .dojo-link:hover { text-decoration: underline; }
+
+  /* ---------- 用語のカード ---------- */
+  .study-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .study-card {
+    min-width: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-margin-top: 16px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .study-card[hidden] { display: none; }
+  .study-card.is-target { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 1px 2px var(--shadow); }
+  .card-head { display: flex; flex-direction: column; gap: 2px; }
+  .study-card h3 {
+    margin: 0;
+    min-width: 0;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+    overflow-wrap: anywhere;
+  }
+  .study-card h3.is-mono { font-family: var(--font-mono); }
+  .term-en {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    overflow-wrap: anywhere;
+  }
+  .study-card p.desc {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+  .sub-title {
+    margin: 4px 0 0;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+  }
+  .study-card .code-body { font-size: 13px; }
+  .opt-list {
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px 14px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .opt-list dt {
+    min-width: 0;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .opt-list dd {
+    margin: 0;
+    min-width: 0;
+    color: var(--ink-muted);
+    overflow-wrap: anywhere;
+  }
+  .note-list {
+    margin: 0;
+    padding: 10px 12px 10px 28px;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 8px 8px 0;
+    color: var(--ink);
+    font-size: 12.5px;
+    line-height: 1.7;
+  }
+  .note-list li { overflow-wrap: anywhere; }
+  .note-list li + li { margin-top: 4px; }
+
+  /* ---------- ふるい(1〜100 の表) ---------- */
+  .sieve { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .sieve-grid {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: 3px;
+    min-width: 0;
+  }
+  .sv-cell {
+    min-width: 0;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    border-radius: 6px;
+    background: var(--surface-2);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background-color 0.35s ease, color 0.35s ease, opacity 0.35s ease;
+    transition-delay: var(--d, 0ms);
+  }
+  .sv-cell.is-one { opacity: 0.35; text-decoration: line-through; }
+  .sv-cell.by-2, .sv-cell.by-3, .sv-cell.by-5, .sv-cell.by-7 { text-decoration: line-through; font-weight: 500; }
+  .sv-cell.by-2 { background: var(--sv-2-soft); color: var(--sv-2); }
+  .sv-cell.by-3 { background: var(--sv-3-soft); color: var(--sv-3); }
+  .sv-cell.by-5 { background: var(--sv-5-soft); color: var(--sv-5); }
+  .sv-cell.by-7 { background: var(--sv-7-soft); color: var(--sv-7); }
+  .sv-cell.is-prime { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+  .sieve-status {
+    margin: 0;
+    min-height: 3.4em;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .sieve-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .sieve-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .sieve-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .sieve-legend .k-prime { background: var(--accent); }
+  .sieve-legend .k-2 { background: var(--sv-2); }
+  .sieve-legend .k-3 { background: var(--sv-3); }
+  .sieve-legend .k-5 { background: var(--sv-5); }
+  .sieve-legend .k-7 { background: var(--sv-7); }
+  .sieve-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sieve-btns button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border-radius: 9px;
+    min-height: 42px;
+    padding: 9px 14px;
+    font-size: 13.5px;
+    font-weight: 700;
+  }
+  .sieve-next { flex: 1 1 auto; border: none; background: var(--accent); color: var(--accent-ink); }
+  .sieve-next:disabled { opacity: 0.5; cursor: not-allowed; }
+  .sieve-reset { flex: none; background: none; border: 1.5px solid var(--border); color: var(--ink-muted); }
+  .sieve-reset:hover { border-color: var(--accent); color: var(--accent); }
+
+  footer.cta {
+    text-align: center;
+    padding: 8px 0 0;
+  }
+  footer.cta p {
+    margin: 10px 0 0;
+    color: var(--ink-muted);
+    font-size: 13px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lv-check, .sv-cell { transition: none; }
+  }
+  @media (max-width: 700px) {
+    .study-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .controls-bar { flex-direction: column; align-items: stretch; padding: 14px 16px; }
+    .search-box, .controls-bar .lv-filter { flex: none; }
+    .lv-filter { gap: 6px; }
+    .lv-check { min-height: 44px; padding: 7px 8px; gap: 2px 5px; font-size: 13px; }
+    .lv-count { flex-basis: 100%; margin-left: 23px; }
+    .bar-side { margin-left: 0; justify-content: space-between; }
+    .toc { padding: 16px; }
+    .toc ol { grid-template-columns: 1fr; gap: 6px; }
+    .grade-head .dojo-link { flex-basis: 100%; }
+    .study-card { padding: 16px; }
+    .code-body { font-size: 13px; padding: 10px 12px; }
+    .code-cap { padding: 5px 12px; }
+    .study-card .code-body { font-size: 12.5px; }
+    .opt-list { grid-template-columns: 1fr; gap: 0; }
+    .opt-list dd { margin-bottom: 8px; }
+    .opt-list dd:last-child { margin-bottom: 0; }
+    .sieve-grid { gap: 2px; }
+    .sv-cell { font-size: 11.5px; border-radius: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">PRIME TECHNIQUES</p>
+    <h1>素数テクニック帳</h1>
+    <p class="tagline">道場の10単元で使う判定法・公式・考え方を、具体例つきのカードにまとめました。ふるいは 1〜100 の表で動かして確かめられます。単元の頭のリンクから、その単元だけを道場で稽古できます。</p>
+    <nav class="site-nav" aria-label="素数道場のページ">
+      <a href="index.html">道場</a>
+      <span aria-current="page">テクニック帳</span>
+      <a href="tools.html">計算ツール</a>
+    </nav>
+  </header>
+
+  <section class="controls-bar" aria-label="絞り込み">
+    <label class="search-box">
+      <span class="p" aria-hidden="true">?</span>
+      <input type="search" id="searchInput" placeholder="用語・数で検索" aria-label="用語・説明・例の数で絞り込み(例: 11の倍数)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
+    </label>
+    <div class="lv-filter" id="lvFilter" role="group" aria-label="単元の難易度で絞り込む"></div>
+    <div class="bar-side">
+      <span class="hit-count" id="hitCount" role="status" aria-live="polite"></span>
+      <a class="quiz-link" href="index.html">道場へ →</a>
+    </div>
+  </section>
+
+  <nav class="toc" id="toc" aria-label="目次">
+    <p class="toc-title">目次</p>
+    <ol id="tocList"></ol>
+  </nav>
+
+  <p class="no-hit" id="noHit" hidden>見つかりませんでした。別のことばや難易度で試してください。</p>
+
+  <div id="sections" style="display: contents"></div>
+
+  <footer class="cta">
+    <a class="quiz-link" href="index.html">道場で稽古する →</a>
+    <p>道場では、単元と難易度を選んで4択で練習できます。数を毎回作り直す問題もあり、正答率は単元ごと・難易度ごとに残ります。</p>
+  </footer>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var tocList = document.getElementById("tocList");
+  var toc = document.getElementById("toc");
+  var sections = document.getElementById("sections");
+  var searchInput = document.getElementById("searchInput");
+  var lvFilter = document.getElementById("lvFilter");
+  var hitCount = document.getElementById("hitCount");
+  var noHit = document.getElementById("noHit");
+  var entries = [];    // { el: カード, text: 検索用の文字, unit }
+  var units = [];      // { unit, section, tocItem }
+  var levelsOn = {};
+  PRIM.LEVELS.forEach(function (l) { levelsOn[l.id] = true; });
+
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function codeEl(text) { return el("code", /^\S{1,16}$/.test(text) ? "nw" : "", text); }
+  function richEl(tag, className, s) {
+    var e = el(tag, className);
+    String(s).split("`").forEach(function (part, i) {
+      if (!part) return;
+      e.appendChild(i % 2 === 1 ? codeEl(part) : document.createTextNode(part));
+    });
+    return e;
+  }
+  function lvTag(levelId) {
+    var l = PRIM.level(levelId);
+    return el("span", "lv-tag lv-" + levelId, l.mark + " " + l.name);
+  }
+  function codeBlockEl(b) {
+    var box = el("div", "code-block");
+    if (b.cap) box.appendChild(el("div", "code-cap", b.cap));
+    box.appendChild(el("pre", "code-body", b.text));
+    return box;
+  }
+
+  // ---------- ふるい(1〜100)。「次へ」で 1 → 2 → 3 → 5 → 7 の順に消し、最後に残りを素数にする ----------
+  function buildSieve() {
+    var N = 100, PRIMES = [2, 3, 5, 7];
+    var box = el("div", "sieve");
+    var grid = el("div", "sieve-grid");
+    grid.setAttribute("aria-hidden", "true");   // 内容は下の説明文で伝える
+    var cells = [null];
+    for (var n = 1; n <= N; n++) {
+      var c = el("span", "sv-cell", String(n));
+      cells.push(c);
+      grid.appendChild(c);
+    }
+    box.appendChild(grid);
+    var status = el("p", "sieve-status");
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+    box.appendChild(status);
+    var legend = el("div", "sieve-legend");
+    [["k-prime", "素数(残る)"], ["k-2", "2 で消えた"], ["k-3", "3 で消えた"], ["k-5", "5 で消えた"], ["k-7", "7 で消えた"]].forEach(function (k) {
+      var sp = el("span");
+      var sw = el("i", k[0]);
+      sw.setAttribute("aria-hidden", "true");
+      sp.appendChild(sw);
+      sp.appendChild(document.createTextNode(k[1]));
+      legend.appendChild(sp);
+    });
+    box.appendChild(legend);
+    var btns = el("div", "sieve-btns");
+    var next = el("button", "sieve-next");
+    next.type = "button";
+    var reset = el("button", "sieve-reset", "最初から");
+    reset.type = "button";
+    btns.appendChild(next);
+    btns.appendChild(reset);
+    box.appendChild(btns);
+
+    var step = 0, gone = [];
+    var LABELS = ["1 を消す", "2 の倍数を消す", "3 の倍数を消す", "5 の倍数を消す", "7 の倍数を消す", "残りを素数にする", "完了"];
+    function delay(cell, i) { cell.style.setProperty("--d", Math.min(i * 18, 600) + "ms"); }
+    function render() {
+      next.textContent = step < 6 ? "次へ: " + LABELS[step] : LABELS[6];
+      next.disabled = step >= 6;
+    }
+    function doStep() {
+      if (step === 0) {
+        cells[1].classList.add("is-one");
+        gone[1] = true;
+        status.textContent = "1 は素数ではないので消しました。残っている最小の数 2 は素数です。";
+      } else if (step >= 1 && step <= 4) {
+        var p = PRIMES[step - 1], fresh = [];
+        cells[p].classList.add("is-prime");
+        for (var m = p * p; m <= N; m += p) {
+          if (gone[m]) continue;
+          gone[m] = true;
+          fresh.push(m);
+        }
+        fresh.forEach(function (m, i) { delay(cells[m], i); cells[m].classList.add("by-" + p); });
+        var nextP = step < 4 ? PRIMES[step] : 11;
+        status.textContent = p + " を残し、" + p + " の倍数を " + (p * p) + "(= " + p + "²)から消しました。新しく消えたのは " + fresh.length + "個(" +
+          fresh.slice(0, 6).join(", ") + (fresh.length > 6 ? ", …" : "") + ")。" +
+          (step < 4 ? "残っている最小の数 " + nextP + " は素数です。" : "次の素数 11 は 11² = 121 > 100 なので、ここで終わりです。");
+      } else if (step === 5) {
+        var count = 0, k = 0;
+        for (var n2 = 2; n2 <= N; n2++) {
+          if (gone[n2]) continue;
+          count++;
+          if (!cells[n2].classList.contains("is-prime")) { delay(cells[n2], k++); cells[n2].classList.add("is-prime"); }
+        }
+        status.textContent = "残った " + count + "個が、100 以下の素数です。";
+      }
+      step++;
+      render();
+    }
+    function restart() {
+      step = 0;
+      gone = [];
+      for (var n3 = 1; n3 <= N; n3++) {
+        cells[n3].className = "sv-cell";
+        cells[n3].style.removeProperty("--d");
+      }
+      status.textContent = "1〜100 を並べました。「次へ」を押すと、ふるいの手順を1つずつ進めます。";
+      render();
+    }
+    next.addEventListener("click", doStep);
+    reset.addEventListener("click", function () { restart(); next.focus(); });
+    restart();
+    return box;
+  }
+
+  // ---------- 用語のカード ----------
+  function buildCard(c) {
+    var card = el("article", "study-card");
+    card.id = "card-" + c.id;
+    var head = el("div", "card-head");
+    head.appendChild(el("h3", c.mono ? "is-mono" : "", c.name));
+    head.appendChild(el("p", "term-en", c.en));
+    card.appendChild(head);
+    card.appendChild(richEl("p", "desc", c.desc));
+    var words = [c.name, c.en, c.desc.replace(/`/g, "")];
+
+    if (c.widget === "sieve") card.appendChild(buildSieve());
+    var blocks = PRIM.blocksOf(c.code);
+    if (blocks.length > 0) {
+      card.appendChild(el("p", "sub-title", "例"));
+      var stack = el("div", "code-stack");
+      blocks.forEach(function (b) {
+        stack.appendChild(codeBlockEl(b));
+        words.push(b.cap || "", b.text);
+      });
+      card.appendChild(stack);
+    }
+    if (Array.isArray(c.options) && c.options.length > 0) {
+      var dl = el("dl", "opt-list");
+      c.options.forEach(function (o) {
+        dl.appendChild(el("dt", "", o[0]));
+        dl.appendChild(el("dd", "", o[1]));
+        words.push(o[0], o[1]);
+      });
+      card.appendChild(dl);
+    }
+    if (Array.isArray(c.notes) && c.notes.length > 0) {
+      card.appendChild(el("p", "sub-title", "注意"));
+      var ul = el("ul", "note-list");
+      c.notes.forEach(function (n) {
+        ul.appendChild(richEl("li", "", n));
+        words.push(n.replace(/`/g, ""));
+      });
+      card.appendChild(ul);
+    }
+    return { el: card, text: words.join("\n").toLowerCase() };
+  }
+
+  PRIM.UNITS.forEach(function (u) {
+    var c = PRIM.contentOf(u.id);
+
+    var li = el("li");
+    li.appendChild(el("span", "no", u.no));
+    var a = el("a", "", u.name);
+    a.href = "#unit-" + u.id;
+    li.appendChild(a);
+    li.appendChild(lvTag(u.level));
+    tocList.appendChild(li);
+
+    var sec = el("section", "grade-section");
+    sec.id = "unit-" + u.id;
+    var head = el("div", "grade-head");
+    var h2 = el("h2");
+    h2.appendChild(el("span", "no", u.no));
+    h2.appendChild(document.createTextNode(u.name));
+    h2.appendChild(lvTag(u.level));
+    head.appendChild(h2);
+    var dojo = el("a", "dojo-link", "この単元を稽古 →");
+    dojo.href = "index.html?unit=" + encodeURIComponent(u.id);
+    head.appendChild(dojo);
+    sec.appendChild(head);
+    var grid = el("div", "study-grid");
+    (c ? c.cards : []).forEach(function (cd) {
+      var built = buildCard(cd);
+      grid.appendChild(built.el);
+      entries.push({ el: built.el, text: built.text + "\n" + u.name.toLowerCase(), unit: u });
+    });
+    sec.appendChild(grid);
+    sections.appendChild(sec);
+    units.push({ unit: u, section: sec, tocItem: li });
+  });
+
+  // ---------- 難易度の絞り込み(単元の難易度) ----------
+  function renderLevelFilter() {
+    lvFilter.innerHTML = "";
+    PRIM.LEVELS.forEach(function (l) {
+      var on = !!levelsOn[l.id];
+      var label = el("label", "lv-check" + (on ? " checked" : ""));
+      label.dataset.level = l.id;
+      var input = el("input");
+      input.type = "checkbox";
+      input.checked = on;
+      label.appendChild(input);
+      var mark = el("span", "lv-mark", l.mark);
+      mark.setAttribute("aria-hidden", "true");
+      label.appendChild(mark);
+      label.appendChild(el("span", "lv-name", l.name));
+      var n = PRIM.UNITS.filter(function (u) { return u.level === l.id; }).length;
+      label.appendChild(el("span", "lv-count", n + "単元"));
+      input.addEventListener("change", function () {
+        if (input.checked) levelsOn[l.id] = true; else delete levelsOn[l.id];
+        renderLevelFilter();
+        applyFilter();
+        var again = lvFilter.querySelector('[data-level="' + l.id + '"] input');
+        if (again) again.focus();
+      });
+      lvFilter.appendChild(label);
+    });
+  }
+
+  // ---------- 絞り込み ----------
+  function applyFilter() {
+    var word = searchInput.value.trim().toLowerCase();
+    var hits = 0;
+    entries.forEach(function (e) {
+      var on = !!levelsOn[e.unit.level] && (!word || e.text.indexOf(word) >= 0);
+      e.el.hidden = !on;
+      if (on) hits++;
+    });
+    var anyUnit = false;
+    units.forEach(function (x) {
+      var lvOn = !!levelsOn[x.unit.level];
+      x.section.hidden = !lvOn || (!!word && !x.section.querySelector(".study-card:not([hidden])"));
+      x.tocItem.hidden = !lvOn;
+      if (lvOn) anyUnit = true;
+    });
+    toc.hidden = !!word || !anyUnit;
+    noHit.hidden = hits > 0;
+    hitCount.textContent = hits + "件";
+  }
+  searchInput.addEventListener("input", function (e) {
+    if (e.isComposing) return;   // 日本語の変換中は、確定まで待つ
+    applyFilter();
+  });
+  searchInput.addEventListener("compositionend", applyFilter);
+  renderLevelFilter();
+  applyFilter();
+
+  // #card-ohms-law などで開かれたとき、描き終えてからそのカードへ移動して目立たせる
+  function focusHash() {
+    var id = "";
+    try { id = decodeURIComponent(location.hash.slice(1)); } catch (e) { /* こわれたアンカーは無視 */ }
+    document.querySelectorAll(".is-target").forEach(function (c) { c.classList.remove("is-target"); });
+    if (!id) return;
+    var target = document.getElementById(id);
+    if (!target || !sections.contains(target)) return;
+    if (target.hidden || (target.closest(".grade-section") || target).hidden) {
+      // 絞り込みで隠れていたら、すべて表示に戻す
+      searchInput.value = "";
+      PRIM.LEVELS.forEach(function (l) { levelsOn[l.id] = true; });
+      renderLevelFilter();
+      applyFilter();
+    }
+    if (target.classList.contains("study-card")) target.classList.add("is-target");
+    target.scrollIntoView({ block: "start" });
+  }
+  window.addEventListener("hashchange", focusHash);
+  focusHash();
+  if (location.hash && document.fonts && document.fonts.ready) document.fonts.ready.then(focusHash);
+})();
+</script>
+</body>
+</html>

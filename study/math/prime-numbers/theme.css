@@ -1,0 +1,124 @@
+/* 素数道場 の色。変数名は学習シリーズ共通(shared/base.css を参照)。藍色の地に、アクセントは深い青緑。
+   --code-* はコードの表示(.code-block:すだれ算・互除法など)と検索欄だけで使う。ライトでも暗い(藍色の)画面にする。
+   --lv-* は難易度の印(.lv-tag・難易度の絞り込み・難易度ごとの正答率)で使う。basic = 基礎 / std = 標準 / pro = 応用。
+   --sv-* はテクニック帳のふるい(1〜100 の表)で、その数を消した素数(2・3・5・7)の色。 */
+:root {
+  color-scheme: light;
+  --bg: #EDF1F7;
+  --surface: #FFFFFF;
+  --surface-2: #E0E7F1;
+  --border: #C5D0E0;
+  --ink: #131B2E;
+  --ink-muted: #3A4862;
+  --ink-faint: #525F78;
+  --accent: #0B6A6E;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #DAEEEE;
+  --good: #1F6B45;
+  --good-soft: #DCEFE4;
+  --bad: #A8372A;
+  --bad-soft: #F7E0DB;
+  --shadow: rgba(19,27,46,.10);
+  --code-bg: #15204A;
+  --code-border: #2C3A6E;
+  --code-ink: #E0E6F7;
+  --code-muted: #9BA8CF;
+  --code-kw: #7FDAD3;
+  --code-caret: #7FDAD3;
+  --lv-basic: #1A5E96;
+  --lv-basic-soft: #E0ECF8;
+  --lv-std: #765600;
+  --lv-std-soft: #F6EDCF;
+  --lv-pro: #9C2B62;
+  --lv-pro-soft: #F8E1EC;
+  --sv-2: #A8432C;
+  --sv-2-soft: #F6E2DB;
+  --sv-3: #7A5A00;
+  --sv-3-soft: #F3EBD0;
+  --sv-5: #2A62A6;
+  --sv-5-soft: #DEE8F6;
+  --sv-7: #7D3C9E;
+  --sv-7-soft: #EEE0F6;
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0B1020;
+    --surface: #11182C;
+    --surface-2: #1A233B;
+    --border: #2B3754;
+    --ink: #E3E8F3;
+    --ink-muted: #AAB5CC;
+    --ink-faint: #8C98B2;
+    --accent: #5CCBC4;
+    --accent-ink: #032321;
+    --accent-soft: #12302F;
+    --good: #86CFA0;
+    --good-soft: #183024;
+    --bad: #EE8E78;
+    --bad-soft: #3A221D;
+    --shadow: rgba(0,0,0,.45);
+    --code-bg: #080D1E;
+    --code-border: #263257;
+    --code-ink: #DCE3F5;
+    --code-muted: #8E9BC2;
+    --code-kw: #7FDAD3;
+    --code-caret: #7FDAD3;
+    --lv-basic: #8CC4F2;
+    --lv-basic-soft: #13283D;
+    --lv-std: #E5C765;
+    --lv-std-soft: #2E2812;
+    --lv-pro: #F29AC4;
+    --lv-pro-soft: #3A1A2B;
+    --sv-2: #F2A08A;
+    --sv-2-soft: #3A211A;
+    --sv-3: #E3C76E;
+    --sv-3-soft: #2F2813;
+    --sv-5: #94C0F2;
+    --sv-5-soft: #16283F;
+    --sv-7: #D6A8EE;
+    --sv-7-soft: #2E1D3B;
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0B1020;
+  --surface: #11182C;
+  --surface-2: #1A233B;
+  --border: #2B3754;
+  --ink: #E3E8F3;
+  --ink-muted: #AAB5CC;
+  --ink-faint: #8C98B2;
+  --accent: #5CCBC4;
+  --accent-ink: #032321;
+  --accent-soft: #12302F;
+  --good: #86CFA0;
+  --good-soft: #183024;
+  --bad: #EE8E78;
+  --bad-soft: #3A221D;
+  --shadow: rgba(0,0,0,.45);
+  --code-bg: #080D1E;
+  --code-border: #263257;
+  --code-ink: #DCE3F5;
+  --code-muted: #8E9BC2;
+  --code-kw: #7FDAD3;
+  --code-caret: #7FDAD3;
+  --lv-basic: #8CC4F2;
+  --lv-basic-soft: #13283D;
+  --lv-std: #E5C765;
+  --lv-std-soft: #2E2812;
+  --lv-pro: #F29AC4;
+  --lv-pro-soft: #3A1A2B;
+  --sv-2: #F2A08A;
+  --sv-2-soft: #3A211A;
+  --sv-3: #E3C76E;
+  --sv-3-soft: #2F2813;
+  --sv-5: #94C0F2;
+  --sv-5-soft: #16283F;
+  --sv-7: #D6A8EE;
+  --sv-7-soft: #2E1D3B;
+}

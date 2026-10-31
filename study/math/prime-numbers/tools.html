@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>素数の計算ツール</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 720px; gap: 22px; }
+  .tagline { max-width: 48ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] { color: var(--ink); font-weight: 600; border-bottom: 2px solid var(--accent); }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .toc { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .toc a {
+    font-size: 13px; font-weight: 600; color: var(--ink-muted); text-decoration: none;
+    border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px; background: var(--surface);
+  }
+  .toc a:hover { color: var(--accent); border-color: var(--accent); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    scroll-margin-top: 16px;
+    min-width: 0;
+  }
+  .card h2 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; margin: 0 0 6px; }
+  .card h3 { margin: 18px 0 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.09em; color: var(--ink-faint); }
+  .lead { margin: 0 0 14px; font-size: 0.86rem; line-height: 1.7; color: var(--ink-muted); }
+  .lead code, .hint code, .result code { font-family: var(--font-mono); font-size: 0.92em; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; }
+
+  .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+  .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .field > span { font-size: 12.5px; font-weight: 600; color: var(--ink-muted); }
+  input[type="text"] {
+    width: 100%;
+    min-width: 0;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 9px 10px;
+  }
+  input[aria-invalid="true"] { border-color: var(--bad); }
+
+  .result {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 0.92rem;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .result.is-error { background: var(--bad-soft); color: var(--bad); font-weight: 600; }
+  .result.is-idle { background: var(--surface-2); color: var(--ink-muted); }
+  .result[hidden] { display: none; }
+  .result .r-title {
+    margin: 0 0 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+  }
+  .result .big { font-family: var(--font-mono); font-size: 1.3rem; font-weight: 700; color: var(--accent); overflow-wrap: anywhere; }
+  .result .verdict-prime { color: var(--good); }
+  .result .verdict-comp { color: var(--bad); }
+  .result .sub { color: var(--ink-muted); font-size: 0.84rem; }
+  .result .mono { font-family: var(--font-mono); }
+  .result > * + * { margin-top: 4px; }
+  .res-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.84rem; }
+  .res-table th, .res-table td { padding: 6px 6px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  .res-table th { font-size: 11px; color: var(--ink-faint); font-weight: 600; white-space: nowrap; }
+  .res-table td.num { font-family: var(--font-mono); }
+  .num-list {
+    margin: 6px 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+    line-height: 1.8;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .hint { font-size: 0.78rem; color: var(--ink-faint); margin: 10px 0 0; line-height: 1.6; }
+
+  .btn {
+    font-family: var(--font-body); cursor: pointer; border-radius: 9px; padding: 8px 12px; font-size: 13px; font-weight: 600;
+    background: none; border: 1.5px solid var(--border); color: var(--ink-muted); min-height: 40px;
+  }
+  .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .btn.mono { font-family: var(--font-mono); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+  /* ---------- すだれ算・互除法の表示(index.html・reference.html と同じ見た目) ---------- */
+  .code-block {
+    margin-top: 8px;
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 10px;
+    overflow: hidden;
+    min-width: 0;
+  }
+  .code-cap {
+    padding: 5px 14px;
+    border-bottom: 1px solid var(--code-border);
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--code-muted);
+  }
+  .code-body {
+    margin: 0;
+    padding: 12px 14px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--code-ink);
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 18px 16px; }
+    .fields { grid-template-columns: 1fr; }
+    .res-table th, .res-table td { padding: 5px 3px; }
+    .code-body { font-size: 12.5px; padding: 10px 12px; }
+    .code-cap { padding: 5px 12px; }
+    .result { padding: 11px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">PRIME CALCULATOR</p>
+    <h1>素数の計算ツール</h1>
+    <p class="tagline">数を入れると、素数かどうか(試し割りの過程)、素因数分解(すだれ算)、約数、平方数にする最小の数を表示します。2つの数の最大公約数・最小公倍数も、互除法の過程つきで求めます。</p>
+    <nav class="site-nav" aria-label="素数道場のページ">
+      <a href="index.html">道場</a>
+      <a href="reference.html">テクニック帳</a>
+      <span aria-current="page">計算ツール</span>
+    </nav>
+  </header>
+
+  <nav class="toc" aria-label="計算の種類">
+    <a href="#number">1つの数を調べる</a>
+    <a href="#gcd">最大公約数・最小公倍数</a>
+  </nav>
+
+  <!-- ============ 1つの数 ============ -->
+  <section class="card" id="number" aria-labelledby="numTitle">
+    <h2 id="numTitle">1つの数を調べる</h2>
+    <p class="lead">2 から 10<sup>12</sup>(1兆)までの整数を入れると、すぐに結果が出ます。3けたごとのカンマや全角の数字も使えます。</p>
+    <label class="field"><span>調べる数 N</span>
+      <input type="text" inputmode="numeric" id="numIn" autocomplete="off" value="360" aria-describedby="numMsg">
+    </label>
+    <div class="btn-row" role="group" aria-label="例の数">
+      <button type="button" class="btn mono" data-ex="91">91</button>
+      <button type="button" class="btn mono" data-ex="221">221</button>
+      <button type="button" class="btn mono" data-ex="360">360</button>
+      <button type="button" class="btn mono" data-ex="1001">1001</button>
+      <button type="button" class="btn mono" data-ex="2024">2024</button>
+      <button type="button" class="btn mono" data-ex="999999999989">999999999989</button>
+    </div>
+    <div class="result is-idle" id="numMsg" role="status" aria-live="polite" hidden></div>
+    <div id="numResults">
+      <div class="result" id="primeOut"></div>
+      <div class="result" id="factorOut"></div>
+      <div class="result" id="divOut"></div>
+      <div class="result" id="squareOut"></div>
+    </div>
+  </section>
+
+  <!-- ============ GCD・LCM ============ -->
+  <section class="card" id="gcd" aria-labelledby="gcdTitle">
+    <h2 id="gcdTitle">最大公約数・最小公倍数</h2>
+    <p class="lead">2つの整数(2 〜 10<sup>12</sup>)を入れると、ユークリッドの互除法の過程と、素因数分解による求め方を表示します。<code>a × b = GCD × LCM</code> も確かめます。</p>
+    <div class="fields">
+      <label class="field"><span>a</span><input type="text" inputmode="numeric" id="gcdA" autocomplete="off" value="84"></label>
+      <label class="field"><span>b</span><input type="text" inputmode="numeric" id="gcdB" autocomplete="off" value="126"></label>
+    </div>
+    <div class="result" id="gcdOut" role="status" aria-live="polite"></div>
+  </section>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var M = PRIM.math;
+  var MAX = M.MAX_N;
+
+  function $(id) { return document.getElementById(id); }
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function line(parts, className) {
+    var d = el("div", className || "");
+    parts.forEach(function (p) { d.appendChild(typeof p === "string" ? document.createTextNode(p) : p); });
+    return d;
+  }
+  function setOut(box, state, title, nodes) {
+    box.className = "result" + (state ? " is-" + state : "");
+    box.innerHTML = "";
+    if (title) box.appendChild(el("p", "r-title", title));
+    (Array.isArray(nodes) ? nodes : [nodes]).forEach(function (n) {
+      box.appendChild(typeof n === "string" ? el("div", "", n) : n);
+    });
+  }
+  function codeBlock(cap, text) {
+    var b = el("div", "code-block");
+    if (cap) b.appendChild(el("div", "code-cap", cap));
+    b.appendChild(el("pre", "code-body", text));
+    return b;
+  }
+  // 3けたごとにカンマ(文字列で処理するので BigInt の値にも使える)
+  function group(v) {
+    var s = String(v);
+    return s.length <= 4 ? s : s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+  function mark(input, bad) { input.setAttribute("aria-invalid", bad ? "true" : "false"); }
+
+  // 入力の文字 → { n } か { error }。全角の数字は半角に、カンマと空白は無視する
+  // tail: 2 未満のときの説明(欄ごとに変える)
+  function parseN(raw, name, tail) {
+    var s = String(raw).replace(/[０-９]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); })
+      .replace(/[,，\s]/g, "");
+    if (s === "") return { error: name + "を入れてください。", empty: true };
+    if (/^[-−ー]/.test(s)) return { error: name + "は 2 以上の整数にしてください(負の数は使えません)。" };
+    if (!/^\d+$/.test(s)) return { error: name + "は整数で入れてください(小数や文字は使えません)。" };
+    s = s.replace(/^0+(?=\d)/, "");
+    if (s.length > 13 || Number(s) > MAX) return { error: name + "が大きすぎます。10¹²(1兆 = 1000000000000)までにしてください。" };
+    var n = Number(s);
+    if (n < 2) return { error: name + "は 2 以上にしてください" + (tail || "") + "。" };
+    return { n: n };
+  }
+
+  // 素因数分解の表示。底にも3けたごとのカンマをつけて、左辺とそろえる
+  function fmtF(f) {
+    if (f.length === 0) return "1";
+    return f.map(function (pe) { return group(pe[0]) + (pe[1] === 1 ? "" : M.sup(pe[1])); }).join(" × ");
+  }
+  function pickList(list, head, tail) {
+    if (list.length <= head + tail + 2) return list.join(", ");
+    return list.slice(0, head).join(", ") + ", …, " + list.slice(list.length - tail).join(", ");
+  }
+  // 素因数分解の一覧 [[p, e]] → BigInt の値
+  function bigOf(f) {
+    return f.reduce(function (v, pe) { return v * BigInt(pe[0]) ** BigInt(pe[1]); }, 1n);
+  }
+
+  // ---------- 1つの数 ----------
+  var numIn = $("numIn"), numMsg = $("numMsg"), numResults = $("numResults");
+
+  function renderPrime(n, f) {
+    var box = $("primeOut"), r = M.isqrt(n), primes = M.primesUpTo(r);
+    var nodes = [];
+    // 先にふるう(倍数の見分け方)
+    var last = n % 10, ds = M.digitSum(n), alt = M.altSum(n);
+    var table = el("table", "res-table");
+    var head = el("tr");
+    ["見分け方", "計算", "結果"].forEach(function (h) { head.appendChild(el("th", "", h)); });
+    table.appendChild(head);
+    [
+      ["2・5 の倍数", "一の位 " + last, last === 0 ? "2・5の倍数(10の倍数)" : last % 2 === 0 ? "2の倍数" : last % 5 === 0 ? "5の倍数" : "どちらでもない"],
+      ["3・9 の倍数", "各位の和 " + ds, ds % 9 === 0 ? "9の倍数(3の倍数)" : ds % 3 === 0 ? "3の倍数" : "どちらでもない"],
+      ["11 の倍数", "交代和 " + alt, alt % 11 === 0 ? "11の倍数" : "ちがう"]
+    ].forEach(function (row) {
+      var tr = el("tr");
+      tr.appendChild(el("td", "", row[0]));
+      tr.appendChild(el("td", "num", row[1]));
+      tr.appendChild(el("td", "", row[2]));
+      table.appendChild(tr);
+    });
+
+    // √N は小数第2位に四捨五入。整数なら「=」
+    var sqrtText = "√" + group(n) + (r * r === n ? " = " + group(r) : " ≈ " + (Math.round(Math.sqrt(n) * 100) / 100).toFixed(2));
+    var hit = null, idx = -1;
+    for (var i = 0; i < primes.length; i++) {
+      if (n % primes[i] === 0) { hit = primes[i]; idx = i; break; }
+    }
+    var isP = M.isPrime(n);
+    if (isP) {
+      nodes.push(line([el("span", "big verdict-prime", group(n) + " は素数です")]));
+    } else {
+      nodes.push(line([el("span", "big verdict-comp", group(n) + " は合成数です")]));
+    }
+    if (primes.length === 0) {
+      nodes.push(el("div", "", sqrtText + "。√N 以下の素数がないので、割ってみる必要はありません。"));
+    } else if (hit !== null && hit !== n) {
+      var tried = primes.slice(0, idx + 1);
+      nodes.push(el("div", "", sqrtText + "。小さい素数から順に割ると、" + (idx + 1) + "個目の素数 " + hit + " で割り切れました。"));
+      nodes.push(el("div", "mono", group(n) + " = " + group(hit) + " × " + group(n / hit)));
+      nodes.push(el("div", "sub", "試した素数: " + pickList(tried, 10, 3)));
+    } else {
+      nodes.push(el("div", "", sqrtText + "。√N 以下の素数 " + primes.length + "個(" + pickList(primes, 8, 2) + ")のどれでも割り切れませんでした。"));
+      nodes.push(el("div", "sub", "最後に試した素数は " + primes[primes.length - 1] + "(" + primes[primes.length - 1] + "² = " + group(primes[primes.length - 1] * primes[primes.length - 1]) + " ≤ N)。次の素数 " + M.nextPrime(primes[primes.length - 1]) + " は2乗が N をこえるので不要です。"));
+    }
+    nodes.push(el("h3", "", "先にふるう"));
+    nodes.push(table);
+    setOut(box, "", "素数の判定(試し割り)", nodes);
+  }
+
+  function renderFactor(n, f) {
+    var nodes = [line([el("span", "big", group(n) + " = " + fmtF(f))])];
+    if (f.length === 1 && f[0][1] === 1) {
+      nodes.push(el("div", "sub", "素数なので、素因数分解はその数自身です。"));
+    } else {
+      nodes.push(codeBlock("すだれ算", M.sudareText(n)));
+      nodes.push(el("div", "sub", "左の数と、いちばん下の商(素数)をかけ合わせたものが答えです。"));
+    }
+    setOut($("factorOut"), "", "素因数分解", nodes);
+  }
+
+  function renderDivisors(n, f) {
+    var d = M.numDivisors(f), s = M.sumDivisors(f);
+    var nodes = [];
+    var countExpr = f.map(function (pe) { return "(" + pe[1] + "+1)"; }).join("");
+    nodes.push(line(["約数の個数 ", el("span", "big", group(d) + "個")]));
+    nodes.push(el("div", "sub mono", countExpr + " = " + group(d)));
+    nodes.push(line(["約数の総和 ", el("span", "big", group(s))]));
+    nodes.push(el("div", "sub mono", f.map(function (pe) {
+      return "(1+" + pe[0] + (pe[1] >= 2 ? "+…+" + pe[0] + M.sup(pe[1]) : "") + ")";
+    }).join("") + " = " + f.map(function (pe) { return group(M.sumDivisors([pe])); }).join(" × ") + " = " + group(s)));
+    nodes.push(el("div", "sub", "自分自身を除いた約数の和は " + group(s - n) + (s - n === n ? "(完全数です)" : "") + "。約数の個数が" + (d % 2 === 1 ? "奇数なので平方数です。" : "偶数なので平方数ではありません。")));
+    var LIMIT = 240, list = M.divisorsOf(f, LIMIT);
+    nodes.push(el("h3", "", "約数の一覧"));
+    if (list) {
+      nodes.push(el("p", "num-list", list.map(group).join(", ")));
+    } else {
+      var all = M.divisorsOf(f);
+      nodes.push(el("p", "num-list", all.slice(0, 60).map(group).join(", ") + ", …, " + all.slice(all.length - 10).map(group).join(", ")));
+      nodes.push(el("div", "sub", "約数が " + group(d) + "個と多いので、小さいほうの60個と大きいほうの10個だけを表示しています。"));
+    }
+    setOut($("divOut"), "", "約数", nodes);
+  }
+
+  function renderSquare(n, f) {
+    var m = M.squareMultiplier(f), nodes = [];
+    var root = f.reduce(function (v, pe) { return v * BigInt(pe[0]) ** BigInt(Math.ceil(pe[1] / 2)); }, 1n);
+    var small = f.reduce(function (v, pe) { return v * BigInt(pe[0]) ** BigInt(Math.floor(pe[1] / 2)); }, 1n);
+    if (m === 1) {
+      nodes.push(line([el("span", "big", group(n) + " は平方数です")]));
+      nodes.push(el("div", "mono", group(n) + " = " + group(root) + "²(指数がすべて偶数)"));
+    } else if (m === n) {
+      // 指数がすべて 1(素数・91・1001 など)。割って平方数にする行は出さない
+      nodes.push(line(["かける最小の数 ", el("span", "big", group(m))]));
+      nodes.push(el("div", "sub", "指数がすべて1なので、平方数にするには N 自身をかけるしかありません(" + group(n) + " × " + group(n) + " = " + group(BigInt(n) * BigInt(n)) + " = " + group(n) + "²)。"));
+    } else {
+      var odd = f.filter(function (pe) { return pe[1] % 2 === 1; }).map(function (pe) { return pe[0]; });
+      nodes.push(line(["かける最小の数 ", el("span", "big", group(m))]));
+      nodes.push(el("div", "sub", "指数が奇数の素数は " + odd.map(group).join(", ") + "。これを1つずつかけると、指数がすべて偶数になります。"));
+      nodes.push(el("div", "mono", group(n) + " × " + group(m) + " = " + group(BigInt(n) * BigInt(m)) + " = " + group(root) + "²"));
+      nodes.push(el("div", "mono", group(n) + " ÷ " + group(m) + " = " + group(n / m) + " = " + group(small) + "²(割って平方数にする場合)"));
+    }
+    var ss = M.sqrtSimplify(f);
+    nodes.push(el("div", "sub mono", "√" + group(n) + " = " + (ss.in === 1 ? group(ss.out) : (ss.out === 1 ? "√" + group(ss.in) + "(これ以上簡単にならない)" : group(ss.out) + "√" + group(ss.in)))));
+    setOut($("squareOut"), "", "平方数にする", nodes);
+  }
+
+  function calcNumber() {
+    var p = parseN(numIn.value, "数", "(0 と 1 は素数でも合成数でもありません)");
+    if (p.error) {
+      mark(numIn, !p.empty);
+      numMsg.hidden = false;
+      setOut(numMsg, p.empty ? "idle" : "error", "", p.error);
+      numResults.hidden = true;
+      return;
+    }
+    mark(numIn, false);
+    numMsg.hidden = true;
+    numResults.hidden = false;
+    var f = M.factorize(p.n);
+    renderPrime(p.n, f);
+    renderFactor(p.n, f);
+    renderDivisors(p.n, f);
+    renderSquare(p.n, f);
+  }
+
+  // 大きな数では計算に少し時間がかかるので、入力が止まってから計算する
+  var numTimer = null;
+  numIn.addEventListener("input", function () {
+    clearTimeout(numTimer);
+    numTimer = setTimeout(calcNumber, 150);
+  });
+  document.querySelectorAll("[data-ex]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      numIn.value = b.dataset.ex;
+      calcNumber();
+    });
+  });
+
+  // ---------- GCD・LCM ----------
+  var gcdA = $("gcdA"), gcdB = $("gcdB");
+  function calcGcd() {
+    var out = $("gcdOut");
+    var pa = parseN(gcdA.value, "a"), pb = parseN(gcdB.value, "b");
+    mark(gcdA, !!pa.error && !pa.empty);
+    mark(gcdB, !!pb.error && !pb.empty);
+    if (pa.error || pb.error) {
+      // 不正な入力を先に知らせる。空欄だけなら、入力を待つ表示にする
+      var bad = pa.error && !pa.empty ? pa : pb.error && !pb.empty ? pb : null;
+      return setOut(out, bad ? "error" : "idle", "", (bad || (pa.error ? pa : pb)).error);
+    }
+    var a = pa.n, b = pb.n, g = M.gcd(a, b);
+    var L = BigInt(a / g) * BigInt(b);
+    var nodes = [];
+    nodes.push(line(["最大公約数 GCD = ", el("span", "big", group(g))]));
+    nodes.push(line(["最小公倍数 LCM = ", el("span", "big", group(L))]));
+    if (g === 1) nodes.push(el("div", "sub", group(a) + " と " + group(b) + " は互いに素です(LCM = a × b)。"));
+
+    var steps = M.euclidSteps(a, b);
+    var w1 = 0, w2 = 0, w3 = 0;
+    steps.forEach(function (s) { w1 = Math.max(w1, String(s.a).length); w2 = Math.max(w2, String(s.b).length); w3 = Math.max(w3, String(s.q).length); });
+    function pad(x, w) { x = String(x); while (x.length < w) x = " " + x; return x; }
+    var shown = steps.length > 30 ? steps.slice(0, 30) : steps;
+    var text = shown.map(function (s) { return pad(s.a, w1) + " = " + pad(s.b, w2) + " × " + pad(s.q, w3) + " + " + s.r; }).join("\n");
+    if (steps.length > 30) text += "\n…(全 " + steps.length + " 段)";
+    text += "\n→ GCD = " + g;
+    nodes.push(el("h3", "", "ユークリッドの互除法"));
+    nodes.push(codeBlock("大きいほうを小さいほうで割り、割った数を余りで割る", text));
+
+    var fa = M.factorize(a), fb = M.factorize(b), ex = {};
+    fa.forEach(function (pe) { ex[pe[0]] = [pe[1], 0]; });
+    fb.forEach(function (pe) { if (ex[pe[0]]) ex[pe[0]][1] = pe[1]; else ex[pe[0]] = [0, pe[1]]; });
+    var ps = Object.keys(ex).map(Number).sort(function (x, y) { return x - y; });
+    var fg = [], fl = [];
+    ps.forEach(function (p) {
+      var lo = Math.min(ex[p][0], ex[p][1]), hi = Math.max(ex[p][0], ex[p][1]);
+      if (lo > 0) fg.push([p, lo]);
+      fl.push([p, hi]);
+    });
+    nodes.push(el("h3", "", "素因数分解で求める"));
+    var table = el("table", "res-table");
+    [["a", group(a) + " = " + fmtF(fa)], ["b", group(b) + " = " + fmtF(fb)],
+      ["GCD", fmtF(fg) + "(共通の素数を小さい指数で)"],
+      ["LCM", fmtF(fl) + "(すべての素数を大きい指数で)"]].forEach(function (row) {
+      var tr = el("tr");
+      tr.appendChild(el("th", "", row[0]));
+      tr.appendChild(el("td", "num", row[1]));
+      table.appendChild(tr);
+    });
+    nodes.push(table);
+    if (bigOf(fl) !== L || bigOf(fg) !== BigInt(g)) nodes.push(el("div", "sub", "(計算の確かめで食いちがいがありました)"));
+    var prod = BigInt(a) * BigInt(b);
+    nodes.push(el("div", "sub mono", "a × b = " + group(prod) + " = " + group(g) + " × " + group(L) + " = GCD × LCM"));
+    setOut(out, "", "", nodes);
+  }
+  [gcdA, gcdB].forEach(function (x) { x.addEventListener("input", calcGcd); });
+
+  calcNumber();
+  calcGcd();
+})();
+</script>
+</body>
+</html>
