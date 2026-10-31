@@ -70,3 +70,13 @@ body {
   text-decoration: none;
 }
 .back-link:hover { color: var(--accent); text-decoration: underline; }
+
+/* 「← ページ一覧」と「習慣プランナー →」を左右に並べる */
+.page-links {
+  align-self: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0 16px;
+}
