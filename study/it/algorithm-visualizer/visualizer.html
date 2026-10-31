@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>アルゴリズム可視化</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 1040px; gap: 22px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 52ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h3 {
+    margin: 20px 0 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+  }
+  .hint {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin: 10px 0 0;
+    line-height: 1.6;
+  }
+  .hint[hidden] { display: none; }
+  button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    padding: 12px 20px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 700;
+  }
+  .btn-secondary {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  button:focus-visible,
+  a:focus-visible,
+  select:focus-visible,
+  input:focus-visible,
+  .g-node:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .tool-btn {
+    min-height: 40px;
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--ink-muted);
+    border-radius: 9px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .tool-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .mode-tab {
+    min-width: 0;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2px 8px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.15s ease;
+  }
+  .mode-tab:hover { border-color: var(--accent); color: var(--ink); }
+  .mode-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  /* ---------- アルゴリズムの切り替え ---------- */
+  .algo-nav { padding: 6px 22px 18px; }
+  .algo-tabs { display: flex; flex-wrap: wrap; gap: 0 26px; }
+  .algo-group h3 { margin: 12px 0 8px; }
+  .algo-group .tab-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .algo-group .mode-tab { min-height: 40px; padding: 6px 14px; }
+  .algo-select-wrap { display: none; }
+  .algo-select-wrap label { display: block; margin: 12px 0 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.09em; color: var(--ink-faint); }
+
+  select, input[type="number"] {
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    min-height: 40px;
+    padding: 6px 10px;
+    min-width: 0;
+  }
+  .algo-select { width: 100%; font-weight: 600; min-height: 44px; }
+  input[type="number"] { font-family: var(--font-mono); width: 5.2em; }
+
+  /* ---------- 2カラム ---------- */
+  .viz-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 18px;
+    align-items: start;
+  }
+  .viz-layout[hidden], .complexity-view[hidden] { display: none; }
+  .side { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  .side .card[hidden] { display: none; }
+  .stage { display: flex; flex-direction: column; gap: 14px; }
+  .stage-title { margin: 0; }
+
+  .stage-opts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px 14px;
+  }
+  .opt { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .opt-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--ink-faint); }
+  .opt-row { display: flex; gap: 6px; align-items: center; }
+  .seg { display: grid; grid-template-columns: repeat(3, auto); gap: 6px; }
+  .seg .mode-tab { min-height: 40px; padding: 6px 12px; font-size: 13.5px; }
+
+  /* 図の枠 */
+  .viz {
+    background: var(--viz-bg);
+    border: 1px solid var(--viz-border);
+    border-radius: 12px;
+    padding: 10px 6px;
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .viz svg { display: block; max-width: 100%; }
+  .viz .graph-svg { max-height: 360px; }
+
+  /* ---------- 棒(ソート) ---------- */
+  .bar { transition: transform 0.32s ease; }
+  .no-anim .bar { transition: none; }
+  .bar-rect { fill: var(--viz-bar); stroke: var(--viz-bar-line); stroke-width: 1; }
+  .bar.is-compare .bar-rect { fill: var(--viz-compare); stroke: var(--viz-compare-line); stroke-width: 2; }
+  .bar.is-swap .bar-rect, .bar.is-write .bar-rect { fill: var(--viz-swap); stroke: var(--viz-swap-line); stroke-width: 3; }
+  .bar.is-done .bar-rect { fill: var(--viz-done); stroke: var(--viz-done-line); stroke-width: 1.5; }
+  .bar.is-pivot .bar-rect { fill: var(--viz-pivot); stroke: var(--viz-pivot-line); stroke-width: 2; }
+  .bar-val { font-family: var(--font-mono); font-weight: 600; fill: var(--viz-label); text-anchor: middle; }
+  .bar-star { fill: var(--viz-pivot-line); text-anchor: middle; display: none; }
+  .bar.is-pivot .bar-star { display: inline; }
+  .bar-sym { font-family: var(--font-mono); font-weight: 800; text-anchor: middle; fill: var(--viz-bar-line); }
+  .bar.is-compare .bar-sym { fill: var(--viz-compare-line); }
+  .bar.is-swap .bar-sym, .bar.is-write .bar-sym { fill: var(--viz-swap-line); }
+  .bar.is-done .bar-sym { fill: var(--viz-done-line); }
+  .bar.is-pivot .bar-sym { fill: var(--viz-pivot-line); }
+  .bar-idx { font-family: var(--font-mono); fill: var(--viz-index); text-anchor: middle; }
+  .range-band { fill: var(--viz-range-bg); stroke: var(--viz-range-line); stroke-width: 1.5; stroke-dasharray: 5 4; }
+  .range-bracket { fill: none; stroke: var(--viz-range-line); stroke-width: 2; }
+  .range-mid { stroke: var(--viz-range-line); stroke-width: 1.5; stroke-dasharray: 3 3; }
+
+  /* ---------- 図: 箱の列とグラフ(index.html と同じ内容。変えるときは両方を直す) ---------- */
+  .box-rect { fill: var(--viz-node); stroke: var(--viz-bar-line); stroke-width: 1.5; }
+  .box-val { font-family: var(--font-mono); font-weight: 700; fill: var(--viz-label); text-anchor: middle; dominant-baseline: central; }
+  .box-idx { font-family: var(--font-mono); fill: var(--viz-index); text-anchor: middle; }
+  .box.is-dim .box-rect { fill: var(--viz-dim-bg); stroke: var(--viz-dim-ink); stroke-dasharray: 4 3; }
+  .box.is-dim .box-val { fill: var(--viz-dim-ink); font-weight: 500; }
+  .box.is-checked .box-rect { fill: var(--viz-dim-bg); }
+  .box.is-checked .box-val { fill: var(--viz-dim-ink); }
+  .box.is-compare .box-rect { fill: var(--viz-queued); stroke: var(--viz-compare-line); stroke-width: 3; }
+  .box.is-found .box-rect { fill: var(--viz-visited); stroke: var(--viz-done-line); stroke-width: 3; }
+  .box-mark { font-family: var(--font-body); font-weight: 700; fill: var(--viz-done-line); text-anchor: middle; dominant-baseline: central; }
+  .box-ptr, .box-ptr-label { font-family: var(--font-mono); font-weight: 600; fill: var(--viz-ptr-sub); text-anchor: middle; }
+  .box-ptr.is-mid, .box-ptr-label .is-mid { fill: var(--viz-ptr); font-weight: 800; }
+  .box-done { font-family: var(--font-body); font-weight: 600; fill: var(--viz-index); text-anchor: middle; }
+
+  .graph-svg { display: block; width: 100%; height: auto; }
+  .g-edge { stroke: var(--viz-edge); stroke-width: 2; }
+  .g-edge.is-try { stroke: var(--viz-edge-try); stroke-width: 3; stroke-dasharray: 5 4; }
+  .g-edge.is-on { stroke: var(--viz-edge-on); stroke-width: 4; }
+  .g-dot { fill: var(--viz-node); stroke: var(--viz-node-line); stroke-width: 1.5; }
+  .g-id { font-family: var(--font-mono); font-size: 15px; font-weight: 700; fill: var(--viz-node-ink); text-anchor: middle; dominant-baseline: central; }
+  .g-node.is-queued .g-dot { fill: var(--viz-queued); stroke-dasharray: 4 3; stroke-width: 2; }
+  .g-node.is-visited .g-dot { fill: var(--viz-visited); stroke-width: 2; }
+  .g-node.is-current .g-dot { fill: var(--accent); stroke: var(--accent); }
+  .g-node.is-current .g-id { fill: var(--accent-ink); }
+  .g-ring { fill: none; stroke: var(--accent); stroke-width: 2; }
+  .g-badge { fill: var(--viz-bg); stroke: var(--viz-node-line); stroke-width: 1; }
+  .g-badge-text { font-family: var(--font-mono); font-size: 10px; font-weight: 700; fill: var(--viz-label); text-anchor: middle; dominant-baseline: central; }
+  .g-start { font-family: var(--font-body); font-size: 12px; font-weight: 700; fill: var(--viz-ptr); text-anchor: middle; }
+  /* ---------- 図 ここまで ---------- */
+  .g-node.is-clickable { cursor: pointer; }
+  .g-node.is-clickable:hover .g-dot { stroke: var(--accent); stroke-width: 2.5; }
+  .g-node:focus { outline: none; }
+  .g-node:focus-visible .g-dot { stroke: var(--accent); stroke-width: 3; }
+
+  /* ---------- 凡例 ---------- */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 12.5px;
+    color: var(--ink-muted);
+  }
+  .legend li { display: inline-flex; align-items: center; gap: 5px; }
+  .sw {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1px solid var(--viz-bar-line);
+    background: var(--viz-bar);
+  }
+  .sw.round { border-radius: 50%; }
+  .sw-sym { font-family: var(--font-mono); font-weight: 800; font-size: 12px; }
+  .sw.compare { background: var(--viz-compare); border: 2px solid var(--viz-compare-line); }
+  .sw.swap { background: var(--viz-swap); border: 3px solid var(--viz-swap-line); }
+  .sw.done { background: var(--viz-done); border: 1.5px solid var(--viz-done-line); }
+  .sw.pivot { background: var(--viz-pivot); border: 2px solid var(--viz-pivot-line); }
+  .sw.range { background: var(--viz-range-bg); border: 1.5px dashed var(--viz-range-line); }
+  .sw.dim { background: var(--viz-dim-bg); border: 1.5px dashed var(--viz-dim-ink); }
+  .sw.box { background: var(--viz-node); border: 1.5px solid var(--viz-bar-line); }
+  .sw.box-cmp { background: var(--viz-queued); border: 3px solid var(--viz-compare-line); }
+  .sw.found { background: var(--viz-visited); border: 3px solid var(--viz-done-line); }
+  .sw.node { background: var(--viz-node); border: 1.5px solid var(--viz-node-line); }
+  .sw.queued { background: var(--viz-queued); border: 2px dashed var(--viz-node-line); }
+  .sw.visited { background: var(--viz-visited); border: 2px solid var(--viz-node-line); }
+  .sw.current { background: var(--accent); border: 2px solid var(--accent); box-shadow: 0 0 0 2px var(--viz-bg), 0 0 0 4px var(--accent); }
+  .sw.edge-try, .sw.edge-on { width: 22px; height: 0; border: 0; border-radius: 0; background: none; }
+  .sw.edge-try { border-top: 3px dashed var(--viz-edge-try); }
+  .sw.edge-on { border-top: 4px solid var(--viz-edge-on); }
+  .sym-compare { color: var(--viz-compare-line); }
+  .sym-swap { color: var(--viz-swap-line); }
+  .sym-done { color: var(--viz-done-line); }
+  .sym-pivot { color: var(--viz-pivot-line); }
+  .sym-ptr { color: var(--viz-ptr); }
+  .sym-sub { color: var(--viz-ptr-sub); }
+
+  /* ---------- カウンター・説明・位置 ---------- */
+  .counters { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .counters.two { grid-template-columns: repeat(2, 1fr); }
+  .stat-box {
+    text-align: center;
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 10px 8px;
+    min-width: 0;
+  }
+  .stat-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    margin-top: 3px;
+  }
+  .step-note {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: var(--surface-2);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 4.6em;
+    overflow-wrap: anywhere;
+  }
+  .step-pos { display: flex; flex-direction: column; gap: 6px; }
+  .step-pos-text { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+  .progress-bar {
+    height: 6px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .progress-fill { height: 100%; background: var(--accent); }
+
+  /* ---------- 操作バー ---------- */
+  .player { display: flex; flex-direction: column; gap: 10px; }
+  .player-btns { display: grid; grid-template-columns: 1fr 1fr 2fr 1fr; gap: 8px; }
+  .player-btns button { min-height: 46px; padding: 8px 6px; font-size: 14.5px; font-weight: 600; white-space: nowrap; }
+  .speed {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12.5px;
+    color: var(--ink-muted);
+  }
+  .speed .speed-title { font-weight: 600; color: var(--ink-faint); letter-spacing: 0.06em; }
+  .speed input { flex: 1; min-width: 0; accent-color: var(--accent); height: 28px; }
+
+  /* ---------- 擬似コード ---------- */
+  .pseudo {
+    margin: 0;
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 10px;
+    padding: 10px 0;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--code-ink);
+    min-width: 0;
+  }
+  .pl {
+    display: block;
+    position: relative;
+    padding: 1px 12px 1px 26px;
+    border-left: 3px solid transparent;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .pl.is-cur { background: var(--code-line-bg); border-left-color: var(--code-line-mark); }
+  .pl.is-cur::before { content: "▶"; position: absolute; left: 7px; color: var(--code-line-mark); font-size: 11px; }
+  .pseudo .kw { color: var(--code-kw); font-weight: 600; }
+  .pseudo .num { color: var(--code-num); }
+  .pseudo .cm { color: var(--code-muted); }
+
+  /* ---------- 計算量の表 ---------- */
+  .cx-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .cx-table th, .cx-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+  .cx-table tr:last-child th, .cx-table tr:last-child td { border-bottom: none; }
+  .cx-table th { color: var(--ink-muted); font-weight: 600; font-size: 13px; white-space: nowrap; }
+  .cx-table td { font-family: var(--font-mono); font-weight: 600; }
+
+  /* ---------- キュー・スタック・訪問順 ---------- */
+  .ds-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .ds-end { font-size: 11px; font-weight: 600; color: var(--ink-faint); }
+  .chip {
+    display: inline-grid;
+    place-items: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 8px;
+    border-radius: 9px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 15px;
+    background: var(--viz-queued);
+    border: 2px dashed var(--viz-node-line);
+    color: var(--ink);
+  }
+  .chip.visited { background: var(--viz-visited); border-style: solid; }
+  .ds-empty { font-size: 13px; color: var(--ink-faint); }
+  .stack-col { display: flex; flex-direction: column-reverse; gap: 4px; align-items: stretch; max-width: 220px; }
+  .stack-col .chip { justify-content: start; height: 32px; }
+  .stack-col .chip.top { border-style: solid; border-color: var(--accent); }
+  .stack-top-label { font-size: 11px; font-weight: 600; color: var(--ink-faint); margin-bottom: 4px; }
+  .order-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+  .order-row .arrow { color: var(--ink-faint); font-size: 12px; }
+
+  /* ---------- 計算量の比較 ---------- */
+  .complexity-view { display: flex; flex-direction: column; gap: 18px; }
+  .chart-svg { display: block; width: 100%; max-width: 640px; height: auto; margin: 0 auto; }
+  .ch-grid { stroke: var(--viz-grid); stroke-width: 1; }
+  .ch-axis { stroke: var(--viz-index); stroke-width: 1.5; }
+  .ch-tick { font-family: var(--font-mono); font-size: 10px; fill: var(--viz-index); }
+  .ch-title { font-family: var(--font-body); font-size: 11px; font-weight: 600; fill: var(--viz-index); }
+  .ch-line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .ch-label { font-family: var(--font-mono); font-size: 11.5px; font-weight: 700; }
+  .ch-c1 { stroke: var(--viz-c1); stroke-width: 2.5; stroke-dasharray: 1 5; }
+  .ch-clog { stroke: var(--viz-clog); stroke-width: 2.5; stroke-dasharray: 8 5; }
+  .ch-cn { stroke: var(--viz-cn); stroke-width: 2.5; }
+  .ch-cnlogn { stroke: var(--viz-cnlogn); stroke-width: 2.5; stroke-dasharray: 10 4 2 4; }
+  .ch-cn2 { stroke: var(--viz-cn2); stroke-width: 4.5; }
+  .lb-c1 { fill: var(--viz-c1); } .lb-clog { fill: var(--viz-clog); } .lb-cn { fill: var(--viz-cn); }
+  .lb-cnlogn { fill: var(--viz-cnlogn); } .lb-cn2 { fill: var(--viz-cn2); }
+  .n-controls { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: flex-end; margin-bottom: 14px; }
+  .n-seg { grid-template-columns: repeat(4, auto); }
+  .n-table td.v { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; overflow-wrap: anywhere; }
+  .n-table td.t { font-family: var(--font-body); font-weight: 500; font-size: 13px; color: var(--ink-muted); text-align: right; }
+  .n-table th.h { font-size: 11px; letter-spacing: 0.06em; color: var(--ink-faint); }
+  .n-table th.h.r { text-align: right; }
+  .n-table td.o { white-space: nowrap; }
+  .table-scroll { max-width: 100%; overflow-x: auto; }
+  .all-cards { display: none; }
+  .all-card { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+  .all-card h4 { margin: 0 0 8px; font-size: 14px; }
+  .all-card h4 a { color: var(--accent); text-decoration: none; }
+  .all-card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 13px; }
+  .all-card dt { color: var(--ink-faint); font-weight: 600; }
+  .all-card dd { margin: 0; font-family: var(--font-mono); font-weight: 600; }
+  .cx-table a { color: var(--accent); text-decoration: none; font-family: var(--font-body); }
+  .cx-table a:hover, .all-card h4 a:hover { text-decoration: underline; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bar, .mode-tab { transition: none; }
+  }
+
+  /* ---------- タブレット幅: 1カラム ---------- */
+  @media (max-width: 820px) {
+    .viz-layout { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  /* ---------- スマホ表示の調整 ---------- */
+  @media (max-width: 480px) {
+    .card { padding: 18px 16px; }
+    .algo-nav { padding: 4px 16px 16px; }
+    .algo-tabs { display: none; }
+    .algo-select-wrap { display: block; }
+    .stage { gap: 12px; }
+    .stage-opts { gap: 10px; }
+    .stage-opts > * { order: 0; }
+    .seg .mode-tab { padding: 6px 9px; font-size: 13px; }
+    .viz { padding: 8px 2px; }
+    /* 並び: 設定 → 図 → 凡例 → 説明文 → 操作バー → カウンター(操作バーは sticky にしない。図に重ならないように) */
+    .stage > .stage-title { order: 0; }
+    .stage > .stage-opts { order: 1; }
+    .stage > .viz { order: 2; }
+    .stage > .graph-hint { order: 3; margin-top: -4px; }
+    .stage > .legend { order: 4; }
+    .stage > .step-note { order: 5; }
+    .stage > .step-pos { order: 6; }
+    .stage > .player { order: 7; }
+    .stage > .counters { order: 8; }
+    .player-btns button { min-height: 44px; font-size: 13.5px; padding: 8px 2px; }
+    .player-btns .pc { display: none; }
+    .step-note { font-size: 14.5px; }
+    .stat-num { font-size: 1.15rem; }
+    .stat-label { font-size: 10.5px; letter-spacing: 0; }
+    .pseudo { font-size: 12.5px; }
+    .pl { padding-left: 22px; }
+    .pl.is-cur::before { left: 5px; }
+    .all-table { display: none; }
+    .all-cards { display: flex; flex-direction: column; gap: 10px; }
+    .n-table th, .n-table td { padding: 7px 3px; }
+    .n-table td.v { font-size: 12.5px; }
+    .n-table td.t { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">ALGORITHM VISUALIZER · 10種</p>
+    <h1>アルゴリズム可視化</h1>
+    <p class="tagline">ソート・探索・グラフの探索が、1ステップずつどう動くかを見られます。再生・戻る・進むで、比べる・交換する・訪問する瞬間を追いかけましょう。</p>
+    <nav class="site-nav" aria-label="アルゴリズム道場のページ">
+      <a href="index.html">道場</a>
+      <span aria-current="page">可視化</span>
+    </nav>
+  </header>
+
+  <!-- ============ 切り替え ============ -->
+  <nav class="card algo-nav" aria-label="アルゴリズムの切り替え">
+    <div class="algo-tabs" id="algoTabs" role="tablist" aria-label="アルゴリズム"></div>
+    <div class="algo-select-wrap">
+      <label for="algoSelect">アルゴリズム</label>
+      <select class="algo-select" id="algoSelect"></select>
+    </div>
+  </nav>
+
+  <!-- ============ ソート・探索・グラフ ============ -->
+  <div class="viz-layout" id="vizLayout">
+    <section class="card stage" aria-labelledby="stageTitle">
+      <h2 class="stage-title" id="stageTitle">バブルソート</h2>
+      <div class="stage-opts" id="stageOpts"></div>
+      <div class="viz" id="viz"></div>
+      <p class="hint graph-hint" id="graphHint" hidden>となりのノードは番号の小さい順にたどります。ノードをタップすると、そこを開始点にします。</p>
+      <ul class="legend" id="legend" aria-label="凡例"></ul>
+      <div class="counters" id="counters"></div>
+      <p class="step-note" id="stepNote" aria-live="polite"></p>
+      <div class="step-pos">
+        <span class="step-pos-text" id="stepPos">ステップ 0 / 0</span>
+        <div class="progress-bar"><div class="progress-fill" id="stepFill" style="width:0%"></div></div>
+      </div>
+      <div class="player" id="player">
+        <div class="player-btns">
+          <button type="button" class="btn-secondary" id="firstBtn" aria-label="最初へ">⏮ 最初<span class="pc">へ</span></button>
+          <button type="button" class="btn-secondary" id="prevBtn" aria-label="戻る">◀ 戻る</button>
+          <button type="button" class="btn-primary" id="playBtn">▶ 再生</button>
+          <button type="button" class="btn-secondary" id="nextBtn" aria-label="進む">進む ▶</button>
+        </div>
+        <label class="speed">
+          <span class="speed-title">速度</span>
+          <span aria-hidden="true">遅い</span>
+          <input type="range" id="speedInput" min="1" max="5" step="1" value="3" aria-label="再生の速度(1 遅い 〜 5 速い)">
+          <span aria-hidden="true">速い</span>
+        </label>
+      </div>
+    </section>
+
+    <div class="side">
+      <section class="card" id="dsCard" hidden>
+        <h2 id="dsTitle">キュー</h2>
+        <div id="dsBody"></div>
+        <h3>訪問順</h3>
+        <div class="order-row" id="orderRow"></div>
+      </section>
+      <section class="card">
+        <h2>擬似コード</h2>
+        <pre class="pseudo" id="pseudo"></pre>
+        <p class="hint">▶ の行が、いま実行しているところです。</p>
+      </section>
+      <section class="card">
+        <h2>計算量</h2>
+        <table class="cx-table" id="cxTable"></table>
+        <p class="hint" id="cxNote"></p>
+      </section>
+    </div>
+  </div>
+
+  <!-- ============ 計算量の比較 ============ -->
+  <div class="complexity-view" id="complexityView" hidden>
+    <section class="card">
+      <h2>増え方のグラフ</h2>
+      <svg class="chart-svg" id="chart" viewBox="0 0 360 250" role="img" aria-label="O(1)、O(log n)、O(n)、O(n log n)、O(n²) の増え方を比べた折れ線グラフ。n が大きくなるほど O(n²) が急に増え、O(1) は平らなまま。"></svg>
+      <p class="hint">横は n(データの量)、縦は手間のめやす。O(n²) と O(n log n) は途中で上にはみ出します。線の形でも見分けられます(O(1) 点線・O(log n) 破線・O(n) 実線・O(n log n) 一点鎖線・O(n²) 太い実線)。log は底が2です。</p>
+    </section>
+    <section class="card">
+      <h2>n を変えると</h2>
+      <div class="n-controls">
+        <label class="opt"><span class="opt-label">n(データの量)</span>
+          <input type="number" id="nInput" min="1" max="10000000" step="1" value="1000" inputmode="numeric" style="width: 8.5em"></label>
+        <div class="opt"><span class="opt-label">よく使う値</span>
+          <div class="seg n-seg" id="nSeg" role="group" aria-label="n の値">
+            <button type="button" class="mode-tab" data-n="10">10</button>
+            <button type="button" class="mode-tab" data-n="100">100</button>
+            <button type="button" class="mode-tab" data-n="1000">1,000</button>
+            <button type="button" class="mode-tab" data-n="1000000">10⁶</button>
+          </div>
+        </div>
+      </div>
+      <table class="cx-table n-table" id="nTable"></table>
+      <p class="hint">「1秒に1億回」は、手間1回 = 1億分の1秒として計算しためやすです。n = 10⁶ のとき、O(n log n) なら0.2秒ほどですが、O(n²) だと3時間近くかかります。n は 1〜10,000,000 まで入れられます。</p>
+    </section>
+    <section class="card">
+      <h2>全アルゴリズムの計算量一覧</h2>
+      <div class="table-scroll all-table">
+        <table class="cx-table" id="allTable"></table>
+      </div>
+      <div class="all-cards" id="allCards"></div>
+      <p class="hint">V = ノードの数、E = 辺の数。安定 = 同じ値の要素の並び順が、整列後も保たれるか(ソートだけ)。</p>
+    </section>
+  </div>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="data.js"></script>
+<script src="algo.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var A = AlgoViz;
+  var VIEW_KEY = "algorithmVisualizerViewSettings";
+  var SPEEDS = [1200, 800, 500, 300, 150];
+  var KIND_NAMES = { random: "ランダム", nearly: "ほぼ整列", reversed: "逆順" };
+
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function num(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+
+  // ---------- 設定(保存) ----------
+  var view = (function () {
+    var raw = Store.load(VIEW_KEY, null), v = { algo: "bubble", kind: "random", size: A.DEFAULT_N, speed: 3, preset: "tree" };
+    if (raw && typeof raw === "object") {
+      if (A.ALGOS[raw.algo]) v.algo = raw.algo;
+      if (KIND_NAMES[raw.kind]) v.kind = raw.kind;
+      v.size = A.clampN(raw.size);
+      if (raw.speed >= 1 && raw.speed <= 5) v.speed = Math.round(raw.speed);
+      if (A.PRESETS.some(function (p) { return p.id === raw.preset; })) v.preset = raw.preset;
+    }
+    return v;
+  })();
+  function saveView() { Store.save(VIEW_KEY, view); }
+  function hashAlgo() { var h = (location.hash || "").replace(/^#/, ""); return A.ALGOS[h] ? h : null; }
+  if (hashAlgo()) view.algo = hashAlgo();
+
+  // ---------- データと再生の状態 ----------
+  var data = { sort: null, search: null, target: null, graph: null, start: 1 };
+  var steps = [], idx = 0, timer = null, barView = null;
+
+  function group() { return A.ALGOS[view.algo].group; }
+  function newSortData() { data.sort = A.makeSortData(view.kind, view.size); }
+  function newSearchData() {
+    data.search = A.makeSearchData(view.size);
+    data.target = data.search[A.randInt(0, data.search.length - 1)];
+  }
+  function newGraph() { data.graph = A.preset(view.preset); data.start = 1; }
+
+  // ---------- 要素 ----------
+  var algoTabs = document.getElementById("algoTabs");
+  var algoSelect = document.getElementById("algoSelect");
+  var vizLayout = document.getElementById("vizLayout");
+  var complexityView = document.getElementById("complexityView");
+  var stageTitle = document.getElementById("stageTitle");
+  var stageOpts = document.getElementById("stageOpts");
+  var vizEl = document.getElementById("viz");
+  var graphHint = document.getElementById("graphHint");
+  var legendEl = document.getElementById("legend");
+  var countersEl = document.getElementById("counters");
+  var stepNote = document.getElementById("stepNote");
+  var stepPos = document.getElementById("stepPos");
+  var stepFill = document.getElementById("stepFill");
+  var firstBtn = document.getElementById("firstBtn");
+  var prevBtn = document.getElementById("prevBtn");
+  var playBtn = document.getElementById("playBtn");
+  var nextBtn = document.getElementById("nextBtn");
+  var speedInput = document.getElementById("speedInput");
+  var pseudoEl = document.getElementById("pseudo");
+  var dsCard = document.getElementById("dsCard");
+
+  // ---------- タブ(PC)と select(スマホ) ----------
+  var tabBtns = [];
+  A.GROUPS.forEach(function (g) {
+    var box = el("div", "algo-group");
+    box.appendChild(el("h3", "", g.name));
+    var row = el("div", "tab-row");
+    var og = el("optgroup");
+    og.label = g.name;
+    g.algos.forEach(function (id) {
+      var b = el("button", "mode-tab", A.ALGOS[id].short);
+      b.type = "button";
+      b.setAttribute("role", "tab");
+      b.dataset.algo = id;
+      b.title = A.ALGOS[id].name;
+      b.addEventListener("click", function () { goAlgo(id); });
+      row.appendChild(b);
+      tabBtns.push(b);
+      var o = el("option", "", A.ALGOS[id].name);
+      o.value = id;
+      og.appendChild(o);
+    });
+    box.appendChild(row);
+    algoTabs.appendChild(box);
+    algoSelect.appendChild(og);
+  });
+  algoTabs.addEventListener("keydown", function (e) {
+    var i = tabBtns.indexOf(document.activeElement);
+    if (i < 0) return;
+    var d = 0;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") d = 1;
+    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") d = -1;
+    else if (e.key === "Home") { e.preventDefault(); e.stopPropagation(); tabBtns[0].focus(); goAlgo(tabBtns[0].dataset.algo); return; }
+    if (!d) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var nb = tabBtns[(i + d + tabBtns.length) % tabBtns.length];
+    nb.focus();
+    goAlgo(nb.dataset.algo);
+  });
+  algoSelect.addEventListener("change", function () { goAlgo(algoSelect.value); });
+
+  function goAlgo(id) {
+    if (!A.ALGOS[id]) return;
+    if (location.hash !== "#" + id) {
+      try { history.replaceState(null, "", "#" + id); } catch (e) { location.hash = id; return; }
+    }
+    setAlgo(id);
+  }
+  window.addEventListener("hashchange", function () {
+    var h = hashAlgo();
+    if (h && h !== view.algo) setAlgo(h);
+  });
+
+  function renderTabs() {
+    tabBtns.forEach(function (b) {
+      var on = b.dataset.algo === view.algo;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+      b.tabIndex = on ? 0 : -1;
+    });
+    algoSelect.value = view.algo;
+  }
+
+  function setAlgo(id) {
+    stop();
+    view.algo = id;
+    saveView();
+    renderTabs();
+    var g = group();
+    document.title = A.ALGOS[id].name + " — アルゴリズム可視化";
+    if (g === "complexity") {
+      vizLayout.hidden = true;
+      complexityView.hidden = false;
+      renderComplexity();
+      return;
+    }
+    vizLayout.hidden = false;
+    complexityView.hidden = true;
+    stageTitle.textContent = A.ALGOS[id].name;
+    if (g === "sort" && !data.sort) newSortData();
+    if (g === "search" && !data.search) newSearchData();
+    if (g === "graph" && !data.graph) newGraph();
+    barView = null;
+    renderOptions();
+    renderLegend();
+    renderSideStatic();
+    rebuild();
+  }
+
+  // ---------- 設定行 ----------
+  function sizeSelect() {
+    var lab = el("label", "opt");
+    lab.appendChild(el("span", "opt-label", "要素数"));
+    var s = el("select");
+    for (var n = A.MIN_N; n <= A.MAX_N; n++) {
+      var o = el("option", "", n + "個");
+      o.value = n;
+      s.appendChild(o);
+    }
+    s.value = view.size;
+    s.addEventListener("change", function () {
+      view.size = A.clampN(s.value);
+      saveView();
+      if (group() === "sort") newSortData(); else newSearchData();
+      rebuild();
+      if (group() === "search") renderOptions();
+    });
+    lab.appendChild(s);
+    return lab;
+  }
+  function newDataBtn(fn) {
+    var b = el("button", "tool-btn", "新しいデータ");
+    b.type = "button";
+    b.addEventListener("click", fn);
+    return b;
+  }
+  function renderOptions() {
+    stageOpts.innerHTML = "";
+    var g = group();
+    graphHint.hidden = g !== "graph";
+    if (g === "sort") {
+      var kindBox = el("div", "opt");
+      kindBox.appendChild(el("span", "opt-label", "データの種類"));
+      var seg = el("div", "seg");
+      seg.setAttribute("role", "radiogroup");
+      seg.setAttribute("aria-label", "データの種類");
+      Object.keys(KIND_NAMES).forEach(function (k) {
+        var b = el("button", "mode-tab" + (view.kind === k ? " active" : ""), KIND_NAMES[k]);
+        b.type = "button";
+        b.setAttribute("role", "radio");
+        b.setAttribute("aria-checked", view.kind === k ? "true" : "false");
+        b.addEventListener("click", function () {
+          view.kind = k;
+          saveView();
+          newSortData();
+          renderOptions();
+          rebuild();
+          var again = stageOpts.querySelectorAll(".seg .mode-tab")[Object.keys(KIND_NAMES).indexOf(k)];
+          if (again) again.focus();
+        });
+        seg.appendChild(b);
+      });
+      kindBox.appendChild(seg);
+      stageOpts.appendChild(kindBox);
+      stageOpts.appendChild(sizeSelect());
+      stageOpts.appendChild(newDataBtn(function () { newSortData(); rebuild(); }));
+    } else if (g === "search") {
+      stageOpts.appendChild(sizeSelect());
+      var tBox = el("div", "opt");
+      tBox.appendChild(el("span", "opt-label", "探す値"));
+      var row = el("div", "opt-row");
+      var sel = el("select");
+      sel.setAttribute("aria-label", "探す値(配列から選ぶ)");
+      data.search.forEach(function (v) { var o = el("option", "", String(v)); o.value = v; sel.appendChild(o); });
+      var none = el("option", "", "ない値");
+      none.value = "none";
+      sel.appendChild(none);
+      sel.value = data.search.indexOf(data.target) >= 0 ? String(data.target) : "none";
+      var inp = el("input");
+      inp.type = "number";
+      inp.min = 1;
+      inp.max = A.MAX_VALUE;
+      inp.value = data.target;
+      inp.setAttribute("aria-label", "探す値(1〜50 を入力)");
+      inp.setAttribute("inputmode", "numeric");
+      sel.addEventListener("change", function () {
+        if (sel.value === "none") {
+          var absent = A.range(1, A.MAX_VALUE).filter(function (v) { return data.search.indexOf(v) < 0; });
+          data.target = absent[A.randInt(0, absent.length - 1)];
+        } else data.target = Number(sel.value);
+        inp.value = data.target;
+        rebuild();
+      });
+      inp.addEventListener("change", function () {
+        var v = Math.floor(Number(inp.value));
+        if (!(v >= 1 && v <= A.MAX_VALUE)) { inp.value = data.target; return; }
+        data.target = v;
+        inp.value = v;
+        sel.value = data.search.indexOf(v) >= 0 ? String(v) : "none";
+        rebuild();
+      });
+      row.appendChild(sel);
+      row.appendChild(inp);
+      tBox.appendChild(row);
+      stageOpts.appendChild(tBox);
+      stageOpts.appendChild(newDataBtn(function () { newSearchData(); renderOptions(); rebuild(); }));
+    } else if (g === "graph") {
+      var lab = el("label", "opt");
+      lab.appendChild(el("span", "opt-label", "グラフ"));
+      var ps = el("select");
+      A.PRESETS.forEach(function (p) { var o = el("option", "", p.name); o.value = p.id; ps.appendChild(o); });
+      ps.value = view.preset;
+      ps.addEventListener("change", function () {
+        view.preset = ps.value;
+        saveView();
+        newGraph();
+        rebuild();
+      });
+      lab.appendChild(ps);
+      stageOpts.appendChild(lab);
+      var st = el("div", "opt");
+      st.appendChild(el("span", "opt-label", "開始点"));
+      st.appendChild(el("span", "start-text", ""));
+      st.lastChild.id = "startText";
+      stageOpts.appendChild(st);
+    }
+  }
+
+  // ---------- 凡例 ----------
+  function lg(sw, sym, symCls, label) {
+    var li = el("li");
+    var s = el("span", "sw " + sw);
+    s.setAttribute("aria-hidden", "true");
+    li.appendChild(s);
+    if (sym) li.appendChild(el("span", "sw-sym " + symCls, sym));
+    li.appendChild(document.createTextNode(label));
+    return li;
+  }
+  function renderLegend() {
+    legendEl.innerHTML = "";
+    var a = view.algo, g = group(), items = [];
+    if (g === "sort") {
+      items.push(lg("", "", "", "ふつう"), lg("compare", "?", "sym-compare", "比較中"));
+      if (a === "insertion") items.push(lg("swap", "⇄", "sym-swap", "入れる値(移動中)"), lg("swap", "↓", "sym-swap", "取り出し・ずらし・書き込み"));
+      else if (a === "merge") items.push(lg("swap", "↓", "sym-swap", "書き込み"));
+      else items.push(lg("swap", "⇄", "sym-swap", "交換中"));
+      items.push(lg("done", "✓", "sym-done", "確定"));
+      if (a === "quick") items.push(lg("pivot", "P ★", "sym-pivot", "ピボット"));
+      if (a === "merge") items.push(lg("range", "", "", "合わせる範囲(点線は左右の境目)"));
+      if (a === "quick") items.push(lg("range", "", "", "分ける範囲"));
+      if (a === "insertion") items.push(lg("range", "", "", "整列済みの部分"));
+    } else if (g === "search") {
+      items.push(lg("box-cmp", "", "", "いま調べている値"));
+      if (a === "linear") items.push(lg("dim", "済", "sym-sub", "調べ終わった"));
+      if (a === "binary") {
+        items.push(lg("dim", "", "", "範囲の外(もう調べない)"));
+        items.push(lg("box", "▲M", "sym-ptr", "真ん中 mid"));
+        items.push(lg("box", "▲L ▲H", "sym-sub", "範囲の両端 low・high"));
+      }
+      items.push(lg("found", "✓", "sym-done", "見つけた"));
+    } else if (g === "graph") {
+      items.push(lg("node round", "", "", "未訪問"));
+      items.push(lg("queued round", "", "", a === "bfs" ? "キューの中" : "呼び出しスタックの中"));
+      items.push(lg("visited round", "", "", "訪問済み(右上は訪問順)"));
+      items.push(lg("current round", "", "", "いま処理中"));
+      items.push(lg("edge-try", "", "", "調べている辺"));
+      items.push(lg("edge-on", "", "", "たどった辺"));
+    }
+    items.forEach(function (li) { legendEl.appendChild(li); });
+  }
+
+  // ---------- 右カラム(擬似コード・計算量) ----------
+  function appendCodeLine(parent, text) {
+    var ci = text.indexOf("//"), code = ci >= 0 ? text.slice(0, ci) : text, cm = ci >= 0 ? text.slice(ci) : "";
+    code.split(/(\b(?:for|while|if|else|return|break|not|and|swap)\b|\d+)/).forEach(function (part, i) {
+      if (!part) return;
+      if (i % 2 === 1) parent.appendChild(el("span", /^\d+$/.test(part) ? "num" : "kw", part));
+      else parent.appendChild(document.createTextNode(part));
+    });
+    if (cm) parent.appendChild(el("span", "cm", cm));
+  }
+  function renderSideStatic() {
+    pseudoEl.innerHTML = "";
+    (A.PSEUDO[view.algo] || []).forEach(function (line, i) {
+      var s = el("span", "pl");
+      s.dataset.line = i;
+      appendCodeLine(s, line);
+      pseudoEl.appendChild(s);
+    });
+    var info = A.INFO[view.algo], t = document.getElementById("cxTable");
+    t.innerHTML = "";
+    var rows = [["最良", info.best], ["平均", info.avg], ["最悪", info.worst], ["追加メモリ", info.mem]];
+    if (group() === "sort") rows.push(["安定性", info.stable]);
+    else rows.push(["安定性", "—(ソートではない)"]);
+    rows.forEach(function (r) {
+      var tr = el("tr");
+      tr.appendChild(el("th", "", r[0]));
+      tr.appendChild(el("td", "", r[1]));
+      t.appendChild(tr);
+    });
+    document.getElementById("cxNote").textContent = info.note;
+    var g = group();
+    dsCard.hidden = g !== "graph";
+    document.getElementById("dsTitle").textContent = view.algo === "bfs" ? "キュー" : "呼び出しスタック";
+    var two = g !== "sort";
+    countersEl.className = "counters" + (two ? " two" : "");
+    countersEl.innerHTML = "";
+    var labels = g === "sort" ? ["比較回数", "書き込み回数", "ステップ"] : g === "search" ? ["調べた回数", "ステップ"] : ["訪問数", "ステップ"];
+    labels.forEach(function (lb, i) {
+      var b = el("div", "stat-box");
+      var n = el("div", "stat-num", "0");
+      n.id = "ctr" + i;
+      b.appendChild(n);
+      b.appendChild(el("div", "stat-label", lb));
+      countersEl.appendChild(b);
+    });
+  }
+
+  // ---------- ステップを作り直す ----------
+  function rebuild() {
+    stop();
+    var g = group();
+    if (g === "sort") steps = A.sortSteps(view.algo, data.sort);
+    else if (g === "search") steps = A.searchSteps(view.algo, data.search, data.target);
+    else steps = A.graphSteps(view.algo, data.graph, data.start);
+    idx = 0;
+    if (g === "sort") { barView = new A.BarView(vizEl); render(true); } else render(true);
+    var stx = document.getElementById("startText");
+    if (stx) stx.textContent = "ノード " + data.start;
+  }
+
+  // ---------- 描画 ----------
+  function render(force) {
+    var s = steps[idx], g = group(), last = steps.length - 1;
+    if (!s) return;
+    if (g === "sort") {
+      if (!barView) barView = new A.BarView(vizEl);
+      barView.update(s, force);
+    } else if (g === "search") {
+      vizEl.innerHTML = "";
+      var narrow = vizEl.clientWidth < 460;
+      vizEl.appendChild(A.renderBoxes(data.search, { state: s, box: narrow ? 34 : 44, gap: narrow ? 4 : 6, width: vizEl.clientWidth - 12 }));
+    } else {
+      vizEl.innerHTML = "";
+      vizEl.appendChild(A.renderGraph(data.graph, { state: s, start: data.start, maxHeight: 360, dsName: view.algo === "bfs" ? "キュー" : "呼び出しスタック",
+        onNodeClick: function (id) { data.start = id; rebuild(); var n = vizEl.querySelector('.g-node[aria-label^="ノード ' + id + '"]'); if (n) n.focus(); } }));
+      renderDs(s);
+    }
+    // カウンター
+    var vals = g === "sort" ? [s.cmp, s.wr, idx] : g === "search" ? [s.probes, idx] : [s.order.length, idx];
+    vals.forEach(function (v, i) { var c = document.getElementById("ctr" + i); if (c) c.textContent = v; });
+    stepNote.textContent = s.note;
+    stepPos.textContent = "ステップ " + idx + " / " + last;
+    stepFill.style.width = (last > 0 ? Math.round(idx / last * 100) : 100) + "%";
+    // 擬似コードの現在行
+    Array.prototype.forEach.call(pseudoEl.children, function (ln) {
+      ln.classList.toggle("is-cur", Number(ln.dataset.line) === s.line);
+    });
+    firstBtn.disabled = idx === 0;
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx >= last;
+    renderPlayBtn();
+  }
+
+  function chip(text, cls) { return el("span", "chip" + (cls ? " " + cls : ""), String(text)); }
+  function renderDs(s) {
+    var body = document.getElementById("dsBody");
+    body.innerHTML = "";
+    if (view.algo === "bfs") {
+      var row = el("div", "ds-row");
+      row.setAttribute("aria-label", "キュー(先頭から): " + (s.ds.length ? s.ds.join("、") : "空"));
+      if (!s.ds.length) row.appendChild(el("span", "ds-empty", "(空)"));
+      else {
+        row.appendChild(el("span", "ds-end", "先頭(次に取り出す)"));
+        s.ds.forEach(function (v) { row.appendChild(chip(v)); });
+        row.appendChild(el("span", "ds-end", "末尾"));
+      }
+      body.appendChild(row);
+    } else {
+      if (!s.ds.length) { body.appendChild(el("span", "ds-empty", "(空)")); }
+      else {
+        body.appendChild(el("div", "stack-top-label", "上(いま実行中)"));
+        var col = el("div", "stack-col");
+        col.setAttribute("aria-label", "呼び出しスタック(下から): " + s.ds.map(function (v) { return "dfs(" + v + ")"; }).join("、"));
+        s.ds.forEach(function (v, i) { col.appendChild(chip("dfs(" + v + ")", i === s.ds.length - 1 ? "top" : "")); });
+        body.appendChild(col);
+      }
+    }
+    var orow = document.getElementById("orderRow");
+    orow.innerHTML = "";
+    if (!s.order.length) orow.appendChild(el("span", "ds-empty", "(まだなし)"));
+    s.order.forEach(function (v, i) {
+      if (i) orow.appendChild(el("span", "arrow", "→"));
+      orow.appendChild(chip(v, "visited"));
+    });
+  }
+
+  // ---------- 再生 ----------
+  function renderPlayBtn() {
+    var playing = !!timer;
+    playBtn.textContent = playing ? "❚❚ 停止" : "▶ 再生";
+    playBtn.setAttribute("aria-label", playing ? "停止" : "再生");
+  }
+  function stop() {
+    if (timer) { clearTimeout(timer); timer = null; }
+    renderPlayBtn();
+  }
+  function tick() {
+    if (idx >= steps.length - 1) { stop(); return; }
+    idx++;
+    render(false);
+    if (idx >= steps.length - 1) { stop(); return; }
+    timer = setTimeout(tick, SPEEDS[view.speed - 1]);
+  }
+  function play() {
+    if (timer) { stop(); return; }
+    if (idx >= steps.length - 1) { idx = 0; render(true); }
+    timer = setTimeout(tick, Math.min(300, SPEEDS[view.speed - 1]));
+    renderPlayBtn();
+  }
+  function go(d) {
+    stop();
+    var n = Math.max(0, Math.min(steps.length - 1, idx + d));
+    if (n === idx) return;
+    // 戻るときは、そのステップの状態を描き直す(移動のアニメーションはなし)
+    var back = n < idx;
+    idx = n;
+    render(back);
+  }
+  function first() { stop(); idx = 0; render(true); }
+  playBtn.addEventListener("click", play);
+  prevBtn.addEventListener("click", function () { go(-1); });
+  nextBtn.addEventListener("click", function () { go(1); });
+  firstBtn.addEventListener("click", first);
+  speedInput.value = view.speed;
+  speedInput.addEventListener("input", function () {
+    view.speed = Math.max(1, Math.min(5, Number(speedInput.value) || 3));
+    saveView();
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (group() === "complexity") return;
+    if (e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+    var t = e.target, tag = t && t.tagName;
+    if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
+    var onButton = tag === "BUTTON" || tag === "A" || (t && t.getAttribute && t.getAttribute("role") === "button");
+    if (e.key === " " || e.key === "Spacebar") {
+      if (onButton) return;   // ボタンの上の Space は、そのボタンを押す
+      e.preventDefault();
+      play();
+    } else if (e.key === "ArrowRight") { e.preventDefault(); go(1); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); go(-1); }
+    else if (e.key === "Home") { e.preventDefault(); first(); }
+  });
+
+  var resizeTimer = null, lastW = window.innerWidth;
+  window.addEventListener("resize", function () {
+    if (window.innerWidth === lastW) return;
+    lastW = window.innerWidth;
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      if (group() === "complexity") return;
+      render(true);
+    }, 150);
+  });
+
+  // ---------- 計算量の比較 ----------
+  var CURVES = [
+    { id: "c1", name: "O(1)", f: function () { return 1; } },
+    { id: "clog", name: "O(log n)", f: function (n) { return Math.log2(n); } },
+    { id: "cn", name: "O(n)", f: function (n) { return n; } },
+    { id: "cnlogn", name: "O(n log n)", f: function (n) { return n * Math.log2(n); } },
+    { id: "cn2", name: "O(n²)", f: function (n) { return n * n; } }
+  ];
+  var SVG_NS = "http://www.w3.org/2000/svg";
+  function sv(tag, attrs, cls, text) {
+    var e = document.createElementNS(SVG_NS, tag);
+    if (cls) e.setAttribute("class", cls);
+    Object.keys(attrs || {}).forEach(function (k) { e.setAttribute(k, attrs[k]); });
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function renderChart() {
+    var svg = document.getElementById("chart");
+    if (svg.childNodes.length) return;
+    var X0 = 38, X1 = 290, Y0 = 220, Y1 = 26, NMAX = 32, YMAX = 48;
+    function px(n) { return X0 + (n / NMAX) * (X1 - X0); }
+    function py(v) { return Y0 - (v / YMAX) * (Y0 - Y1); }
+    var k;
+    for (k = 0; k <= YMAX; k += 8) {
+      svg.appendChild(sv("line", { x1: X0, y1: py(k), x2: X1, y2: py(k) }, "ch-grid"));
+      svg.appendChild(sv("text", { x: X0 - 6, y: py(k) + 3, "text-anchor": "end" }, "ch-tick", String(k)));
+    }
+    for (k = 0; k <= NMAX; k += 8) {
+      svg.appendChild(sv("line", { x1: px(k), y1: Y0, x2: px(k), y2: Y1 }, "ch-grid"));
+      svg.appendChild(sv("text", { x: px(k), y: Y0 + 14, "text-anchor": "middle" }, "ch-tick", String(k)));
+    }
+    svg.appendChild(sv("line", { x1: X0, y1: Y0, x2: X1, y2: Y0 }, "ch-axis"));
+    svg.appendChild(sv("line", { x1: X0, y1: Y0, x2: X0, y2: Y1 }, "ch-axis"));
+    svg.appendChild(sv("text", { x: (X0 + X1) / 2, y: Y0 + 28, "text-anchor": "middle" }, "ch-title", "n(データの量)"));
+    svg.appendChild(sv("text", { x: X0, y: 14, "text-anchor": "start" }, "ch-title", "手間"));
+    CURVES.forEach(function (c) {
+      var pts = [], end = null, prev = null;
+      for (var n = 1; n <= NMAX + 1e-9; n += 0.125) {
+        var v = c.f(n);
+        if (v > YMAX) {
+          // 上の端との交点で止める
+          var t = (YMAX - prev.v) / (v - prev.v), en = prev.n + (n - prev.n) * t;
+          pts.push(px(en).toFixed(1) + "," + py(YMAX).toFixed(1));
+          end = { x: px(en), y: py(YMAX), top: true };
+          break;
+        }
+        pts.push(px(n).toFixed(1) + "," + py(v).toFixed(1));
+        prev = { n: n, v: v };
+        end = { x: px(n), y: py(v), top: false };
+      }
+      svg.appendChild(sv("polyline", { points: pts.join(" ") }, "ch-line ch-" + c.id));
+      var lab;
+      if (end.top) {
+        var anchor = c.id === "cn2" ? "end" : "start";
+        lab = sv("text", { x: end.x + (anchor === "end" ? 4 : -4), y: end.y - 7, "text-anchor": anchor }, "ch-label lb-" + c.id, c.name);
+      } else {
+        var dy = c.id === "c1" ? 3 : c.id === "clog" ? 2 : 4;
+        lab = sv("text", { x: end.x + 6, y: end.y + dy, "text-anchor": "start" }, "ch-label lb-" + c.id, c.name);
+      }
+      svg.appendChild(lab);
+    });
+  }
+  function timeText(v) {
+    var sec = v / 1e8;
+    if (sec < 0.001) return "一瞬";
+    if (sec < 1) return "約" + (sec * 1000).toFixed(sec < 0.01 ? 1 : 0) + "ミリ秒";
+    if (sec < 60) return "約" + sec.toFixed(sec < 10 ? 1 : 0) + "秒";
+    if (sec < 3600) return "約" + Math.round(sec / 60) + "分";
+    if (sec < 86400) return "約" + (sec / 3600).toFixed(1) + "時間";
+    if (sec < 86400 * 365) return "約" + Math.round(sec / 86400) + "日";
+    return "約" + num(Math.round(sec / 86400 / 365)) + "年";
+  }
+  var nValue = 1000;
+  function renderNTable() {
+    var t = document.getElementById("nTable");
+    t.innerHTML = "";
+    var head = el("tr");
+    head.appendChild(el("th", "h", "計算量"));
+    head.appendChild(el("th", "h r", "手間(n = " + num(nValue) + ")"));
+    head.appendChild(el("th", "h r", "1秒に1億回なら"));
+    t.appendChild(head);
+    CURVES.forEach(function (c) {
+      var v = c.f(nValue), tr = el("tr");
+      tr.appendChild(el("td", "o", c.name));
+      var shown = c.id === "clog" ? (Math.round(v * 10) / 10).toFixed(1) : num(Math.round(v));
+      tr.appendChild(el("td", "v", shown));
+      tr.appendChild(el("td", "t", timeText(v)));
+      t.appendChild(tr);
+    });
+    document.querySelectorAll("#nSeg .mode-tab").forEach(function (b) {
+      var on = Number(b.dataset.n) === nValue;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+  var nInput = document.getElementById("nInput");
+  nInput.addEventListener("input", function () {
+    var v = Math.floor(Number(nInput.value));
+    if (v >= 1 && v <= 10000000) { nValue = v; renderNTable(); }
+  });
+  nInput.addEventListener("change", function () { nInput.value = nValue; });
+  document.querySelectorAll("#nSeg .mode-tab").forEach(function (b) {
+    b.addEventListener("click", function () { nValue = Number(b.dataset.n); nInput.value = nValue; renderNTable(); });
+  });
+  function renderAllTable() {
+    var t = document.getElementById("allTable"), cards = document.getElementById("allCards");
+    if (t.childNodes.length) return;
+    var cols = [["best", "最良"], ["avg", "平均"], ["worst", "最悪"], ["mem", "追加メモリ"], ["stable", "安定"]];
+    var head = el("tr");
+    head.appendChild(el("th", "", "アルゴリズム"));
+    cols.forEach(function (c) { head.appendChild(el("th", "", c[1])); });
+    t.appendChild(head);
+    A.ORDER.forEach(function (id) {
+      var info = A.INFO[id];
+      if (!info) return;
+      var tr = el("tr"), th = el("th");
+      var a = el("a", "", A.ALGOS[id].name);
+      a.href = "#" + id;
+      th.appendChild(a);
+      tr.appendChild(th);
+      cols.forEach(function (c) { tr.appendChild(el("td", "", info[c[0]])); });
+      t.appendChild(tr);
+      var card = el("div", "all-card"), h = el("h4"), a2 = el("a", "", A.ALGOS[id].name);
+      a2.href = "#" + id;
+      h.appendChild(a2);
+      card.appendChild(h);
+      var dl = el("dl");
+      cols.forEach(function (c) { dl.appendChild(el("dt", "", c[1])); dl.appendChild(el("dd", "", info[c[0]])); });
+      card.appendChild(dl);
+      cards.appendChild(card);
+    });
+  }
+  function renderComplexity() {
+    renderChart();
+    nInput.value = nValue;
+    renderNTable();
+    renderAllTable();
+  }
+
+  // ---------- 始める ----------
+  newSortData();
+  setAlgo(view.algo);
+})();
+</script>
+</body>
+</html>
