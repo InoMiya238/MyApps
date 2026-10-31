@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>学習記録の管理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 720px; gap: 22px; }
+  .tagline { max-width: 40ch; }
+
+  /* ---------- カード ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+    margin: 10px 0 0;
+    line-height: 1.65;
+  }
+  .hint:first-child { margin-top: 0; }
+
+  /* ---------- 概要 ---------- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .stat {
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 12px 10px;
+    text-align: center;
+    min-width: 0;
+  }
+  .stat-num {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .stat-num small { font-size: 0.72rem; font-weight: 600; color: var(--ink-muted); margin-left: 2px; }
+  .stat-label { display: block; margin-top: 2px; font-size: 0.76rem; color: var(--ink-muted); }
+  .notice {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--bad-soft);
+    color: var(--bad);
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.65;
+  }
+  .notice + .stats { margin-top: 12px; }
+
+  /* ---------- ボタン ---------- */
+  button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 10px 16px;
+  }
+  button:disabled { cursor: not-allowed; opacity: 0.45; }
+  .btn-plain {
+    background: var(--surface-2);
+    color: var(--ink);
+    border: 1px solid var(--border);
+  }
+  .btn-accent { background: var(--accent); color: var(--accent-ink); }
+  .btn-danger { background: var(--bad-soft); color: var(--bad); }
+  .btn-danger-solid { background: var(--bad); color: var(--surface); }
+  .btn-small { padding: 6px 12px; font-size: 0.8rem; border-radius: 8px; }
+  button:not(:disabled):hover { filter: brightness(0.97); }
+  button:focus-visible,
+  summary:focus-visible,
+  a:focus-visible,
+  input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  /* ---------- 一括操作 ---------- */
+  .bulk-counts { margin: 0 0 12px; font-size: 0.88rem; line-height: 1.7; color: var(--ink-muted); }
+  .bulk-counts strong { color: var(--ink); font-family: var(--font-mono); }
+  .confirm-field { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 12px; font-size: 0.86rem; }
+  .confirm-field input {
+    width: 7em;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+    font: inherit;
+  }
+
+  /* ---------- 区分とアプリ ---------- */
+  .cat-list { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+  .cat-list:empty { display: none; }
+  .cat { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .cat-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+  .cat-sub { font-family: var(--font-mono); font-size: 0.76rem; font-weight: 500; color: var(--ink-muted); }
+  .app-card { padding: 16px 18px; }
+  .app-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 2px 12px;
+    margin-bottom: 8px;
+  }
+  .app-name { font-weight: 700; font-size: 1rem; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+  a.app-name:hover { color: var(--accent); text-decoration: underline; }
+  .app-size { font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-muted); white-space: nowrap; }
+
+  .item-list { list-style: none; margin: 0; padding: 0; }
+  .item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    padding: 9px 0;
+    border-top: 1px dashed var(--border);
+  }
+  .item-main { min-width: 0; flex: 1 1 14em; display: flex; flex-direction: column; gap: 3px; }
+  .item-line { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; min-width: 0; }
+  .badge {
+    flex: none;
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.6;
+    white-space: nowrap;
+  }
+  .badge.record { background: var(--accent-soft); color: var(--accent); }
+  .badge.setting { background: var(--surface-2); color: var(--ink-muted); border: 1px solid var(--border); }
+  .badge.other { background: var(--bad-soft); color: var(--bad); }
+  .key {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--ink-muted);
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
+  .item-note { font-size: 0.76rem; color: var(--ink-faint); }
+  .item-sum { font-size: 0.84rem; color: var(--ink); }
+  .item-side { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+  .item-size { font-family: var(--font-mono); font-size: 0.76rem; color: var(--ink-muted); white-space: nowrap; }
+  .app-actions { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 10px; border-top: 1px dashed var(--border); }
+
+  details.empty-apps {
+    padding: 4px 2px;
+    color: var(--ink-faint);
+    font-size: 0.86rem;
+  }
+  details.empty-apps summary { cursor: pointer; font-weight: 600; color: var(--ink-muted); }
+  .empty-list {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+  }
+  .empty-list a { color: var(--ink-faint); text-decoration: none; }
+  .empty-list a:hover { color: var(--accent); text-decoration: underline; }
+  .none-text { margin: 0; color: var(--ink-muted); font-size: 0.88rem; }
+
+  /* ---------- 注意書き ---------- */
+  .notes { margin: 0; padding-left: 1.2em; font-size: 0.86rem; line-height: 1.75; color: var(--ink-muted); }
+  .notes strong { color: var(--ink); }
+  .file-input { display: none; }
+  .error-text { margin: 10px 0 0; font-size: 0.84rem; font-weight: 600; color: var(--bad); }
+  .error-text:empty { display: none; }
+
+  /* ---------- 確認ダイアログ ---------- */
+  dialog.confirm {
+    width: min(480px, calc(100vw - 24px));
+    max-height: calc(100vh - 48px);
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 10px 40px var(--shadow);
+  }
+  dialog.confirm::backdrop { background: var(--backdrop); }
+  .dlg-body { padding: 20px 20px 18px; display: flex; flex-direction: column; gap: 12px; }
+  .dlg-body h2 { margin: 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; }
+  .dlg-lead { margin: 0; font-size: 0.9rem; line-height: 1.65; }
+  .dlg-list {
+    margin: 0;
+    padding: 8px 12px 8px 1.8em;
+    max-height: 40vh;
+    overflow-y: auto;
+    background: var(--surface-2);
+    border-radius: 10px;
+    font-size: 0.84rem;
+    line-height: 1.7;
+  }
+  .dlg-list .key { margin-left: 6px; }
+  .dlg-list .tag { font-size: 0.72rem; font-weight: 700; color: var(--bad); margin-left: 6px; white-space: nowrap; }
+  .dlg-list .tag.new { color: var(--good); }
+  .dlg-opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.86rem;
+    line-height: 1.6;
+    cursor: pointer;
+  }
+  .dlg-opt input { margin-top: 4px; flex: none; accent-color: var(--accent); }
+  .dlg-opt small { display: block; color: var(--ink-muted); font-size: 0.78rem; }
+  .dlg-warn { margin: 0; font-size: 0.8rem; color: var(--bad); font-weight: 600; }
+  .dlg-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+
+  /* ---------- 完了メッセージ ---------- */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: calc(100vw - 24px);
+    margin: 0;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.5;
+    box-shadow: 0 4px 16px var(--shadow);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .toast.show { opacity: 1; }
+  .toast.error { background: var(--bad); color: var(--surface); }
+
+  @media (max-width: 480px) {
+    body { padding: 24px 12px 56px; }
+    .card { padding: 18px 16px; }
+    .app-card { padding: 14px 14px; }
+    .stats { gap: 6px; }
+    .stat { padding: 10px 4px; }
+    .stat-num { font-size: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="page-links" aria-label="ページの移動">
+    <a class="back-link" href="../../../index.html">← ページ一覧</a>
+    <a class="back-link" href="../review-planner/index.html">復習プランナー →</a>
+  </nav>
+  <header class="hero">
+    <p class="eyebrow">RECORDS</p>
+    <h1>学習記録の管理</h1>
+    <p class="tagline">このブラウザに保存された記録と設定の確認・削除</p>
+  </header>
+
+  <section class="card" aria-labelledby="overviewHeading">
+    <h2 id="overviewHeading">概要</h2>
+    <p class="notice" id="unavailable" hidden>このブラウザでは保存領域(localStorage)を読み書きできません。シークレットモードや、サイトデータを保存しない設定になっていないか確かめてください。いまは記録の確認・削除・バックアップができません。</p>
+    <div class="stats">
+      <div class="stat"><span class="stat-num" id="statApps">0</span><span class="stat-label">保存ありアプリ</span></div>
+      <div class="stat"><span class="stat-num" id="statItems">0</span><span class="stat-label">項目数</span></div>
+      <div class="stat"><span class="stat-num" id="statSize">0<small>KB</small></span><span class="stat-label">合計サイズ</span></div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="bulkHeading">
+    <h2 id="bulkHeading">一括操作</h2>
+    <p class="bulk-counts" id="bulkCounts"></p>
+    <label class="confirm-field">
+      <span>確認のため「<strong>削除</strong>」と入力:</span>
+      <input type="text" id="confirmWord" autocomplete="off" spellcheck="false" aria-describedby="bulkCounts">
+    </label>
+    <div class="btn-row">
+      <button type="button" class="btn-plain" id="bulkExportBtn">先にバックアップを書き出す</button>
+      <button type="button" class="btn-danger" id="bulkRecordsBtn" disabled>すべての記録を削除</button>
+      <button type="button" class="btn-danger-solid" id="bulkAllBtn" disabled>すべて削除(記録と設定)</button>
+    </div>
+    <p class="hint">「すべての記録を削除」は、成績・進み具合・復習プランナーと習慣プランナーの記録を消し、設定は残します。登録されていない保存は「すべて削除」のときだけ消えます。</p>
+  </section>
+
+  <div id="catList" class="cat-list"></div>
+
+  <section class="card" aria-labelledby="backupHeading">
+    <h2 id="backupHeading">バックアップ</h2>
+    <p class="hint">保存されている記録と設定を、まとめて1つのJSONファイルに書き出します。読み込むと、ファイルの中の項目で今の保存を上書きします(ファイルにない項目はそのまま残ります)。</p>
+    <div class="btn-row" style="margin-top: 12px;">
+      <button type="button" class="btn-accent" id="exportBtn">書き出す</button>
+      <button type="button" class="btn-plain" id="importBtn">読み込む</button>
+      <input type="file" id="importFile" class="file-input" accept=".json,application/json">
+    </div>
+    <p class="error-text" id="importError" role="alert"></p>
+  </section>
+
+  <section class="card" aria-labelledby="notesHeading">
+    <h2 id="notesHeading">注意</h2>
+    <ul class="notes">
+      <li>保存はこの端末のこのブラウザの中だけにあります。サーバーへは送りません。</li>
+      <li>ページを<strong>ファイルとして直接開いた場合</strong>と、<strong>サーバー(http://〜)で開いた場合</strong>では、保存場所が別になります。このページも、道場と同じ開き方で開いてください。</li>
+      <li><strong>消した記録は元に戻せません。</strong>消す前に、バックアップを書き出しておくと安心です。</li>
+    </ul>
+  </section>
+</div>
+
+<dialog class="confirm" id="dlg" aria-labelledby="dlgTitle">
+  <form method="dialog" class="dlg-body">
+    <h2 id="dlgTitle"></h2>
+    <p class="dlg-lead" id="dlgLead"></p>
+    <ul class="dlg-list" id="dlgList"></ul>
+    <label class="dlg-opt" id="dlgOptWrap" hidden>
+      <input type="checkbox" id="dlgOpt" checked>
+      <span><span id="dlgOptText"></span><small id="dlgOptSub"></small></span>
+    </label>
+    <p class="dlg-warn" id="dlgWarn"></p>
+    <div class="dlg-actions">
+      <button type="submit" value="cancel" class="btn-plain" id="dlgCancel" autofocus>やめる</button>
+      <button type="submit" value="ok" class="btn-danger-solid" id="dlgOk">削除する</button>
+    </div>
+  </form>
+</dialog>
+
+<p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+<script src="../../../shared/store.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // ---------- 登録表 ----------
+  // kind: "record"(記録)か "setting"(設定)。review: 復習プランナー上のアプリ名(shared/review.js の APPS)
+  function R(key, note) { return { key: key, kind: "record", note: note || "" }; }
+  function S(key, note) { return { key: key, kind: "setting", note: note || "" }; }
+
+  var REGISTRY = [
+    { cat: "道場", apps: [
+      { name: "中学数学道場", href: "../../math/junior-high-math/index.html", review: "math", keys: [R("juniorHighMathStats"), S("juniorHighMathSettings")] },
+      { name: "中学国語道場", href: "../../japanese/junior-high-japanese/index.html", review: "japanese", keys: [R("juniorHighJapaneseStats"), S("juniorHighJapaneseSettings")] },
+      { name: "中学英語道場", href: "../../english/junior-high-english/index.html", review: "english", keys: [R("juniorHighEnglishStats"), S("juniorHighEnglishSettings")] },
+      { name: "中学英単語帳", href: "../../english/junior-high-english/vocab.html", review: "english-vocab", keys: [R("juniorHighEnglishVocabStats"), R("juniorHighEnglishVocabWords", "単語ごとの記録"), S("juniorHighEnglishVocabSettings")] },
+      { name: "中学理科道場", href: "../../science/junior-high-science/index.html", review: "science", keys: [R("juniorHighScienceStats"), S("juniorHighScienceSettings")] },
+      { name: "化学基礎ラボ", href: "../../science/chemistry-lab/index.html", review: "chemistry", keys: [R("chemistryLabStats"), R("chemistryLabEquation", "反応式の組み立て済み"), S("chemistryLabSettings"), S("chemistryLabPeriodicMode", "周期表の表示")] },
+      { name: "中学社会道場", href: "../../social/junior-high-social/index.html", review: "social", keys: [R("juniorHighSocialStats"), S("juniorHighSocialSettings")] },
+      { name: "世界地図道場", href: "../../geography/world-map-dojo/index.html", review: "worldmap", keys: [R("worldMapDojoStats"), S("worldMapDojoSettings")] },
+      { name: "将棋道場", href: "../../shogi/shogi-dojo/index.html", review: "shogi", keys: [R("shogiDojoStats"), R("shogiDojoTsume", "1手詰め"), S("shogiDojoSettings")] },
+      { name: "Git道場", href: "../../it/git-basics/index.html", review: "git", keys: [R("gitBasicsStats"), S("gitBasicsSettings")] },
+      { name: "Linux道場", href: "../../it/linux-basics/index.html", review: "linux", keys: [R("linuxBasicsStats"), S("linuxBasicsSettings")] },
+      { name: "SQL道場", href: "../../it/sql-basics/index.html", review: "sql", keys: [R("sqlBasicsStats"), S("sqlBasicsSettings")] },
+      { name: "正規表現道場", href: "../../it/regex-basics/index.html", review: "regex", keys: [R("regexBasicsStats"), S("regexBasicsSettings")] },
+      { name: "Web道場", href: "../../it/web-basics/index.html", review: "web", keys: [R("webBasicsStats"), S("webBasicsSettings")] },
+      { name: "Python道場", href: "../../it/python-basics/index.html", review: "python", keys: [R("pythonBasicsStats"), S("pythonBasicsSettings")] },
+      { name: "アルゴリズム道場", href: "../../it/algorithm-visualizer/index.html", review: "algorithm", keys: [R("algorithmVisualizerStats"), S("algorithmVisualizerQuizSettings"), S("algorithmVisualizerViewSettings", "可視化")] },
+      { name: "AI理論ラボ", href: "../../ai/ai-theory-lab/index.html", review: "ai", keys: [R("aiTheoryLabStats"), S("aiTheoryLabLab", "実験室のつまみの位置"), S("aiTheoryLabSettings")] },
+      { name: "電子工作道場", href: "../../electronics/electronics-basics/index.html", review: "electronics", keys: [R("electronicsBasicsStats"), S("electronicsBasicsSettings")] },
+      { name: "素数道場", href: "../../math/prime-numbers/index.html", review: "primes", keys: [R("primeNumbersStats"), S("primeNumbersSettings")] },
+      { name: "韓国語入門道場", href: "../../korean/korean-basics/index.html", review: "korean", keys: [R("koreanBasicsStats"), S("koreanBasicsSettings")] }
+    ] },
+    { cat: "練習・講座", apps: [
+      { name: "暗算道場", href: "../../math/mental-math-trainer/index.html", keys: [S("mentalMathTrainerSettings")] },
+      { name: "オーダークイズ", href: "../../math/order-of-magnitude/quiz.html", keys: [R("oomQuizBest", "最高記録"), S("oomQuizUnitMode")] },
+      { name: "ギター入門コース", href: "../../music/guitar-beginner-course/index.html", keys: [R("guitarBeginnerCourseProgress"), S("guitarBeginnerCourseChords", "コード一覧の絞り込み")] },
+      { name: "投資シミュレーション道場", href: "../../finance/investment-simulator/index.html", keys: [R("investmentSimulatorCourse", "コースの進み具合"), S("investmentSimulatorSettings")] },
+      { name: "宇宙シミュレーター", href: "../../science/astronomy-simulator/index.html", keys: [S("astronomySimulatorSettings")] }
+    ] },
+    { cat: "復習・習慣", apps: [
+      { name: "復習プランナー", href: "../review-planner/index.html", keys: [R("reviewPlannerLog")] },
+      { name: "習慣プランナー", href: "../habit-planner/index.html", keys: [R("habitPlannerHistory"), R("habitPlannerAnswerLog", "日ごとの回答数"), S("habitPlannerSettings")] }
+    ] },
+    { cat: "ツール", apps: [
+      { name: "習慣トラッカー", href: "../../../tools/habit-tracker/index.html", keys: [R("habit-tracker:data"), R("habit-tracker:data:broken", "読めなかったデータの退避"), S("habit-tracker:theme")] },
+      { name: "ポモドーロタイマー", href: "../../../tools/pomodoro-timer/index.html", keys: [S("pomodoro-timer:sound"), S("pomodoro-timer:theme"), S("pomodoro-timer:notify"), S("pomodoro-timer:minutes")] },
+      { name: "小節分けエディタ", href: "../../../tools/lyric-bar-splitter/index.html", keys: [R("lyricBarSplitter.v1", "入力した歌詞"), S("lyricBarSplitter.theme")] }
+    ] }
+  ];
+  // 一覧にも書き出しにも出さないキー(保存できるか試すための一時的なキー)
+  var HIDDEN = ["habit-tracker:probe"];
+  var PLANNER_KEY = "reviewPlannerLog";
+  var ANSWER_KEY = "habitPlannerAnswerLog";
+  var KIND_LABEL = { record: "記録", setting: "設定", other: "不明" };
+
+  var KEY_INFO = {};
+  REGISTRY.forEach(function (c) {
+    c.apps.forEach(function (a) {
+      a.keys.forEach(function (k) { KEY_INFO[k.key] = { app: a, def: k }; });
+    });
+  });
+
+  // ---------- 保存領域 ----------
+  function checkStorage() {
+    try {
+      var ls = window.localStorage;
+      if (!ls) return false;
+      void ls.length;
+      ls.getItem("recordManagerCheck");
+      return true;
+    } catch (e) { return false; }
+  }
+  var storageOk = checkStorage();
+
+  function rawGet(k) {
+    try { return localStorage.getItem(k); } catch (e) { return null; }
+  }
+  function allKeys() {
+    var out = [];
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k !== null && HIDDEN.indexOf(k) < 0) out.push(k);
+      }
+    } catch (e) { /* 読めなければ空 */ }
+    return out;
+  }
+  function hasOwn(o, k) { return Object.prototype.hasOwnProperty.call(o, k); }
+  // UTF-16 で保存されるので、文字数 × 2 バイトとして数える
+  function bytesOf(k, v) { return (k.length + v.length) * 2; }
+  function kb(b) {
+    if (b === 0) return "0";
+    var v = b / 1024;
+    if (v < 0.1) return "0.1";
+    return v < 100 ? v.toFixed(1) : String(Math.round(v));
+  }
+
+  // 今の保存を調べる
+  function scan() {
+    var present = {};
+    allKeys().forEach(function (k) {
+      var v = rawGet(k);
+      if (v !== null) present[k] = v;
+    });
+    var res = { cats: [], others: [], items: 0, bytes: 0, appsWithData: 0, records: [], settings: [] };
+    REGISTRY.forEach(function (c) {
+      var cat = { cat: c.cat, withData: [], empty: [] };
+      c.apps.forEach(function (a) {
+        var rows = [], size = 0;
+        a.keys.forEach(function (d) {
+          if (!hasOwn(present, d.key)) return;
+          var b = bytesOf(d.key, present[d.key]);
+          rows.push({ def: d, raw: present[d.key], bytes: b });
+          size += b;
+          (d.kind === "record" ? res.records : res.settings).push(d.key);
+        });
+        var entry = { app: a, rows: rows, bytes: size };
+        // 道場の保存を消したあとも、プランナーに記録が残っていればカードを出す(そこから消せるように)
+        if (!rows.length && a.review) {
+          var pc = plannerCounts(a.review);
+          if (pc.r || pc.d) { entry.plannerOnly = pc; cat.withData.push(entry); return; }
+        }
+        if (rows.length) { cat.withData.push(entry); res.appsWithData++; res.items += rows.length; res.bytes += size; }
+        else cat.empty.push(entry);
+      });
+      res.cats.push(cat);
+    });
+    Object.keys(present).sort().forEach(function (k) {
+      if (hasOwn(KEY_INFO, k)) return;
+      var b = bytesOf(k, present[k]);
+      res.others.push({ key: k, raw: present[k], bytes: b });
+      res.items++;
+      res.bytes += b;
+    });
+    return res;
+  }
+
+  // ---------- 要約 ----------
+  function num(v) { return typeof v === "number" && isFinite(v) && v >= 0 ? Math.floor(v) : 0; }
+  function sumPairs(obj) {
+    var t = 0, c = 0;
+    Object.keys(obj).forEach(function (k) {
+      var r = obj[k];
+      if (!r || typeof r !== "object") return;
+      var tt = num(r.total);
+      t += tt;
+      c += Math.min(num(r.correct), tt);
+    });
+    return { t: t, c: c };
+  }
+  function answerText(p) {
+    if (p.t === 0) return "回答 0問";
+    return "回答 " + p.t + "問・正解率 " + Math.round(p.c / p.t * 100) + "%";
+  }
+  function summarize(key) {
+    try {
+      var v = Store.load(key, null);
+      if (!v || typeof v !== "object") return "";
+      if (key === PLANNER_KEY) {
+        return v.items && typeof v.items === "object" ? "単元 " + Object.keys(v.items).length + "件" : "";
+      }
+      if (key === "shogiDojoStats") {
+        return v.byCat && typeof v.byCat === "object" ? answerText(sumPairs(v.byCat)) : "";
+      }
+      if (key === "shogiDojoTsume") {
+        if (!v.items || typeof v.items !== "object") return "";
+        var tries = 0, solved = 0;
+        Object.keys(v.items).forEach(function (k) {
+          var r = v.items[k];
+          if (!r || typeof r !== "object") return;
+          tries += num(r.tries);
+          if (r.solved === true) solved++;
+        });
+        return "挑戦 " + tries + "回・解けた問題 " + solved + "問";
+      }
+      if (v.byUnit && typeof v.byUnit === "object") return answerText(sumPairs(v.byUnit));
+    } catch (e) { /* 要約できなければ出さない */ }
+    return "";
+  }
+
+  // ---------- 削除 ----------
+  function removeKeys(keys) {
+    var ok = 0;
+    keys.forEach(function (k) {
+      Store.remove(k);
+      if (rawGet(k) === null) ok++;
+    });
+    return ok;
+  }
+  // 復習プランナーと習慣プランナーに残っている、このアプリの記録を数える
+  function plannerCounts(name) {
+    var r = 0, d = 0;
+    try {
+      var log = Store.load(PLANNER_KEY, null);
+      if (log && log.items && typeof log.items === "object") {
+        Object.keys(log.items).forEach(function (k) { if (k.indexOf(name + ":") === 0) r++; });
+      }
+      var ans = Store.load(ANSWER_KEY, null);
+      if (ans && ans.days && typeof ans.days === "object") {
+        Object.keys(ans.days).forEach(function (day) {
+          var o = ans.days[day];
+          if (o && typeof o === "object" && hasOwn(o, name)) d++;
+        });
+      }
+    } catch (e) { /* 数えられなければ 0 */ }
+    return { r: r, d: d };
+  }
+  // ほかのアプリの分は残して、このアプリの分だけを消す
+  function cleanPlanners(name) {
+    var ok = true;
+    try {
+      var log = Store.load(PLANNER_KEY, null);
+      if (log && log.items && typeof log.items === "object") {
+        var changed = false;
+        Object.keys(log.items).forEach(function (k) {
+          if (k.indexOf(name + ":") === 0) { delete log.items[k]; changed = true; }
+        });
+        if (changed) {
+          ok = (Object.keys(log.items).length ? Store.save(PLANNER_KEY, log) : Store.remove(PLANNER_KEY)) && ok;
+        }
+      }
+      var ans = Store.load(ANSWER_KEY, null);
+      if (ans && ans.days && typeof ans.days === "object") {
+        var changed2 = false;
+        Object.keys(ans.days).forEach(function (day) {
+          var o = ans.days[day];
+          if (o && typeof o === "object" && hasOwn(o, name)) {
+            delete o[name];
+            if (!Object.keys(o).length) delete ans.days[day];
+            changed2 = true;
+          }
+        });
+        if (changed2) {
+          ok = (Object.keys(ans.days).length ? Store.save(ANSWER_KEY, ans) : Store.remove(ANSWER_KEY)) && ok;
+        }
+      }
+    } catch (e) { ok = false; }
+    return ok;
+  }
+
+  // ---------- 完了メッセージ ----------
+  var toastEl = document.getElementById("toast");
+  var toastTimer = null;
+  function notify(msg, isError) {
+    toastEl.textContent = msg;
+    toastEl.classList.toggle("error", !!isError);
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 4500);
+  }
+
+  // ---------- 確認ダイアログ ----------
+  var dlg = document.getElementById("dlg");
+  var dlgTitle = document.getElementById("dlgTitle");
+  var dlgLead = document.getElementById("dlgLead");
+  var dlgList = document.getElementById("dlgList");
+  var dlgOptWrap = document.getElementById("dlgOptWrap");
+  var dlgOpt = document.getElementById("dlgOpt");
+  var dlgOptText = document.getElementById("dlgOptText");
+  var dlgOptSub = document.getElementById("dlgOptSub");
+  var dlgWarn = document.getElementById("dlgWarn");
+  var dlgOk = document.getElementById("dlgOk");
+  var pending = null;
+
+  // opts: { title, lead, items: [{ label, key, tag, tagNew }], option: { text, sub } | null, okLabel, okClass, warn, onOk(checked) }
+  function openDialog(opts) {
+    dlgTitle.textContent = opts.title;
+    dlgLead.textContent = opts.lead || "";
+    dlgList.textContent = "";
+    (opts.items || []).forEach(function (it) {
+      var li = document.createElement("li");
+      li.appendChild(document.createTextNode(it.label));
+      if (it.key) {
+        var code = document.createElement("span");
+        code.className = "key";
+        code.textContent = it.key;
+        li.appendChild(code);
+      }
+      if (it.tag) {
+        var tag = document.createElement("span");
+        tag.className = "tag" + (it.tagNew ? " new" : "");
+        tag.textContent = it.tag;
+        li.appendChild(tag);
+      }
+      dlgList.appendChild(li);
+    });
+    dlgList.hidden = !(opts.items && opts.items.length);
+    if (opts.option) {
+      dlgOptWrap.hidden = false;
+      dlgOpt.checked = true;
+      dlgOptText.textContent = opts.option.text;
+      dlgOptSub.textContent = opts.option.sub || "";
+    } else {
+      dlgOptWrap.hidden = true;
+    }
+    dlgWarn.textContent = opts.warn === undefined ? "消した記録は元に戻せません。" : opts.warn;
+    dlgWarn.hidden = !dlgWarn.textContent;
+    dlgOk.textContent = opts.okLabel || "削除する";
+    dlgOk.className = opts.okClass || "btn-danger-solid";
+    pending = opts;
+    dlg.returnValue = "";
+    try {
+      dlg.showModal();
+    } catch (e) {
+      pending = null;
+      notify("確認画面を開けませんでした。", true);
+    }
+  }
+  // 「削除する」を押したときだけ実行する。Esc・「やめる」では何もしない
+  var staleWhileOpen = false;   // ダイアログ中にほかのタブで保存が変わったら、閉じたあとに描き直す
+  dlg.querySelector("form").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var p = pending;
+    var go = ev.submitter === dlgOk;
+    var checked = !dlgOptWrap.hidden && dlgOpt.checked;
+    pending = null;
+    dlg.close(go ? "ok" : "cancel");
+    if (p && go) p.onOk(checked);
+  });
+  dlg.addEventListener("close", function () {
+    pending = null;
+    if (staleWhileOpen) { staleWhileOpen = false; render(); }
+  });
+
+  function keyItem(k) {
+    var info = KEY_INFO[k];
+    if (!info) return { label: "その他", key: k };
+    return { label: info.app.name + "・" + KIND_LABEL[info.def.kind] + (info.def.note ? "(" + info.def.note + ")" : ""), key: k };
+  }
+
+  function plannerOption(app) {
+    if (!app.review) return null;
+    var pc = plannerCounts(app.review);
+    if (!pc.r && !pc.d) return null;
+    return {
+      text: "復習プランナーと習慣プランナーの、このアプリの記録も消す",
+      sub: "復習プランナー: 単元 " + pc.r + "件 / 習慣プランナー: " + pc.d + "日分(ほかのアプリの分は残ります)"
+    };
+  }
+
+  function deleteFlow(title, keys, app, extraDone) {
+    var opt = app ? plannerOption(app) : null;
+    if (!keys.length && !opt) return;
+    openDialog({
+      title: title,
+      lead: keys.length ? "次の " + keys.length + " 項目を削除します。" : "このアプリの保存はもうありません。",
+      items: keys.map(keyItem),
+      option: opt,
+      onOk: function (alsoPlanners) {
+        var n = removeKeys(keys);
+        var msg = keys.length ? n + " 項目を削除しました。" : "";
+        if (alsoPlanners && app && app.review) {
+          msg += cleanPlanners(app.review) ? "復習・習慣プランナーの記録も消しました。" : "プランナーの記録は消せませんでした。";
+        }
+        if (n < keys.length) msg += "(" + (keys.length - n) + " 項目は消せませんでした)";
+        if (!msg) msg = "何も削除しませんでした。";
+        render();
+        notify(msg, n < keys.length);
+        if (extraDone) extraDone();
+      }
+    });
+  }
+
+  // ---------- 描画 ----------
+  var catList = document.getElementById("catList");
+  var last = null;
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function itemRow(key, kind, note, bytes, summary, onDelete) {
+    var li = el("li", "item-row");
+    var main = el("div", "item-main");
+    var line = el("div", "item-line");
+    line.appendChild(el("span", "badge " + kind, KIND_LABEL[kind]));
+    if (note) line.appendChild(el("span", "item-note", note));
+    main.appendChild(line);
+    main.appendChild(el("span", "key", key));
+    if (summary) main.appendChild(el("span", "item-sum", summary));
+    li.appendChild(main);
+    var side = el("div", "item-side");
+    side.appendChild(el("span", "item-size", kb(bytes) + " KB"));
+    var btn = el("button", "btn-danger btn-small", "削除");
+    btn.type = "button";
+    btn.setAttribute("aria-label", key + " を削除");
+    btn.addEventListener("click", onDelete);
+    side.appendChild(btn);
+    li.appendChild(side);
+    return li;
+  }
+
+  function appCard(entry) {
+    var a = entry.app;
+    var card = el("article", "card app-card");
+    var head = el("div", "app-head");
+    var link = el("a", "app-name", a.name);
+    link.href = a.href;
+    head.appendChild(link);
+    head.appendChild(el("span", "app-size", entry.rows.length + " 項目・" + kb(entry.bytes) + " KB"));
+    card.appendChild(head);
+    if (entry.plannerOnly) {
+      card.appendChild(el("p", "none-text", "このアプリの保存はありませんが、復習プランナーに単元 " + entry.plannerOnly.r +
+        "件、習慣プランナーに " + entry.plannerOnly.d + "日分の記録が残っています。「記録を削除」で消せます。"));
+    }
+
+    var ul = el("ul", "item-list");
+    entry.rows.forEach(function (r) {
+      ul.appendChild(itemRow(r.def.key, r.def.kind, r.def.note, r.bytes, summarize(r.def.key), function () {
+        deleteFlow(a.name + " の項目を削除", [r.def.key], null);
+      }));
+    });
+    card.appendChild(ul);
+
+    var recKeys = entry.rows.filter(function (r) { return r.def.kind === "record"; }).map(function (r) { return r.def.key; });
+    var allK = entry.rows.map(function (r) { return r.def.key; });
+    var actions = el("div", "app-actions");
+    var b1 = el("button", "btn-danger btn-small", "記録を削除");
+    b1.type = "button";
+    var pc = a.review ? plannerCounts(a.review) : { r: 0, d: 0 };
+    b1.disabled = !recKeys.length && !(pc.r || pc.d);
+    b1.addEventListener("click", function () { deleteFlow(a.name + " の記録を削除", recKeys, a); });
+    var b2 = el("button", "btn-danger btn-small", "すべて削除");
+    b2.type = "button";
+    b2.addEventListener("click", function () { deleteFlow(a.name + " の記録と設定を削除", allK, a); });
+    actions.appendChild(b1);
+    if (allK.length) actions.appendChild(b2);
+    card.appendChild(actions);
+    return card;
+  }
+
+  function render() {
+    var res = storageOk ? scan() : { cats: [], others: [], items: 0, bytes: 0, appsWithData: 0, records: [], settings: [] };
+    last = res;
+
+    document.getElementById("statApps").textContent = res.appsWithData;
+    document.getElementById("statItems").textContent = res.items;
+    var sizeEl = document.getElementById("statSize");
+    sizeEl.textContent = kb(res.bytes);
+    sizeEl.appendChild(el("small", "", "KB"));
+
+    var counts = document.getElementById("bulkCounts");
+    counts.textContent = "";
+    if (storageOk) {
+      counts.appendChild(document.createTextNode("いまの保存: 記録 "));
+      counts.appendChild(el("strong", "", String(res.records.length)));
+      counts.appendChild(document.createTextNode(" 項目、設定 "));
+      counts.appendChild(el("strong", "", String(res.settings.length)));
+      counts.appendChild(document.createTextNode(" 項目、登録されていない保存 "));
+      counts.appendChild(el("strong", "", String(res.others.length)));
+      counts.appendChild(document.createTextNode(" 項目。"));
+    } else {
+      counts.textContent = "保存領域を使えないため、操作できません。";
+    }
+    updateBulkButtons();
+
+    catList.textContent = "";
+    if (!storageOk) return;
+
+    res.cats.forEach(function (c) {
+      var sec = el("section", "cat");
+      var h = el("h2", "cat-title", c.cat);
+      h.appendChild(el("span", "cat-sub", c.withData.length + " / " + (c.withData.length + c.empty.length) + " アプリに保存あり"));
+      sec.appendChild(h);
+      c.withData.forEach(function (e) { sec.appendChild(appCard(e)); });
+      if (!c.withData.length) sec.appendChild(el("p", "none-text", "この区分には保存がありません。"));
+      if (c.empty.length) {
+        var det = el("details", "empty-apps");
+        det.appendChild(el("summary", "", "保存なし " + c.empty.length + "件"));
+        var ul = el("ul", "empty-list");
+        c.empty.forEach(function (e) {
+          var li = el("li");
+          var a = el("a", "", e.app.name);
+          a.href = e.app.href;
+          li.appendChild(a);
+          ul.appendChild(li);
+        });
+        det.appendChild(ul);
+        sec.appendChild(det);
+      }
+      catList.appendChild(sec);
+    });
+
+    if (res.others.length) {
+      var sec = el("section", "cat");
+      var h = el("h2", "cat-title", "その他(登録されていない保存)");
+      h.appendChild(el("span", "cat-sub", res.others.length + " 項目"));
+      sec.appendChild(h);
+      var card = el("article", "card app-card");
+      card.appendChild(el("p", "hint", "このページの登録表にない保存です。別のページや、同じ場所で開いたほかのサイトのものかもしれません。"));
+      var ul = el("ul", "item-list");
+      ul.style.marginTop = "8px";
+      res.others.forEach(function (o) {
+        ul.appendChild(itemRow(o.key, "other", "", o.bytes, "", function () {
+          deleteFlow("登録されていない保存を削除", [o.key], null);
+        }));
+      });
+      card.appendChild(ul);
+      sec.appendChild(card);
+      catList.appendChild(sec);
+    }
+  }
+
+  // ---------- 一括操作 ----------
+  var confirmWord = document.getElementById("confirmWord");
+  var bulkRecordsBtn = document.getElementById("bulkRecordsBtn");
+  var bulkAllBtn = document.getElementById("bulkAllBtn");
+  function updateBulkButtons() {
+    var typed = confirmWord.value.trim() === "削除";
+    var r = last || { records: [], settings: [], others: [] };
+    bulkRecordsBtn.disabled = !storageOk || !typed || !r.records.length;
+    bulkAllBtn.disabled = !storageOk || !typed || !(r.records.length + r.settings.length + r.others.length);
+    confirmWord.disabled = !storageOk;
+  }
+  confirmWord.addEventListener("input", updateBulkButtons);
+
+  function bulkDelete(keys, label) {
+    var n = removeKeys(keys);
+    confirmWord.value = "";
+    render();
+    var msg = label + "(" + n + " 項目)。";
+    if (n < keys.length) msg += (keys.length - n) + " 項目は消せませんでした。";
+    notify(msg, n < keys.length);
+  }
+  bulkRecordsBtn.addEventListener("click", function () {
+    if (confirmWord.value.trim() !== "削除" || !last) return;
+    bulkDelete(last.records.slice(), "すべての記録を削除しました");
+  });
+  bulkAllBtn.addEventListener("click", function () {
+    if (confirmWord.value.trim() !== "削除" || !last) return;
+    var keys = last.records.concat(last.settings, last.others.map(function (o) { return o.key; }));
+    bulkDelete(keys, "記録と設定をすべて削除しました");
+  });
+
+  // ---------- バックアップ ----------
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function exportBackup() {
+    if (!storageOk) return;
+    var data = {}, n = 0;
+    allKeys().forEach(function (k) {
+      var v = rawGet(k);
+      if (v !== null) { data[k] = v; n++; }
+    });
+    if (!n) { notify("保存がないため、書き出すものがありません。"); return; }
+    var now = new Date();
+    var json = JSON.stringify({ app: "record-manager", version: 1, exportedAt: now.toISOString(), data: data }, null, 2);
+    try {
+      var blob = new Blob([json], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = "study-records-" + now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate()) + ".json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+      notify(n + " 項目を書き出しました。");
+    } catch (e) {
+      notify("書き出せませんでした。", true);
+    }
+  }
+  document.getElementById("exportBtn").addEventListener("click", exportBackup);
+  document.getElementById("bulkExportBtn").addEventListener("click", exportBackup);
+
+  var importFile = document.getElementById("importFile");
+  var importError = document.getElementById("importError");
+  document.getElementById("importBtn").addEventListener("click", function () {
+    importError.textContent = "";
+    importFile.value = "";
+    importFile.click();
+  });
+
+  function parseBackup(text) {
+    var obj;
+    try { obj = JSON.parse(text); } catch (e) { return { error: "JSONとして読めないファイルです。" }; }
+    if (!obj || typeof obj !== "object" || Array.isArray(obj)) return { error: "バックアップの形になっていません。" };
+    if (obj.app !== "record-manager") return { error: "このページで書き出したバックアップではありません。" };
+    if (obj.version !== 1) return { error: "対応していない版のバックアップです(version: " + String(obj.version) + ")。" };
+    var data = obj.data;
+    if (!data || typeof data !== "object" || Array.isArray(data)) return { error: "バックアップの中身(data)がありません。" };
+    var keys = Object.keys(data).filter(function (k) { return HIDDEN.indexOf(k) < 0; });
+    for (var i = 0; i < keys.length; i++) {
+      if (typeof data[keys[i]] !== "string") return { error: "中身の形が正しくありません(" + keys[i] + " が文字列ではありません)。" };
+    }
+    if (!keys.length) return { error: "バックアップに項目が1つもありません。" };
+    return { data: data, keys: keys, exportedAt: typeof obj.exportedAt === "string" ? obj.exportedAt : "" };
+  }
+
+  function importBackup(b) {
+    var overwrite = 0, same = 0;
+    var items = b.keys.map(function (k) {
+      var cur = rawGet(k);
+      var it = keyItem(k);
+      if (cur === null) { it.tag = "新規"; it.tagNew = true; }
+      else if (cur === b.data[k]) { it.tag = "同じ"; it.tagNew = true; same++; }
+      else { it.tag = "上書き"; overwrite++; }
+      return it;
+    });
+    var when = "";
+    if (b.exportedAt) {
+      var d = new Date(b.exportedAt);
+      if (!isNaN(d.getTime())) when = d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日に書き出したバックアップです。";
+    }
+    openDialog({
+      title: "バックアップを読み込む",
+      lead: when + b.keys.length + " 項目を書き込みます。そのうち " + overwrite + " 項目は、今の保存を上書きします" + (same ? "(" + same + " 項目は今と同じ内容)" : "") + "。",
+      items: items,
+      option: null,
+      warn: overwrite ? "上書きした今の保存は元に戻せません。" : "",
+      okLabel: "読み込む",
+      okClass: "btn-accent",
+      onOk: function () {
+        var ok = 0;
+        b.keys.forEach(function (k) {
+          try { localStorage.setItem(k, b.data[k]); ok++; } catch (e) { /* 容量不足など */ }
+        });
+        render();
+        if (ok < b.keys.length) notify(ok + " 項目を読み込みました。" + (b.keys.length - ok) + " 項目は書き込めませんでした。", true);
+        else notify(ok + " 項目を読み込みました。");
+      }
+    });
+  }
+
+  importFile.addEventListener("change", function () {
+    var f = importFile.files && importFile.files[0];
+    if (!f) return;
+    if (!storageOk) return;
+    if (f.size > 20 * 1024 * 1024) { importError.textContent = "ファイルが大きすぎます。"; return; }
+    var reader = new FileReader();
+    reader.onload = function () {
+      var b = parseBackup(String(reader.result || ""));
+      if (b.error) { importError.textContent = b.error; notify("読み込めませんでした。", true); return; }
+      importError.textContent = "";
+      importBackup(b);
+    };
+    reader.onerror = function () { importError.textContent = "ファイルを読めませんでした。"; };
+    reader.readAsText(f);
+  });
+
+  // ---------- はじめに ----------
+  if (!storageOk) {
+    document.getElementById("unavailable").hidden = false;
+    ["exportBtn", "importBtn", "bulkExportBtn"].forEach(function (id) { document.getElementById(id).disabled = true; });
+  }
+  // ほかのタブで保存が変わったら描き直す
+  window.addEventListener("storage", function () {
+    if (dlg.open) staleWhileOpen = true; else render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>
