@@ -1,0 +1,61 @@
+/* 習慣プランナー の色。変数名は学習シリーズ共通(shared/base.css を参照)。 */
+:root {
+  color-scheme: light;
+  --bg: #F1F0F7;
+  --surface: #FFFFFF;
+  --surface-2: #E7E5F1;
+  --border: #D2CFE3;
+  --ink: #1D1B2B;
+  --ink-muted: #4F4C63;
+  --ink-faint: #66637A;
+  --accent: #4B47A8;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E3E2F6;
+  --good: #2F6E4B;
+  --good-soft: #DDEFE3;
+  --bad: #A8432F;
+  --bad-soft: #F6E2DC;
+  --shadow: rgba(29, 27, 43, 0.10);
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #12111A;
+    --surface: #1A1926;
+    --surface-2: #252336;
+    --border: #35324B;
+    --ink: #E9E7F5;
+    --ink-muted: #B0ADC6;
+    --ink-faint: #8E8BA6;
+    --accent: #A9A5F2;
+    --accent-ink: #15133A;
+    --accent-soft: #28264C;
+    --good: #7DBF98;
+    --good-soft: #1E3328;
+    --bad: #E58A6E;
+    --bad-soft: #3A241E;
+    --shadow: rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #12111A;
+  --surface: #1A1926;
+  --surface-2: #252336;
+  --border: #35324B;
+  --ink: #E9E7F5;
+  --ink-muted: #B0ADC6;
+  --ink-faint: #8E8BA6;
+  --accent: #A9A5F2;
+  --accent-ink: #15133A;
+  --accent-soft: #28264C;
+  --good: #7DBF98;
+  --good-soft: #1E3328;
+  --bad: #E58A6E;
+  --bad-soft: #3A241E;
+  --shadow: rgba(0, 0, 0, 0.4);
+}

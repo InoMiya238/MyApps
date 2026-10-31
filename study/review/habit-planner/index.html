@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>習慣プランナー</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 720px; gap: 22px; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+  .card h2 .h2-sub {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--ink-muted);
+  }
+  .card h2 .h2-score {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .hint {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin: 10px 0 0;
+    line-height: 1.6;
+  }
+  .empty {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+  .empty strong { color: var(--ink); }
+  .empty a { color: var(--accent); font-weight: 600; }
+
+  /* 教科・種類の小さな札 */
+  .subj {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.74rem;
+    font-weight: 700;
+    line-height: 1.6;
+    white-space: nowrap;
+  }
+  .subj.plain { background: var(--surface-2); color: var(--ink-muted); }
+  .subj.review { background: var(--bad-soft); color: var(--bad); }
+  .subj.ok { background: var(--good-soft); color: var(--good); }
+
+  /* ---------- ボタン ---------- */
+  button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    padding: 11px 18px;
+  }
+  .solve-btn {
+    flex: none;
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .solve-btn:hover, .btn-primary:hover { filter: brightness(1.08); }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--border);
+    font-weight: 600;
+  }
+  .btn-ghost:hover { background: var(--accent-soft); }
+  .btn-small { padding: 6px 12px; font-size: 0.82rem; border-radius: 8px; }
+  .btn-danger {
+    background: var(--bad-soft);
+    color: var(--bad);
+    font-weight: 700;
+  }
+  .btn-danger:hover { filter: brightness(0.97); }
+  .icon-btn {
+    padding: 5px 9px;
+    font-size: 0.8rem;
+    border-radius: 8px;
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .icon-btn:hover:not(:disabled) { color: var(--accent); }
+  .icon-btn:disabled { opacity: 0.4; cursor: default; }
+  .icon-btn.del { color: var(--bad); }
+
+  /* 「やった」チェック */
+  .check-btn {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-weight: 700;
+    font-size: 0.88rem;
+    white-space: nowrap;
+  }
+  .check-btn .box {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1.5px solid var(--ink-faint);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    line-height: 1;
+  }
+  .check-btn[aria-pressed="true"] { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+  .check-btn[aria-pressed="true"] .box { border-color: var(--good); background: var(--good); color: var(--surface); }
+
+  /* ---------- 今日のメニュー ---------- */
+  .menu-list { list-style: none; margin: 0; padding: 0; }
+  .habit {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .habit:first-child { padding-top: 0; }
+  .habit:last-child { border-bottom: none; padding-bottom: 0; }
+  .habit-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 12px;
+  }
+  .habit-main { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .habit-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+  }
+  .habit-name { font-weight: 700; font-size: 1rem; overflow-wrap: anywhere; }
+  .habit-name a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+  .habit-name a:hover { color: var(--accent); }
+  .habit.is-done .habit-name { color: var(--ink-muted); }
+
+  .progress { display: flex; align-items: center; gap: 10px; }
+  .bar {
+    flex: 1;
+    min-width: 0;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .bar-fill { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
+  .habit.is-done .bar-fill { background: var(--good); }
+  .prog-text { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-muted); white-space: nowrap; }
+  .prog-text b { color: var(--ink); }
+
+  .pick-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+  }
+  .pick-list {
+    list-style: none;
+    margin: 0;
+    padding: 4px 12px;
+    background: var(--surface-2);
+    border-radius: 12px;
+  }
+  .pick {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .pick:last-child { border-bottom: none; }
+  .pick-main { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .pick-name { font-weight: 600; font-size: 0.92rem; overflow-wrap: anywhere; }
+  .pick-sub {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2px 8px;
+    font-size: 0.74rem;
+    color: var(--ink-muted);
+  }
+  .pick-none { margin: 0; font-size: 0.84rem; color: var(--ink-muted); }
+
+  .all-done {
+    margin: 0 0 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--good-soft);
+    color: var(--good);
+    font-weight: 700;
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  details.rest { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
+  details.rest summary, details.fold summary {
+    cursor: pointer;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .rest-list { list-style: none; margin: 8px 0 0; padding: 0; }
+  .rest-list li {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2px 8px;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 0.86rem;
+  }
+  .rest-list li:last-child { border-bottom: none; }
+  .rest-days { font-size: 0.76rem; color: var(--ink-muted); }
+
+  /* ---------- 記録 ---------- */
+  .streaks {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .streak {
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .streak-label { font-size: 0.76rem; font-weight: 600; color: var(--ink-muted); }
+  .streak-num { font-family: var(--font-display); font-size: 1.7rem; font-weight: 700; line-height: 1.2; }
+  .streak-num small { font-family: var(--font-body); font-size: 0.8rem; font-weight: 600; margin-left: 2px; color: var(--ink-muted); }
+  .streak-note { font-size: 0.74rem; color: var(--ink-muted); }
+  .streak-note.up { color: var(--accent); font-weight: 600; }
+
+  .cal {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .cal-wd {
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+    padding-bottom: 2px;
+  }
+  .cal-day {
+    aspect-ratio: 1 / 1;
+    max-height: 52px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1.5px solid transparent;
+  }
+  .st-all { background: var(--good); color: var(--surface); }
+  .st-part { background: var(--good-soft); color: var(--good); border-color: var(--good); }
+  .st-miss { background: var(--bad-soft); color: var(--bad); }
+  .st-off { background: var(--surface-2); color: var(--ink-muted); }
+  .st-none { background: transparent; color: var(--ink-faint); border: 1.5px dashed var(--border); }
+  .st-future { background: transparent; color: var(--ink-faint); opacity: 0.5; }
+  .cal-day.is-today { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    margin: 12px 0 0;
+    font-size: 0.76rem;
+    color: var(--ink-muted);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend i {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    border-radius: 3px;
+    border: 1.5px solid transparent;
+  }
+  /* 凡例の見本はマスより小さいので、枠の色でも見分けられるようにする */
+  .legend i.st-part { border-color: var(--good); }
+  .legend i.st-miss { border-color: var(--bad); }
+  .legend i.st-off { border-color: var(--ink-faint); }
+  .legend i.st-none { border: 1.5px dashed var(--ink-faint); }
+
+  /* ---------- 習慣の設定 ---------- */
+  .set-list { list-style: none; margin: 0 0 16px; padding: 0; }
+  .set-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .set-row:first-child { padding-top: 0; }
+  .set-row.is-editing { background: var(--accent-soft); border-radius: 10px; padding: 10px; }
+  .set-main { min-width: 0; flex: 1 1 200px; display: flex; flex-direction: column; gap: 3px; }
+  .set-name { font-weight: 600; font-size: 0.95rem; overflow-wrap: anywhere; }
+  .set-sub { font-size: 0.76rem; color: var(--ink-muted); }
+  .set-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--surface-2);
+  }
+  .form-title { margin: 0; font-weight: 700; font-size: 0.92rem; }
+  fieldset { border: none; margin: 0; padding: 0; min-width: 0; }
+  legend.f-label, .f-label {
+    display: block;
+    padding: 0;
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+  }
+  .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { position: relative; }
+  .chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .chip span {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+  }
+  .chip.day span { min-width: 2.5em; text-align: center; padding: 7px 0; }
+  .chip input:checked + span { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); }
+  .chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .f-row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .f-field { display: flex; flex-direction: column; min-width: 0; flex: 1 1 140px; }
+  select, input[type="text"] {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    padding: 9px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    width: 100%;
+    min-width: 0;
+  }
+  .form-error { margin: 0; color: var(--bad); font-size: 0.84rem; font-weight: 600; }
+  .form-error:empty { display: none; }
+  .form-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  [hidden] { display: none !important; }
+
+  /* ---------- しくみ ---------- */
+  .rules { margin: 0; padding-left: 1.2em; font-size: 0.88rem; line-height: 1.75; color: var(--ink-muted); }
+  .rules strong { color: var(--ink); }
+  .clear-row { margin-top: 14px; }
+
+  .solve-btn:focus-visible,
+  button:focus-visible,
+  summary:focus-visible,
+  select:focus-visible,
+  input:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 24px 12px 56px; }
+    .card { padding: 18px 14px; }
+    .form { padding: 14px 12px; }
+    .pick-list { padding: 4px 10px; }
+    .solve-btn, .check-btn { padding: 8px 11px; }
+    .chip.day span { min-width: 2.2em; }
+    .cal { gap: 3px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">HABIT</p>
+    <h1>習慣プランナー</h1>
+    <p class="tagline">続けたい道場や練習を登録しておくと、毎日の「今日やること」を分野をまたいで並べます。道場で解いた問題数は自動で数えます。</p>
+  </header>
+
+  <section class="card" aria-labelledby="menuHeading">
+    <h2 id="menuHeading">今日のメニュー <span class="h2-sub" id="menuDate"></span><span class="h2-score" id="menuScore"></span></h2>
+    <div id="menuBody"></div>
+  </section>
+
+  <section class="card" aria-labelledby="recordHeading">
+    <h2 id="recordHeading">記録</h2>
+    <div class="streaks">
+      <div class="streak">
+        <span class="streak-label">連続達成</span>
+        <span class="streak-num" id="curStreak"></span>
+        <span class="streak-note" id="curNote"></span>
+      </div>
+      <div class="streak">
+        <span class="streak-label">最長連続</span>
+        <span class="streak-num" id="bestStreak"></span>
+        <span class="streak-note">対象の習慣がない日は飛ばして数えます</span>
+      </div>
+    </div>
+    <div class="cal" id="calendar" aria-label="直近5週の達成状況"></div>
+    <p class="legend" aria-hidden="true">
+      <span><i class="st-all"></i>全部達成</span>
+      <span><i class="st-part"></i>一部</span>
+      <span><i class="st-miss"></i>未達成</span>
+      <span><i class="st-off"></i>対象なし</span>
+      <span><i class="st-none"></i>記録なし</span>
+    </p>
+  </section>
+
+  <section class="card" id="settings" aria-labelledby="settingsHeading">
+    <h2 id="settingsHeading">習慣の設定 <span class="h2-sub" id="habitCount"></span></h2>
+    <ul class="set-list" id="setList"></ul>
+
+    <form class="form" id="habitForm" novalidate>
+      <p class="form-title" id="formTitle">習慣を追加</p>
+      <fieldset>
+        <legend class="f-label">種類</legend>
+        <div class="seg">
+          <label class="chip"><input type="radio" name="ftype" value="dojo" checked><span>道場(自動で数える)</span></label>
+          <label class="chip"><input type="radio" name="ftype" value="page"><span>練習ページ</span></label>
+          <label class="chip"><input type="radio" name="ftype" value="free"><span>自由な習慣</span></label>
+        </div>
+      </fieldset>
+
+      <div class="f-row" id="dojoFields">
+        <label class="f-field"><span class="f-label">道場</span><select id="fDojo"></select></label>
+        <label class="f-field"><span class="f-label">1日の問題数</span>
+          <select id="fCount"><option value="5">5問</option><option value="10" selected>10問</option><option value="20">20問</option><option value="30">30問</option></select>
+        </label>
+        <label class="f-field" id="gradeField"><span class="f-label">学年で絞る</span><select id="fGrade"></select></label>
+      </div>
+
+      <div class="f-row" id="pageFields" hidden>
+        <label class="f-field"><span class="f-label">ページ</span><select id="fPage"></select></label>
+      </div>
+
+      <div class="f-row" id="freeFields" hidden>
+        <label class="f-field"><span class="f-label">名前</span><input type="text" id="fName" maxlength="30" placeholder="例: 読書15分" autocomplete="off"></label>
+      </div>
+
+      <fieldset>
+        <legend class="f-label">曜日</legend>
+        <div class="seg" id="dayChips"></div>
+      </fieldset>
+
+      <p class="form-error" id="formError" role="alert"></p>
+      <div class="form-actions">
+        <button type="submit" class="btn-primary" id="submitBtn">追加する</button>
+        <button type="button" class="btn-ghost" id="cancelBtn" hidden>やめる</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card" aria-labelledby="rulesHeading">
+    <h2 id="rulesHeading">しくみ</h2>
+    <ul class="rules">
+      <li><strong>道場</strong>は、その日に解いた問題数を自動で数え、1日の問題数に届いたら達成です。</li>
+      <li>おすすめ単元は、<strong>復習日が来た単元 → まだ解いていない単元 → 正答率の低い単元 → しばらく解いていない単元</strong>の順に選びます。その日のうちは同じ並びのままです。</li>
+      <li><strong>練習ページ</strong>と<strong>自由な習慣</strong>は、終わったら自分で「やった」を押します。</li>
+      <li>その日の対象の習慣をすべて終えると<strong>全部達成</strong>です。対象の習慣がない曜日は、連続日数を数えるときに飛ばします。</li>
+      <li>このページを開かなかった日は「記録なし」になり、連続が途切れます。</li>
+    </ul>
+    <p class="hint">記録はこの端末のブラウザーにだけ保存されます。道場の成績や復習プランナーの記録は書き換えません。</p>
+    <div class="clear-row">
+      <button type="button" class="btn-danger" id="clearBtn">記録を消す</button>
+    </div>
+  </section>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="../../../shared/review.js"></script>
+<script src="../../math/junior-high-math/data.js"></script>
+<script src="../../japanese/junior-high-japanese/data.js"></script>
+<script src="../../english/junior-high-english/data.js"></script>
+<script src="../../english/junior-high-english/vocab.js"></script>
+<script src="../../science/junior-high-science/data.js"></script>
+<script src="../../science/chemistry-lab/data.js"></script>
+<script src="../../social/junior-high-social/data.js"></script>
+<script src="../../geography/world-map-dojo/data.js"></script>
+<script src="../../it/git-basics/data.js"></script>
+<script src="../../it/linux-basics/data.js"></script>
+<script src="../../it/sql-basics/data.js"></script>
+<script src="../../it/regex-basics/data.js"></script>
+<script src="../../it/web-basics/data.js"></script>
+<script src="../../it/python-basics/data.js"></script>
+<script src="../../it/algorithm-visualizer/data.js"></script>
+<script src="../../ai/ai-theory-lab/data.js"></script>
+<script src="../../electronics/electronics-basics/data.js"></script>
+<script src="../../math/prime-numbers/data.js"></script>
+<script src="../../korean/korean-basics/data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var SETTINGS_KEY = "habitPlannerSettings";
+  var HISTORY_KEY = "habitPlannerHistory";
+  var ANSWER_KEY = "habitPlannerAnswerLog";   // shared/review.js が回答のたびに数える
+  var KEEP_DAYS = 400;                         // 日々の記録を残す日数
+  var COUNTS = [5, 10, 20, 30];
+  var ALL_DAYS = [0, 1, 2, 3, 4, 5, 6];
+  var WEEK = ["日", "月", "火", "水", "木", "金", "土"];
+
+  // ---------- 道場の定義(復習プランナーの SUBJECTS と同じ表) ----------
+  // ns: 道場の data.js が作るグローバル(読み込めなかったときは null。そのときも止めない)
+  function nsOf(name) { return typeof window[name] === "object" && window[name] ? window[name] : null; }
+  var SUBJECTS = [
+    { app: "math", label: "数学", ns: nsOf("JHM"), href: "../../math/junior-high-math/index.html", dojo: "中学数学道場" },
+    { app: "japanese", label: "国語", ns: nsOf("JHJ"), href: "../../japanese/junior-high-japanese/index.html", dojo: "中学国語道場" },
+    { app: "english", label: "英語", ns: nsOf("JHE"), href: "../../english/junior-high-english/index.html", dojo: "中学英語道場" },
+    { app: "english-vocab", label: "英単語", ns: nsOf("JHV"), href: "../../english/junior-high-english/vocab.html", dojo: "中学英単語帳" },
+    { app: "science", label: "理科", ns: nsOf("JHS"), href: "../../science/junior-high-science/index.html", dojo: "中学理科道場" },
+    { app: "chemistry", label: "化学基礎", ns: nsOf("CHEM"), href: "../../science/chemistry-lab/index.html", dojo: "化学基礎道場" },
+    { app: "social", label: "社会", ns: nsOf("JHSO"), href: "../../social/junior-high-social/index.html", dojo: "中学社会道場" },
+    { app: "worldmap", label: "世界地図", ns: nsOf("WMAP"), href: "../../geography/world-map-dojo/index.html", dojo: "世界地図道場" },
+    { app: "shogi", label: "将棋", ns: null, href: "../../shogi/shogi-dojo/index.html", dojo: "将棋道場" },
+    { app: "git", label: "Git", ns: nsOf("GITD"), href: "../../it/git-basics/index.html", dojo: "Git道場" },
+    { app: "linux", label: "Linux", ns: nsOf("LNX"), href: "../../it/linux-basics/index.html", dojo: "Linux道場" },
+    { app: "sql", label: "SQL", ns: nsOf("SQLD"), href: "../../it/sql-basics/index.html", dojo: "SQL道場" },
+    { app: "regex", label: "正規表現", ns: nsOf("RGX"), href: "../../it/regex-basics/index.html", dojo: "正規表現道場" },
+    { app: "web", label: "Web", ns: nsOf("WEBD"), href: "../../it/web-basics/index.html", dojo: "Web道場" },
+    { app: "python", label: "Python", ns: nsOf("PYD"), href: "../../it/python-basics/index.html", dojo: "Python道場" },
+    { app: "algorithm", label: "アルゴリズム", ns: nsOf("ALGO"), href: "../../it/algorithm-visualizer/index.html", dojo: "アルゴリズム道場" },
+    { app: "ai", label: "AI理論", ns: nsOf("AITL"), href: "../../ai/ai-theory-lab/index.html", dojo: "AI理論道場" },
+    { app: "electronics", label: "電子工作", ns: nsOf("ELEC"), href: "../../electronics/electronics-basics/index.html", dojo: "電子工作道場" },
+    { app: "primes", label: "素数", ns: nsOf("PRIM"), href: "../../math/prime-numbers/index.html", dojo: "素数道場" },
+    { app: "korean", label: "韓国語", ns: nsOf("KOR"), href: "../../korean/korean-basics/index.html", dojo: "韓国語入門道場" }
+  ];
+  var SHOGI_CATS = [
+    { id: "castles", name: "囲い" },
+    { id: "openings", name: "戦法" },
+    { id: "tesuji", name: "手筋" },
+    { id: "terms", name: "用語" },
+    // 1手詰めは別のページ(tsume.html)。成績は shogiDojoTsume に問題ごとに入っている
+    { id: "tsume1", name: "1手詰め", page: "../../shogi/shogi-dojo/tsume.html", statsKey: "shogiDojoTsume" }
+  ];
+  var subjectOf = {};
+  SUBJECTS.forEach(function (s, i) { s.order = i; subjectOf[s.app] = s; });
+
+  // ---------- 練習ページ(復習プランナーで管理していないページ。id は保存データのキーなので変えない) ----------
+  var PAGES = [
+    { id: "mental-math", label: "数学", name: "暗算道場", href: "../../math/mental-math-trainer/index.html" },
+    { id: "order-quiz", label: "数学", name: "オーダークイズ", href: "../../math/order-of-magnitude/quiz.html" },
+    { id: "fretboard", label: "音楽", name: "指板ノート道場", href: "../../music/fretboard-note-quiz/index.html" },
+    { id: "pentatonic", label: "音楽", name: "ペンタトニックスケール帳", href: "../../music/fretboard-note-quiz/pentatonic.html" },
+    { id: "staff", label: "音楽", name: "五線譜ノート道場", href: "../../music/staff-notation-quiz/index.html" },
+    { id: "invest-course", label: "投資", name: "投資入門コース", href: "../../finance/investment-simulator/course.html" },
+    { id: "invest-sim", label: "投資", name: "投資シミュレーション道場", href: "../../finance/investment-simulator/index.html" },
+    { id: "ai-lab", label: "AI", name: "AI実験室", href: "../../ai/ai-theory-lab/lab.html" }
+  ];
+  var pageOf = {};
+  PAGES.forEach(function (p) { pageOf[p.id] = p; });
+
+  // ---------- 小さな道具 ----------
+  function cleanNum(v) { return typeof v === "number" && isFinite(v) && v >= 0 ? Math.floor(v) : 0; }
+  function isObj(v) { return !!v && typeof v === "object" && !Array.isArray(v); }
+  function isId(v) { return typeof v === "string" && /^[A-Za-z0-9_-]{1,40}$/.test(v); }
+  function today() { return Review.today(); }
+  function dateOf(ymd) { var p = ymd.split("-").map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+  function weekday(ymd) { return dateOf(ymd).getDay(); }
+  function longDate(ymd) { var d = dateOf(ymd); return (d.getMonth() + 1) + "月" + d.getDate() + "日(" + WEEK[d.getDay()] + ")"; }
+  function shortDate(ymd) { var d = dateOf(ymd); return (d.getMonth() + 1) + "/" + d.getDate() + "(" + WEEK[d.getDay()] + ")"; }
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function newId() { return "h" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function daysText(days) {
+    if (days.length === 7) return "毎日";
+    if (days.join() === "1,2,3,4,5") return "平日";
+    if (days.join() === "0,6") return "土日";
+    return days.map(function (d) { return WEEK[d]; }).join("・");
+  }
+
+  // ---------- 道場の単元と成績 ----------
+  // 学年: [{ id, short }](2つ以上あるときだけ「学年で絞る」を出す)
+  function gradesOf(s) {
+    var ns = s.ns;
+    if (!ns || !Array.isArray(ns.UNITS)) return [];
+    var seen = [], out = [];
+    ns.UNITS.forEach(function (u) {
+      if (u && typeof u.grade === "string" && seen.indexOf(u.grade) < 0) seen.push(u.grade);
+    });
+    seen.forEach(function (g) {
+      var info = null;
+      try { info = typeof ns.grade === "function" ? ns.grade(g) : null; } catch (e) { info = null; }
+      out.push({ id: g, short: info ? (info.short || info.name || g) : g });
+    });
+    return out.length >= 2 ? out : [];
+  }
+  function gradeShort(s, g) {
+    var list = gradesOf(s);
+    for (var i = 0; i < list.length; i++) if (list[i].id === g) return list[i].short;
+    return "";
+  }
+  // 単元の一覧: [{ id, name, meta, href }](学年で絞る)
+  function unitsOf(s, grade) {
+    if (s.app === "shogi") {
+      return SHOGI_CATS.map(function (c) {
+        return { id: c.id, name: c.name, meta: "",
+          href: c.page ? c.page + "?unit=" + encodeURIComponent(c.id) : s.href + "?cat=" + encodeURIComponent(c.id) };
+      });
+    }
+    if (!s.ns || !Array.isArray(s.ns.UNITS)) return [];
+    var hasGrades = gradesOf(s).length > 0;
+    return s.ns.UNITS.filter(function (u) {
+      return u && typeof u.id === "string" && (!grade || grade === "all" || u.grade === grade);
+    }).map(function (u) {
+      var g = hasGrades ? gradeShort(s, u.grade) : "";
+      return { id: u.id, name: u.name, meta: g + (g && u.area ? " · " : "") + (u.area || ""),
+        href: s.href + "?unit=" + encodeURIComponent(u.id) };
+    });
+  }
+  // 単元ごとの成績: { 単元ID: { total, correct } }(道場のキーは読むだけ)
+  function statsOf(s) {
+    var out = {};
+    try {
+      if (s.app === "shogi") {
+        var raw = Store.load("shogiDojoStats", null);
+        var byCat = isObj(raw) && isObj(raw.byCat) ? raw.byCat : {};
+        SHOGI_CATS.forEach(function (c) {
+          if (c.statsKey) {
+            var t = Store.load(c.statsKey, null);
+            var items = isObj(t) && isObj(t.items) ? t.items : {};
+            var total = 0, correct = 0;
+            Object.keys(items).forEach(function (k) {
+              var r = items[k];
+              if (!isObj(r) || cleanNum(r.tries) <= 0) return;
+              total++;
+              if (r.first === "ok") correct++;
+            });
+            out[c.id] = { total: total, correct: correct };
+          } else {
+            var b = isObj(byCat[c.id]) ? byCat[c.id] : {};
+            var tt = cleanNum(b.total);
+            out[c.id] = { total: tt, correct: Math.min(cleanNum(b.correct), tt) };
+          }
+        });
+      } else if (s.ns && typeof s.ns.loadStats === "function") {
+        var st = s.ns.loadStats();
+        var byUnit = isObj(st) && isObj(st.byUnit) ? st.byUnit : {};
+        Object.keys(byUnit).forEach(function (id) {
+          var r = isObj(byUnit[id]) ? byUnit[id] : {};
+          var n = cleanNum(r.total);
+          out[id] = { total: n, correct: Math.min(cleanNum(r.correct), n) };
+        });
+      }
+    } catch (e) { /* 読めなくても止めない */ }
+    return out;
+  }
+
+  // ---------- 回答数 ----------
+  function reviewItems() {
+    try { return Review.list(); } catch (e) { return []; }
+  }
+  // その日の道場ごとの回答数: { app: 数 }
+  function answersOn(ymd) {
+    var out = {};
+    try {
+      var src = null;
+      if (typeof Review.answersOn === "function") src = Review.answersOn(ymd);
+      else {
+        var raw = Store.load(ANSWER_KEY, null);
+        src = isObj(raw) && isObj(raw.days) && isObj(raw.days[ymd]) ? raw.days[ymd] : null;
+      }
+      if (isObj(src)) Object.keys(src).forEach(function (app) { out[app] = cleanNum(src[app]); });
+    } catch (e) { /* 読めなくても止めない */ }
+    return out;
+  }
+  // 今日解いた数 = max(回答ログ, 復習の記録の今日の回答数の合計)
+  function solvedToday(app, t, items) {
+    var a = answersOn(t)[app] || 0, b = 0;
+    items.forEach(function (it) { if (it.app === app && it.dayDate === t) b += cleanNum(it.dayTotal); });
+    return Math.max(a, b);
+  }
+
+  // ---------- 設定 ----------
+  // { habits: [ { id, type: "dojo"|"page"|"free", days: [0〜6], app, count, grade, page, name } ] }
+  function cleanDays(v) {
+    var out = [];
+    if (Array.isArray(v)) v.forEach(function (d) { if (ALL_DAYS.indexOf(d) >= 0 && out.indexOf(d) < 0) out.push(d); });
+    out.sort();
+    return out.length ? out : ALL_DAYS.slice();
+  }
+  function cleanHabit(r) {
+    if (!isObj(r) || !isId(r.id)) return null;
+    var h = { id: r.id, type: r.type, days: cleanDays(r.days) };
+    if (r.type === "dojo") {
+      var s = subjectOf[r.app];
+      if (!s) return null;
+      h.app = r.app;
+      h.count = COUNTS.indexOf(r.count) >= 0 ? r.count : 10;
+      h.grade = gradesOf(s).some(function (g) { return g.id === r.grade; }) ? r.grade : "all";
+    } else if (r.type === "page") {
+      if (!pageOf[r.page]) return null;
+      h.page = r.page;
+    } else if (r.type === "free") {
+      var name = typeof r.name === "string" ? r.name.trim().slice(0, 30) : "";
+      if (!name) return null;
+      h.name = name;
+    } else return null;
+    return h;
+  }
+  function loadSettings() {
+    var raw = Store.load(SETTINGS_KEY, null);
+    var list = isObj(raw) && Array.isArray(raw.habits) ? raw.habits : [];
+    var out = [], ids = {}, apps = {};
+    list.forEach(function (r) {
+      var h = cleanHabit(r);
+      if (!h || ids[h.id]) return;
+      if (h.type === "dojo") { if (apps[h.app]) return; apps[h.app] = true; }
+      ids[h.id] = true;
+      out.push(h);
+    });
+    return { habits: out };
+  }
+  function saveSettings() { Store.save(SETTINGS_KEY, settings); }
+  function habitById(id) {
+    for (var i = 0; i < settings.habits.length; i++) if (settings.habits[i].id === id) return settings.habits[i];
+    return null;
+  }
+  function habitTitle(h) {
+    if (h.type === "dojo") return subjectOf[h.app].dojo;
+    if (h.type === "page") return pageOf[h.page].name;
+    return h.name;
+  }
+  function habitLabel(h) {
+    if (h.type === "dojo") return subjectOf[h.app].label;
+    if (h.type === "page") return pageOf[h.page].label;
+    return "自由";
+  }
+  function habitDetail(h) {
+    var parts = [daysText(h.days)];
+    if (h.type === "dojo") {
+      parts.push("1日" + h.count + "問");
+      if (h.grade !== "all") parts.push(gradeShort(subjectOf[h.app], h.grade) + "だけ");
+      parts.push("自動で数える");
+    } else parts.push("自分でチェック");
+    return parts.join(" · ");
+  }
+
+  // ---------- 日々の記録 ----------
+  // { days: { "YYYY-MM-DD": { planned: [id], done: [id], picks: { id: [単元ID] }, checks: { id: true } } } }
+  function emptyDay() { return { planned: [], done: [], picks: {}, checks: {} }; }
+  function idList(v) {
+    var out = [];
+    if (Array.isArray(v)) v.forEach(function (x) { if (isId(x) && out.indexOf(x) < 0) out.push(x); });
+    return out;
+  }
+  function cleanDay(r) {
+    if (!isObj(r)) return null;
+    var d = emptyDay();
+    d.planned = idList(r.planned);
+    d.done = idList(r.done).filter(function (id) { return d.planned.indexOf(id) >= 0; });
+    if (isObj(r.picks)) Object.keys(r.picks).forEach(function (id) {
+      if (!isId(id) || !Array.isArray(r.picks[id])) return;
+      d.picks[id] = r.picks[id].filter(function (u) { return typeof u === "string" && u.length > 0 && u.length < 80; }).slice(0, 3);
+    });
+    if (isObj(r.checks)) Object.keys(r.checks).forEach(function (id) { if (isId(id) && r.checks[id] === true) d.checks[id] = true; });
+    return d;
+  }
+  function loadHistory() {
+    var raw = Store.load(HISTORY_KEY, null);
+    var h = { days: {} };
+    if (!isObj(raw) || !isObj(raw.days)) return h;
+    var t = today();
+    Object.keys(raw.days).forEach(function (ymd) {
+      if (!Review.isYmd(ymd)) return;
+      var age = Review.daysBetween(ymd, t);
+      if (age < 0 || age >= KEEP_DAYS) return;
+      var d = cleanDay(raw.days[ymd]);
+      if (d) h.days[ymd] = d;
+    });
+    return h;
+  }
+  function saveHistory() { Store.save(HISTORY_KEY, history); }
+
+  // ---------- おすすめ単元 ----------
+  function pickCount(h) { return Math.min(3, Math.max(1, Math.ceil(h.count / 5))); }
+  // おすすめ順に並べた単元ID。avoid にある単元は最後に回す(選び直し用)
+  function rankUnits(h, t, items, avoid) {
+    var s = subjectOf[h.app];
+    var units = unitsOf(s, h.grade);
+    var order = {};
+    units.forEach(function (u, i) { order[u.id] = i; });
+    var stats = statsOf(s);
+    var rev = {};
+    items.forEach(function (it) { if (it.app === h.app && order.hasOwnProperty(it.unit)) rev[it.unit] = it; });
+
+    var due = [], fresh = [], weak = [], rest = [];
+    units.forEach(function (u) {
+      var r = rev[u.id], st = stats[u.id] || { total: 0, correct: 0 };
+      if (r && r.due <= t) due.push({ id: u.id, late: Review.daysBetween(r.due, t) });
+      else if (st.total === 0) fresh.push({ id: u.id });
+      else if (st.correct / st.total < 0.8) weak.push({ id: u.id, rate: st.correct / st.total });
+      else rest.push({ id: u.id, last: r && r.last ? r.last : "" });
+    });
+    due.sort(function (a, b) { return b.late - a.late || order[a.id] - order[b.id]; });
+    weak.sort(function (a, b) { return a.rate - b.rate || order[a.id] - order[b.id]; });
+    rest.sort(function (a, b) { return (a.last < b.last ? -1 : a.last > b.last ? 1 : 0) || order[a.id] - order[b.id]; });
+    var ids = [].concat(due, fresh, weak, rest).map(function (x) { return x.id; });
+    if (avoid && avoid.length) {
+      ids = ids.filter(function (id) { return avoid.indexOf(id) < 0; })
+        .concat(ids.filter(function (id) { return avoid.indexOf(id) >= 0; }));
+    }
+    return ids;
+  }
+  function choosePicks(h, t, items, avoid) { return rankUnits(h, t, items, avoid).slice(0, pickCount(h)); }
+
+  // ---------- 今日の分を書き直す ----------
+  function plannedOn(ymd) {
+    var wd = weekday(ymd);
+    return settings.habits.filter(function (h) { return h.days.indexOf(wd) >= 0; });
+  }
+  function syncToday() {
+    var t = today();
+    var items = reviewItems();
+    var day = history.days[t] || emptyDay();
+    var planned = plannedOn(t);
+    day.planned = planned.map(function (h) { return h.id; });
+    Object.keys(day.checks).forEach(function (id) { if (!habitById(id)) delete day.checks[id]; });
+    var picks = {};
+    planned.forEach(function (h) {
+      if (h.type !== "dojo") return;
+      var known = unitsOf(subjectOf[h.app], h.grade).map(function (u) { return u.id; });
+      var old = day.picks[h.id];
+      var ok = Array.isArray(old) && old.length > 0 && old.every(function (u) { return known.indexOf(u) >= 0; });
+      picks[h.id] = ok ? old : choosePicks(h, t, items, null);
+    });
+    day.picks = picks;
+    day.done = planned.filter(function (h) {
+      if (h.type === "dojo") return solvedToday(h.app, t, items) >= h.count;
+      return day.checks[h.id] === true;
+    }).map(function (h) { return h.id; });
+    history.days[t] = day;
+    saveHistory();
+    return t;
+  }
+
+  // ---------- 1日の判定 ----------
+  // kind: "all" 全部達成 / "part" 一部 / "miss" 未達成 / "off" 対象なし / "none" 記録なし
+  function dayStatus(ymd) {
+    var rec = history.days[ymd];
+    if (!rec) return { kind: "none", done: 0, total: 0 };
+    if (rec.planned.length === 0) return { kind: "off", done: 0, total: 0 };
+    var answers = null, done = 0;
+    rec.planned.forEach(function (id) {
+      if (rec.done.indexOf(id) >= 0) { done++; return; }
+      var h = habitById(id);
+      if (h && h.type === "dojo") {
+        if (!answers) answers = answersOn(ymd);
+        if ((answers[h.app] || 0) >= h.count) done++;
+      }
+    });
+    var total = rec.planned.length;
+    return { kind: done === total ? "all" : done > 0 ? "part" : "miss", done: done, total: total };
+  }
+  function streaks(t) {
+    var todayKind = dayStatus(t).kind;
+    // 今の連続: 今日が達成なら今日から、そうでなければ昨日からさかのぼる
+    var cur = 0, d = todayKind === "all" ? t : Review.addDays(t, -1);
+    for (var i = 0; i < KEEP_DAYS; i++, d = Review.addDays(d, -1)) {
+      var k = dayStatus(d).kind;
+      if (k === "off") continue;
+      if (k === "all") cur++;
+      else break;
+    }
+    // 最長: いちばん古い記録から今日まで
+    var first = t;
+    Object.keys(history.days).forEach(function (ymd) { if (ymd < first) first = ymd; });
+    var best = 0, run = 0;
+    for (var day = first; day <= t; day = Review.addDays(day, 1)) {
+      var kk = dayStatus(day).kind;
+      if (kk === "off") continue;
+      if (kk === "all") { run++; if (run > best) best = run; }
+      else if (day !== t) run = 0;
+    }
+    return { cur: cur, best: Math.max(best, cur), todayKind: todayKind };
+  }
+
+  // ---------- 描画: 今日のメニュー ----------
+  function renderMenu(t) {
+    var items = reviewItems();
+    var day = history.days[t];
+    var body = document.getElementById("menuBody");
+    body.innerHTML = "";
+    document.getElementById("menuDate").textContent = longDate(t);
+    var score = document.getElementById("menuScore");
+    score.textContent = "";
+
+    if (settings.habits.length === 0) {
+      var p = el("p", "empty");
+      p.appendChild(el("strong", "", "まだ習慣がありません。"));
+      p.appendChild(document.createTextNode("下の「"));
+      var a = el("a", "", "習慣の設定");
+      a.href = "#settings";
+      p.appendChild(a);
+      p.appendChild(document.createTextNode("」で、続けたい道場や練習を追加してください。"));
+      body.appendChild(p);
+      return;
+    }
+
+    var planned = day.planned.map(habitById).filter(Boolean);
+    var resting = settings.habits.filter(function (h) { return day.planned.indexOf(h.id) < 0; });
+
+    if (planned.length === 0) {
+      body.appendChild(el("p", "empty", "今日は対象の習慣がありません。ゆっくり休みましょう。"));
+    } else {
+      score.textContent = day.done.length + "/" + planned.length + " 達成";
+      if (day.done.length === planned.length) {
+        body.appendChild(el("p", "all-done", "今日のメニューはすべて達成しました。おつかれさまでした!"));
+      }
+      var ul = el("ul", "menu-list");
+      planned.forEach(function (h) { ul.appendChild(menuItem(h, t, day, items)); });
+      body.appendChild(ul);
+    }
+
+    if (resting.length > 0) {
+      var det = el("details", "rest");
+      det.appendChild(el("summary", "", "今日はお休み(" + resting.length + ")"));
+      var rl = el("ul", "rest-list");
+      resting.forEach(function (h) {
+        var li = el("li");
+        li.appendChild(el("span", "subj plain", habitLabel(h)));
+        li.appendChild(el("span", "", habitTitle(h)));
+        li.appendChild(el("span", "rest-days", daysText(h.days)));
+        rl.appendChild(li);
+      });
+      det.appendChild(rl);
+      body.appendChild(det);
+    }
+  }
+
+  function menuItem(h, t, day, items) {
+    var isDone = day.done.indexOf(h.id) >= 0;
+    var li = el("li", "habit" + (isDone ? " is-done" : ""));
+    var top = el("div", "habit-top");
+    var main = el("div", "habit-main");
+    var meta = el("div", "habit-meta");
+    meta.appendChild(el("span", "subj" + (h.type === "free" ? " plain" : ""), habitLabel(h)));
+    if (h.type === "dojo" && h.grade !== "all") meta.appendChild(el("span", "", gradeShort(subjectOf[h.app], h.grade) + "だけ"));
+    if (isDone) meta.appendChild(el("span", "subj ok", "達成"));
+    main.appendChild(meta);
+    var name = el("div", "habit-name");
+    if (h.type === "free") name.textContent = h.name;
+    else {
+      var link = el("a", "", habitTitle(h));
+      link.href = h.type === "dojo" ? subjectOf[h.app].href : pageOf[h.page].href;
+      name.appendChild(link);
+    }
+    main.appendChild(name);
+    top.appendChild(main);
+
+    if (h.type !== "dojo") {
+      var on = day.checks[h.id] === true;
+      var btn = el("button", "check-btn");
+      btn.type = "button";
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+      btn.setAttribute("aria-label", habitTitle(h) + "をやった");
+      btn.appendChild(el("span", "box", on ? "✓" : ""));
+      btn.appendChild(document.createTextNode("やった"));
+      btn.addEventListener("click", function () {
+        if (today() !== shownDate) { refresh(); return; }  // 日付が変わっていたら、新しい日で描き直す
+        var d = history.days[today()];
+        if (!d) return;
+        if (d.checks[h.id]) delete d.checks[h.id];
+        else d.checks[h.id] = true;
+        refresh();
+        var again = document.querySelector('[data-check="' + h.id + '"]');
+        if (again) again.focus();
+      });
+      btn.setAttribute("data-check", h.id);
+      top.appendChild(btn);
+      li.appendChild(top);
+      return li;
+    }
+
+    li.appendChild(top);
+    var s = subjectOf[h.app];
+    var n = solvedToday(h.app, t, items);
+    var prog = el("div", "progress");
+    var bar = el("div", "bar");
+    bar.setAttribute("role", "progressbar");
+    bar.setAttribute("aria-valuemin", "0");
+    bar.setAttribute("aria-valuemax", String(h.count));
+    bar.setAttribute("aria-valuenow", String(Math.min(n, h.count)));
+    bar.setAttribute("aria-label", s.dojo + "の今日の問題数");
+    var fill = el("span", "bar-fill");
+    fill.style.width = Math.min(100, n / h.count * 100) + "%";
+    bar.appendChild(fill);
+    prog.appendChild(bar);
+    var pt = el("span", "prog-text");
+    pt.appendChild(document.createTextNode("今日 "));
+    pt.appendChild(el("b", "", String(n)));
+    pt.appendChild(document.createTextNode(" / " + h.count + " 問"));
+    prog.appendChild(pt);
+    li.appendChild(prog);
+
+    var head = el("div", "pick-head");
+    head.appendChild(el("span", "", "今日のおすすめ単元"));
+    var re = el("button", "btn-ghost btn-small", "選び直す");
+    re.type = "button";
+    re.setAttribute("aria-label", s.dojo + "のおすすめ単元を選び直す");
+    re.setAttribute("data-repick", h.id);
+    re.addEventListener("click", function () {
+      if (today() !== shownDate) { refresh(); return; }
+      var tt = today();
+      var d = history.days[tt];
+      if (!d) return;
+      d.picks[h.id] = choosePicks(h, tt, reviewItems(), d.picks[h.id] || []);
+      refresh();
+      var again = document.querySelector('[data-repick="' + h.id + '"]');
+      if (again) again.focus();
+    });
+    head.appendChild(re);
+    li.appendChild(head);
+
+    var picks = day.picks[h.id] || [];
+    var units = unitsOf(s, h.grade);
+    var byId = {};
+    units.forEach(function (u) { byId[u.id] = u; });
+    var rev = {};
+    items.forEach(function (it) { if (it.app === h.app) rev[it.unit] = it; });
+    if (picks.length === 0) {
+      li.appendChild(el("p", "pick-none", "単元を読み込めませんでした。道場で好きな単元を解いてください。"));
+      return li;
+    }
+    var pl = el("ul", "pick-list");
+    picks.forEach(function (id) {
+      var u = byId[id];
+      if (!u) return;
+      var r = rev[id];
+      var row = el("li", "pick");
+      var pm = el("div", "pick-main");
+      pm.appendChild(el("span", "pick-name", u.name));
+      var sub = el("div", "pick-sub");
+      if (r && r.due <= t && r.dayDate !== t) sub.appendChild(el("span", "subj review", "復習"));
+      if (u.meta) sub.appendChild(el("span", "", u.meta));
+      if (r && r.dayDate === t && r.dayTotal > 0) sub.appendChild(el("span", "", "今日 " + r.dayTotal + "問"));
+      if (sub.childNodes.length) pm.appendChild(sub);
+      row.appendChild(pm);
+      var a = el("a", "solve-btn", "解く");
+      a.href = u.href;
+      a.setAttribute("aria-label", s.label + "「" + u.name + "」を解く");
+      row.appendChild(a);
+      pl.appendChild(row);
+    });
+    li.appendChild(pl);
+    return li;
+  }
+
+  // ---------- 描画: 記録 ----------
+  function renderRecord(t) {
+    var st = streaks(t);
+    var cs = document.getElementById("curStreak");
+    cs.innerHTML = "";
+    cs.appendChild(document.createTextNode(String(st.cur)));
+    cs.appendChild(el("small", "", "日"));
+    var bs = document.getElementById("bestStreak");
+    bs.innerHTML = "";
+    bs.appendChild(document.createTextNode(String(st.best)));
+    bs.appendChild(el("small", "", "日"));
+    var note = document.getElementById("curNote");
+    note.className = "streak-note";
+    if (st.todayKind === "all") note.textContent = "今日も達成しました";
+    else if (st.todayKind === "off") note.textContent = "今日は対象の習慣がありません";
+    else if (st.todayKind === "none") note.textContent = "";
+    else { note.textContent = "今日達成すると +1"; note.className = "streak-note up"; }
+
+    var cal = document.getElementById("calendar");
+    cal.innerHTML = "";
+    WEEK.forEach(function (w) { cal.appendChild(el("span", "cal-wd", w)); });
+    var start = Review.addDays(t, -weekday(t) - 28);
+    var names = { all: "全部達成", part: "一部", miss: "未達成", off: "対象なし", none: "記録なし" };
+    for (var i = 0; i < 35; i++) {
+      var d = Review.addDays(start, i);
+      var cell = el("span", "cal-day", String(dateOf(d).getDate()));
+      if (d > t) {
+        cell.className += " st-future";
+        cell.setAttribute("aria-hidden", "true");
+      } else {
+        var s = dayStatus(d);
+        cell.className += " st-" + s.kind + (d === t ? " is-today" : "");
+        var label = shortDate(d) + (d === t ? "(今日)" : "") + " " + names[s.kind] + (s.total ? " " + s.done + "/" + s.total : "");
+        cell.setAttribute("title", label);
+        cell.setAttribute("role", "img");
+        cell.setAttribute("aria-label", label);
+      }
+      cal.appendChild(cell);
+    }
+  }
+
+  // ---------- 描画: 習慣の一覧 ----------
+  var editingId = null;
+  function renderList() {
+    var ul = document.getElementById("setList");
+    ul.innerHTML = "";
+    var hs = settings.habits;
+    document.getElementById("habitCount").textContent = hs.length + "件";
+    if (hs.length === 0) {
+      var li0 = el("li", "empty", "まだ習慣がありません。下のフォームから追加してください。");
+      ul.appendChild(li0);
+      return;
+    }
+    hs.forEach(function (h, i) {
+      var li = el("li", "set-row" + (h.id === editingId ? " is-editing" : ""));
+      var main = el("div", "set-main");
+      var nm = el("div", "set-name");
+      nm.appendChild(el("span", "subj" + (h.type === "free" ? " plain" : ""), habitLabel(h)));
+      nm.appendChild(document.createTextNode(" " + habitTitle(h)));
+      main.appendChild(nm);
+      main.appendChild(el("span", "set-sub", habitDetail(h)));
+      li.appendChild(main);
+      var btns = el("div", "set-btns");
+      function mk(text, label, cls, fn, disabled) {
+        var b = el("button", "icon-btn" + (cls ? " " + cls : ""), text);
+        b.type = "button";
+        b.setAttribute("aria-label", habitTitle(h) + "を" + label);
+        b.disabled = !!disabled;
+        b.addEventListener("click", fn);
+        btns.appendChild(b);
+      }
+      mk("↑", "上へ", "", function () { move(i, -1); }, i === 0);
+      mk("↓", "下へ", "", function () { move(i, 1); }, i === hs.length - 1);
+      mk("編集", "編集", "", function () { startEdit(h.id); });
+      mk("削除", "削除", "del", function () { removeHabit(h.id); });
+      li.appendChild(btns);
+      ul.appendChild(li);
+    });
+  }
+  function move(i, dir) {
+    var hs = settings.habits, j = i + dir;
+    if (j < 0 || j >= hs.length) return;
+    var tmp = hs[i]; hs[i] = hs[j]; hs[j] = tmp;
+    saveSettings();
+    refresh();
+    var btns = document.querySelectorAll("#setList .set-row")[j];
+    if (btns) {
+      var ib = btns.querySelectorAll(".icon-btn");
+      var b = ib[dir < 0 ? 0 : 1];
+      if (b && b.disabled) b = ib[dir < 0 ? 1 : 0];  // 端に着いたら、押せるほうへ
+      if (b && !b.disabled) b.focus();
+    }
+  }
+  function removeHabit(id) {
+    var h = habitById(id);
+    if (!h) return;
+    if (!confirm("「" + habitTitle(h) + "」を習慣から外します。よろしいですか?\n(これまでの日々の記録は残ります)")) return;
+    settings.habits = settings.habits.filter(function (x) { return x.id !== id; });
+    saveSettings();
+    if (editingId === id) resetForm();
+    refresh();
+  }
+
+  // ---------- フォーム ----------
+  var form = document.getElementById("habitForm");
+  var fDojo = document.getElementById("fDojo"), fCount = document.getElementById("fCount");
+  var fGrade = document.getElementById("fGrade"), fPage = document.getElementById("fPage");
+  var fName = document.getElementById("fName"), formError = document.getElementById("formError");
+  var dayChips = document.getElementById("dayChips");
+
+  // 曜日は月曜はじまりで並べる
+  [1, 2, 3, 4, 5, 6, 0].forEach(function (d) {
+    var lab = el("label", "chip day");
+    var inp = el("input");
+    inp.type = "checkbox";
+    inp.name = "fday";
+    inp.value = String(d);
+    inp.checked = true;
+    inp.setAttribute("aria-label", WEEK[d] + "曜日");
+    lab.appendChild(inp);
+    lab.appendChild(el("span", "", WEEK[d]));
+    dayChips.appendChild(lab);
+  });
+  PAGES.forEach(function (p) {
+    var o = el("option", "", p.name + "(" + p.label + ")");
+    o.value = p.id;
+    fPage.appendChild(o);
+  });
+  function formType() {
+    var r = form.querySelector('input[name="ftype"]:checked');
+    return r ? r.value : "dojo";
+  }
+  function setFormType(type) {
+    form.querySelectorAll('input[name="ftype"]').forEach(function (r) { r.checked = r.value === type; });
+    showTypeFields();
+  }
+  function showTypeFields() {
+    var type = formType();
+    document.getElementById("dojoFields").hidden = type !== "dojo";
+    document.getElementById("pageFields").hidden = type !== "page";
+    document.getElementById("freeFields").hidden = type !== "free";
+    formError.textContent = "";
+  }
+  // 道場の選択肢(ほかの習慣に登録ずみの道場は選べない)
+  function fillDojoOptions() {
+    var keep = fDojo.value;
+    fDojo.innerHTML = "";
+    var used = {};
+    settings.habits.forEach(function (h) { if (h.type === "dojo" && h.id !== editingId) used[h.app] = true; });
+    var firstFree = "";
+    SUBJECTS.forEach(function (s) {
+      var o = el("option", "", s.dojo + (used[s.app] ? "(登録ずみ)" : ""));
+      o.value = s.app;
+      o.disabled = !!used[s.app];
+      if (!used[s.app] && !firstFree) firstFree = s.app;
+      fDojo.appendChild(o);
+    });
+    fDojo.value = keep && !used[keep] ? keep : firstFree;
+    fillGradeOptions();
+  }
+  function fillGradeOptions(selected) {
+    var s = subjectOf[fDojo.value];
+    var grades = s ? gradesOf(s) : [];
+    var keep = selected !== undefined ? selected : fGrade.value;
+    fGrade.innerHTML = "";
+    var all = el("option", "", "すべて");
+    all.value = "all";
+    fGrade.appendChild(all);
+    grades.forEach(function (g) {
+      var o = el("option", "", g.short + "だけ");
+      o.value = g.id;
+      fGrade.appendChild(o);
+    });
+    fGrade.value = grades.some(function (g) { return g.id === keep; }) ? keep : "all";
+    document.getElementById("gradeField").hidden = grades.length === 0;
+  }
+  function readDays() {
+    var out = [];
+    dayChips.querySelectorAll("input").forEach(function (i) { if (i.checked) out.push(Number(i.value)); });
+    return out.sort();
+  }
+  function setDays(days) {
+    dayChips.querySelectorAll("input").forEach(function (i) { i.checked = days.indexOf(Number(i.value)) >= 0; });
+  }
+  function resetForm() {
+    editingId = null;
+    document.getElementById("formTitle").textContent = "習慣を追加";
+    document.getElementById("submitBtn").textContent = "追加する";
+    document.getElementById("cancelBtn").hidden = true;
+    fName.value = "";
+    fCount.value = "10";
+    setDays(ALL_DAYS);
+    fDojo.value = "";
+    fillDojoOptions();
+    fillGradeOptions("all");
+    setFormType("dojo");
+  }
+  function startEdit(id) {
+    var h = habitById(id);
+    if (!h) return;
+    editingId = id;
+    document.getElementById("formTitle").textContent = "「" + habitTitle(h) + "」を編集";
+    document.getElementById("submitBtn").textContent = "保存する";
+    document.getElementById("cancelBtn").hidden = false;
+    fillDojoOptions();
+    setFormType(h.type);
+    if (h.type === "dojo") {
+      fDojo.value = h.app;
+      fCount.value = String(h.count);
+      fillGradeOptions(h.grade);
+    } else if (h.type === "page") fPage.value = h.page;
+    else fName.value = h.name;
+    setDays(h.days);
+    renderList();
+    form.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  form.querySelectorAll('input[name="ftype"]').forEach(function (r) { r.addEventListener("change", showTypeFields); });
+  fDojo.addEventListener("change", function () { fillGradeOptions("all"); });
+  document.getElementById("cancelBtn").addEventListener("click", function () { resetForm(); renderList(); });
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var type = formType();
+    var days = readDays();
+    if (days.length === 0) { formError.textContent = "曜日を1つ以上選んでください。"; return; }
+    var r = { id: editingId || newId(), type: type, days: days };
+    if (type === "dojo") {
+      r.app = fDojo.value;
+      if (!subjectOf[r.app]) { formError.textContent = "道場を選んでください。"; return; }
+      var dup = settings.habits.some(function (h) { return h.type === "dojo" && h.app === r.app && h.id !== r.id; });
+      if (dup) { formError.textContent = "この道場は、すでにほかの習慣に登録されています。"; return; }
+      r.count = Number(fCount.value);
+      r.grade = fGrade.value;
+    } else if (type === "page") {
+      r.page = fPage.value;
+    } else {
+      r.name = fName.value.trim();
+      if (!r.name) { formError.textContent = "名前を入力してください。"; fName.focus(); return; }
+    }
+    var h = cleanHabit(r);
+    if (!h) { formError.textContent = "入力を確かめてください。"; return; }
+    if (editingId) {
+      var idx = -1;
+      settings.habits.forEach(function (x, i) { if (x.id === editingId) idx = i; });
+      if (idx < 0) settings.habits.push(h);
+      else settings.habits[idx] = h;
+      // 道場・学年・問題数が変わったら、今日のおすすめを選び直す
+      var d = history.days[today()];
+      if (d && d.picks[h.id]) delete d.picks[h.id];
+    } else {
+      settings.habits.push(h);
+    }
+    saveSettings();
+    resetForm();
+    refresh();
+  });
+
+  // ---------- 記録を消す ----------
+  document.getElementById("clearBtn").addEventListener("click", function () {
+    if (!confirm("連続日数とカレンダーの記録を消します。よろしいですか?\n(習慣の設定、道場の成績、復習プランナーの記録は消えません)")) return;
+    Store.remove(HISTORY_KEY);
+    history = { days: {} };
+    refresh();
+  });
+
+  // ---------- 全体 ----------
+  var settings = loadSettings();
+  var history = loadHistory();
+  var shownDate = null;
+
+  function refresh() {
+    var t = syncToday();
+    shownDate = t;
+    renderMenu(t);
+    renderRecord(t);
+    renderList();
+    fillDojoOptions();
+  }
+
+  // 道場から戻ったとき・日付が変わったときに、今日の分を書き直す
+  window.addEventListener("pageshow", function (e) { if (e.persisted) refresh(); });
+  window.addEventListener("focus", function () { refresh(); });
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") refresh(); });
+  setInterval(function () { if (document.visibilityState === "visible" && today() !== shownDate) refresh(); }, 60000);
+
+  resetForm();
+  refresh();
+})();
+</script>
+</body>
+</html>
