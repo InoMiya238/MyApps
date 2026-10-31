@@ -273,11 +273,14 @@
 </head>
 <body>
 <div class="app">
-  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <nav class="page-links" aria-label="ページの移動">
+    <a class="back-link" href="../../../index.html">← ページ一覧</a>
+    <a class="back-link" href="../../../study/review/habit-planner/index.html">習慣プランナー →</a>
+  </nav>
   <header class="hero">
     <p class="eyebrow">REVIEW</p>
     <h1>復習プランナー</h1>
-    <p class="tagline">中学5教科・英単語帳・化学基礎・世界地図・将棋・IT(Git・Linux・SQL・正規表現・Web)・AI理論の道場で解いた単元を、忘れかけた頃にもう一度出題します。道場で解くと、ここに自動で記録されます。</p>
+    <p class="tagline">中学5教科・英単語帳・化学基礎・世界地図・将棋・IT(Git・Linux・SQL・正規表現・Web・Python・アルゴリズム)・AI理論・電子工作・素数・韓国語の道場で解いた単元を、忘れかけた頃にもう一度出題します。道場で解くと、ここに自動で記録されます。</p>
   </header>
 
   <section class="card" aria-labelledby="todayHeading">
@@ -326,7 +329,12 @@
 <script src="../../it/sql-basics/data.js"></script>
 <script src="../../it/regex-basics/data.js"></script>
 <script src="../../it/web-basics/data.js"></script>
+<script src="../../it/python-basics/data.js"></script>
+<script src="../../it/algorithm-visualizer/data.js"></script>
 <script src="../../ai/ai-theory-lab/data.js"></script>
+<script src="../../electronics/electronics-basics/data.js"></script>
+<script src="../../math/prime-numbers/data.js"></script>
+<script src="../../korean/korean-basics/data.js"></script>
 <script>
 (function () {
   "use strict";
@@ -349,7 +357,12 @@
     { app: "sql", label: "SQL", ns: nsOf("SQLD"), href: "../../it/sql-basics/index.html", dojo: "SQL道場" },
     { app: "regex", label: "正規表現", ns: nsOf("RGX"), href: "../../it/regex-basics/index.html", dojo: "正規表現道場" },
     { app: "web", label: "Web", ns: nsOf("WEBD"), href: "../../it/web-basics/index.html", dojo: "Web道場" },
-    { app: "ai", label: "AI理論", ns: nsOf("AITL"), href: "../../ai/ai-theory-lab/index.html", dojo: "AI理論道場" }
+    { app: "python", label: "Python", ns: nsOf("PYD"), href: "../../it/python-basics/index.html", dojo: "Python道場" },
+    { app: "algorithm", label: "アルゴリズム", ns: nsOf("ALGO"), href: "../../it/algorithm-visualizer/index.html", dojo: "アルゴリズム道場" },
+    { app: "ai", label: "AI理論", ns: nsOf("AITL"), href: "../../ai/ai-theory-lab/index.html", dojo: "AI理論道場" },
+    { app: "electronics", label: "電子工作", ns: nsOf("ELEC"), href: "../../electronics/electronics-basics/index.html", dojo: "電子工作道場" },
+    { app: "primes", label: "素数", ns: nsOf("PRIM"), href: "../../math/prime-numbers/index.html", dojo: "素数道場" },
+    { app: "korean", label: "韓国語", ns: nsOf("KOR"), href: "../../korean/korean-basics/index.html", dojo: "韓国語入門道場" }
   ];
   var SHOGI_CATS = [
     { id: "castles", name: "囲い" },

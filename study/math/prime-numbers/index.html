@@ -724,7 +724,10 @@
 <body>
 
 <div class="app">
-  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <nav class="page-links" aria-label="ページの移動">
+    <a class="back-link" href="../../../index.html">← ページ一覧</a>
+    <a class="back-link" href="../../../study/review/habit-planner/index.html">習慣プランナー →</a>
+  </nav>
   <header class="hero">
     <p class="eyebrow">PRIME NUMBERS · 全10単元</p>
     <h1>素数道場</h1>
@@ -870,6 +873,14 @@
   var levelsOn = {};       // 選んでいる難易度(ID → true)
   var session = null;
 
+  // ?count=<N>(1〜50の整数)で開いたとき(習慣プランナーから): このページを開いているあいだの出題数。保存はしない
+  var URL_COUNT = (function () {
+    var raw = null;
+    try { raw = new URLSearchParams(location.search).get("count"); } catch (e) { raw = null; }
+    return raw !== null && /^[0-9]+$/.test(raw) && Number(raw) >= 1 && Number(raw) <= 50 ? Number(raw) : null;
+  })();
+  var quizCount = URL_COUNT || PRIM.COUNT;
+
   function levelList() { return LV_IDS.filter(function (id) { return levelsOn[id]; }); }
   // 選んだ単元のうち、選んだ難易度の問題が1問以上あるもの
   function selectedIds() {
@@ -896,6 +907,10 @@
       levelsOn = {};
       LV_IDS.forEach(function (id) { levelsOn[id] = true; });
       preselectNote.textContent = "「" + u.no + " " + u.name + "」だけを選びました。難易度はすべてオンにしています。";
+      preselectNote.hidden = false;
+    }
+    if (URL_COUNT) {
+      preselectNote.textContent = (preselectNote.hidden ? "" : preselectNote.textContent + " ") + "習慣プランナーから: " + URL_COUNT + "問で出題します。";
       preselectNote.hidden = false;
     }
   })();
@@ -1042,7 +1057,7 @@
     var avail = PRIM.countOf(ids, lv);
     var ok = ids.length > 0 && avail > 0;
     startBtn.disabled = !ok;
-    startBtn.textContent = ok ? "始める(" + ids.length + "単元・" + levelNames(lv) + "・" + Math.min(PRIM.COUNT, avail) + "問)" : "始める";
+    startBtn.textContent = ok ? "始める(" + ids.length + "単元・" + levelNames(lv) + "・" + Math.min(quizCount, avail) + "問)" : "始める";
     setupError.classList.toggle("show", !ok);
   }
 
@@ -1157,7 +1172,7 @@
   function startQuiz() {
     var ids = selectedIds(), lv = levelList();
     if (ids.length === 0 || lv.length === 0) return;
-    var questions = PRIM.buildQuiz(ids, lv, PRIM.COUNT);
+    var questions = PRIM.buildQuiz(ids, lv, quizCount);
     if (questions.length === 0) return;
     // 始めるときに、単元と難易度を保存する
     PRIM.saveSettings({ units: ids, levels: lv });

@@ -239,6 +239,27 @@
     color: var(--ink-muted);
   }
   .pick-none { margin: 0; font-size: 0.84rem; color: var(--ink-muted); }
+  .pick-btns { flex: none; display: flex; align-items: center; gap: 6px; }
+
+  /* 解説・クイズのリンク */
+  .link-row { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+  .mini-link {
+    display: inline-block;
+    padding: 5px 11px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1.4;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .mini-link:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .mini-link.quiz { background: var(--accent-soft); }
+  .mini-link.quiz:hover { border-color: var(--accent); }
+  .pick .mini-link { padding: 6px 10px; }
 
   .all-done {
     margin: 0 0 14px;
@@ -270,6 +291,8 @@
   }
   .rest-list li:last-child { border-bottom: none; }
   .rest-days { font-size: 0.76rem; color: var(--ink-muted); }
+  .rest-list .link-row { flex-basis: 100%; padding-top: 2px; }
+  .rest-list .mini-link { padding: 3px 10px; font-size: 0.76rem; }
 
   /* ---------- 記録 ---------- */
   .streaks {
@@ -401,7 +424,7 @@
   .chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
   .f-row { display: flex; flex-wrap: wrap; gap: 12px; }
   .f-field { display: flex; flex-direction: column; min-width: 0; flex: 1 1 140px; }
-  select, input[type="text"] {
+  select, input[type="text"], input[type="url"] {
     font-family: var(--font-body);
     font-size: 0.95rem;
     padding: 9px 10px;
@@ -412,6 +435,8 @@
     width: 100%;
     min-width: 0;
   }
+  .f-col { display: flex; flex-direction: column; gap: 12px; }
+  .f-note { margin: 0; font-size: 0.76rem; color: var(--ink-faint); line-height: 1.6; overflow-wrap: anywhere; }
   .form-error { margin: 0; color: var(--bad); font-size: 0.84rem; font-weight: 600; }
   .form-error:empty { display: none; }
   .form-actions { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -438,6 +463,9 @@
     .form { padding: 14px 12px; }
     .pick-list { padding: 4px 10px; }
     .solve-btn, .check-btn { padding: 8px 11px; }
+    .solve-btn { padding: 8px 9px; font-size: 0.84rem; }
+    .pick-btns { gap: 5px; }
+    .pick .mini-link { padding: 6px 8px; }
     .chip.day span { min-width: 2.2em; }
     .cal { gap: 3px; }
   }
@@ -508,8 +536,15 @@
         <label class="f-field"><span class="f-label">ページ</span><select id="fPage"></select></label>
       </div>
 
-      <div class="f-row" id="freeFields" hidden>
-        <label class="f-field"><span class="f-label">名前</span><input type="text" id="fName" maxlength="30" placeholder="例: 読書15分" autocomplete="off"></label>
+      <div id="freeFields" class="f-col" hidden>
+        <div class="f-row">
+          <label class="f-field"><span class="f-label">名前</span><input type="text" id="fName" maxlength="30" placeholder="例: 読書15分" autocomplete="off"></label>
+        </div>
+        <div class="f-row">
+          <label class="f-field"><span class="f-label">解説のURL(任意)</span><input type="text" id="fGuide" maxlength="500" inputmode="url" placeholder="https://… または相対パス" autocomplete="off" spellcheck="false"></label>
+          <label class="f-field"><span class="f-label">クイズのURL(任意)</span><input type="text" id="fQuiz" maxlength="500" inputmode="url" placeholder="https://… または相対パス" autocomplete="off" spellcheck="false"></label>
+        </div>
+        <p class="f-note">http:// か https:// ではじまるURL、またはこのページからの相対パス(例: ../../math/prime-numbers/tools.html)。外部のURLは新しいタブで開きます。</p>
       </div>
 
       <fieldset>
@@ -530,7 +565,9 @@
     <ul class="rules">
       <li><strong>道場</strong>は、その日に解いた問題数を自動で数え、1日の問題数に届いたら達成です。</li>
       <li>おすすめ単元は、<strong>復習日が来た単元 → まだ解いていない単元 → 正答率の低い単元 → しばらく解いていない単元</strong>の順に選びます。その日のうちは同じ並びのままです。</li>
-      <li><strong>練習ページ</strong>と<strong>自由な習慣</strong>は、終わったら自分で「やった」を押します。</li>
+      <li>習慣ごとの<strong>解説</strong>は要点帳・コマンド帳などの解説ページ、<strong>クイズ</strong>は問題を解くページへのリンクです。道場のクイズは今日の残りの問題数(達成ずみなら1日の問題数)で始まります。</li>
+      <li>おすすめ単元の<strong>解く</strong>は、1日の問題数をおすすめ単元の数で割った数(切り上げ)で始まります。1手詰めは問題数を指定できません。解説ページにその単元の見出しがあれば、<strong>解説</strong>からそこへ飛べます。</li>
+      <li><strong>練習ページ</strong>と<strong>自由な習慣</strong>は、終わったら自分で「やった」を押します。自由な習慣には、解説とクイズのURLを登録できます。</li>
       <li>その日の対象の習慣をすべて終えると<strong>全部達成</strong>です。対象の習慣がない曜日は、連続日数を数えるときに飛ばします。</li>
       <li>このページを開かなかった日は「記録なし」になり、連続が途切れます。</li>
     </ul>
@@ -577,49 +614,86 @@
   // ---------- 道場の定義(復習プランナーの SUBJECTS と同じ表) ----------
   // ns: 道場の data.js が作るグローバル(読み込めなかったときは null。そのときも止めない)
   function nsOf(name) { return typeof window[name] === "object" && window[name] ? window[name] : null; }
+  // guide: 解説ページ(道場のフォルダーからの相対パス)。anchor: 単元ごとの見出しへの飛び方
+  //   "id" → #単元ID / "unit" → #unit-単元ID / "region" → ?region=単元ID / "ref" → #単元の ref / なし → 単元の解説リンクを出さない
   var SUBJECTS = [
-    { app: "math", label: "数学", ns: nsOf("JHM"), href: "../../math/junior-high-math/index.html", dojo: "中学数学道場" },
-    { app: "japanese", label: "国語", ns: nsOf("JHJ"), href: "../../japanese/junior-high-japanese/index.html", dojo: "中学国語道場" },
-    { app: "english", label: "英語", ns: nsOf("JHE"), href: "../../english/junior-high-english/index.html", dojo: "中学英語道場" },
-    { app: "english-vocab", label: "英単語", ns: nsOf("JHV"), href: "../../english/junior-high-english/vocab.html", dojo: "中学英単語帳" },
-    { app: "science", label: "理科", ns: nsOf("JHS"), href: "../../science/junior-high-science/index.html", dojo: "中学理科道場" },
-    { app: "chemistry", label: "化学基礎", ns: nsOf("CHEM"), href: "../../science/chemistry-lab/index.html", dojo: "化学基礎道場" },
-    { app: "social", label: "社会", ns: nsOf("JHSO"), href: "../../social/junior-high-social/index.html", dojo: "中学社会道場" },
-    { app: "worldmap", label: "世界地図", ns: nsOf("WMAP"), href: "../../geography/world-map-dojo/index.html", dojo: "世界地図道場" },
-    { app: "shogi", label: "将棋", ns: null, href: "../../shogi/shogi-dojo/index.html", dojo: "将棋道場" },
-    { app: "git", label: "Git", ns: nsOf("GITD"), href: "../../it/git-basics/index.html", dojo: "Git道場" },
-    { app: "linux", label: "Linux", ns: nsOf("LNX"), href: "../../it/linux-basics/index.html", dojo: "Linux道場" },
-    { app: "sql", label: "SQL", ns: nsOf("SQLD"), href: "../../it/sql-basics/index.html", dojo: "SQL道場" },
-    { app: "regex", label: "正規表現", ns: nsOf("RGX"), href: "../../it/regex-basics/index.html", dojo: "正規表現道場" },
-    { app: "web", label: "Web", ns: nsOf("WEBD"), href: "../../it/web-basics/index.html", dojo: "Web道場" },
-    { app: "python", label: "Python", ns: nsOf("PYD"), href: "../../it/python-basics/index.html", dojo: "Python道場" },
-    { app: "algorithm", label: "アルゴリズム", ns: nsOf("ALGO"), href: "../../it/algorithm-visualizer/index.html", dojo: "アルゴリズム道場" },
-    { app: "ai", label: "AI理論", ns: nsOf("AITL"), href: "../../ai/ai-theory-lab/index.html", dojo: "AI理論道場" },
-    { app: "electronics", label: "電子工作", ns: nsOf("ELEC"), href: "../../electronics/electronics-basics/index.html", dojo: "電子工作道場" },
-    { app: "primes", label: "素数", ns: nsOf("PRIM"), href: "../../math/prime-numbers/index.html", dojo: "素数道場" },
-    { app: "korean", label: "韓国語", ns: nsOf("KOR"), href: "../../korean/korean-basics/index.html", dojo: "韓国語入門道場" }
+    { app: "math", label: "数学", ns: nsOf("JHM"), href: "../../math/junior-high-math/index.html", dojo: "中学数学道場",
+      guide: "../../math/junior-high-math/reference.html", guideName: "中学数学の要点帳", anchor: "id" },
+    { app: "japanese", label: "国語", ns: nsOf("JHJ"), href: "../../japanese/junior-high-japanese/index.html", dojo: "中学国語道場",
+      guide: "../../japanese/junior-high-japanese/reference.html", guideName: "中学国語の要点帳", anchor: "id" },
+    { app: "english", label: "英語", ns: nsOf("JHE"), href: "../../english/junior-high-english/index.html", dojo: "中学英語道場",
+      guide: "../../english/junior-high-english/reference.html", guideName: "中学英語の要点帳", anchor: "id" },
+    // 英単語帳の単元(学年×分野)は要点帳の単元と別なので、単元ごとの解説リンクは出さない
+    { app: "english-vocab", label: "英単語", ns: nsOf("JHV"), href: "../../english/junior-high-english/vocab.html", dojo: "中学英単語帳",
+      guide: "../../english/junior-high-english/reference.html", guideName: "中学英語の要点帳" },
+    { app: "science", label: "理科", ns: nsOf("JHS"), href: "../../science/junior-high-science/index.html", dojo: "中学理科道場",
+      guide: "../../science/junior-high-science/reference.html", guideName: "中学理科の要点帳", anchor: "id" },
+    { app: "chemistry", label: "化学基礎", ns: nsOf("CHEM"), href: "../../science/chemistry-lab/index.html", dojo: "化学基礎道場",
+      guide: "../../science/chemistry-lab/periodic.html", guideName: "周期表" },
+    { app: "social", label: "社会", ns: nsOf("JHSO"), href: "../../social/junior-high-social/index.html", dojo: "中学社会道場",
+      guide: "../../social/junior-high-social/reference.html", guideName: "中学社会の要点帳", anchor: "id" },
+    { app: "worldmap", label: "世界地図", ns: nsOf("WMAP"), href: "../../geography/world-map-dojo/index.html", dojo: "世界地図道場",
+      guide: "../../geography/world-map-dojo/atlas.html", guideName: "世界地図帳", anchor: "region" },
+    // 将棋は分類ごとの解説を SHOGI_CATS に持つ。習慣の解説は用語帳
+    { app: "shogi", label: "将棋", ns: null, href: "../../shogi/shogi-dojo/index.html", dojo: "将棋道場",
+      guide: "../../shogi/shogi-dojo/glossary.html", guideName: "用語帳" },
+    { app: "git", label: "Git", ns: nsOf("GITD"), href: "../../it/git-basics/index.html", dojo: "Git道場",
+      guide: "../../it/git-basics/reference.html", guideName: "Gitコマンド帳", anchor: "unit" },
+    { app: "linux", label: "Linux", ns: nsOf("LNX"), href: "../../it/linux-basics/index.html", dojo: "Linux道場",
+      guide: "../../it/linux-basics/reference.html", guideName: "Linuxコマンド帳", anchor: "unit" },
+    { app: "sql", label: "SQL", ns: nsOf("SQLD"), href: "../../it/sql-basics/index.html", dojo: "SQL道場",
+      guide: "../../it/sql-basics/reference.html", guideName: "SQL構文帳", anchor: "unit" },
+    { app: "regex", label: "正規表現", ns: nsOf("RGX"), href: "../../it/regex-basics/index.html", dojo: "正規表現道場",
+      guide: "../../it/regex-basics/reference.html", guideName: "正規表現記法帳", anchor: "unit" },
+    { app: "web", label: "Web", ns: nsOf("WEBD"), href: "../../it/web-basics/index.html", dojo: "Web道場",
+      guide: "../../it/web-basics/reference.html", guideName: "Web用語帳", anchor: "unit" },
+    { app: "python", label: "Python", ns: nsOf("PYD"), href: "../../it/python-basics/index.html", dojo: "Python道場",
+      guide: "../../it/python-basics/reference.html", guideName: "Python文法帳", anchor: "unit" },
+    { app: "algorithm", label: "アルゴリズム", ns: nsOf("ALGO"), href: "../../it/algorithm-visualizer/index.html", dojo: "アルゴリズム道場",
+      guide: "../../it/algorithm-visualizer/visualizer.html", guideName: "アルゴリズム可視化", anchor: "ref" },
+    { app: "ai", label: "AI理論", ns: nsOf("AITL"), href: "../../ai/ai-theory-lab/index.html", dojo: "AI理論道場",
+      guide: "../../ai/ai-theory-lab/reference.html", guideName: "AI理論帳", anchor: "id" },
+    { app: "electronics", label: "電子工作", ns: nsOf("ELEC"), href: "../../electronics/electronics-basics/index.html", dojo: "電子工作道場",
+      guide: "../../electronics/electronics-basics/reference.html", guideName: "電子工作の教科書", anchor: "unit" },
+    { app: "primes", label: "素数", ns: nsOf("PRIM"), href: "../../math/prime-numbers/index.html", dojo: "素数道場",
+      guide: "../../math/prime-numbers/reference.html", guideName: "素数テクニック帳", anchor: "unit" },
+    { app: "korean", label: "韓国語", ns: nsOf("KOR"), href: "../../korean/korean-basics/index.html", dojo: "韓国語入門道場",
+      guide: "../../korean/korean-basics/reference.html", guideName: "ハングル表・単語帳", anchor: "unit" }
   ];
   var SHOGI_CATS = [
-    { id: "castles", name: "囲い" },
-    { id: "openings", name: "戦法" },
-    { id: "tesuji", name: "手筋" },
-    { id: "terms", name: "用語" },
-    // 1手詰めは別のページ(tsume.html)。成績は shogiDojoTsume に問題ごとに入っている
+    { id: "castles", name: "囲い", guide: "../../shogi/shogi-dojo/castles.html" },
+    { id: "openings", name: "戦法", guide: "../../shogi/shogi-dojo/openings.html" },
+    { id: "tesuji", name: "手筋", guide: "../../shogi/shogi-dojo/tesuji.html" },
+    { id: "terms", name: "用語", guide: "../../shogi/shogi-dojo/glossary.html" },
+    // 1手詰めは別のページ(tsume.html)。成績は shogiDojoTsume に問題ごとに入っている。問題数は指定できない
     { id: "tsume1", name: "1手詰め", page: "../../shogi/shogi-dojo/tsume.html", statsKey: "shogiDojoTsume" }
   ];
   var subjectOf = {};
   SUBJECTS.forEach(function (s, i) { s.order = i; subjectOf[s.app] = s; });
 
   // ---------- 練習ページ(復習プランナーで管理していないページ。id は保存データのキーなので変えない) ----------
+  // href: 習慣の名前のリンク先。quiz / guide: 「クイズ」「解説」のリンク先(ないものは書かない)
   var PAGES = [
-    { id: "mental-math", label: "数学", name: "暗算道場", href: "../../math/mental-math-trainer/index.html" },
-    { id: "order-quiz", label: "数学", name: "オーダークイズ", href: "../../math/order-of-magnitude/quiz.html" },
-    { id: "fretboard", label: "音楽", name: "指板ノート道場", href: "../../music/fretboard-note-quiz/index.html" },
-    { id: "pentatonic", label: "音楽", name: "ペンタトニックスケール帳", href: "../../music/fretboard-note-quiz/pentatonic.html" },
-    { id: "staff", label: "音楽", name: "五線譜ノート道場", href: "../../music/staff-notation-quiz/index.html" },
-    { id: "invest-course", label: "投資", name: "投資入門コース", href: "../../finance/investment-simulator/course.html" },
-    { id: "invest-sim", label: "投資", name: "投資シミュレーション道場", href: "../../finance/investment-simulator/index.html" },
-    { id: "ai-lab", label: "AI", name: "AI実験室", href: "../../ai/ai-theory-lab/lab.html" }
+    { id: "mental-math", label: "数学", name: "暗算道場", href: "../../math/mental-math-trainer/index.html",
+      quiz: "../../math/mental-math-trainer/index.html", guide: "../../math/mental-math-trainer/reference.html", guideName: "暗算テクニック帳" },
+    { id: "order-quiz", label: "数学", name: "オーダークイズ", href: "../../math/order-of-magnitude/quiz.html",
+      quiz: "../../math/order-of-magnitude/quiz.html", guide: "../../math/order-of-magnitude/index.html", guideName: "オーダー図鑑" },
+    { id: "fretboard", label: "音楽", name: "指板ノート道場", href: "../../music/fretboard-note-quiz/index.html",
+      quiz: "../../music/fretboard-note-quiz/index.html", guide: "../../music/fretboard-note-quiz/reference.html", guideName: "指板ノート帳" },
+    { id: "pentatonic", label: "音楽", name: "ペンタトニックスケール帳", href: "../../music/fretboard-note-quiz/pentatonic.html",
+      guide: "../../music/fretboard-note-quiz/pentatonic.html", guideName: "ペンタトニックスケール帳" },
+    { id: "staff", label: "音楽", name: "五線譜ノート道場", href: "../../music/staff-notation-quiz/index.html",
+      quiz: "../../music/staff-notation-quiz/index.html", guide: "../../music/staff-notation-quiz/reference.html", guideName: "音符の読み方帳" },
+    { id: "guitar-course", label: "音楽", name: "ギター入門コース", href: "../../music/guitar-beginner-course/index.html",
+      guide: "../../music/guitar-beginner-course/index.html", guideName: "ギター入門コース" },
+    { id: "invest-course", label: "投資", name: "投資入門コース", href: "../../finance/investment-simulator/course.html",
+      guide: "../../finance/investment-simulator/course.html", guideName: "投資入門コース" },
+    { id: "invest-sim", label: "投資", name: "投資シミュレーション道場", href: "../../finance/investment-simulator/index.html",
+      quiz: "../../finance/investment-simulator/index.html", guide: "../../finance/investment-simulator/reference.html", guideName: "投資用語帳" },
+    { id: "ai-lab", label: "AI", name: "AI実験室", href: "../../ai/ai-theory-lab/lab.html",
+      guide: "../../ai/ai-theory-lab/reference.html", guideName: "AI理論帳" },
+    { id: "astronomy", label: "理科", name: "宇宙シミュレーター", href: "../../science/astronomy-simulator/index.html",
+      guide: "../../science/astronomy-simulator/index.html", guideName: "宇宙シミュレーター" }
   ];
   var pageOf = {};
   PAGES.forEach(function (p) { pageOf[p.id] = p; });
@@ -647,6 +721,18 @@
     return days.map(function (d) { return WEEK[d]; }).join("・");
   }
 
+  // 自由な習慣のリンク: http: / https: か、相対パスだけを受けつける。だめなら ""
+  function cleanUrl(v) {
+    if (typeof v !== "string") return "";
+    v = v.trim();
+    if (!v || v.length > 500) return "";
+    if (/[\s\\\u0000-\u001f\u007f]/.test(v)) return "";        // 空白・制御文字・\ を含むものは受けつけない
+    if (/^[a-z][a-z0-9+.\-]*:/i.test(v)) return /^https?:\/\/[^\/]/i.test(v) ? v : "";   // javascript: などは拒否
+    if (v.slice(0, 2) === "//") return "";                   // // ではじまる外部URLは https:// で書いてもらう
+    return v;
+  }
+  function isExternal(href) { return /^https?:/i.test(href); }
+
   // ---------- 道場の単元と成績 ----------
   // 学年: [{ id, short }](2つ以上あるときだけ「学年で絞る」を出す)
   function gradesOf(s) {
@@ -668,11 +754,22 @@
     for (var i = 0; i < list.length; i++) if (list[i].id === g) return list[i].short;
     return "";
   }
-  // 単元の一覧: [{ id, name, meta, href }](学年で絞る)
+  // 単元の解説ページ(見出しへのアンカーつき)。飛べる先がなければ ""
+  function unitGuide(s, u) {
+    if (!s.guide || !u || typeof u.id !== "string") return "";
+    var id = encodeURIComponent(u.id);
+    if (s.anchor === "id") return s.guide + "#" + id;
+    if (s.anchor === "unit") return s.guide + "#unit-" + id;
+    if (s.anchor === "region") return s.guide + "?region=" + id;
+    if (s.anchor === "ref") return typeof u.ref === "string" && u.ref ? s.guide + "#" + encodeURIComponent(u.ref) : "";
+    return "";
+  }
+  // 単元の一覧: [{ id, name, meta, href, guide, sep, fixed }](学年で絞る)
+  //   href に問題数をつけるときは sep("?" か "&")のあとに count=…。fixed: 問題数を指定できないページ
   function unitsOf(s, grade) {
     if (s.app === "shogi") {
       return SHOGI_CATS.map(function (c) {
-        return { id: c.id, name: c.name, meta: "",
+        return { id: c.id, name: c.name, meta: "", guide: c.guide || "", fixed: !!c.page,
           href: c.page ? c.page + "?unit=" + encodeURIComponent(c.id) : s.href + "?cat=" + encodeURIComponent(c.id) };
       });
     }
@@ -683,9 +780,10 @@
     }).map(function (u) {
       var g = hasGrades ? gradeShort(s, u.grade) : "";
       return { id: u.id, name: u.name, meta: g + (g && u.area ? " · " : "") + (u.area || ""),
-        href: s.href + "?unit=" + encodeURIComponent(u.id) };
+        href: s.href + "?unit=" + encodeURIComponent(u.id), guide: unitGuide(s, u), fixed: false };
     });
   }
+  function withCount(href, n) { return href + (href.indexOf("?") >= 0 ? "&" : "?") + "count=" + n; }
   // 単元ごとの成績: { 単元ID: { total, correct } }(道場のキーは読むだけ)
   function statsOf(s) {
     var out = {};
@@ -750,7 +848,8 @@
   }
 
   // ---------- 設定 ----------
-  // { habits: [ { id, type: "dojo"|"page"|"free", days: [0〜6], app, count, grade, page, name } ] }
+  // { habits: [ { id, type: "dojo"|"page"|"free", days: [0〜6], app, count, grade, page, name, guide, quiz } ] }
+  //   guide / quiz は自由な習慣だけ(どちらも任意。入っていないときは持たない)
   function cleanDays(v) {
     var out = [];
     if (Array.isArray(v)) v.forEach(function (d) { if (ALL_DAYS.indexOf(d) >= 0 && out.indexOf(d) < 0) out.push(d); });
@@ -773,6 +872,9 @@
       var name = typeof r.name === "string" ? r.name.trim().slice(0, 30) : "";
       if (!name) return null;
       h.name = name;
+      var gu = cleanUrl(r.guide), qu = cleanUrl(r.quiz);
+      if (gu) h.guide = gu;
+      if (qu) h.quiz = qu;
     } else return null;
     return h;
   }
@@ -953,6 +1055,47 @@
     return { cur: cur, best: Math.max(best, cur), todayKind: todayKind };
   }
 
+  // ---------- 解説・クイズのリンク ----------
+  // 道場のクイズは、今日の残りの問題数(最低1。達成ずみなら1日の問題数)で開く
+  function remainingOf(h, t, items) {
+    var left = h.count - solvedToday(h.app, t, items);
+    return left > 0 ? left : h.count;
+  }
+  // [{ kind: "guide"|"quiz", text, href, label }]
+  function habitLinks(h, t, items) {
+    var out = [], title = habitTitle(h);
+    if (h.type === "dojo") {
+      var s = subjectOf[h.app];
+      if (s.guide) out.push({ kind: "guide", text: "解説", href: s.guide, label: title + "の解説(" + s.guideName + ")を開く" });
+      var n = remainingOf(h, t, items);
+      out.push({ kind: "quiz", text: "クイズ(" + n + "問)", href: withCount(s.href, n), label: title + "で" + n + "問解く" });
+    } else if (h.type === "page") {
+      var pg = pageOf[h.page];
+      if (pg.guide) out.push({ kind: "guide", text: "解説", href: pg.guide, label: title + "の解説(" + pg.guideName + ")を開く" });
+      if (pg.quiz) out.push({ kind: "quiz", text: "クイズ", href: pg.quiz, label: title + "のクイズを開く" });
+    } else {
+      if (h.guide) out.push({ kind: "guide", text: "解説", href: h.guide, label: title + "の解説を開く" });
+      if (h.quiz) out.push({ kind: "quiz", text: "クイズ", href: h.quiz, label: title + "のクイズを開く" });
+    }
+    return out;
+  }
+  function setHref(a, href) {
+    a.href = href;
+    if (isExternal(href)) { a.target = "_blank"; a.rel = "noopener"; }
+  }
+  function linkRow(h, t, items) {
+    var links = habitLinks(h, t, items);
+    if (!links.length) return null;
+    var row = el("div", "link-row");
+    links.forEach(function (l) {
+      var a = el("a", "mini-link " + l.kind, l.text);
+      setHref(a, l.href);
+      a.setAttribute("aria-label", l.label + (a.target === "_blank" ? "(新しいタブ)" : ""));
+      row.appendChild(a);
+    });
+    return row;
+  }
+
   // ---------- 描画: 今日のメニュー ----------
   function renderMenu(t) {
     var items = reviewItems();
@@ -999,6 +1142,8 @@
         li.appendChild(el("span", "subj plain", habitLabel(h)));
         li.appendChild(el("span", "", habitTitle(h)));
         li.appendChild(el("span", "rest-days", daysText(h.days)));
+        var lr = linkRow(h, t, items);
+        if (lr) li.appendChild(lr);
         rl.appendChild(li);
       });
       det.appendChild(rl);
@@ -1023,6 +1168,7 @@
       link.href = h.type === "dojo" ? subjectOf[h.app].href : pageOf[h.page].href;
       name.appendChild(link);
     }
+    var links = linkRow(h, t, items);
     main.appendChild(name);
     top.appendChild(main);
 
@@ -1047,10 +1193,12 @@
       btn.setAttribute("data-check", h.id);
       top.appendChild(btn);
       li.appendChild(top);
+      if (links) li.appendChild(links);
       return li;
     }
 
     li.appendChild(top);
+    if (links) li.appendChild(links);
     var s = subjectOf[h.app];
     var n = solvedToday(h.app, t, items);
     var prog = el("div", "progress");
@@ -1101,6 +1249,8 @@
       return li;
     }
     var pl = el("ul", "pick-list");
+    var shown = picks.filter(function (id) { return !!byId[id]; }).length || 1;
+    var per = Math.ceil(h.count / shown);   // 単元ごとの問題数(合わせて1日の問題数以上になる)
     picks.forEach(function (id) {
       var u = byId[id];
       if (!u) return;
@@ -1114,10 +1264,18 @@
       if (r && r.dayDate === t && r.dayTotal > 0) sub.appendChild(el("span", "", "今日 " + r.dayTotal + "問"));
       if (sub.childNodes.length) pm.appendChild(sub);
       row.appendChild(pm);
-      var a = el("a", "solve-btn", "解く");
-      a.href = u.href;
-      a.setAttribute("aria-label", s.label + "「" + u.name + "」を解く");
-      row.appendChild(a);
+      var btns = el("div", "pick-btns");
+      if (u.guide) {
+        var g = el("a", "mini-link guide", "解説");
+        g.href = u.guide;
+        g.setAttribute("aria-label", s.label + "「" + u.name + "」の解説を開く");
+        btns.appendChild(g);
+      }
+      var a = el("a", "solve-btn", u.fixed ? "解く" : "解く(" + per + "問)");
+      a.href = u.fixed ? u.href : withCount(u.href, per);
+      a.setAttribute("aria-label", s.label + "「" + u.name + "」を" + (u.fixed ? "解く" : per + "問解く"));
+      btns.appendChild(a);
+      row.appendChild(btns);
       pl.appendChild(row);
     });
     li.appendChild(pl);
@@ -1232,6 +1390,7 @@
   var fDojo = document.getElementById("fDojo"), fCount = document.getElementById("fCount");
   var fGrade = document.getElementById("fGrade"), fPage = document.getElementById("fPage");
   var fName = document.getElementById("fName"), formError = document.getElementById("formError");
+  var fGuide = document.getElementById("fGuide"), fQuiz = document.getElementById("fQuiz");
   var dayChips = document.getElementById("dayChips");
 
   // 曜日は月曜はじまりで並べる
@@ -1314,6 +1473,8 @@
     document.getElementById("submitBtn").textContent = "追加する";
     document.getElementById("cancelBtn").hidden = true;
     fName.value = "";
+    fGuide.value = "";
+    fQuiz.value = "";
     fCount.value = "10";
     setDays(ALL_DAYS);
     fDojo.value = "";
@@ -1335,7 +1496,11 @@
       fCount.value = String(h.count);
       fillGradeOptions(h.grade);
     } else if (h.type === "page") fPage.value = h.page;
-    else fName.value = h.name;
+    else {
+      fName.value = h.name;
+      fGuide.value = h.guide || "";
+      fQuiz.value = h.quiz || "";
+    }
     setDays(h.days);
     renderList();
     form.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1361,6 +1526,18 @@
     } else {
       r.name = fName.value.trim();
       if (!r.name) { formError.textContent = "名前を入力してください。"; fName.focus(); return; }
+      var urls = [[fGuide, "guide", "解説"], [fQuiz, "quiz", "クイズ"]];
+      for (var k = 0; k < urls.length; k++) {
+        var v = urls[k][0].value.trim();
+        if (!v) continue;
+        var ok = cleanUrl(v);
+        if (!ok) {
+          formError.textContent = urls[k][2] + "のURLは、http:// か https:// ではじまるURLか、相対パスで入力してください(空白は使えません)。";
+          urls[k][0].focus();
+          return;
+        }
+        r[urls[k][1]] = ok;
+      }
     }
     var h = cleanHabit(r);
     if (!h) { formError.textContent = "入力を確かめてください。"; return; }
