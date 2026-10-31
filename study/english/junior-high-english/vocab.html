@@ -679,7 +679,10 @@
 <body>
 
 <div class="app">
-  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <nav class="page-links" aria-label="ページの移動">
+    <a class="back-link" href="../../../index.html">← ページ一覧</a>
+    <a class="back-link" href="../../../study/review/habit-planner/index.html">習慣プランナー →</a>
+  </nav>
   <header class="hero">
     <p class="eyebrow" id="eyebrow">JUNIOR HIGH ENGLISH · 単語 0語</p>
     <h1>中学英単語帳</h1>
@@ -1191,6 +1194,29 @@
     $("preselectNote").hidden = false;
   })();
 
+  // ---------- ?count= で開いたとき(習慣プランナーから) ----------
+  // 1〜50の整数なら、このページを開いているあいだの出題数にする。settings.count(保存する値)は変えない。
+  // 出題数のボタンでほかの数を選んだら、その値に戻る
+  var URL_COUNT = (function () {
+    var raw = null;
+    try { raw = new URLSearchParams(location.search).get("count"); } catch (e) { raw = null; }
+    return raw !== null && /^[0-9]+$/.test(raw) && Number(raw) >= 1 && Number(raw) <= 50 ? Number(raw) : null;
+  })();
+  var habitCount = URL_COUNT;
+  var unitNoteText = $("preselectNote").hidden ? "" : $("preselectNote").textContent;
+  function practiceCount() { return habitCount || settings.count; }
+  function renderPreselectNote() {
+    var parts = [];
+    if (unitNoteText) parts.push(unitNoteText);
+    if (habitCount) parts.push("習慣プランナーから: " + habitCount + "問で出題します。");
+    $("preselectNote").textContent = parts.join(" ");
+    $("preselectNote").hidden = parts.length === 0;
+  }
+  if (URL_COUNT) {
+    settings.tab = "practice";   // ?unit= のときと同じく、練習タブで開く
+    renderPreselectNote();
+  }
+
   // ---------- 範囲 ----------
   var rangeFold = $("rangeFold");
   var gradeChips = $("gradeChips"), catList = $("catList"), posChips = $("posChips");
@@ -1314,7 +1340,29 @@
   bindSeg("segFilter", "filter");
   bindSeg("segMode", "mode");
   bindSeg("segDir", "dir");
+  // 出題数のボタンを押したら、?count= の指定をやめてその値にする(bindSeg より先に登録する)
+  segButtons("segCount").forEach(function (b) {
+    b.addEventListener("click", function () {
+      habitCount = null;
+      if (!$("preselectNote").hidden) renderPreselectNote();
+    });
+  });
   bindSeg("segCount", "count", Number);
+  // ?count= の数がボタンにないときは、一時的なボタンを足す
+  if (URL_COUNT && !segButtons("segCount").some(function (b) { return Number(b.dataset.v) === URL_COUNT; })) {
+    var habitBtn = document.createElement("button");
+    habitBtn.type = "button";
+    habitBtn.dataset.v = String(URL_COUNT);
+    habitBtn.textContent = String(URL_COUNT);
+    habitBtn.title = "習慣プランナーで決めた数";
+    habitBtn.addEventListener("click", function () {
+      habitCount = URL_COUNT;
+      if (!$("preselectNote").hidden) renderPreselectNote();
+      changed();
+    });
+    var afterBtn = segButtons("segCount").filter(function (b) { var v = Number(b.dataset.v); return v === 0 || v > URL_COUNT; })[0] || null;
+    $("segCount").insertBefore(habitBtn, afterBtn);
+  }
   $("orderSelect").addEventListener("change", function () {
     settings.order = has(JHV.ORDERS, this.value) ? this.value : "random";
     changed();
@@ -1338,7 +1386,8 @@
     pressSeg("segDir", spell ? "je" : settings.dir);
     segButtons("segDir").forEach(function (b) { b.disabled = spell; });
     $("dirHint").hidden = !spell;
-    pressSeg("segCount", settings.count);
+    var pc = practiceCount();
+    pressSeg("segCount", pc);
     $("orderSelect").value = settings.order;
     $("exampleCheck").checked = settings.example;
     $("autoSpeakCheck").checked = settings.autoSpeak;
@@ -1348,8 +1397,8 @@
     btn.disabled = P === 0;
     $("startError").classList.toggle("show", P === 0);
     if (P === 0) btn.textContent = "練習を始める";
-    else if (settings.count === 0 || settings.count >= P) btn.textContent = "練習を始める(" + P + "語すべて)";
-    else btn.textContent = "練習を始める(" + P + "語から" + settings.count + "問)";
+    else if (pc === 0 || pc >= P) btn.textContent = "練習を始める(" + P + "語すべて)";
+    else btn.textContent = "練習を始める(" + P + "語から" + pc + "問)";
   }
 
   // ---------- タブ ----------
@@ -1709,7 +1758,8 @@
     var pool = makePool();
     if (!pool.length) return;
     var ordered = orderWords(pool);
-    var n = settings.count === 0 ? ordered.length : Math.min(settings.count, ordered.length);
+    var pc = practiceCount();
+    var n = pc === 0 ? ordered.length : Math.min(pc, ordered.length);
     var questions = ordered.slice(0, n).map(function (w) {
       var mode = settings.mode;
       return { w: w, mode: mode, dir: mode === "spell" ? "je" : settings.dir };

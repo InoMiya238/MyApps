@@ -597,7 +597,10 @@
 <body>
 
 <div class="app">
-  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <nav class="page-links" aria-label="ページの移動">
+    <a class="back-link" href="../../../index.html">← ページ一覧</a>
+    <a class="back-link" href="../../../study/review/habit-planner/index.html">習慣プランナー →</a>
+  </nav>
   <header class="hero">
     <p class="eyebrow" id="eyebrow">AI THEORY LAB · 道場</p>
     <h1>AI理論道場</h1>
@@ -740,6 +743,16 @@
   var selected = {};       // 選んでいる単元(ID → true)
   var count = 10;
   var session = null;
+  // 習慣プランナーから ?count=<1〜50の整数> で開いたときだけの出題数(設定には保存しない)。
+  // 出題数の欄を変えたら、そちらを優先して指定をやめる
+  var urlCount = (function () {
+    var s = null;
+    try { s = new URLSearchParams(location.search).get("count"); } catch (e) { s = null; }
+    if (!s || !/^\d+$/.test(s)) return 0;
+    var n = Number(s);
+    return n >= 1 && n <= 50 ? n : 0;
+  })();
+  function quizCount() { return urlCount || count; }
 
   function readyUnits() { return AITL.UNITS.filter(function (u) { return AITL.isReady(u.id); }); }
   function selectedIds() {
@@ -769,6 +782,21 @@
       selected[u.id] = true;
       preselectNote.textContent = "「" + u.name + "」だけを選びました。";
       preselectNote.hidden = false;
+    }
+    if (urlCount) {
+      var habit = "習慣プランナーから: " + urlCount + "問で出題します。";
+      preselectNote.textContent = preselectNote.hidden ? habit : preselectNote.textContent + " " + habit;
+      preselectNote.hidden = false;
+      // 5・10・20 以外の数は、出題数の欄に一時的な選択肢を足して表示を合わせる
+      if (AITL.COUNTS.indexOf(urlCount) < 0) {
+        var opt = document.createElement("option");
+        opt.value = String(urlCount);
+        opt.textContent = urlCount + "問(習慣プランナーの指定)";
+        opt.setAttribute("data-url-count", "");
+        var after = null;
+        Array.prototype.forEach.call(countSelect.options, function (o) { if (!after && Number(o.value) > urlCount) after = o; });
+        countSelect.insertBefore(opt, after);
+      }
     }
   })();
 
@@ -844,7 +872,7 @@
   function renderStartBar() {
     var n = selectedIds().length;
     startBtn.disabled = n === 0;
-    startBtn.textContent = n === 0 ? "クイズを始める" : "クイズを始める(" + n + "単元・" + count + "問)";
+    startBtn.textContent = n === 0 ? "クイズを始める" : "クイズを始める(" + n + "単元・" + quizCount() + "問)";
     setupError.classList.toggle("show", n === 0);
   }
 
@@ -911,7 +939,7 @@
 
   function renderSetup() {
     renderUnitList();
-    countSelect.value = String(count);
+    countSelect.value = String(quizCount());
     renderStartBar();
     renderStats();
   }
@@ -927,6 +955,16 @@
   countSelect.addEventListener("change", function () {
     var n = Number(countSelect.value);
     count = AITL.COUNTS.indexOf(n) >= 0 ? n : 10;
+    // 欄を変えたら、URLの指定より欄の値を優先する
+    if (urlCount) {
+      urlCount = 0;
+      var tmp = countSelect.querySelector("option[data-url-count]");
+      if (tmp) tmp.remove();
+      countSelect.value = String(count);
+      var rest = preselectNote.textContent.replace(/ ?習慣プランナーから: \d+問で出題します。/, "");
+      preselectNote.textContent = rest;
+      preselectNote.hidden = rest === "";
+    }
     renderStartBar();
   });
   weakBtn.addEventListener("click", function () {
@@ -947,7 +985,7 @@
   function startQuiz() {
     var ids = selectedIds();
     if (ids.length === 0) return;
-    var questions = AITL.buildQuiz(ids, count);
+    var questions = AITL.buildQuiz(ids, quizCount());
     if (questions.length === 0) return;
     AITL.saveSettings({ units: ids, count: count });
     preselectNote.hidden = true;
