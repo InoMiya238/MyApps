@@ -1,0 +1,70 @@
+/* 韓国語入門道場 の色。変数名は学習シリーズ共通(shared/base.css を参照)。
+   --mark / --mark-soft は、パッチムの部分(.pc)などの目印だけで使う。
+   --font-hangul は、ハングルを出す要素(lang="ko" class="ko")で使う。 */
+:root {
+  color-scheme: light;
+  --font-hangul: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --bg: #F1F3F8;
+  --surface: #FFFFFF;
+  --surface-2: #E4E9F3;
+  --border: #CAD2E2;
+  --ink: #141B2B;
+  --ink-muted: #44506A;
+  --ink-faint: #56627A;
+  --accent: #1F4FA0;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E2EBFA;
+  --good: #1F6B45;
+  --good-soft: #DFF0E6;
+  --bad: #A8321E;
+  --bad-soft: #F9E4DE;
+  --mark: #B8233B;
+  --mark-soft: #FBE3E7;
+  --shadow: rgba(20, 27, 43, 0.10);
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0D1118;
+    --surface: #151B26;
+    --surface-2: #1E2633;
+    --border: #2F3A4C;
+    --ink: #E9EEF6;
+    --ink-muted: #B0BACB;
+    --ink-faint: #909BAE;
+    --accent: #8FB4F5;
+    --accent-ink: #0B1A33;
+    --accent-soft: #1A2A47;
+    --good: #86CFA0;
+    --good-soft: #183024;
+    --bad: #F29A84;
+    --bad-soft: #3A1F1A;
+    --mark: #FF8FA0;
+    --mark-soft: #3A1A22;
+    --shadow: rgba(0, 0, 0, 0.45);
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0D1118;
+  --surface: #151B26;
+  --surface-2: #1E2633;
+  --border: #2F3A4C;
+  --ink: #E9EEF6;
+  --ink-muted: #B0BACB;
+  --ink-faint: #909BAE;
+  --accent: #8FB4F5;
+  --accent-ink: #0B1A33;
+  --accent-soft: #1A2A47;
+  --good: #86CFA0;
+  --good-soft: #183024;
+  --bad: #F29A84;
+  --bad-soft: #3A1F1A;
+  --mark: #FF8FA0;
+  --mark-soft: #3A1A22;
+  --shadow: rgba(0, 0, 0, 0.45);
+}

@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ハングル表・単語帳 | 韓国語入門道場</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 900px; gap: 24px; }
+  .app > * { min-width: 0; }
+
+  /* ハングル(lang="ko" class="ko") */
+  .ko {
+    font-family: var(--font-hangul);
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.35;
+    word-break: keep-all;   /* 語の途中で折り返さず、分かち書きの空白で折り返す */
+  }
+  .roma { font-family: var(--font-mono); }
+  /* パッチムの部分 */
+  .pc {
+    color: var(--mark);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 56ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+  a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button { font-family: var(--font-body); cursor: pointer; border: none; }
+
+  .hint {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--bad);
+    line-height: 1.6;
+  }
+  .hint[hidden] { display: none; }
+
+  /* ---------- 発音ボタン ---------- */
+  .speak-btn {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 12px;
+    display: inline-grid;
+    place-items: center;
+  }
+  .speak-btn:hover { background: var(--accent); color: var(--accent-ink); }
+  body:not(.has-voice) .speak-btn { display: none; }
+
+  /* ---------- Controls bar ---------- */
+  .controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 16px;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 20px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .search-input {
+    flex: 1 1 320px;
+    min-width: 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    font: inherit;
+    font-size: 16px;
+  }
+  .search-input::placeholder { color: var(--ink-faint); opacity: 1; }
+  .search-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .bar-side {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-left: auto;
+  }
+  .hit-count {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+  .quiz-link {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-radius: 9px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  /* ---------- TOC ---------- */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .toc[hidden] { display: none; }
+  .toc-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    margin: 0 0 10px;
+  }
+  .toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 24px;
+    font-size: 13.5px;
+  }
+  .toc li { min-width: 0; display: flex; gap: 8px; align-items: baseline; }
+  .toc li .no {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .toc a { color: var(--ink); text-decoration: none; font-weight: 600; overflow-wrap: anywhere; }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+
+  /* 反切表 */
+  .chart-box { scroll-margin-top: 16px; }
+  .chart-box summary { cursor: pointer; list-style-position: inside; }
+  .chart-box summary.toc-title { margin: 0; font-size: 12px; }
+  .chart-box[open] summary.toc-title { margin-bottom: 10px; }
+  .chart-lead { margin: 0 0 10px; font-size: 13px; color: var(--ink-muted); line-height: 1.7; }
+  .table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .chart {
+    border-collapse: collapse;
+    font-size: 12px;
+    min-width: 640px;
+    width: 100%;
+  }
+  .chart th, .chart td { border: 1px solid var(--border); padding: 0; text-align: center; }
+  .chart tr:first-child th { border-top: 0; }
+  .chart tr > :first-child { border-left: 0; }
+  .chart tr > :last-child { border-right: 0; }
+  .chart tr:last-child > * { border-bottom: 0; }
+  .chart th {
+    background: var(--surface-2);
+    color: var(--accent);
+    font-size: 16px;
+    padding: 6px 4px;
+    font-weight: 700;
+  }
+  .chart thead th:first-child { position: sticky; left: 0; z-index: 1; }
+  .chart tbody th { position: sticky; left: 0; z-index: 1; }
+  .chart-cell {
+    width: 100%;
+    min-height: 48px;
+    padding: 5px 2px;
+    background: var(--surface);
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    border-radius: 0;
+  }
+  .chart-cell .ko { font-size: 19px; }
+  .chart-cell .roma { font-size: 10.5px; color: var(--ink-faint); }
+  .has-voice .chart-cell:hover { background: var(--accent-soft); }
+
+  .no-hit {
+    margin: 0;
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 14px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+  }
+  .no-hit[hidden] { display: none; }
+
+  /* ---------- 単元の区切り ---------- */
+  .grade-section { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 16px; min-width: 0; }
+  .grade-section[hidden] { display: none; }
+  .grade-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .grade-section.is-target .grade-head { border-bottom: 2px solid var(--accent); }
+  .grade-head h2 {
+    margin: 0;
+    min-width: 0;
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .grade-head h2 .no {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .grade-head .dojo-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .grade-head .dojo-link:hover { text-decoration: underline; }
+
+  [data-group][hidden] { display: none !important; }
+
+  /* ---------- 説明のカード ---------- */
+  .study-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .study-card {
+    min-width: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .study-card[hidden] { display: none; }
+  .study-card p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+  .study-card .ko { font-weight: 700; color: var(--ink); }
+  .sub-title {
+    margin: 4px 0 0;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- 字母のタイル ---------- */
+  .hangul-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: 8px;
+  }
+  .tile {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 10px 4px 9px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 1px 2px var(--shadow);
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .tile[hidden] { display: none; }
+  .has-voice .tile:hover { border-color: var(--accent); background: var(--accent-soft); }
+  body:not(.has-voice) .tile, body:not(.has-voice) .chart-cell { cursor: default; }
+  .tile .t-ko { font-size: 34px; line-height: 1.2; }
+  .tile .t-syl { font-size: 13px; color: var(--ink-muted); }
+  .tile .t-kana { font-size: 13px; font-weight: 700; line-height: 1.35; text-align: center; overflow-wrap: anywhere; }
+  .tile .t-roma { font-size: 11px; color: var(--ink-faint); }
+
+  /* ---------- 平音・激音・濃音の比較表 ---------- */
+  .contrast-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 6px;
+    margin: -6px;
+    width: calc(100% + 12px);
+    table-layout: fixed;
+  }
+  .contrast-table th {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    padding: 2px;
+  }
+  .contrast-table thead th:first-child { width: 64px; }
+  .contrast-table tbody th { font-size: 12px; color: var(--ink-muted); text-align: left; }
+  .contrast-table td { padding: 0; }
+  .contrast-table tr[hidden] { display: none; }
+  .contrast-table .tile { width: 100%; }
+  .contrast-table .empty {
+    display: grid;
+    place-items: center;
+    min-height: 100px;
+    border-radius: 12px;
+    border: 1px dashed var(--border);
+    color: var(--ink-faint);
+  }
+
+  /* ---------- パッチムの代表音カード ---------- */
+  .rep-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
+  .rep-sound { font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--mark); }
+  .rep-kana { font-size: 15px; font-weight: 700; }
+  .rep-letters { font-size: 18px; }
+  .rep-letters .ko { color: var(--mark); font-weight: 700; }
+  .study-card.rep-card { gap: 8px; }
+
+  /* ---------- 単語の行 ---------- */
+  .word-list {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 1px 2px var(--shadow);
+    overflow: hidden;
+  }
+  .study-card .word-list { box-shadow: none; border-radius: 10px; }
+  .wl-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 1fr 36px;
+    align-items: center;
+    gap: 4px 14px;
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+    min-width: 0;
+  }
+  .wl-row:first-child { border-top: 0; }
+  .wl-row[hidden] { display: none; }
+  .wl-ko { font-size: 19px; font-weight: 700; min-width: 0; overflow-wrap: anywhere; }
+  .wl-meta { display: contents; }
+  .wl-read { min-width: 0; display: flex; flex-direction: column; overflow-wrap: anywhere; }
+  .wl-read .kana { font-size: 14px; font-weight: 700; }
+  .wl-read .roma { font-size: 12px; color: var(--ink-faint); }
+  .wl-ja { min-width: 0; font-size: 14px; color: var(--ink-muted); overflow-wrap: anywhere; }
+  .wl-row .speak-btn { justify-self: end; }
+  .wl-note {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: 12px;
+    color: var(--ink-faint);
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+  .study-card .wl-row { grid-template-columns: 1fr 1.2fr 1fr 36px; }
+
+  footer.cta {
+    text-align: center;
+    padding: 8px 0 0;
+  }
+  footer.cta p {
+    margin: 10px 0 0;
+    color: var(--ink-muted);
+    font-size: 13px;
+  }
+
+  @media (prefers-reduced-motion: reduce) { .tile { transition: none; } }
+
+  @media (max-width: 700px) {
+    .study-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .wl-row, .study-card .wl-row { grid-template-columns: minmax(0, 1fr) 36px; padding: 10px 12px; }
+    .wl-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; grid-column: 1 / -1; min-width: 0; }
+    .wl-read { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 0 8px; }
+    .wl-row .speak-btn { grid-column: 2; grid-row: 1; }
+  }
+  @media (max-width: 480px) {
+    .controls-bar { padding: 14px 16px; }
+    .search-input { flex-basis: 100%; }
+    .bar-side { margin-left: 0; width: 100%; justify-content: space-between; }
+    .toc { padding: 16px; }
+    .toc ol { gap: 6px 14px; }
+    .study-card { padding: 16px; }
+    .hangul-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
+    .tile .t-ko { font-size: 30px; }
+    .tile .t-kana { font-size: 12px; }
+    .contrast-table { border-spacing: 4px; margin: -4px; width: calc(100% + 8px); }
+    .contrast-table thead th:first-child { width: 44px; }
+    .contrast-table tbody th { font-size: 11px; }
+    .contrast-table .tile { padding: 8px 2px; }
+    .contrast-table .tile .t-ko { font-size: 26px; }
+    .contrast-table .tile .t-kana { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">HANGUL &amp; WORDS</p>
+    <h1>ハングル表・単語帳</h1>
+    <p class="tagline">道場の9単元に出てくる文字と単語を、読み(カタカナ・ローマ字)と意味つきでまとめました。▶ や文字をタップすると発音を聞けます。</p>
+    <nav class="site-nav" aria-label="韓国語入門道場のページ">
+      <a href="index.html">道場</a>
+      <span aria-current="page">ハングル表・単語帳</span>
+    </nav>
+  </header>
+
+  <section class="controls-bar" aria-label="絞り込み">
+    <input type="search" class="search-input" id="searchInput" placeholder="ハングル・読み・意味で検索" aria-label="ハングル・読み・意味で絞り込み(例: カムサ、ありがとう)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
+    <div class="bar-side">
+      <span class="hit-count" id="hitCount" role="status" aria-live="polite"></span>
+      <a class="quiz-link" href="index.html">道場で練習する →</a>
+    </div>
+  </section>
+  <p class="hint" id="voiceHint" role="status">この端末には韓国語の音声がないため、再生ボタンは使えません。</p>
+
+  <nav class="toc" id="toc" aria-label="目次">
+    <p class="toc-title">目次</p>
+    <ol id="tocList"></ol>
+  </nav>
+
+  <details class="toc chart-box" id="chart">
+    <summary class="toc-title">反切表(子音14 × 基本母音10)</summary>
+    <p class="chart-lead">左の子音と上の母音を組み合わせた字の一覧です。ローマ字は改訂ローマ字で、ㅇ は音がないので母音だけになります。表は横にスクロールできます。</p>
+    <div class="table-scroll" id="chartScroll"></div>
+  </details>
+
+  <p class="no-hit" id="noHit" hidden>見つかりませんでした。別のことばで試してください。</p>
+
+  <div id="sections" style="display: contents"></div>
+
+  <footer class="cta">
+    <a class="quiz-link" href="index.html">道場で練習する →</a>
+    <p>道場では、単元を選んで「ハングル→読み」「音声→ハングル」など6つの向きで4択の練習ができます。正答率は単元ごとに残ります。</p>
+  </footer>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // 単元ごとの説明
+  var LEADS = {
+    "vowels": "ハングルは、子音と母音の字を組み合わせて1文字(1音節)を作ります。母音だけの音は、音のない ㅇ を左か上につけて書きます(ㅏ → 아)。「オ」と「ウ」には2種類ずつあるので、口の形で区別します。",
+    "consonants": "基本の子音です。ㄱ・ㄷ・ㅂ・ㅈ は、語頭では「カ・タ・パ・チャ」、語中(母音にはさまれたとき)では「ガ・ダ・バ・ジャ」と濁ります。はじめの ㅇ は音がありません。",
+    "aspirated-tense": "激音は息を強く出す音、濃音はのどを詰めて息を出さない音です。平音(基本子音)と並べると違いがわかります。濃音のカタカナは、詰まった感じを「ッ」で表しています。激音・濃音は語中でも濁りません。",
+    "compound-vowels": "母音を2つ組み合わせた字です。ㅐ と ㅔ、ㅒ と ㅖ、ㅙ・ㅚ・ㅞ は、いまの発音ではほとんど同じ音になります。",
+    "batchim": "字の下につく子音をパッチムといいます。パッチムの音は7つ(代表音)にまとまります。読みの赤い下線の部分がパッチムの音です。[k][t][p] は、口の形だけ作って音を止めます。",
+    "greetings": "まず覚えたい、あいさつとお礼・おわびのことばです。-요 や -습니다 で終わる、ていねいな言い方を集めました。",
+    "numbers": "韓国語の数字は2種類あります。漢数詞(일・이・삼…)は日付・値段・電話番号・「〜分」に、固有数詞(하나・둘・셋…)は物の数・年齢・「〜時」に使います。",
+    "words": "身のまわりの基本単語です。漢字語(学校・時間など)は、日本語と音が似ているものが多くあります。",
+    "phrases": "旅行や会話ですぐ使える短いフレーズです。○○ 주세요(〜ください)、○○ 어디예요?(〜はどこですか)の形は、単語を入れかえて使えます。"
+  };
+  // 平音・激音・濃音の比較(基本子音の単元・激音と濃音の単元の項目を使う)
+  var CONTRAST = [["ㄱ", "ㅋ", "ㄲ"], ["ㄷ", "ㅌ", "ㄸ"], ["ㅂ", "ㅍ", "ㅃ"], ["ㅈ", "ㅊ", "ㅉ"], ["ㅅ", "", "ㅆ"]];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var tocList = $("tocList");
+  var toc = $("toc");
+  var chartBox = $("chart");
+  var sections = $("sections");
+  var searchInput = $("searchInput");
+  var hitCount = $("hitCount");
+  var noHit = $("noHit");
+  var entries = [];   // { el, text }
+  var groups = [];    // 中身がすべて隠れたら隠す要素
+  var sectionEls = [];
+
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function koEl(tag, className, text) {
+    var e = el(tag, "ko" + (className ? " " + className : ""), text);
+    e.lang = "ko";
+    return e;
+  }
+  // [ ] で囲んだところを .pc にする
+  function markedEl(tag, className, s) {
+    var e = el(tag, className);
+    String(s).split(/(\[[^\]]*\])/).forEach(function (part) {
+      if (!part) return;
+      if (/^\[.*\]$/.test(part)) e.appendChild(el("span", "pc", part.slice(1, -1)));
+      else e.appendChild(document.createTextNode(part));
+    });
+    return e;
+  }
+  // 検索用: ひらがなはカタカナにそろえ、空白をつめ、小文字にする
+  function norm(s) {
+    return String(s || "").replace(/[ぁ-ゖ]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) + 0x60); })
+      .replace(/[\[\]\s]/g, "").toLowerCase();
+  }
+  function textOf(it) { return norm([it.ko, it.jamo || "", it.kana, it.roma, it.ja || ""].join("|")); }
+
+  // ---------- 発音 ----------
+  var synth = null, voice = null;
+  try { synth = window.speechSynthesis || null; } catch (e) { synth = null; }
+  function pickVoice() {
+    var vs = [];
+    try { vs = (synth && synth.getVoices()) || []; } catch (e) { vs = []; }
+    var ko = vs.filter(function (v) { return /^ko([-_]|$)/i.test(v.lang || ""); });
+    function rank(v) { return (v.localService ? 0 : 2) + (v["default"] ? 0 : 1); }
+    ko.sort(function (a, b) { return rank(a) - rank(b); });
+    voice = ko[0] || null;
+    document.body.classList.toggle("has-voice", !!voice);
+    $("voiceHint").hidden = !!voice;
+  }
+  function speak(text) {
+    if (!voice || !synth || !text) return;
+    try {
+      synth.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.voice = voice;
+      u.lang = voice.lang;
+      u.rate = 0.85;
+      synth.speak(u);
+    } catch (e) { /* 読めなくても止めない */ }
+  }
+  function speakBtn(text) {
+    var b = el("button", "speak-btn", "▶");
+    b.type = "button";
+    b.setAttribute("aria-label", text + " の発音を聞く");
+    b.lang = "ja";
+    b.addEventListener("click", function () { speak(text); });
+    return b;
+  }
+
+  // ---------- 部品 ----------
+  function tile(it) {
+    var b = el("button", "tile");
+    b.type = "button";
+    b.appendChild(koEl("span", "t-ko", it.jamo || it.ko));
+    if (it.jamo && it.jamo !== it.ko) b.appendChild(koEl("span", "t-syl", it.ko));
+    b.appendChild(el("span", "t-kana", it.kana));
+    b.appendChild(el("span", "roma t-roma", it.roma));
+    b.setAttribute("aria-label", (it.jamo || it.ko) + "、" + it.kana + "、" + it.roma + "(タップで発音)");
+    b.addEventListener("click", function () { speak(it.say); });
+    return b;
+  }
+  function wordRow(it, withNote) {
+    var row = el("div", "wl-row");
+    row.appendChild(koEl("div", "wl-ko", it.ko));
+    var meta = el("div", "wl-meta");
+    var read = el("div", "wl-read");
+    read.appendChild(markedEl("span", "kana", it.kanaMarked));
+    var r = markedEl("span", "roma", it.romaMarked);
+    r.lang = "ko-Latn";
+    read.appendChild(r);
+    meta.appendChild(read);
+    meta.appendChild(el("div", "wl-ja", it.ja || ""));
+    row.appendChild(meta);
+    row.appendChild(speakBtn(it.say));
+    if (withNote && it.note) row.appendChild(el("p", "wl-note", it.note));
+    return row;
+  }
+  function addEntry(node, text, count) { entries.push({ el: node, text: text, count: count || 1 }); }
+  function group(node) { node.dataset.group = "1"; groups.push(node); return node; }
+
+  function leadCard(u) {
+    var card = el("div", "study-card");
+    card.appendChild(el("p", "", LEADS[u.id] || ""));
+    return card;
+  }
+  function tileGrid(list) {
+    var grid = group(el("div", "hangul-grid"));
+    list.forEach(function (it) {
+      var t = tile(it);
+      grid.appendChild(t);
+      addEntry(t, textOf(it));
+    });
+    return grid;
+  }
+  function wordList(list, withNote) {
+    var wl = group(el("div", "word-list"));
+    list.forEach(function (it) {
+      var row = wordRow(it, withNote);
+      wl.appendChild(row);
+      addEntry(row, textOf(it));
+    });
+    return wl;
+  }
+  function letters(id) { return KOR.items(id).filter(function (it) { return it.kind === "letter"; }); }
+  function words(id) { return KOR.items(id).filter(function (it) { return it.kind === "word"; }); }
+
+  function contrastTable() {
+    var byJamo = {};
+    letters("consonants").concat(letters("aspirated-tense")).forEach(function (it) { byJamo[it.jamo] = it; });
+    var table = group(el("table", "contrast-table"));
+    var thead = el("thead"), hr = el("tr");
+    ["", "平音", "激音", "濃音"].forEach(function (h) { var th = el("th", "", h); th.scope = "col"; hr.appendChild(th); });
+    thead.appendChild(hr);
+    table.appendChild(thead);
+    var tbody = el("tbody");
+    CONTRAST.forEach(function (row) {
+      var tr = el("tr");
+      var th = el("th", "", row[0] + " の行");
+      th.scope = "row";
+      th.lang = "ja";
+      tr.appendChild(th);
+      var text = [];
+      row.forEach(function (j) {
+        var td = el("td");
+        var it = j ? byJamo[j] : null;
+        if (it) { td.appendChild(tile(it)); text.push(textOf(it)); }
+        else { var e = el("div", "empty", "–"); e.setAttribute("aria-label", "なし"); td.appendChild(e); }
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+      addEntry(tr, text.join("|"), text.length);
+    });
+    table.appendChild(tbody);
+    return table;
+  }
+
+  function repCards() {
+    var c = KOR.contentOf("batchim");
+    var grid = el("div", "study-grid");
+    c.reps.forEach(function (rep) {
+      var card = group(el("article", "study-card rep-card"));
+      var head = el("div", "rep-head");
+      if (rep.sound) {
+        head.appendChild(el("span", "rep-sound", "[" + rep.sound + "]"));
+        head.appendChild(el("span", "rep-kana", rep.kana));
+        var ls = el("span", "rep-letters");
+        ls.appendChild(document.createTextNode("パッチム "));
+        ls.appendChild(koEl("span", "", rep.letters));
+        head.appendChild(ls);
+      } else {
+        head.appendChild(el("span", "rep-kana", rep.title));
+      }
+      card.appendChild(head);
+      card.appendChild(el("p", "", rep.desc));
+      var list = KOR.items("batchim").filter(function (it) { return it.rep === rep.id; });
+      card.appendChild(wordList(list, rep.id === "link"));
+      grid.appendChild(card);
+    });
+    return grid;
+  }
+
+  function buildChart() {
+    var ch = KOR.chart();
+    var table = el("table", "chart");
+    var thead = el("thead"), hr = el("tr");
+    var corner = el("th", "", "");
+    corner.setAttribute("aria-label", "子音 \\ 母音");
+    hr.appendChild(corner);
+    ch.vowels.forEach(function (v) { var th = koEl("th", "", v); th.scope = "col"; hr.appendChild(th); });
+    thead.appendChild(hr);
+    table.appendChild(thead);
+    var tbody = el("tbody");
+    ch.rows.forEach(function (row, i) {
+      var tr = el("tr");
+      var th = koEl("th", "", ch.cons[i]);
+      th.scope = "row";
+      tr.appendChild(th);
+      row.forEach(function (cell) {
+        var td = el("td");
+        var b = el("button", "chart-cell");
+        b.type = "button";
+        b.appendChild(koEl("span", "", cell.ko));
+        b.appendChild(el("span", "roma", cell.roma));
+        b.setAttribute("aria-label", cell.ko + " " + cell.roma);
+        b.addEventListener("click", function () { speak(cell.ko); });
+        td.appendChild(b);
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    $("chartScroll").appendChild(table);
+  }
+
+  // ---------- 単元ごとのまとまり ----------
+  KOR.UNITS.forEach(function (u) {
+    var li = el("li");
+    li.appendChild(el("span", "no", u.no));
+    var a = el("a", "", u.name);
+    a.href = "#unit-" + u.id;
+    li.appendChild(a);
+    tocList.appendChild(li);
+
+    var sec = el("section", "grade-section");
+    sec.id = "unit-" + u.id;
+    var head = el("div", "grade-head");
+    var h2 = el("h2");
+    h2.appendChild(el("span", "no", u.no));
+    h2.appendChild(document.createTextNode(u.name));
+    head.appendChild(h2);
+    var dojo = el("a", "dojo-link", "この単元を練習 →");
+    dojo.href = "index.html?unit=" + encodeURIComponent(u.id);
+    head.appendChild(dojo);
+    sec.appendChild(head);
+    sec.appendChild(group(leadCard(u)));
+
+    if (u.id === "vowels" || u.id === "consonants" || u.id === "compound-vowels") {
+      sec.appendChild(tileGrid(letters(u.id)));
+      sec.appendChild(el("p", "sub-title", "この単元の単語"));
+      sec.appendChild(wordList(words(u.id), false));
+    } else if (u.id === "aspirated-tense") {
+      sec.appendChild(contrastTable());
+      sec.appendChild(el("p", "sub-title", "この単元の単語"));
+      sec.appendChild(wordList(words(u.id), false));
+    } else if (u.id === "batchim") {
+      sec.appendChild(repCards());
+    } else if (u.id === "numbers") {
+      sec.appendChild(el("p", "sub-title", "漢数詞(일・이・삼…)"));
+      sec.appendChild(wordList(KOR.items(u.id).filter(function (it) { return it.sub === "sino"; }), true));
+      sec.appendChild(el("p", "sub-title", "固有数詞(하나・둘・셋…)"));
+      sec.appendChild(wordList(KOR.items(u.id).filter(function (it) { return it.sub === "native"; }), true));
+    } else {
+      sec.appendChild(wordList(KOR.items(u.id), true));
+    }
+    sections.appendChild(sec);
+    sectionEls.push(sec);
+  });
+  buildChart();
+
+  // ---------- 絞り込み ----------
+  function applyFilter() {
+    var word = norm(searchInput.value);
+    var hits = 0;
+    entries.forEach(function (e) {
+      var on = !word || e.text.indexOf(word) >= 0;
+      e.el.hidden = !on;
+      if (on) hits += e.count;
+    });
+    // 説明のカードは検索中は隠す。中身がすべて隠れたまとまりも隠す
+    groups.slice().reverse().forEach(function (g) {
+      if (!word) { g.hidden = false; return; }
+      var hasEntry = entries.some(function (e) { return g.contains(e.el) && e.el !== g; });
+      g.hidden = !hasEntry || !entries.some(function (e) { return g.contains(e.el) && e.el !== g && !e.el.hidden; });
+    });
+    sectionEls.forEach(function (sec) {
+      sec.hidden = !!word && !entries.some(function (e) { return sec.contains(e.el) && !e.el.hidden; });
+      sec.querySelectorAll(".sub-title").forEach(function (st) {
+        var next = st.nextElementSibling;
+        st.hidden = !!word && !!next && next.hidden;
+      });
+    });
+    toc.hidden = !!word;
+    chartBox.hidden = !!word;
+    noHit.hidden = hits > 0;
+    hitCount.textContent = hits + "件";
+  }
+  searchInput.addEventListener("input", function (e) {
+    if (e.isComposing) return;   // 日本語の変換中は、確定まで待つ
+    applyFilter();
+  });
+  searchInput.addEventListener("compositionend", applyFilter);
+  applyFilter();
+
+  // #unit-vowels などで開かれたとき、描き終えてからその単元へ移動して目立たせる
+  function focusHash() {
+    var id = "";
+    try { id = decodeURIComponent(location.hash.slice(1)); } catch (e) { /* こわれたアンカーは無視 */ }
+    sections.querySelectorAll(".is-target").forEach(function (c) { c.classList.remove("is-target"); });
+    if (!id) return;
+    if (id === "chart") {
+      if (searchInput.value) { searchInput.value = ""; applyFilter(); }
+      chartBox.open = true;
+      chartBox.scrollIntoView({ block: "start" });
+      return;
+    }
+    var target = document.getElementById(id);
+    if (!target || !sections.contains(target)) return;
+    if (target.hidden) { searchInput.value = ""; applyFilter(); }
+    target.classList.add("is-target");
+    target.scrollIntoView({ block: "start" });
+  }
+  window.addEventListener("hashchange", focusHash);
+  focusHash();
+  // フォントが読みこまれると高さが変わるので、もう一度合わせる
+  if (location.hash && document.fonts && document.fonts.ready) document.fonts.ready.then(focusHash);
+
+  pickVoice();
+  if (synth) {
+    try { synth.addEventListener("voiceschanged", pickVoice); } catch (e) { try { synth.onvoiceschanged = pickVoice; } catch (e2) { /* なし */ } }
+  }
+})();
+</script>
+</body>
+</html>

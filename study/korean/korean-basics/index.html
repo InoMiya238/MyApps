@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>韓国語入門道場</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 720px; gap: 22px; }
+
+  /* ハングル(lang="ko" class="ko") */
+  .ko {
+    font-family: var(--font-hangul);
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.35;
+    word-break: keep-all;   /* 語の途中で折り返さず、分かち書きの空白で折り返す */
+  }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+  body.is-quiz .hero .tagline,
+  body.is-quiz .hero-hangul { display: none; }
+
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+  .hero-hangul {
+    align-self: center;
+    margin: -6px 0 -4px;
+    font-size: 48px;
+    color: var(--accent);
+    line-height: 1.1;
+  }
+
+  /* ---------- 発音ボタン ---------- */
+  .speak-btn {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 14px;
+    display: inline-grid;
+    place-items: center;
+  }
+  .speak-btn:hover { background: var(--accent); color: var(--accent-ink); }
+  .speak-btn.sm { width: 28px; height: 28px; font-size: 11px; }
+  body:not(.has-voice) .speak-btn,
+  body:not(.has-voice) .listen-btn { display: none; }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h3 {
+    margin: 20px 0 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+  }
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .hint {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin: 10px 0 0;
+    line-height: 1.6;
+  }
+  .hint[hidden] { display: none; }
+  .hint.voice-hint { color: var(--bad); }
+  button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    padding: 12px 20px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    width: 100%;
+    font-weight: 700;
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-secondary {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .btn-row button { flex: 1; }
+  button:focus-visible,
+  a:focus-visible,
+  .cat-check:focus-within {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- 設定 ---------- */
+  #setup-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .preselect-note {
+    margin: 0;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 0.86rem;
+    line-height: 1.6;
+  }
+  .preselect-note[hidden] { display: none; }
+
+  /* 出題の向きのタブ */
+  .mode-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .mode-tab {
+    min-width: 0;
+    min-height: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    padding: 8px 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.3;
+    transition: all 0.15s ease;
+  }
+  .mode-tab:hover:not(:disabled) { border-color: var(--accent); color: var(--ink); }
+  .mode-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .mode-tab:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    border-style: dashed;
+  }
+  .mode-tab .off {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--bad);
+  }
+
+  .unit-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .tool-btn {
+    min-height: 40px;
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--ink-muted);
+    border-radius: 9px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .tool-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+
+  .unit-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .cat-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 56px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+  .cat-check.checked {
+    border-color: var(--accent);
+    color: var(--ink);
+    background: var(--accent-soft);
+  }
+  .cat-check input { flex: none; }
+  .cat-check input:focus-visible { outline: none; }
+  .unit-no {
+    flex: none;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .unit-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .unit-name { min-width: 0; overflow-wrap: anywhere; line-height: 1.4; }
+  .unit-ex {
+    font-size: 13px;
+    color: var(--ink-faint);
+    overflow-wrap: anywhere;
+  }
+  .unit-sub {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1.4;
+  }
+  .weak-tag {
+    flex: none;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--bad);
+    background: var(--bad-soft);
+    border: 1px solid var(--bad);
+    border-radius: 999px;
+    padding: 3px 7px;
+  }
+  .unit-stat {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-faint);
+    line-height: 1.35;
+  }
+  .unit-stat .tries { font-size: 10.5px; }
+
+  /* 開始ボタン */
+  .start-bar { display: flex; flex-direction: column; gap: 8px; }
+  .start-note {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+    text-align: center;
+    line-height: 1.5;
+  }
+  .start-note[hidden] { display: none; }
+  .error-msg {
+    color: var(--bad);
+    font-size: 0.85rem;
+    margin: 0;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  /* ---------- 設定: これまでの成績 ---------- */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .stat-box {
+    text-align: center;
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 14px 8px;
+    min-width: 0;
+  }
+  .stat-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    margin-top: 3px;
+  }
+  .cat-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .cat-row {
+    display: grid;
+    grid-template-columns: 110px 1fr 44px;
+    align-items: center;
+    gap: 10px;
+  }
+  .cat-row-label {
+    min-width: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    overflow-wrap: anywhere;
+  }
+  .cat-row-label .no {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--accent);
+    margin-right: 5px;
+  }
+  .cat-row-track {
+    height: 7px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .cat-row-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+  .cat-row-pct {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-faint);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .weak-list { font-size: 0.88rem; }
+  .weak-empty {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    line-height: 1.6;
+  }
+  .weak-practice { width: 100%; margin-top: 12px; font-size: 0.92rem; font-weight: 600; }
+  .weak-practice[hidden] { display: none; }
+  .reset-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+  }
+  .reset-btn {
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--ink-muted);
+    border-radius: 9px;
+    padding: 9px 14px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- 出題 ---------- */
+  #quiz-screen { display: none; }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--ink-muted);
+  }
+  .progress-bar {
+    height: 6px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    overflow: hidden;
+    margin: 6px 0 18px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.25s ease;
+  }
+  .problem-type-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .question {
+    margin: 0 0 12px;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 15.5px;
+    font-weight: 600;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+
+  /* 問題の表示 */
+  .q-stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 140px;
+    margin: 0 0 16px;
+    padding: 22px 16px;
+    border-radius: 14px;
+    background: var(--surface-2);
+    text-align: center;
+    min-width: 0;
+  }
+  .q-stage .speak-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    font-size: 15px;
+  }
+  .q-hangul {
+    margin: 0;
+    max-width: 100%;
+    color: var(--ink);
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+  .q-hangul[data-len="1"] { font-size: 84px; line-height: 1.15; }
+  .q-hangul[data-len="m"] { font-size: 44px; }
+  .q-hangul[data-len="l"] { font-size: 28px; }
+  .q-stage.has-speak .q-hangul { padding: 0 34px; }
+  .q-reading { display: flex; flex-direction: column; align-items: center; gap: 4px; max-width: 100%; }
+  .q-reading .kana {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.35;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+  .q-reading .roma {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    color: var(--ink-muted);
+    overflow-wrap: anywhere;
+  }
+  .q-ja {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.45;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+  .listen-btn {
+    width: 88px;
+    height: 88px;
+    padding: 0;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-ink);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    font-weight: 700;
+    box-shadow: 0 4px 14px var(--shadow);
+  }
+  .listen-btn .ic { font-size: 24px; line-height: 1; }
+  .listen-btn .lb { font-size: 11px; line-height: 1.2; }
+  .listen-btn:hover { filter: brightness(1.08); }
+
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .choices.is-ko { grid-template-columns: 1fr 1fr; }
+  .choices.is-ko.long { grid-template-columns: 1fr; }
+  @media (min-width: 481px) { .choices.is-read { grid-template-columns: 1fr 1fr; } .choices.is-read.long { grid-template-columns: 1fr; } }
+  .choice-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 52px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.5;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .choice-key {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    border-radius: 7px;
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .choice-body { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  /* 正誤の印は、番号の真下に重ねて出す(答えたあとに並びが動かない) */
+  .choice-mark {
+    position: absolute;
+    left: 12px;
+    top: calc(50% + 13px);
+    width: 24px;
+    text-align: center;
+    white-space: nowrap;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .choices.is-ko .choice-btn { min-height: 72px; }
+  .choices.is-ko .choice-body { text-align: center; font-size: 26px; }
+  .choices.is-ko.single .choice-body { font-size: 30px; }
+  .choices.is-ko.long .choice-btn { min-height: 56px; }
+  .choices.is-ko.long .choice-body { text-align: left; font-size: 19px; }
+  .choices.is-ko .choice-body .ko { font-weight: 500; }
+  .choice-body .kana { display: block; font-size: 16px; font-weight: 700; }
+  .choice-body .roma {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--ink-faint);
+  }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent); }
+  .choice-btn:disabled { cursor: not-allowed; }
+  .choice-btn.correct { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+  .choice-btn.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+  .choice-btn.correct .roma, .choice-btn.wrong .roma { color: inherit; opacity: 0.8; }
+
+  .feedback {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    display: none;
+    scroll-margin: 16px;
+    overflow-wrap: anywhere;
+  }
+  .feedback.good { display: block; background: var(--good-soft); color: var(--good); }
+  .feedback.bad { display: block; background: var(--bad-soft); color: var(--bad); }
+  .feedback .answer-line { font-weight: 700; }
+  .answer-card {
+    margin-top: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .answer-card .ac-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .answer-card .ac-ko { font-size: 28px; min-width: 0; overflow-wrap: anywhere; }
+  .answer-card .ac-read { font-size: 14px; font-weight: 700; }
+  .answer-card .ac-read .roma { font-family: var(--font-mono); font-weight: 500; font-size: 12.5px; color: var(--ink-muted); margin-left: 8px; }
+  .answer-card .ac-ja { font-size: 14px; color: var(--ink-muted); }
+  .feedback .explanation {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    color: var(--ink);
+    font-weight: 400;
+    font-size: 0.85rem;
+    line-height: 1.75;
+  }
+  .feedback .ref-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .feedback .ref-link:hover { text-decoration: underline; }
+  .next-row { margin-top: 16px; display: none; }
+  .next-row.show { display: block; }
+  .kbd-hint { display: none; margin: 10px 0 0; text-align: center; font-size: 12px; color: var(--ink-faint); }
+  @media (hover: hover) and (pointer: fine) { .kbd-hint { display: block; } }
+  .quit-link {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 6px;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  /* ---------- 結果 ---------- */
+  #result-screen { display: none; }
+  .result-head { text-align: center; padding: 4px 4px 14px; }
+  .result-head .label { color: var(--ink-muted); font-size: 14px; }
+  .result-head .score {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 700;
+    margin: 6px 0;
+  }
+  .result-head .score span { font-size: 24px; color: var(--ink-faint); }
+  .unit-result, .miss-list { font-size: 0.88rem; }
+  .miss-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .miss-item:last-child { border-bottom: none; }
+  .miss-item a { color: var(--accent); font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .miss-item a:hover { text-decoration: underline; }
+  .miss-item .name { font-weight: 600; }
+  .miss-item .no {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    margin-right: 6px;
+  }
+  .miss-item .detail { color: var(--ink-muted); font-size: 0.82rem; }
+  .miss-item .given { color: var(--bad); }
+  .miss-item .rate {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .miss-item .spacer { margin-left: auto; }
+  .miss-word {
+    flex: 1 1 100%;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+  }
+  .miss-word .mw-ko { font-size: 20px; font-weight: 700; overflow-wrap: anywhere; }
+  .miss-word .mw-read { font-weight: 700; }
+  .miss-word .mw-read .roma { font-family: var(--font-mono); font-weight: 500; font-size: 12px; color: var(--ink-faint); margin-left: 6px; }
+  .miss-word .mw-ja { color: var(--ink-muted); }
+  .miss-item .detail.answer-pair { flex: 1 1 100%; min-width: 0; line-height: 1.8; overflow-wrap: anywhere; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mode-tab, .cat-check, .cat-row-fill, .progress-fill, .choice-btn { transition: none; }
+  }
+
+  /* ---------- スマホ表示の調整 ---------- */
+  @media (max-width: 480px) {
+    .card { padding: 18px 16px; }
+    .stat-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stat-num { font-size: 1.2rem; }
+    .stat-label { font-size: 10.5px; letter-spacing: 0; }
+    .mode-tabs { grid-template-columns: repeat(2, 1fr); }
+    .unit-list { grid-template-columns: 1fr; }
+    .cat-check { padding: 10px 10px; gap: 7px; }
+    .mode-tab { font-size: 13.5px; }
+    .cat-row { grid-template-columns: 1fr 44px; gap: 4px 10px; }
+    .cat-row-label { grid-column: 1 / -1; }
+    .start-bar { position: sticky; bottom: 12px; z-index: 5; }
+    .start-bar .btn-primary { box-shadow: 0 6px 18px var(--shadow), 0 0 0 3px var(--bg); }
+    .start-bar .error-msg,
+    .start-bar .start-note {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 7px 10px;
+    }
+    .q-stage { padding: 18px 12px; }
+    .q-hangul[data-len="1"] { font-size: 64px; }
+    .q-hangul[data-len="m"] { font-size: 36px; }
+    .q-hangul[data-len="l"] { font-size: 24px; }
+    .q-reading .kana { font-size: 24px; }
+    .q-ja { font-size: 21px; }
+    .listen-btn { width: 76px; height: 76px; }
+    .result-head .score { font-size: 42px; }
+    .btn-row button { font-size: 0.86rem; padding: 12px 6px; }
+    .feedback { padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a class="back-link" href="../../../index.html">← ページ一覧</a>
+  <header class="hero">
+    <p class="eyebrow">KOREAN BASICS · 全9単元</p>
+    <h1>韓国語入門道場</h1>
+    <p class="tagline">ハングルの読み方から、あいさつ・数字・かんたんな単語とフレーズまで。音を聞きながら4択で覚えます。</p>
+    <nav class="site-nav" aria-label="韓国語入門道場のページ">
+      <span aria-current="page">道場</span>
+      <a href="reference.html">ハングル表・単語帳</a>
+    </nav>
+  </header>
+  <p class="hero-hangul ko" lang="ko" aria-hidden="true">안녕</p>
+
+  <!-- ============ 設定 ============ -->
+  <div id="setup-screen">
+    <p class="preselect-note" id="preselectNote" role="status" hidden></p>
+
+    <div class="card">
+      <h2 id="modeHeading">出題の向き</h2>
+      <div class="mode-tabs" id="modeTabs" role="radiogroup" aria-labelledby="modeHeading">
+        <button type="button" class="mode-tab" role="radio" data-mode="ko2read">ハングル→読み</button>
+        <button type="button" class="mode-tab" role="radio" data-mode="read2ko">読み→ハングル</button>
+        <button type="button" class="mode-tab" role="radio" data-mode="ko2ja">韓国語→日本語</button>
+        <button type="button" class="mode-tab" role="radio" data-mode="ja2ko">日本語→韓国語</button>
+        <button type="button" class="mode-tab" role="radio" data-mode="audio">音声→ハングル</button>
+        <button type="button" class="mode-tab" role="radio" data-mode="mix">まぜる</button>
+      </div>
+      <p class="hint" id="modeHint"></p>
+      <p class="hint voice-hint" id="voiceHint" role="status">この端末には韓国語の音声がないため、音声の問題と再生ボタンは使えません。</p>
+    </div>
+
+    <div class="card">
+      <h2 id="unitHeading">単元を選ぶ</h2>
+      <div class="unit-tools">
+        <button type="button" class="tool-btn" id="selectAllBtn">すべて選ぶ</button>
+        <button type="button" class="tool-btn" id="clearAllBtn">すべてはずす</button>
+      </div>
+      <div class="unit-list" id="unitList" role="group" aria-labelledby="unitHeading"></div>
+      <p class="hint">右の数字は、これまでの正答率と挑戦回数です。5問以上答えて70%未満の単元に「苦手」がつきます。01〜05 はハングルの単元で、意味の向きを選んでも読みの問題で出します。</p>
+    </div>
+
+    <div class="start-bar">
+      <p class="start-note" id="startNote" hidden></p>
+      <p class="error-msg" id="setupError" role="status">単元を1つ以上選んでください。</p>
+      <button type="button" class="btn-primary" id="startBtn">始める</button>
+    </div>
+
+    <div class="card" id="statsCard">
+      <h2>これまでの成績</h2>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num" id="statTotal">0</div><div class="stat-label">回答数</div></div>
+        <div class="stat-box"><div class="stat-num" id="statAccuracy">–</div><div class="stat-label">正答率</div></div>
+        <div class="stat-box"><div class="stat-num" id="statUnits">0/9</div><div class="stat-label">挑戦した単元</div></div>
+      </div>
+
+      <h3>単元ごとの正答率</h3>
+      <div class="cat-bars" id="unitBars"></div>
+
+      <h3>苦手な単元</h3>
+      <div class="weak-list" id="weakList"></div>
+      <button type="button" class="btn-secondary weak-practice" id="weakBtn" hidden>苦手な単元だけ練習する</button>
+
+      <div class="reset-row">
+        <button type="button" class="reset-btn" id="resetBtn">成績をリセット</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 出題 ============ -->
+  <div id="quiz-screen">
+    <div class="card">
+      <div class="progress-row">
+        <span id="progressText">問題 1 / 10</span>
+        <span id="scoreText">正解 0 ・ 連続 0</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+      <div class="problem-type-label" id="unitLabel"></div>
+      <p class="question" id="questionText"></p>
+      <div class="q-stage" id="qStage"></div>
+
+      <div class="choices" id="choices"></div>
+
+      <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+      <div class="next-row" id="nextRow">
+        <button type="button" class="btn-primary" id="nextBtn">次の問題 →</button>
+      </div>
+      <p class="kbd-hint">1〜4 で回答 ・ Enter で次へ ・ S で再生</p>
+      <button type="button" class="quit-link" id="quitBtn">中断して結果を見る</button>
+    </div>
+  </div>
+
+  <!-- ============ 結果 ============ -->
+  <div id="result-screen">
+    <div class="card">
+      <div class="result-head">
+        <div class="label">稽古終了</div>
+        <div class="score" id="resultScore">0<span> / 0</span></div>
+        <div class="label" id="resultRate">正答率 –</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num" id="resCorrect">0</div><div class="stat-label">正解数</div></div>
+        <div class="stat-box"><div class="stat-num" id="resAccuracy">–</div><div class="stat-label">正答率</div></div>
+        <div class="stat-box"><div class="stat-num" id="resStreak">0</div><div class="stat-label">最大連続正解</div></div>
+      </div>
+
+      <h3>単元ごとの結果</h3>
+      <div class="unit-result" id="unitResult"></div>
+
+      <h3>間違えた問題</h3>
+      <div class="miss-list" id="missList"></div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-secondary" id="backBtn">単元を選び直す</button>
+        <button type="button" class="btn-primary" id="retryBtn">同じ設定でもう一度</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="../../../shared/review.js"></script>
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var MODE_HINTS = {
+    ko2read: "ハングルを見て、読み(カタカナとローマ字)を選びます。",
+    read2ko: "読み(カタカナとローマ字)を見て、そのハングルを選びます。",
+    ko2ja: "韓国語を見て、日本語の意味を選びます。01〜05 のハングル単元は「ハングル→読み」で出します。",
+    ja2ko: "日本語の意味を見て、韓国語を選びます。01〜05 のハングル単元は「読み→ハングル」で出します。",
+    audio: "音声を聞いて、そのハングルを選びます。問題が出ると自動で再生します。",
+    mix: "5つの向きをまぜて出します。"
+  };
+  var KEY_HINT = "キーボードでは 1〜4 で回答、Enter で次へ、S で再生できます。";
+  var QUESTION_TEXT = {
+    ko2read: "このハングルの読みは?",
+    read2ko: "この読みのハングルは?",
+    ko2ja: "この韓国語の意味は?",
+    ja2ko: "この意味の韓国語は?",
+    audio: "聞こえた韓国語はどれ?"
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var setupScreen = $("setup-screen");
+  var quizScreen = $("quiz-screen");
+  var resultScreen = $("result-screen");
+  var preselectNote = $("preselectNote");
+  var modeTabs = $("modeTabs");
+  var modeHint = $("modeHint");
+  var unitList = $("unitList");
+  var startBtn = $("startBtn");
+  var startNote = $("startNote");
+  var setupError = $("setupError");
+  var weakBtn = $("weakBtn");
+  var qStage = $("qStage");
+  var choicesEl = $("choices");
+  var feedbackEl = $("feedback");
+  var nextRow = $("nextRow");
+  var nextBtn = $("nextBtn");
+
+  // ---------- 状態 ----------
+  var stats = KOR.loadStats();
+  var selected = {};       // 選んでいる単元(ID → true)
+  var mode = "ko2read";
+  var session = null;
+  var voice = null;
+
+  function selectedIds() {
+    return KOR.UNITS.filter(function (u) { return selected[u.id] && KOR.items(u.id).length > 0; }).map(function (u) { return u.id; });
+  }
+
+  // 保存済みの設定 → なければ全単元を選ぶ。?unit=<ID> で開いたときは、その単元だけを選ぶ
+  (function initSelection() {
+    var saved = KOR.loadSettings(), restored = false;
+    if (saved) {
+      mode = saved.mode;
+      saved.units.forEach(function (id) { selected[id] = true; restored = true; });
+    }
+    if (!restored) KOR.UNITS.forEach(function (u) { selected[u.id] = true; });
+    var wanted = null;
+    try { wanted = new URLSearchParams(location.search).get("unit"); } catch (e) { wanted = null; }
+    var u = wanted ? KOR.unit(wanted) : null;
+    if (u) {
+      selected = {};
+      selected[u.id] = true;
+      preselectNote.textContent = "「" + u.no + " " + u.name + "」だけを選びました。";
+      preselectNote.hidden = false;
+    }
+  })();
+
+  function pct(correct, total) { return total > 0 ? Math.round((correct / total) * 100) + "%" : "–"; }
+  function recOf(id) { return stats.byUnit[id] || { total: 0, correct: 0, sessions: 0 }; }
+
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function koEl(tag, className, text) {
+    var e = el(tag, "ko" + (className ? " " + className : ""), text);
+    e.lang = "ko";
+    return e;
+  }
+  function readEl(tag, it) {
+    var e = el(tag, "read");
+    e.appendChild(el("span", "kana", it.kana));
+    var r = el("span", "roma", it.roma);
+    r.lang = "ko-Latn";
+    e.appendChild(r);
+    return e;
+  }
+  function unitLink(unitId, text) {
+    var a = el("a", "", text);
+    a.href = "reference.html#unit-" + unitId;
+    a.target = "_blank";
+    a.rel = "noopener";
+    return a;
+  }
+
+  // ---------- 発音 ----------
+  var synth = null;
+  try { synth = window.speechSynthesis || null; } catch (e) { synth = null; }
+  function pickVoice() {
+    var vs = [];
+    try { vs = (synth && synth.getVoices()) || []; } catch (e) { vs = []; }
+    var ko = vs.filter(function (v) { return /^ko([-_]|$)/i.test(v.lang || ""); });
+    // 端末の中にある声 → 既定の声 → そのほか
+    function rank(v) { return (v.localService ? 0 : 2) + (v["default"] ? 0 : 1); }
+    ko.sort(function (a, b) { return rank(a) - rank(b); });
+    var had = !!voice;
+    voice = ko[0] || null;
+    document.body.classList.toggle("has-voice", !!voice);
+    $("voiceHint").hidden = !!voice;
+    if (had !== !!voice && !session) { renderModeTabs(); renderStartBar(); }
+  }
+  function speak(text) {
+    if (!voice || !synth || !text) return;
+    try {
+      synth.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.voice = voice;
+      u.lang = voice.lang;
+      u.rate = 0.85;
+      synth.speak(u);
+    } catch (e) { /* 読めなくても止めない */ }
+  }
+  function speakBtn(text, small) {
+    var b = el("button", "speak-btn" + (small ? " sm" : ""), "▶");
+    b.type = "button";
+    b.setAttribute("aria-label", "発音を聞く");
+    b.addEventListener("click", function (e) { e.stopPropagation(); speak(text); });
+    return b;
+  }
+
+  // ---------- 画面の切り替え ----------
+  function showScreen(name) {
+    setupScreen.style.display = name === "setup" ? "flex" : "none";
+    quizScreen.style.display = name === "quiz" ? "block" : "none";
+    resultScreen.style.display = name === "result" ? "block" : "none";
+    document.body.classList.toggle("is-quiz", name === "quiz");
+  }
+
+  // ---------- 設定画面 ----------
+  var tabs = Array.prototype.slice.call(modeTabs.querySelectorAll(".mode-tab"));
+  tabs.forEach(function (t) { t.dataset.label = t.textContent; });
+  function modeUsable(m) { return m !== "audio" || !!voice; }
+  function renderModeTabs() {
+    var focusable = modeUsable(mode) ? mode : null;
+    tabs.forEach(function (t) {
+      var m = t.dataset.mode, on = m === mode, usable = modeUsable(m);
+      t.classList.toggle("active", on && usable);
+      t.setAttribute("aria-checked", on && usable ? "true" : "false");
+      t.disabled = !usable;
+      t.textContent = t.dataset.label;
+      if (!usable) t.appendChild(el("span", "off", "音声なし"));
+      if (!focusable && usable) focusable = m;
+      t.tabIndex = m === focusable ? 0 : -1;
+    });
+    var h = MODE_HINTS[mode];
+    if (mode === "mix") h += voice ? "" : "この端末では音声の問題を除きます。";
+    modeHint.textContent = h + " " + KEY_HINT;
+  }
+  function setMode(m, focus) {
+    if (KOR.MODES.indexOf(m) < 0 || !modeUsable(m)) return;
+    mode = m;
+    renderModeTabs();
+    renderUnitList();
+    renderStartBar();
+    if (focus) modeTabs.querySelector('[data-mode="' + m + '"]').focus();
+  }
+  tabs.forEach(function (t) {
+    t.addEventListener("click", function () { setMode(t.dataset.mode, false); });
+    t.addEventListener("keydown", function (e) {
+      var d = 0;
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") d = 1;
+      else if (e.key === "ArrowLeft" || e.key === "ArrowUp") d = -1;
+      if (!d) return;
+      e.preventDefault();
+      var usable = tabs.filter(function (x) { return !x.disabled; });
+      var i = usable.indexOf(t);
+      setMode(usable[(i + d + usable.length) % usable.length].dataset.mode, true);
+    });
+  });
+
+  function substitutedName(m) {
+    var d = KOR.effectiveDir("vowels", m);
+    return d !== m ? KOR.MODE_NAMES[d] : "";
+  }
+
+  function renderUnitList() {
+    unitList.innerHTML = "";
+    var sub = substitutedName(mode);
+    KOR.UNITS.forEach(function (u) {
+      var on = !!selected[u.id], rec = recOf(u.id);
+      var label = el("label", "cat-check" + (on ? " checked" : ""));
+      label.dataset.unit = u.id;
+      var input = el("input");
+      input.type = "checkbox";
+      input.checked = on;
+      label.appendChild(input);
+      label.appendChild(el("span", "unit-no", u.no));
+      var text = el("span", "unit-text");
+      text.appendChild(el("span", "unit-name", u.name));
+      text.appendChild(koEl("span", "unit-ex", u.ex));
+      if (u.hangul && sub) text.appendChild(el("span", "unit-sub", "「" + sub + "」で出題"));
+      label.appendChild(text);
+      if (KOR.isWeak(rec)) label.appendChild(el("span", "weak-tag", "苦手"));
+      var st = el("span", "unit-stat");
+      st.appendChild(el("span", "", pct(rec.correct, rec.total)));
+      st.appendChild(el("span", "tries", rec.sessions + "回"));
+      st.setAttribute("aria-label", (rec.total > 0 ? "正答率 " + pct(rec.correct, rec.total) : "まだ回答なし") + "、挑戦 " + rec.sessions + "回");
+      label.appendChild(st);
+      input.addEventListener("change", function () {
+        if (input.checked) selected[u.id] = true; else delete selected[u.id];
+        renderSetup();
+        var again = unitList.querySelector('[data-unit="' + u.id + '"] input');
+        if (again) again.focus();
+      });
+      unitList.appendChild(label);
+    });
+  }
+
+  function renderStartBar() {
+    var ids = selectedIds(), n = ids.length, usable = modeUsable(mode);
+    startBtn.disabled = n === 0 || !usable;
+    startBtn.textContent = n === 0 ? "始める" : "始める(" + n + "単元・" + KOR.MODE_NAMES[mode] + "・" + KOR.COUNT + "問)";
+    setupError.textContent = n === 0 ? "単元を1つ以上選んでください。" : "この端末では音声の問題を使えません。ほかの向きを選んでください。";
+    setupError.classList.toggle("show", n === 0 || !usable);
+    var sub = substitutedName(mode);
+    var hangulSel = ids.filter(function (id) { return KOR.isHangulUnit(id); });
+    startNote.hidden = !(sub && hangulSel.length > 0 && usable);
+    if (!startNote.hidden) {
+      startNote.textContent = hangulSel.length === n
+        ? "ハングルの単元だけなので「" + sub + "」で出します。"
+        : "01〜05 の単元は「" + sub + "」で出します。";
+    }
+  }
+
+  function weakUnits() {
+    var list = [];
+    KOR.UNITS.forEach(function (u) {
+      var rec = recOf(u.id);
+      if (KOR.isWeak(rec)) list.push({ unit: u, rec: rec, rate: rec.correct / rec.total });
+    });
+    list.sort(function (a, b) { return a.rate - b.rate || b.rec.total - a.rec.total; });
+    return list;
+  }
+
+  function renderStats() {
+    var total = 0, correct = 0, tried = 0;
+    KOR.UNITS.forEach(function (u) {
+      var r = recOf(u.id);
+      total += r.total; correct += r.correct;
+      if (r.total > 0) tried++;
+    });
+    $("statTotal").textContent = total;
+    $("statAccuracy").textContent = pct(correct, total);
+    $("statUnits").textContent = tried + "/" + KOR.UNITS.length;
+
+    var bars = $("unitBars");
+    bars.innerHTML = "";
+    KOR.UNITS.forEach(function (u) {
+      var r = recOf(u.id);
+      var row = el("div", "cat-row");
+      var lab = el("span", "cat-row-label");
+      lab.appendChild(el("span", "no", u.no));
+      lab.appendChild(document.createTextNode(u.short));
+      row.appendChild(lab);
+      var track = el("div", "cat-row-track");
+      var fill = el("div", "cat-row-fill");
+      fill.style.width = (r.total > 0 ? Math.round((r.correct / r.total) * 100) : 0) + "%";
+      track.appendChild(fill);
+      row.appendChild(track);
+      row.appendChild(el("span", "cat-row-pct", pct(r.correct, r.total)));
+      bars.appendChild(row);
+    });
+
+    var weak = weakUnits();
+    var list = $("weakList");
+    list.innerHTML = "";
+    if (weak.length === 0) {
+      list.appendChild(el("p", "weak-empty", "まだ苦手な単元はありません(5問以上答えた単元から判定します)。"));
+    } else {
+      weak.forEach(function (w) {
+        var row = el("div", "miss-item");
+        var left = el("span");
+        left.appendChild(el("span", "no", w.unit.no));
+        left.appendChild(el("span", "name", w.unit.name));
+        row.appendChild(left);
+        row.appendChild(el("span", "rate spacer", w.rec.correct + "/" + w.rec.total + " (" + pct(w.rec.correct, w.rec.total) + ")"));
+        row.appendChild(unitLink(w.unit.id, "表で見直す"));
+        list.appendChild(row);
+      });
+    }
+    weakBtn.hidden = weak.length === 0;
+  }
+
+  function renderSetup() {
+    renderModeTabs();
+    renderUnitList();
+    renderStartBar();
+    renderStats();
+  }
+
+  $("selectAllBtn").addEventListener("click", function () {
+    KOR.UNITS.forEach(function (u) { selected[u.id] = true; });
+    renderSetup();
+  });
+  $("clearAllBtn").addEventListener("click", function () {
+    selected = {};
+    renderSetup();
+  });
+  weakBtn.addEventListener("click", function () {
+    var ids = weakUnits().map(function (w) { return w.unit.id; });
+    if (ids.length === 0) return;
+    selected = {};
+    ids.forEach(function (id) { selected[id] = true; });
+    startQuiz();
+  });
+  $("resetBtn").addEventListener("click", function () {
+    if (!confirm("これまでの成績をすべて消します。よろしいですか?")) return;
+    KOR.clearStats();
+    stats = KOR.emptyStats();
+    renderSetup();
+  });
+
+  // ---------- 出題画面 ----------
+  function startQuiz() {
+    var ids = selectedIds();
+    if (ids.length === 0 || !modeUsable(mode)) return;
+    var questions = KOR.buildQuiz(ids, mode, KOR.COUNT, !!voice);
+    if (questions.length === 0) return;
+    // 始めるときに、向きと単元を保存する
+    KOR.saveSettings({ mode: mode, units: ids });
+    preselectNote.hidden = true;
+    session = { mode: mode, questions: questions, index: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, results: [], counted: false };
+    showScreen("quiz");
+    renderQuestion();
+    window.scrollTo(0, 0);
+  }
+
+  function updateProgress() {
+    var total = session.questions.length;
+    $("progressText").textContent = "問題 " + (session.index + 1) + " / " + total;
+    $("scoreText").textContent = "正解 " + session.correct + " ・ 連続 " + session.streak;
+    $("progressFill").style.width = Math.round((session.results.length / total) * 100) + "%";
+  }
+
+  // ハングルの長さ: 1字 / 2〜5字 / 6字以上か空白・記号あり
+  function lenClass(ko) {
+    var s = String(ko);
+    if (/[\s?!.,]/.test(s) || s.length >= 6) return "l";
+    return s.length === 1 ? "1" : "m";
+  }
+  function isLongKo(ko) { return lenClass(ko) === "l"; }
+
+  function renderStage(q) {
+    var it = q.item;
+    qStage.innerHTML = "";
+    qStage.className = "q-stage";
+    if (q.dir === "ko2read" || q.dir === "ko2ja") {
+      var h = koEl("p", "q-hangul", it.ko);
+      h.dataset.len = lenClass(it.ko);
+      qStage.appendChild(h);
+      if (voice) {
+        qStage.classList.add("has-speak");
+        qStage.appendChild(speakBtn(it.say));
+      }
+    } else if (q.dir === "read2ko") {
+      qStage.appendChild(readEl("div", it)).className = "q-reading";
+    } else if (q.dir === "ja2ko") {
+      qStage.appendChild(el("p", "q-ja", it.ja)).style.margin = "0";
+    } else {
+      var b = el("button", "listen-btn");
+      b.type = "button";
+      b.setAttribute("aria-label", "もう一度聞く");
+      b.appendChild(el("span", "ic", "▶"));
+      b.appendChild(el("span", "lb", "もう一度"));
+      b.addEventListener("click", function () { speak(it.say); });
+      qStage.appendChild(b);
+    }
+  }
+
+  function renderChoices(q) {
+    choicesEl.innerHTML = "";
+    var kind = q.dir === "ko2read" ? "read" : q.dir === "ko2ja" ? "ja" : "ko";
+    var cls = "choices";
+    if (kind === "ko") {
+      cls += " is-ko";
+      if (q.choices.some(function (c) { return isLongKo(c.ko); })) cls += " long";
+      else if (q.choices.every(function (c) { return c.ko.length === 1; })) cls += " single";
+    } else if (kind === "read") {
+      cls += " is-read";
+      if (q.choices.some(function (c) { return c.kana.length > 9 || c.roma.length > 14; })) cls += " long";
+    }
+    choicesEl.className = cls;
+    q.choices.forEach(function (c, i) {
+      var btn = el("button", "choice-btn");
+      btn.type = "button";
+      var key = el("span", "choice-key", String(i + 1));
+      key.setAttribute("aria-hidden", "true");
+      btn.appendChild(key);
+      var body;
+      if (kind === "ko") body = koEl("span", "choice-body", c.ko);
+      else if (kind === "read") body = readEl("span", c), body.className = "choice-body";
+      else body = el("span", "choice-body", c.ja);
+      btn.appendChild(body);
+      btn.addEventListener("click", function () { onChoice(i); });
+      choicesEl.appendChild(btn);
+    });
+  }
+
+  function renderQuestion() {
+    var q = session.questions[session.index];
+    var u = KOR.unit(q.unitId);
+    session.answered = false;
+    updateProgress();
+    var label = u.no + " · " + u.name;
+    if (session.mode === "mix" || q.dir !== session.mode) label += " · " + KOR.MODE_NAMES[q.dir];
+    $("unitLabel").textContent = label;
+    $("questionText").textContent = QUESTION_TEXT[q.dir];
+    renderStage(q);
+    renderChoices(q);
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = "";
+    nextRow.classList.remove("show");
+    nextBtn.textContent = session.index + 1 >= session.questions.length ? "結果を見る" : "次の問題 →";
+    // 音声の問題は自動で鳴らす(「始める」「次の問題」の操作をきっかけにする)
+    if (q.dir === "audio") speak(q.item.say);
+  }
+
+  function recordAnswer(q, isCorrect) {
+    if (!stats.byUnit[q.unitId]) stats.byUnit[q.unitId] = { total: 0, correct: 0, sessions: 0 };
+    stats.byUnit[q.unitId].total++;
+    if (isCorrect) stats.byUnit[q.unitId].correct++;
+    if (session.streak > stats.bestStreak) stats.bestStreak = session.streak;
+    KOR.saveStats(stats);
+    try {
+      if (typeof Review !== "undefined") Review.record("korean", q.unitId, isCorrect);   // 復習プランナーの記録
+    } catch (e) { /* 記録できなくても止めない */ }
+  }
+
+  function answerCard(it) {
+    var card = el("div", "answer-card");
+    var head = el("div", "ac-head");
+    head.appendChild(koEl("span", "ac-ko", it.ko));
+    head.appendChild(speakBtn(it.say, true));
+    card.appendChild(head);
+    var read = el("div", "ac-read");
+    read.appendChild(document.createTextNode(it.kana));
+    var r = el("span", "roma", it.roma);
+    r.lang = "ko-Latn";
+    read.appendChild(r);
+    card.appendChild(read);
+    if (it.ja) card.appendChild(el("div", "ac-ja", it.ja));
+    else if (it.jamo) {
+      var j = el("div", "ac-ja", "文字: ");
+      j.appendChild(koEl("span", "", it.jamo));
+      card.appendChild(j);
+    }
+    return card;
+  }
+
+  function onChoice(chosen) {
+    if (!session || session.answered) return;
+    var q = session.questions[session.index];
+    if (chosen < 0 || chosen >= q.choices.length) return;
+    var isCorrect = chosen === q.answer;
+    session.answered = true;
+    if (isCorrect) {
+      session.correct++;
+      session.streak++;
+      if (session.streak > session.bestStreak) session.bestStreak = session.streak;
+    } else {
+      session.streak = 0;
+    }
+    session.results.push({ q: q, given: q.choices[chosen], isCorrect: isCorrect });
+    recordAnswer(q, isCorrect);
+
+    // 色だけでなく、文字でも正誤を示す
+    choicesEl.querySelectorAll(".choice-btn").forEach(function (btn, i) {
+      btn.disabled = true;
+      if (i === q.answer) {
+        btn.classList.add("correct");
+        btn.appendChild(el("span", "choice-mark", "正解"));
+      } else if (i === chosen) {
+        btn.classList.add("wrong");
+        btn.appendChild(el("span", "choice-mark", "×"));
+      }
+    });
+
+    feedbackEl.innerHTML = "";
+    feedbackEl.appendChild(el("div", "answer-line", isCorrect ? "正解!" : "不正解 — 正解は「正解」の印がついた選択肢です"));
+    feedbackEl.appendChild(answerCard(q.item));
+    feedbackEl.appendChild(el("div", "explanation", q.item.note));
+    var u = KOR.unit(q.unitId);
+    var link = unitLink(q.unitId, u.hangul ? "ハングル表で見る →" : "単語帳で見る →");
+    link.className = "ref-link";
+    feedbackEl.appendChild(link);
+    feedbackEl.className = "feedback " + (isCorrect ? "good" : "bad");
+    nextRow.classList.add("show");
+    updateProgress();
+    nextBtn.focus({ preventScroll: true });
+    feedbackEl.scrollIntoView({ block: "nearest" });
+  }
+
+  function goNext() {
+    if (!session || !session.answered) return;
+    session.index++;
+    if (session.index >= session.questions.length) {
+      showResult();
+    } else {
+      renderQuestion();
+      quizScreen.scrollIntoView({ block: "start" });
+    }
+  }
+  nextBtn.addEventListener("click", goNext);
+  $("quitBtn").addEventListener("click", showResult);
+
+  // S: 再生。答える前は、音声の問題とハングルを見せている問題だけ(答えが聞こえてしまうのを防ぐ)
+  function replay() {
+    var q = session.questions[session.index];
+    if (session.answered || q.dir === "audio" || q.dir === "ko2read" || q.dir === "ko2ja") speak(q.item.say);
+  }
+
+  // 数字キー 1〜4 で答え、Enter で次へ、S で再生
+  document.addEventListener("keydown", function (e) {
+    if (!session || quizScreen.style.display !== "block") return;
+    if (e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+    var t = e.target;
+    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+    if (!session.answered && /^[1-4]$/.test(e.key)) {
+      e.preventDefault();
+      onChoice(Number(e.key) - 1);
+    } else if (e.key === "s" || e.key === "S") {
+      e.preventDefault();
+      replay();
+    } else if (session.answered && e.key === "Enter") {
+      if (t && (t.tagName === "BUTTON" || t.tagName === "A")) return;   // ボタンの上では、ブラウザの動きにまかせる
+      e.preventDefault();
+      goNext();
+    }
+  });
+
+  // ---------- 結果画面 ----------
+  function givenText(q, c) {
+    if (q.dir === "ko2read") return c.kana + " " + c.roma;
+    if (q.dir === "ko2ja") return c.ja;
+    return c.ko;
+  }
+
+  function showResult() {
+    if (!session) return;
+    try { if (synth) synth.cancel(); } catch (e) { /* なし */ }
+    var results = session.results;
+    var total = results.length;
+    var correct = results.filter(function (r) { return r.isCorrect; }).length;
+
+    // 挑戦回数: このセッションで出た(答えた)単元に1回ずつ足す。同じセッションで二重に数えない
+    if (!session.counted) {
+      session.counted = true;
+      var seen = {};
+      results.forEach(function (r) { seen[r.q.unitId] = true; });
+      Object.keys(seen).forEach(function (id) {
+        if (!stats.byUnit[id]) stats.byUnit[id] = { total: 0, correct: 0, sessions: 0 };
+        stats.byUnit[id].sessions++;
+      });
+      if (total > 0) KOR.saveStats(stats);
+    }
+
+    var score = $("resultScore");
+    score.textContent = correct;
+    score.appendChild(el("span", "", " / " + total));
+    $("resultRate").textContent = "正答率 " + pct(correct, total) + "(" + KOR.MODE_NAMES[session.mode] + ")";
+    $("resCorrect").textContent = correct;
+    $("resAccuracy").textContent = pct(correct, total);
+    $("resStreak").textContent = session.bestStreak;
+
+    var unitBox = $("unitResult");
+    unitBox.innerHTML = "";
+    var per = {};
+    results.forEach(function (r) {
+      if (!per[r.q.unitId]) per[r.q.unitId] = { total: 0, correct: 0 };
+      per[r.q.unitId].total++;
+      if (r.isCorrect) per[r.q.unitId].correct++;
+    });
+    KOR.UNITS.forEach(function (u) {
+      if (!per[u.id]) return;
+      var row = el("div", "miss-item");
+      var left = el("span");
+      left.appendChild(el("span", "no", u.no));
+      left.appendChild(el("span", "name", u.name));
+      row.appendChild(left);
+      row.appendChild(el("span", "rate spacer", per[u.id].correct + "/" + per[u.id].total));
+      row.appendChild(unitLink(u.id, (u.hangul ? "ハングル表" : "単語帳") + "で見る →"));
+      unitBox.appendChild(row);
+    });
+    if (total === 0) unitBox.appendChild(el("p", "weak-empty", "まだ1問も答えていません。"));
+
+    var list = $("missList");
+    list.innerHTML = "";
+    var misses = results.filter(function (r) { return !r.isCorrect; });
+    if (total === 0) {
+      list.appendChild(el("p", "weak-empty", "まだ1問も答えていません。"));
+    } else if (misses.length === 0) {
+      list.appendChild(el("p", "weak-empty", "間違えた問題はありませんでした。"));
+    } else {
+      misses.forEach(function (r) {
+        var q = r.q, it = q.item, u = KOR.unit(q.unitId);
+        var row = el("div", "miss-item");
+        var w = el("div", "miss-word");
+        w.appendChild(koEl("span", "mw-ko", it.ko));
+        w.appendChild(speakBtn(it.say, true));
+        var rd = el("span", "mw-read", it.kana);
+        var rm = el("span", "roma", it.roma);
+        rm.lang = "ko-Latn";
+        rd.appendChild(rm);
+        w.appendChild(rd);
+        if (it.ja) w.appendChild(el("span", "mw-ja", it.ja));
+        row.appendChild(w);
+        var pair = el("div", "detail answer-pair");
+        pair.appendChild(el("span", "no", u.no));
+        pair.appendChild(document.createTextNode(KOR.MODE_NAMES[q.dir] + " ・ 選んだ答え "));
+        var g = q.dir === "ko2read" || q.dir === "ko2ja" ? el("span", "given", givenText(q, r.given)) : koEl("span", "given", givenText(q, r.given));
+        pair.appendChild(g);
+        row.appendChild(pair);
+        list.appendChild(row);
+      });
+    }
+    showScreen("result");
+    window.scrollTo(0, 0);
+  }
+
+  $("backBtn").addEventListener("click", function () {
+    session = null;
+    renderSetup();
+    showScreen("setup");
+    window.scrollTo(0, 0);
+  });
+  $("retryBtn").addEventListener("click", startQuiz);
+  startBtn.addEventListener("click", startQuiz);
+
+  pickVoice();
+  if (synth) {
+    try { synth.addEventListener("voiceschanged", pickVoice); } catch (e) { try { synth.onvoiceschanged = pickVoice; } catch (e2) { /* なし */ } }
+  }
+  // 保存した向きが音声で、少し待っても韓国語の声が見つからないときは「ハングル→読み」にする
+  setTimeout(function () {
+    if (!voice && mode === "audio" && !session) setMode("ko2read");
+  }, 1500);
+  renderSetup();
+  showScreen("setup");
+})();
+</script>
+</body>
+</html>
