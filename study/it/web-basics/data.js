@@ -1,4 +1,4 @@
-// Web道場: 12単元の定義・問題・用語帳のカード・コードの色分け。道場(index.html)と用語帳(reference.html)で共有する。
+// Web道場: 20単元の定義・問題・用語帳のカード・コードの色分け。道場(index.html)と用語帳(reference.html)で共有する。
 // 読み込む順番: shared/store.js → (shared/review.js →) data.js
 // 復習プランナー(study/review/review-planner/index.html)もこのファイルを読み込む。グローバルは WEBD の1つだけ。
 //
@@ -52,20 +52,28 @@ var WEBD = (function () {
   LEVELS.forEach(function (l) { levelById[l.id] = l; });
   function level(id) { return levelById.hasOwnProperty(id) ? levelById[id] : null; }
 
-  // ID は保存データのキーなので変えない
+  // ID は保存データのキーなので変えない。no は学ぶ順の番号で、並べ直してもよい
   var UNITS = [
-    { id: "url-dns", no: "01", name: "URLとDNS", short: "URLとDNS", level: "basic", keys: "URLの各部 · DNS · A/CNAME · TTL" },
-    { id: "http", no: "02", name: "HTTPの基本", short: "HTTP基本", level: "basic", keys: "メソッド · ステータス · ヘッダー · HTTP/3" },
-    { id: "render", no: "03", name: "ブラウザが表示するまで", short: "表示の流れ", level: "std", keys: "DOM · CSSOM · レイアウト · defer" },
-    { id: "html", no: "04", name: "HTMLとセマンティクス", short: "HTML", level: "basic", keys: "DOCTYPE · main · label · alt" },
-    { id: "css", no: "05", name: "CSSのセレクタとレイアウト", short: "CSS", level: "basic", keys: "詳細度 · ボックス · flex · grid" },
-    { id: "js-dom", no: "06", name: "JavaScriptとDOM・非同期", short: "JSとDOM", level: "std", keys: "DOM · イベント · Promise · fetch" },
-    { id: "state", no: "07", name: "Cookie・セッション・ストレージ", short: "Cookie等", level: "std", keys: "Cookie属性 · SameSite · Storage · JWT" },
-    { id: "security", no: "08", name: "HTTPSと攻撃対策", short: "攻撃対策", level: "std", keys: "TLS · XSS · CSRF · SQLi" },
-    { id: "origin", no: "09", name: "オリジン・CORS・CSP", short: "CORS・CSP", level: "pro", keys: "オリジン · CORS · プリフライト · CSP" },
-    { id: "cache", no: "10", name: "キャッシュとCDN", short: "キャッシュ", level: "pro", keys: "Cache-Control · ETag · 304 · CDN" },
-    { id: "perf", no: "11", name: "表示速度", short: "表示速度", level: "pro", keys: "LCP · INP · CLS · lazy · preload" },
-    { id: "a11y-seo", no: "12", name: "アクセシビリティとSEO", short: "a11y・SEO", level: "std", keys: "alt · コントラスト · ARIA · canonical" }
+    { id: "network", no: "01", name: "ネットワークとTCP/IP", short: "TCP/IP", level: "std", keys: "TCP/IP · CIDR · TCP/UDP · NAT" },
+    { id: "url-dns", no: "02", name: "URLとDNS", short: "URLとDNS", level: "basic", keys: "URLの各部 · DNS · A/CNAME · TTL" },
+    { id: "http", no: "03", name: "HTTPの基本", short: "HTTP基本", level: "basic", keys: "メソッド · ステータス · ヘッダー · HTTP/3" },
+    { id: "render", no: "04", name: "ブラウザが表示するまで", short: "表示の流れ", level: "std", keys: "DOM · CSSOM · レイアウト · defer" },
+    { id: "html", no: "05", name: "HTMLとセマンティクス", short: "HTML", level: "basic", keys: "DOCTYPE · main · label · alt" },
+    { id: "css", no: "06", name: "CSSのセレクタとレイアウト", short: "CSS", level: "basic", keys: "詳細度 · ボックス · flex · grid" },
+    { id: "js-dom", no: "07", name: "JavaScriptとDOM・非同期", short: "JSとDOM", level: "std", keys: "DOM · イベント · Promise · fetch" },
+    { id: "json", no: "08", name: "JSONとデータ形式", short: "JSON", level: "basic", keys: "JSONの文法 · stringify · YAML · Base64" },
+    { id: "api", no: "09", name: "Web APIとREST", short: "Web API", level: "std", keys: "REST · CRUD · ページング · 429" },
+    { id: "state", no: "10", name: "Cookie・セッション・ストレージ", short: "Cookie等", level: "std", keys: "Cookie属性 · SameSite · Storage · JWT" },
+    { id: "auth", no: "11", name: "認証と認可", short: "認証認可", level: "pro", keys: "OAuth 2.0 · PKCE · OIDC · パスキー" },
+    { id: "security", no: "12", name: "HTTPSと攻撃対策", short: "攻撃対策", level: "std", keys: "TLS · XSS · CSRF · SQLi" },
+    { id: "origin", no: "13", name: "オリジン・CORS・CSP", short: "CORS・CSP", level: "pro", keys: "オリジン · CORS · プリフライト · CSP" },
+    { id: "cache", no: "14", name: "キャッシュとCDN", short: "キャッシュ", level: "pro", keys: "Cache-Control · ETag · 304 · CDN" },
+    { id: "perf", no: "15", name: "表示速度", short: "表示速度", level: "pro", keys: "LCP · INP · CLS · lazy · preload" },
+    { id: "a11y-seo", no: "16", name: "アクセシビリティとSEO", short: "a11y・SEO", level: "std", keys: "alt · コントラスト · ARIA · canonical" },
+    { id: "realtime", no: "17", name: "リアルタイム通信", short: "リアルタイム", level: "pro", keys: "ポーリング · SSE · WebSocket · WebRTC" },
+    { id: "server", no: "18", name: "Webサーバーとインフラ", short: "サーバー", level: "std", keys: "プロキシ · LB · コンテナ · デプロイ" },
+    { id: "frontend", no: "19", name: "フロントエンドの構成", short: "構成", level: "pro", keys: "SPA · SSR/SSG · History API · npm" },
+    { id: "browser-api", no: "20", name: "ブラウザのAPIとPWA", short: "PWA等", level: "pro", keys: "Service Worker · Manifest · Worker" }
   ];
 
   var byId = {};
@@ -93,7 +101,7 @@ var WEBD = (function () {
 
   // ---------- コードの色分け(画面の部品は各ページで作る) ----------
   // tokenize(lang, text) → [{ t: "kw" | "fn" | "str" | "num" | "cm" | "pn" | "st-ok" | "st-ng" | "blank" | "", s: "文字" }, …]
-  var LANGS = ["http", "html", "css", "js", "json", "url", "dns", "csp", "text"];
+  var LANGS = ["http", "html", "xml", "css", "js", "json", "yaml", "url", "dns", "csp", "shell", "text"];
 
   function push(out, t, s) {
     if (!s) return;
@@ -329,17 +337,68 @@ var WEBD = (function () {
     }
   }
 
+  // シェル(1行目の語はコマンド、- で始まる語はオプション、# 以降はコメント、行頭の $ はプロンプト)
+  // $ で始まる行があるブロックでは、$ のない行はコマンドの出力として色を付けない
+  function tokShell(src, out) {
+    var hasPrompt = /^\$ /m.test(src);
+    src.split("\n").forEach(function (line, k) {
+      if (k > 0) push(out, "", "\n");
+      var i = 0, n = line.length, m, first = true;
+      if ((m = /^\$ /.exec(line))) { push(out, "pn", m[0]); i = m[0].length; }
+      else if (/^\s*#/.test(line)) { push(out, "cm", line); return; }
+      else if (hasPrompt) { push(out, "", line); return; }
+      while (i < n) {
+        var rest = line.slice(i);
+        if ((m = /^#.*/.exec(rest)) && (i === 0 || /\s/.test(line.charAt(i - 1)))) push(out, "cm", m[0]);
+        else if ((m = /^\s+/.exec(rest))) push(out, "", m[0]);
+        else if ((m = /^"[^"]*"?/.exec(rest)) || (m = /^'[^']*'?/.exec(rest))) { push(out, "str", m[0]); first = false; }
+        else {
+          m = /^[^\s"']+/.exec(rest);
+          if (first) push(out, "fn", m[0]);
+          else if (/^--?[A-Za-z]/.test(m[0])) push(out, "kw", m[0]);
+          else if (/^\d+(?:\.\d+)*$/.test(m[0])) push(out, "num", m[0]);
+          else push(out, "", m[0]);
+          first = false;
+        }
+        i += m[0].length;
+      }
+    });
+  }
+
+  // YAML(キー: 値、# コメント、- の並び)
+  function tokYaml(src, out) {
+    src.split("\n").forEach(function (line, k) {
+      if (k > 0) push(out, "", "\n");
+      var m = /^(\s*)(- )?([^\s:#"'][^:#]*?)(:)(\s|$)(.*)$/.exec(line), rest = line;
+      if (m) {
+        push(out, "", m[1]); push(out, "pn", m[2] || ""); push(out, "fn", m[3]); push(out, "pn", m[4]); push(out, "", m[5]);
+        rest = m[6];
+      } else if ((m = /^(\s*)(- )(.*)$/.exec(line))) {
+        push(out, "", m[1]); push(out, "pn", m[2]); rest = m[3];
+      } else rest = line;
+      var c = /^(.*?)(\s#.*|^#.*)?$/.exec(rest);
+      var val = c[1], cm = c[2] || "";
+      if (/^\s*(["']).*\1\s*$/.test(val)) push(out, "str", val);
+      else if (/^\s*-?\d+(\.\d+)?\s*$/.test(val)) push(out, "num", val);
+      else if (/^\s*(true|false|null)\s*$/.test(val)) push(out, "kw", val);
+      else push(out, "", val);
+      push(out, "cm", cm);
+    });
+  }
+
   function tokenize(lang, text) {
     var src = String(text == null ? "" : text).split(BLANK).join(PH);
     var raw = [];
     if (lang === "http") tokHttp(src, raw);
-    else if (lang === "html") tokHtml(src, raw);
+    else if (lang === "html" || lang === "xml") tokHtml(src, raw);
     else if (lang === "css") tokCss(src, raw);
     else if (lang === "js") tokJs(src, raw, false);
     else if (lang === "json") tokJs(src, raw, true);
     else if (lang === "url") tokUrl(src, raw);
     else if (lang === "dns") tokDns(src, raw);
     else if (lang === "csp") tokCsp(src, raw);
+    else if (lang === "shell") tokShell(src, raw);
+    else if (lang === "yaml") tokYaml(src, raw);
     else push(raw, "", src);
     // 空欄を戻す
     var out = [];
@@ -2196,7 +2255,7 @@ WEBD.register("security", {
       id: "clickjacking", name: "クリックジャッキング", en: "Clickjacking",
       desc: "本物のページを透明な iframe で重ね、利用者にボタンを押させる攻撃です。自分のページをほかのサイトに埋め込ませないことで防ぎます。",
       code: [{ cap: "レスポンス", lang: "http", text: "X-Frame-Options: DENY" }],
-      notes: ["いまは CSP の `frame-ancestors` で指定するのが基本です(単元09)。古いブラウザのために X-Frame-Options も一緒に送ることがあります。"]
+      notes: ["いまは CSP の `frame-ancestors` で指定するのが基本です(単元「オリジン・CORS・CSP」)。古いブラウザのために X-Frame-Options も一緒に送ることがあります。"]
     },
     {
       id: "password-hash", name: "パスワードの保存", en: "Password hashing",
@@ -3279,6 +3338,1827 @@ WEBD.register("a11y-seo", {
       ],
       explain: "ARIA は状態を伝えるだけなので、開閉に合わせて値を書きかえます。読み上げソフトは「折りたたみ」「展開」などと状態を伝えます。",
       ref: "aria"
+    }
+  ]
+});
+
+
+// =====================================================================
+// ネットワークとTCP/IP(id: network)
+// =====================================================================
+WEBD.register("network", {
+  cards: [
+    {
+      id: "osi-model", name: "OSI参照モデル", en: "OSI reference model",
+      desc: "通信のしくみを7つの層に分けて考えるための模型です。下の層ほど電気信号に近く、上の層ほどアプリに近くなります。各層は、すぐ下の層の働きを使って自分の役目を果たします。",
+      options: [
+        ["第7層 アプリケーション", "HTTP・DNS など、アプリどうしの決まり"],
+        ["第6層 プレゼンテーション", "データの表し方(文字コード・圧縮など)"],
+        ["第5層 セッション", "通信の始まりと終わりの管理"],
+        ["第4層 トランスポート", "TCP・UDP。端末の中のどのプログラムか(ポート)"],
+        ["第3層 ネットワーク", "IP。ネットワークをまたいで宛先へ届ける"],
+        ["第2層 データリンク", "イーサネット・Wi-Fi。となりの機器へ届ける"],
+        ["第1層 物理", "ケーブル・電波などの信号"]
+      ]
+    },
+    {
+      id: "tcpip-model", name: "TCP/IPの4階層", en: "Internet protocol suite",
+      desc: "インターネットで実際に使われているプロトコルの組み合わせで、4つの層で説明されます。送るときは上の層から順にヘッダーを付けて包み(カプセル化)、受け取ると下の層から順にはがします。",
+      options: [
+        ["アプリケーション層", "HTTP・DNS・SMTP など(OSI の第5〜7層)"],
+        ["トランスポート層", "TCP・UDP(第4層)"],
+        ["インターネット層", "IP・ICMP(第3層)"],
+        ["ネットワークインターフェース層", "イーサネット・Wi-Fi(第1〜2層)"]
+      ]
+    },
+    {
+      id: "subnet-cidr", name: "サブネットとCIDR", en: "Subnet / CIDR notation",
+      desc: "IPアドレスを、ネットワークを表す部分(ネットワーク部)と、その中の機器を表す部分(ホスト部)に分けます。`/24` は、先頭の24ビットがネットワーク部という意味で、この書き方を CIDR 表記といいます。",
+      code: [{ cap: "192.168.1.0/24", lang: "text", text: "ネットワーク部: 192.168.1\nホスト部: 0〜255(8ビット)\nサブネットマスク: 255.255.255.0" }],
+      options: [
+        ["/24", "アドレス256個。機器に使えるのは254個"],
+        ["/16", "アドレス65,536個"],
+        ["/32", "アドレス1個だけ"]
+      ],
+      notes: ["ホスト部がすべて0のアドレス(ネットワークアドレス)と、すべて1のアドレス(ブロードキャストアドレス)は、機器に割り当てません。"]
+    },
+    {
+      id: "private-ip", name: "プライベートIPアドレス", en: "Private address space",
+      desc: "家庭や会社の中だけで自由に使えるIPv4アドレスの範囲です。インターネット上では使われず、外と通信するときは NAT でグローバルIPアドレスに変えます。",
+      options: [
+        ["10.0.0.0/8", "10.0.0.0〜10.255.255.255"],
+        ["172.16.0.0/12", "172.16.0.0〜172.31.255.255"],
+        ["192.168.0.0/16", "192.168.0.0〜192.168.255.255"]
+      ],
+      notes: ["`127.0.0.1` は自分自身を表すループバックアドレスで、プライベートアドレスとは別のものです。"]
+    },
+    {
+      id: "tcp-udp", name: "TCPとUDP", en: "TCP / UDP",
+      desc: "TCP は、接続を確立してから送り、届いたかの確認・再送・順番の並べ直しを行う、確実なプロトコルです。UDP は、確認も再送もせずに送るだけの軽いプロトコルで、遅れが少ないのが利点です。",
+      options: [
+        ["TCP", "HTTP/1.1・HTTP/2・メール・SSH など"],
+        ["UDP", "DNS の多くの問い合わせ・音声や映像の通話・QUIC(HTTP/3)"]
+      ],
+      notes: ["UDP で確実さが必要なときは、その上のプロトコル(QUIC など)が再送などを受け持ちます。"]
+    },
+    {
+      id: "three-way", name: "3ウェイハンドシェイク", en: "TCP three-way handshake",
+      desc: "TCP が接続を始めるときの3回のやりとりです。クライアントが SYN を送り、サーバーが SYN+ACK を返し、クライアントが ACK を返すと接続ができます。",
+      code: [{ lang: "text", text: "クライアント → SYN     → サーバー\nクライアント ← SYN+ACK ← サーバー\nクライアント → ACK     → サーバー" }],
+      notes: ["接続を終えるときは FIN を送り合います。HTTPS では、このあとに TLS のハンドシェイクが続きます。"]
+    },
+    {
+      id: "nat", name: "NAT", en: "Network Address Translation",
+      desc: "ルーターが、プライベートIPアドレスとグローバルIPアドレスを付けかえるしくみです。ポート番号も付けかえて、1つのグローバルIPアドレスを家の中の複数の端末で共有するものを NAPT(IPマスカレード)といいます。",
+      notes: ["外からは、NAT の内側の端末に直接つなぎにくくなります。WebRTC などで直接つなぐときに、工夫が必要になる理由です。"]
+    },
+    {
+      id: "routing", name: "パケットとルーティング", en: "Packets / Routing",
+      desc: "データは小さなパケットに分けて送られます。ルーターは、パケットの宛先IPアドレスと経路表(ルーティングテーブル)を見て、次にどのルーターへ渡すかを決めます。経路表にない宛先は、デフォルトゲートウェイへ送ります。",
+      notes: ["IPのヘッダーには TTL(IPv6 ではホップリミット)があり、ルーターを1つ通るたびに1減ります。0になったパケットは捨てられ、送り主に ICMP で知らされます。経路がループしても、パケットが回り続けないためのしくみです。"]
+    },
+    {
+      id: "ping-traceroute", name: "ping と traceroute", en: "ICMP-based diagnostic tools",
+      desc: "`ping` は、ICMP のエコー要求を送って、相手から応答が返るかと、往復にかかる時間を調べます。`traceroute` は、TTL を1から順に増やしたパケットを送り、途中のルーターから返る知らせで、通り道を調べます。",
+      code: [{ lang: "shell", text: "$ ping -c 3 example.com\n$ traceroute example.com" }],
+      notes: ["ICMP に応答しないよう設定されたサーバーもあるので、ping が返らなくても、Webサイトが動いていないとは限りません。"]
+    }
+  ],
+  questions: [
+    {
+      id: "n01", level: "basic", q: "TCP/IP の4階層のモデルで、HTTP が属する層は?", kind: "text",
+      choices: ["アプリケーション層", "トランスポート層", "インターネット層", "ネットワークインターフェース層"],
+      explain: "HTTP・DNS・SMTP などはアプリケーション層です。その下のトランスポート層の TCP や UDP を使って運ばれます。",
+      ref: "tcpip-model"
+    },
+    {
+      id: "n02", level: "basic", q: "届いたかの確認と再送、順番の並べ直しを行うプロトコルは?", kind: "code",
+      choices: ["TCP", "UDP", "IP", "ICMP"],
+      explain: "TCP は確実に届けるためのプロトコルです。UDP は確認も再送もしません。IP は宛先まで運ぶだけで、届いたかは確かめません。",
+      ref: "tcp-udp"
+    },
+    {
+      id: "n03", level: "basic", q: "プライベートIPアドレスはどれ?", kind: "code",
+      choices: ["192.168.10.5", "8.8.8.8", "172.32.0.1", "203.0.113.7"],
+      explain: "192.168.0.0/16 はプライベートアドレスの範囲です。172 で始まるものは 172.16〜172.31 だけがプライベートで、172.32 は範囲の外です。",
+      ref: "private-ip"
+    },
+    {
+      id: "n04", level: "basic", q: "SSH が使うウェルノウンポートの番号は?", kind: "code",
+      choices: ["22", "21", "25", "53"],
+      explain: "SSH は22番です。21番は FTP、25番はメールの送信(SMTP)、53番は DNS で使われます。",
+      ref: "port"
+    },
+    {
+      id: "n05", level: "std", q: "TCP の3ウェイハンドシェイクの順番は?", kind: "code",
+      choices: ["SYN → SYN+ACK → ACK", "SYN → ACK → FIN", "ACK → SYN → SYN+ACK", "SYN+ACK → SYN → ACK"],
+      explain: "クライアントが SYN で接続を求め、サーバーが SYN+ACK で応じ、クライアントが ACK を返して接続ができます。FIN は接続を終えるときに使います。",
+      ref: "three-way"
+    },
+    {
+      id: "n06", level: "std", q: "`192.168.1.0/24` のネットワークで、機器に割り当てられるアドレスはいくつ?", kind: "code",
+      choices: ["254", "256", "255", "24"],
+      explain: "ホスト部は8ビットなので256個ありますが、すべて0のネットワークアドレスと、すべて1のブロードキャストアドレスを除いて254個です。",
+      ref: "subnet-cidr"
+    },
+    {
+      id: "n07", level: "std", q: "UDP が向いている用途は?", kind: "text",
+      choices: [
+        "多少欠けても遅れが困る、音声や映像の通話",
+        "1バイトも欠けてはいけない、ファイルのダウンロード",
+        "届く順番が大事な、Webページの HTML の転送",
+        "確実に届いたか確かめたい、銀行の振込の処理"
+      ],
+      explain: "UDP は再送をしないぶん遅れが少なく、少しの欠けより遅れが困る通話に向きます。確実さが必要なものには TCP を使います。",
+      ref: "tcp-udp"
+    },
+    {
+      id: "n08", level: "std", q: "NAPT(IPマスカレード)の働きは?", kind: "text",
+      choices: [
+        "ポート番号で区別し、1つのグローバルIPを複数台で共有する",
+        "ドメイン名を IP アドレスに変換して、接続先を端末に教える",
+        "通信の中身を暗号化して、途中の人に読めないようにする",
+        "端末に IP アドレスなどの設定を自動で割り当てる"
+      ],
+      explain: "ルーターがアドレスとポート番号を付けかえて、家の中の複数の端末が1つのグローバルIPアドレスで通信できるようにします。名前の変換は DNS、自動の割り当ては DHCP の役目です。",
+      ref: "nat"
+    },
+    {
+      id: "n09", level: "std", q: "OSI参照モデルで、TCP が属する層は?", kind: "text",
+      choices: ["トランスポート層(第4層)", "ネットワーク層(第3層)", "セッション層(第5層)", "データリンク層(第2層)"],
+      explain: "TCP と UDP は第4層のトランスポート層です。IP は第3層のネットワーク層、イーサネットは第2層のデータリンク層です。",
+      ref: "osi-model"
+    },
+    {
+      id: "n10", level: "std", q: "ルーターが、パケットを次にどこへ渡すかを決めるのに使うのは?", kind: "text",
+      choices: ["宛先のIPアドレスと経路表", "宛先のポート番号とドメイン名", "送信元のMACアドレスとURL", "パケットの中のHTTPヘッダー"],
+      explain: "ルーターは第3層の機器で、宛先IPアドレスを経路表と照らして転送先を決めます。ポート番号や HTTP の中身は見ません。",
+      ref: "routing"
+    },
+    {
+      id: "n11", level: "std", q: "`ping` で調べられることは?", kind: "text",
+      choices: [
+        "相手から応答が返るかと、往復にかかる時間",
+        "相手のサーバーで動いている Web サーバーの種類",
+        "相手のドメインの登録者と、有効期限の日付",
+        "相手までの通信が暗号化されているかどうか"
+      ],
+      explain: "ping は ICMP のエコー要求を送り、応答と往復時間(RTT)を表示します。相手が ICMP に応答しない設定のこともあります。",
+      ref: "ping-traceroute"
+    },
+    {
+      id: "n12", level: "pro", q: "`traceroute` は、どうやって途中のルーターを調べる?", kind: "text",
+      choices: [
+        "TTL を1ずつ増やし、期限切れを知らせたルーターを記録する",
+        "経路上のルーターに順に問い合わせ、それぞれの経路表をダウンロードする",
+        "DNS の逆引きだけを使って、通る国の一覧を順に調べる",
+        "相手のサーバーのログを読みに行き、通った場所を調べる"
+      ],
+      explain: "TTL が0になったルーターは、パケットを捨てて ICMP で送り主に知らせます。TTL を1、2、3…と増やすと、近いルーターから順に知らせが返ってきます。",
+      ref: "ping-traceroute"
+    },
+    {
+      id: "n13", level: "pro", q: "`172.16.0.0/12` の範囲に含まれるアドレスは?", kind: "code",
+      choices: ["172.31.0.1", "172.32.0.1", "172.15.255.1", "172.160.0.1"],
+      explain: "/12 なので、先頭の12ビット(172 と、2つ目の数の上位4ビット)が同じものが範囲です。2つ目の数は 16〜31 になり、172.16.0.0〜172.31.255.255 です。",
+      ref: "private-ip"
+    },
+    {
+      id: "n14", level: "pro", q: "IP パケットの TTL が0になると、どうなる?", kind: "text",
+      choices: [
+        "パケットが捨てられ、送り主に ICMP で知らされる",
+        "パケットが、最初の送り主のところへ自動で送り返される",
+        "ルーターが TTL を64に戻して、転送を続ける",
+        "宛先に届くまで、そのルーターの中で待たされる"
+      ],
+      explain: "TTL は、経路がループしたときにパケットが回り続けないためのしくみです。0になったら捨てられ、ICMP の Time Exceeded で知らされます。traceroute はこれを利用します。",
+      ref: "routing"
+    }
+  ]
+});
+
+
+// =====================================================================
+// JSONとデータ形式(id: json)
+// =====================================================================
+WEBD.register("json", {
+  cards: [
+    {
+      id: "json-syntax", name: "JSONの文法", en: "JavaScript Object Notation (RFC 8259)",
+      desc: "JSON は、データを文字で表す形式です。使える値は、オブジェクト・配列・文字列・数値・真偽値(true / false)・null の6種類です。",
+      code: [{ lang: "json", text: "{\n  \"id\": 7,\n  \"name\": \"Ken\",\n  \"tags\": [\"a\", \"b\"],\n  \"admin\": false,\n  \"memo\": null\n}" }],
+      notes: [
+        "キーは、かならず二重引用符 `\"` で囲んだ文字列です。文字列にも `'` は使えません。",
+        "最後の要素のあとのカンマ、コメント、`undefined`・`NaN`・`Infinity` は書けません。"
+      ]
+    },
+    {
+      id: "json-parse", name: "JSON.parse", mono: true, en: "JSON.parse()",
+      desc: "JSON の文字列を、JavaScript の値に直します。文法がまちがっていると `SyntaxError` が投げられるので、外から来たデータは `try` / `catch` で囲みます。",
+      code: [{ lang: "js", text: "JSON.parse('{\"a\": [1, 2]}').a[1]\n// → 2\nJSON.parse(\"{a: 1}\")\n// → SyntaxError" }],
+      notes: ["数値は JavaScript の Number になるので、`9007199254740991`(Number.MAX_SAFE_INTEGER)を超える整数は正確に表せません。大きなIDは文字列でやりとりします。"]
+    },
+    {
+      id: "json-stringify", name: "JSON.stringify", mono: true, en: "JSON.stringify()",
+      desc: "JavaScript の値を JSON の文字列にします。第2引数(replacer)で出すプロパティを選び、第3引数(space)で字下げして読みやすくできます。",
+      code: [{ lang: "js", text: "JSON.stringify({ a: 1 }, null, 2)\n// → \"{\\n  \\\"a\\\": 1\\n}\"\nJSON.stringify([1, undefined])\n// → \"[1,null]\"" }],
+      options: [
+        ["undefined・関数", "オブジェクトの中では省かれ、配列の中では null になる"],
+        ["NaN・Infinity", "null になる"],
+        ["Date", "toJSON() で ISO 8601 の文字列になる"]
+      ]
+    },
+    {
+      id: "json-media-type", name: "application/json", mono: true, en: "JSON media type",
+      desc: "JSON を送るときの Content-Type です。JSON は UTF-8 で書く決まりなので、`charset` を付ける必要はありません。",
+      code: [{ cap: "レスポンス", lang: "http", text: "HTTP/1.1 200 OK\nContent-Type: application/json\n\n{\"ok\": true}" }],
+      notes: ["fetch では `await res.json()` で本文を読み、値に直せます。"]
+    },
+    {
+      id: "json-lines", name: "JSON Lines", en: "JSON Lines / NDJSON",
+      desc: "1行に1つずつ JSON の値を書く形式です。行ごとに読めるので、ログや、少しずつ流れてくるデータに向いています。",
+      code: [{ cap: "events.jsonl", lang: "json", text: "{\"t\": 1, \"ev\": \"login\"}\n{\"t\": 2, \"ev\": \"view\"}" }],
+      notes: ["ファイル全体は1つの JSON ではないので、まとめて `JSON.parse` することはできません。"]
+    },
+    {
+      id: "json-schema", name: "JSON Schema", en: "JSON Schema",
+      desc: "JSON データの形(型・必須の項目・値の範囲など)を、JSON で書いて決める仕様です。受け取ったデータの検証や、API の説明に使われます。",
+      code: [{ lang: "json", text: "{\n  \"type\": \"object\",\n  \"required\": [\"id\"],\n  \"properties\": {\n    \"id\": { \"type\": \"integer\" }\n  }\n}" }],
+      notes: ["`additionalProperties: false` を書かないかぎり、properties にない項目があってもよいとみなされます。"]
+    },
+    {
+      id: "data-formats", name: "XML・YAML・CSV", en: "Other data formats",
+      desc: "JSON のほかにも、よく使われるデータの形式があります。用途に合わせて選びます。",
+      code: [
+        { cap: "XML", lang: "xml", text: "<user id=\"7\">\n  <name>Ken</name>\n</user>" },
+        { cap: "YAML", lang: "yaml", text: "user:\n  id: 7\n  name: Ken  # コメント" },
+        { cap: "CSV", lang: "text", text: "id,name\n7,Ken" }
+      ],
+      options: [
+        ["XML", "タグで囲む。属性を持てる。古くからある API や設定で使う"],
+        ["YAML", "字下げで階層を表す。コメントを書ける。設定ファイルに多い"],
+        ["CSV", "表を行と列で表す。階層は表せない"]
+      ]
+    },
+    {
+      id: "utf8-bom", name: "UTF-8 と BOM", en: "Character encoding / Byte Order Mark",
+      desc: "システムどうしでやりとりする JSON は、UTF-8 で書く決まりです(RFC 8259)。ファイルの先頭に BOM(バイト順マーク)を付けてはいけません。",
+      notes: ["UTF-8 では、日本語のひらがなや漢字の多くは1文字3バイトです。"]
+    },
+    {
+      id: "base64", name: "Base64", en: "Base64 encoding",
+      desc: "バイナリのデータを、英数字と `+` `/`(と埋め草の `=`)だけの文字で表す変換です。3バイトを4文字にするので、大きさは約4/3倍になります。だれでも元に戻せるので、暗号化ではありません。",
+      code: [{ lang: "js", text: "btoa(\"abc\")\n// → \"YWJj\"\natob(\"YWJj\")\n// → \"abc\"" }],
+      options: [
+        ["Base64URL", "`+` `/` の代わりに `-` `_` を使い、URL に入れられるようにしたもの(JWT で使う)"],
+        ["パーセントエンコーディング", "URL に使えない文字だけを `%XX` にする。目的が違う"]
+      ],
+      notes: ["`btoa` は1文字が1バイトの文字列しか扱えません。日本語は、先に UTF-8 のバイト列にしてから変換します。"]
+    }
+  ],
+  questions: [
+    {
+      id: "jn01", level: "basic", q: "JSON として正しいのは?", kind: "code",
+      choices: ["{\"name\": \"Ken\"}", "{name: \"Ken\"}", "{'name': 'Ken'}", "{\"name\": \"Ken\",}"],
+      explain: "JSON のキーと文字列は二重引用符で囲みます。引用符なしのキー、単引用符、最後のカンマは、JavaScript では書けても JSON ではまちがいです。",
+      ref: "json-syntax"
+    },
+    {
+      id: "jn02", level: "basic", q: "JSON の値として書けないものは?", kind: "code",
+      choices: ["undefined", "null", "true", "3.14"],
+      explain: "JSON の値は、オブジェクト・配列・文字列・数値・真偽値・null の6種類です。undefined はありません。",
+      ref: "json-syntax"
+    },
+    {
+      id: "jn03", level: "basic", q: "JSON の文法として正しいのは?", kind: "text",
+      choices: [
+        "文字列は二重引用符で囲む",
+        "// でコメントを書ける",
+        "最後の要素のあとにカンマを置ける",
+        "キーは引用符なしで書ける"
+      ],
+      explain: "JSON はコメントも最後のカンマも書けず、キーはかならず二重引用符の文字列です。コメントを書きたい設定ファイルには YAML などが使われます。",
+      ref: "json-syntax"
+    },
+    {
+      id: "jn04", level: "basic", q: "JSON を返すレスポンスの Content-Type は?", kind: "code",
+      choices: ["application/json", "text/json", "application/javascript", "text/plain"],
+      explain: "JSON の正式なメディアタイプは `application/json` です。JSON は UTF-8 と決まっているので、charset は要りません。",
+      ref: "json-media-type"
+    },
+    {
+      id: "jn05", level: "basic", q: "JSON の文字列を、JavaScript のオブジェクトに直すメソッドは?", kind: "code",
+      choices: ["JSON.parse", "JSON.stringify", "JSON.decode", "JSON.toObject"],
+      explain: "文字列 → 値 は `JSON.parse`、値 → 文字列 は `JSON.stringify` です。decode や toObject というメソッドはありません。",
+      ref: "json-parse"
+    },
+    {
+      id: "jn06", level: "basic", q: "Base64 について正しいのは?", kind: "text",
+      choices: [
+        "暗号化ではなく、だれでも元に戻せる変換",
+        "決まった鍵がないと、元に戻せない暗号化の方式",
+        "データを半分ほどの大きさにする圧縮",
+        "元に戻せない一方向のハッシュ関数"
+      ],
+      explain: "Base64 は、バイナリを文字で表すための変換です。大きさは約4/3倍に増え、秘密を守る力はありません。",
+      ref: "base64"
+    },
+    {
+      id: "jn07", level: "basic", q: "「JSON Lines」の説明として正しいのは?", kind: "text",
+      choices: [
+        "1行に1つずつ、JSON の値を書く形式",
+        "1つの JSON を、1文字ずつ改行して書く形式",
+        "JSON に、コメントの行を足せるようにした形式",
+        "表の行と列を、カンマで区切って書く形式"
+      ],
+      explain: "JSON Lines は、行ごとに独立した JSON を並べます。ログを1行ずつ足したり読んだりできます。カンマで区切る表は CSV です。",
+      ref: "json-lines"
+    },
+    {
+      id: "jn08", level: "std", q: "このコードの結果は?", kind: "code",
+      code: [{ lang: "js", text: "JSON.stringify({\n  d: new Date(0)\n})" }],
+      choices: ["'{\"d\":\"1970-01-01T00:00:00.000Z\"}'", "'{\"d\":0}'", "'{\"d\":{}}'", "'{\"d\":\"Thu Jan 01 1970 00:00:00\"}'"],
+      explain: "Date は `toJSON()` を持ち、ISO 8601 の形(UTC)の文字列になります。読みこむときは、`new Date(文字列)` で Date に戻します。",
+      ref: "json-stringify"
+    },
+    {
+      id: "jn09", level: "std", q: "このコードの結果は?", kind: "code",
+      code: [{ lang: "js", text: "JSON.stringify([1, undefined, NaN])" }],
+      choices: ["'[1,null,null]'", "'[1]'", "'[1,undefined,NaN]'", "'[1,null,NaN]'"],
+      explain: "配列の中の undefined と、JSON にない NaN は、どちらも null になります。オブジェクトのプロパティの undefined は、null ではなく省かれます。",
+      ref: "json-stringify"
+    },
+    {
+      id: "jn10", level: "std", q: "`JSON.stringify(obj, null, 2)` の `2` の意味は?", kind: "text",
+      choices: [
+        "空白2つで字下げして、読みやすく整形する",
+        "数値の小数点以下を、2けたにそろえて出力する",
+        "2階層より深い部分を省いて出力する",
+        "最初の2つのプロパティだけを出力する"
+      ],
+      explain: "第3引数(space)は字下げの幅です。数のかわりに `\"\\t\"` などの文字列も渡せます。第2引数は出すものを選ぶ replacer です。",
+      ref: "json-stringify"
+    },
+    {
+      id: "jn11", level: "std", q: "3バイトのデータを Base64 にすると、何文字になる?", kind: "code",
+      choices: ["4", "3", "6", "2"],
+      explain: "Base64 は6ビットを1文字で表すので、3バイト(24ビット)が4文字になります。全体で約4/3倍の大きさです。",
+      ref: "base64"
+    },
+    {
+      id: "jn12", level: "std", q: "JSON と YAML の違いとして正しいのは?", kind: "text",
+      choices: [
+        "YAML は # でコメントを書けるが、JSON は書けない",
+        "JSON は字下げで階層を表し、YAML は括弧で階層を表す",
+        "YAML は文字列しか扱えず、数値を書けない",
+        "JSON はバイナリの形式で、人には読めない"
+      ],
+      explain: "YAML は字下げで階層を表し、`#` でコメントを書けるので、設定ファイルによく使われます。JSON はコメントを書けません。",
+      ref: "data-formats"
+    },
+    {
+      id: "jn13", level: "pro", q: "このスキーマで検証したとき、正しいとされる JSON は?", kind: "code",
+      code: [{ cap: "JSON Schema", lang: "json", text: "{\n  \"type\": \"object\",\n  \"required\": [\"id\"],\n  \"properties\": {\n    \"id\": { \"type\": \"integer\" }\n  }\n}" }],
+      choices: ["{\"id\": 7, \"x\": 1}", "{\"id\": \"7\"}", "{\"x\": 1}", "{\"id\": 7.5}"],
+      explain: "id は必須で、整数でなければなりません。\"7\" は文字列、7.5 は整数ではありません。properties にない `x` は、`additionalProperties: false` がないので許されます。",
+      ref: "json-schema"
+    },
+    {
+      id: "jn14", level: "pro", q: "このコードの結果は?", kind: "code",
+      code: [{ lang: "js", text: "const s = '{\"id\":9007199254740993}';\nJSON.parse(s).id" }],
+      choices: ["9007199254740992", "9007199254740993", "\"9007199254740993\"", "SyntaxError"],
+      explain: "JSON の数値は Number(倍精度の浮動小数点数)になり、2の53乗を超える整数は正確に表せません。大きなIDは、JSON の中で文字列にして送ります。",
+      ref: "json-parse"
+    },
+    {
+      id: "jn15", level: "std", q: "システムどうしでやりとりする JSON の文字コードとして、RFC 8259 で決められているのは?", kind: "code",
+      choices: ["UTF-8", "Shift_JIS", "UTF-16", "EUC-JP"],
+      explain: "やりとりする JSON は UTF-8 で書き、先頭に BOM を付けてはいけない決まりです。そのため `application/json` には charset を付けません。",
+      ref: "utf8-bom"
+    }
+  ]
+});
+
+
+// =====================================================================
+// Web APIとREST(id: api)
+// =====================================================================
+WEBD.register("api", {
+  cards: [
+    {
+      id: "web-api", name: "Web API", en: "Web API",
+      desc: "プログラムどうしが、HTTP を使って決まった形でデータをやりとりするための窓口です。リクエストを受け付けるURLをエンドポイントと呼び、データは JSON で送ることが多いです。",
+      code: [
+        { cap: "リクエスト", lang: "http", text: "GET /v1/users/42 HTTP/1.1\nHost: api.example.com\nAccept: application/json" },
+        { cap: "レスポンス", lang: "http", text: "HTTP/1.1 200 OK\nContent-Type: application/json\n\n{\"id\": 42, \"name\": \"Ken\"}" }
+      ]
+    },
+    {
+      id: "rest", name: "REST", en: "Representational State Transfer",
+      desc: "Web のしくみに沿って API を設計する考え方です。扱う対象を「リソース」としてURIで表し、HTTP のメソッドで操作します。",
+      options: [
+        ["リソースとURI", "ユーザーや注文などを、/users/42 のようなURIで表す"],
+        ["統一インターフェース", "どのリソースにも、同じ意味の GET・POST・PUT・DELETE などを使う"],
+        ["ステートレス", "リクエストごとに必要な情報(認証など)をすべて含め、前のやりとりに頼らない"],
+        ["表現", "リソースの状態を JSON などの形で送る"]
+      ]
+    },
+    {
+      id: "uri-design", name: "URIの設計", en: "Resource naming",
+      desc: "URIには、動詞ではなくリソースを表す名詞を使い、集まりは複数形にします。親子関係は階層で表し、操作の種類はメソッドで表します。",
+      code: [{ lang: "text", text: "GET  /users          一覧\nGET  /users/42       1件\nGET  /users/42/orders  その人の注文\n× GET /getUser?id=42" }],
+      notes: ["絞り込みや並び順など、リソースそのものではない条件はクエリで表します(`/orders?status=paid&sort=-created`)。"]
+    },
+    {
+      id: "crud-methods", name: "CRUDとメソッド", en: "CRUD mapping",
+      desc: "データの基本操作(作成・読み取り・更新・削除)を、HTTP のメソッドに対応させます。",
+      options: [
+        ["Create", "POST /users(新しいIDはサーバーが決める)"],
+        ["Read", "GET /users/42"],
+        ["Update", "PUT /users/42(全体を置きかえ)・PATCH /users/42(一部を変更)"],
+        ["Delete", "DELETE /users/42"]
+      ],
+      notes: ["PUT は同じ内容を何度送っても結果が同じ(べき等)です。PATCH は書き方によってはべき等になりません(「数を1増やす」など)。"]
+    },
+    {
+      id: "api-status", name: "ステータスコードの使い分け", en: "Status codes in APIs",
+      desc: "API では、結果をステータスコードで正しく伝えます。エラーなのに 200 を返すと、クライアントやキャッシュが成功と誤解します。",
+      options: [
+        ["200", "成功(本文あり)"],
+        ["201", "作成した。Location に新しいリソースのURL"],
+        ["204", "成功したが本文なし(削除など)"],
+        ["400", "リクエストの形がおかしい"],
+        ["401 / 403", "認証が必要 / 権限がない"],
+        ["404", "リソースがない"],
+        ["409", "いまの状態とぶつかる"],
+        ["422", "形は正しいが、内容を処理できない(入力の検証エラーなど)"],
+        ["429", "呼び出しが多すぎる"]
+      ]
+    },
+    {
+      id: "pagination", name: "ページネーション", en: "Pagination",
+      desc: "件数の多い一覧を、少しずつ分けて返す方法です。何件目から読むかを数で指定する offset 方式と、前回の続きの位置を表す値(カーソル)で指定する cursor 方式があります。",
+      code: [
+        { cap: "offset 方式", lang: "url", text: "/items?limit=20&offset=40" },
+        { cap: "cursor 方式", lang: "url", text: "/items?limit=20&cursor=eyJpZCI6NjB9" }
+      ],
+      notes: [
+        "offset 方式は好きなページへ飛べますが、読むあいだにデータが増減すると、重複や抜けが出ます。深いページほど遅くなりやすいです。",
+        "cursor 方式はずれにくく速い反面、「5ページ目へ飛ぶ」ことは苦手です。"
+      ]
+    },
+    {
+      id: "versioning", name: "バージョニング", en: "API versioning",
+      desc: "項目の削除や意味の変更など、いまの利用者を壊す変更(破壊的変更)をするときは、新しいバージョンとして出します。URLのパス(`/v2/`)やヘッダーで版を区別します。",
+      notes: ["項目を足すだけなら、ふつうは破壊的変更ではありません。クライアントは、知らない項目を無視するように作ります。"]
+    },
+    {
+      id: "problem-details", name: "エラーの形式", en: "Problem Details for HTTP APIs (RFC 9457)",
+      desc: "エラーの中身を伝える共通の JSON の形です。Content-Type は `application/problem+json` で、`type` `title` `status` `detail` `instance` などの項目を持ちます。",
+      code: [{ cap: "レスポンス", lang: "http", text: "HTTP/1.1 422 Unprocessable Content\nContent-Type:\n  application/problem+json\n\n{\n  \"type\": \"/errors/invalid\",\n  \"title\": \"入力が正しくありません\",\n  \"status\": 422,\n  \"detail\": \"email の形式が違います\"\n}" }],
+      notes: ["RFC 9457 は、以前の RFC 7807 を置きかえたものです。"]
+    },
+    {
+      id: "rate-limit", name: "レート制限と Idempotency-Key", en: "Rate limiting / Idempotency key",
+      desc: "短い時間の呼び出し回数を制限し、超えたら 429 Too Many Requests を返します。`Retry-After` で、いつ再試行してよいかを伝えます。`Idempotency-Key` は、POST を送り直しても二重に処理されないよう、リクエストに付ける一意の値です。",
+      code: [
+        { cap: "制限を超えたとき", lang: "http", text: "HTTP/1.1 429 Too Many Requests\nRetry-After: 30" },
+        { cap: "二重の注文を防ぐ", lang: "http", text: "POST /orders HTTP/1.1\nIdempotency-Key: 7f3a-91c2" }
+      ],
+      notes: ["Idempotency-Key は決済サービスなどで広く使われ、IETF で標準化の案(ドラフト)が出されているヘッダーです。サーバーは同じキーのリクエストに、前と同じ結果を返します。"]
+    },
+    {
+      id: "openapi", name: "OpenAPI・GraphQL・gRPC", en: "API description / Alternatives to REST",
+      desc: "OpenAPI は、REST API のエンドポイント・パラメーター・レスポンスの形を YAML や JSON で書く仕様で、文書やコードの自動生成に使います。GraphQL と gRPC は、REST とは別の API の方式です。",
+      code: [{ cap: "OpenAPI(一部)", lang: "yaml", text: "paths:\n  /users/{id}:\n    get:\n      summary: 1件取得\n      responses:\n        \"200\":\n          description: OK" }],
+      options: [
+        ["GraphQL", "1つのエンドポイントに、ほしい項目をクエリで書いて送る"],
+        ["gRPC", "Protocol Buffers のバイナリで、HTTP/2 の上で関数のように呼ぶ"]
+      ]
+    }
+  ],
+  questions: [
+    {
+      id: "ap01", level: "basic", q: "新しいユーザーを作るとき、`/users` に送るメソッドとして最も一般的なのは?", kind: "code",
+      choices: ["POST", "GET", "DELETE", "HEAD"],
+      explain: "集まり(/users)に POST して、新しいリソースを作らせます。新しいIDはサーバーが決め、201 と Location で知らせます。",
+      ref: "crud-methods"
+    },
+    {
+      id: "ap02", level: "basic", q: "REST の考え方に沿った URI はどれ?", kind: "code",
+      choices: ["/users/42", "/getUser?id=42", "/user_get/42", "/api/doGetUserById"],
+      explain: "URI はリソース(名詞)を表し、「取得する」という操作はメソッド(GET)で表します。動詞を URI に入れません。",
+      ref: "uri-design"
+    },
+    {
+      id: "ap03", level: "basic", q: "Web API の説明として正しいのは?", kind: "text",
+      choices: [
+        "プログラムどうしが HTTP でデータをやりとりする窓口",
+        "Web ページの見た目を整えるために、ブラウザに読ませる言語",
+        "データを長く保存しておくための、サーバーの中のデータベース",
+        "画面を描くために、ブラウザに組みこまれた描画の部品"
+      ],
+      explain: "Web API は、ほかのプログラムから HTTP で呼び出せる機能の入口です。データは JSON で返すことが多いです。",
+      ref: "web-api"
+    },
+    {
+      id: "ap04", level: "std", q: "`DELETE /users/42` が成功し、返す本文はない。適したステータスコードは?", kind: "code",
+      choices: ["204", "201", "304", "202"],
+      explain: "204 No Content は、成功したが本文がないことを表します。201 は作成、304 はキャッシュの確認、202 は「受け付けたが処理はまだ」です。",
+      ref: "api-status"
+    },
+    {
+      id: "ap05", level: "std", q: "PUT と PATCH の違いとして正しいのは?", kind: "text",
+      choices: [
+        "PUT は全体を置きかえ、PATCH は一部だけを変える",
+        "PUT は一部だけを変え、PATCH は全体を置きかえる",
+        "PUT は作成だけに使い、PATCH は削除だけに使う",
+        "PUT と PATCH は同じ働きで、名前が違うだけ"
+      ],
+      explain: "PUT は送った内容でリソース全体を置きかえるので、送らなかった項目は消えることがあります。PATCH は指定した部分だけを変更します。",
+      ref: "crud-methods"
+    },
+    {
+      id: "ap06", level: "std", q: "POST でリソースを作成した。空欄に入る、新しいリソースのURLを伝えるヘッダーは?", kind: "code",
+      code: [{ cap: "レスポンス", lang: "http", text: "HTTP/1.1 201 Created\n____: /users/43" }],
+      choices: ["Location", "Referer", "Host", "Link"],
+      explain: "201 Created と一緒に `Location` で、作ったリソースのURLを返します。クライアントはそのURLで GET できます。",
+      ref: "api-status"
+    },
+    {
+      id: "ap07", level: "std", q: "offset 方式のページネーションの弱点は?", kind: "text",
+      choices: [
+        "読む間にデータが増減すると、重複や抜けが出る",
+        "1ページの件数を、サーバー側で決められなくなる",
+        "最初のページより先のデータは、取得できなくなる",
+        "ページの位置を、URL のクエリに書けなくなる"
+      ],
+      explain: "「40件目から20件」と数で指定するので、途中で先頭に1件増えると、前のページの最後の1件がもう一度出ます。cursor 方式はこれが起きにくくなります。",
+      ref: "pagination"
+    },
+    {
+      id: "ap08", level: "std", q: "トークンは正しいが、一般ユーザーが管理者だけの API を呼んだ。返すステータスコードは?", kind: "code",
+      choices: ["403", "401", "404", "400"],
+      explain: "だれかはわかっている(認証は成功)が、権限がないので 403 Forbidden です。トークンがない・無効なときは 401 です。",
+      ref: "api-status"
+    },
+    {
+      id: "ap09", level: "std", q: "429 と一緒に返して、再試行してよい時間を伝えるヘッダーは?", kind: "code",
+      choices: ["Retry-After", "Expires", "Cache-Control", "Age"],
+      explain: "`Retry-After` には秒数か日時を書きます。クライアントはその時間まで待ってから送り直します。",
+      ref: "rate-limit"
+    },
+    {
+      id: "ap10", level: "std", q: "REST の「ステートレス」の説明として正しいのは?", kind: "text",
+      choices: [
+        "各リクエストに必要な情報をすべて含め、前のやりとりに頼らない",
+        "サーバーはデータベースを持たず、利用者のデータを何も保存しない",
+        "1本の接続を開いたまま、すべてのリクエストを順番に送る",
+        "レスポンスにはステータスコードもヘッダーも付けない"
+      ],
+      explain: "サーバーが前のリクエストの状態を覚えていなくても処理できるように、認証の情報などを毎回送ります。データを保存しないという意味ではありません。",
+      ref: "rest"
+    },
+    {
+      id: "ap11", level: "std", q: "REST API のエンドポイントやレスポンスの形を、YAML や JSON で記述する仕様は?", kind: "code",
+      choices: ["OpenAPI", "GraphQL", "gRPC", "JSON Lines"],
+      explain: "OpenAPI で書いた仕様から、API の文書や、呼び出すコードを自動で作れます。GraphQL と gRPC は API の方式そのものです。",
+      ref: "openapi"
+    },
+    {
+      id: "ap12", level: "pro", q: "RFC 9457 の形式でエラーを返すときの Content-Type は?", kind: "code",
+      choices: ["application/problem+json", "application/error+json", "text/problem", "application/json+error"],
+      explain: "Problem Details の形式は `application/problem+json` です。`type` `title` `status` `detail` などの項目でエラーを伝えます。",
+      ref: "problem-details"
+    },
+    {
+      id: "ap13", level: "pro", q: "注文の POST に `Idempotency-Key` を付ける目的は?", kind: "text",
+      choices: [
+        "送り直しても、同じ注文を二重に作らないようにする",
+        "リクエストの本文を暗号化して、途中での盗み見を防ぐ",
+        "API キーの代わりに使って、呼び出した利用者を認証する",
+        "レスポンスを CDN にキャッシュさせて、表示を速くする"
+      ],
+      explain: "通信が切れて結果がわからないとき、同じキーで送り直せば、サーバーは前の結果を返し、注文を増やしません。POST はべき等ではないので、この工夫が要ります。",
+      ref: "rate-limit"
+    },
+    {
+      id: "ap14", level: "pro", q: "cursor 方式のページネーションの利点は?", kind: "text",
+      choices: [
+        "続きの位置を値で示すので、データが増減してもずれにくい",
+        "ページ番号を指定するだけで、好きなページへすぐに飛べる",
+        "全体の件数を、いつも正確にすばやく返せる",
+        "クエリなしで、すべてのデータを1回で受け取れる"
+      ],
+      explain: "「最後に見た ID の次から」のように位置を指定するので、途中で増減があっても重複や抜けが出にくく、深いページでも速く読めます。好きなページへ飛ぶのは offset 方式の得意なことです。",
+      ref: "pagination"
+    },
+    {
+      id: "ap15", level: "pro", q: "GraphQL の特徴として正しいのは?", kind: "text",
+      choices: [
+        "必要な項目をクエリで指定し、1つのエンドポイントで受け取る",
+        "リソースごとに URL を分け、決まった項目を GET で受け取る",
+        "Protocol Buffers のバイナリで、HTTP/2 の上で関数を呼ぶ",
+        "API の仕様を YAML で書き、文書やコードを自動で作る"
+      ],
+      explain: "GraphQL では、クライアントがほしい項目を指定するので、取りすぎや取り足りないことが減ります。2つ目は REST、3つ目は gRPC、4つ目は OpenAPI の説明です。",
+      ref: "openapi"
+    },
+    {
+      id: "ap16", level: "std", q: "公開中の API で、いまの利用者のプログラムを壊す変更(破壊的変更)にあたるのは?", kind: "text",
+      choices: [
+        "レスポンスにある項目を削除する",
+        "レスポンスに新しい項目を足す",
+        "新しいエンドポイントを追加する",
+        "説明の文書の誤字を直す"
+      ],
+      explain: "使っている項目が消えると、クライアントは動かなくなります。こうした変更は新しいバージョン(/v2/ など)で出します。項目やエンドポイントを足すだけなら、ふつうは壊しません。",
+      ref: "versioning"
+    }
+  ]
+});
+
+
+// =====================================================================
+// 認証と認可(id: auth)
+// =====================================================================
+WEBD.register("auth", {
+  cards: [
+    {
+      id: "authn-authz", name: "認証と認可", en: "Authentication / Authorization",
+      desc: "認証は「あなたはだれか」を確かめること、認可は「その人に何をしてよいか」を決めることです。HTTP では、認証が必要なら 401、認証はできても権限がなければ 403 を返します。",
+      options: [
+        ["認証(AuthN)", "パスワード・パスキー・トークンなどで本人を確かめる"],
+        ["認可(AuthZ)", "役割や権限を見て、操作を許すか決める"]
+      ]
+    },
+    {
+      id: "basic-auth", name: "Basic認証", en: "HTTP Basic authentication",
+      desc: "`ユーザー名:パスワード` を Base64 にして、`Authorization` ヘッダーで毎回送る方法です。Base64 は暗号化ではないので、かならず HTTPS で使います。",
+      code: [
+        { cap: "サーバー → 認証を求める", lang: "http", text: "HTTP/1.1 401 Unauthorized\nWWW-Authenticate: Basic\n  realm=\"admin\"" },
+        { cap: "ブラウザ → 送る", lang: "http", text: "Authorization: Basic\n  a2VuOnNlY3JldA==" }
+      ]
+    },
+    {
+      id: "bearer-apikey", name: "Bearerトークンと APIキー", en: "Bearer token / API key",
+      desc: "Bearer トークンは「持っている人が使える」トークンで、`Authorization: Bearer <トークン>` で送ります。APIキーは、呼び出すアプリやサービスを見分けるための秘密の文字列です。",
+      code: [{ cap: "リクエスト", lang: "http", text: "GET /v1/me HTTP/1.1\nAuthorization: Bearer eyJhbGc…" }],
+      notes: [
+        "盗まれるとそのまま使われるので、HTTPS で送り、URL のクエリには入れません(ログや履歴に残るため)。",
+        "ブラウザで動くコードに秘密の APIキーを書くと、だれでも読めてしまいます。"
+      ]
+    },
+    {
+      id: "session-vs-token", name: "セッション方式とトークン方式", en: "Session-based / Token-based authentication",
+      desc: "セッション方式は、サーバーがログインの状態を保存し、ブラウザには Cookie でセッションIDだけを渡します。トークン方式は、署名つきのトークン(JWT など)に情報を入れて渡し、サーバーは署名を確かめるだけで済ませます。",
+      options: [
+        ["セッション方式", "サーバーで消せばすぐログアウトできる。サーバーどうしで状態の共有が要る"],
+        ["トークン方式", "サーバーが状態を持たなくてよい。発行したトークンを途中で無効にしにくい"]
+      ],
+      notes: ["トークン方式では、アクセストークンの期限を短くし、リフレッシュトークンで取り直すのが一般的です。"]
+    },
+    {
+      id: "oauth2", name: "OAuth 2.0", en: "OAuth 2.0 Authorization Framework",
+      desc: "パスワードを渡さずに、ほかのアプリに「あなたの代わりに、この範囲だけ操作してよい」という権限を与えるしくみです。権限はアクセストークンの形で渡されます。",
+      options: [
+        ["リソースオーナー", "データの持ち主(利用者)"],
+        ["クライアント", "権限をもらって API を呼ぶアプリ"],
+        ["認可サーバー", "利用者の同意を得て、トークンを発行する"],
+        ["リソースサーバー", "トークンを確かめて、データを返す API"]
+      ],
+      notes: ["OAuth 2.0 は認可のしくみです。「だれがログインしたか」を伝える部分は、OpenID Connect が足しています。"]
+    },
+    {
+      id: "pkce", name: "認可コードフローと PKCE", en: "Authorization Code Flow with PKCE",
+      desc: "利用者を認可サーバーへ移して同意させ、戻ってきたときに受け取る一時的な「認可コード」を、裏でアクセストークンに換える流れです。PKCE は、毎回作るランダムな値(code_verifier)で、横取りされたコードを使えないようにします。",
+      options: [
+        ["code_verifier", "クライアントが毎回作る秘密のランダムな値"],
+        ["code_challenge", "code_verifier の SHA-256 ハッシュを Base64URL にしたもの(S256 方式)。最初の要求で送る"],
+        ["state", "戻ってきた応答が、自分の始めた手続きかを確かめる値(CSRF 対策)"]
+      ],
+      notes: ["トークンを URL で直接受け取るインプリシットフローは、漏れやすいため、現在のセキュリティの指針では使わないことになっています。SPA やスマホアプリも、認可コードフロー + PKCE を使います。"]
+    },
+    {
+      id: "token-types", name: "アクセストークンとリフレッシュトークン", en: "Access token / Refresh token / Scope",
+      desc: "アクセストークンは API を呼ぶための短い期限のトークン、リフレッシュトークンは期限が切れたアクセストークンを取り直すためのトークンです。スコープは、トークンで許される操作の範囲です。",
+      code: [{ cap: "トークンのレスポンス(一部)", lang: "json", text: "{\n  \"access_token\": \"eyJ…\",\n  \"expires_in\": 3600,\n  \"refresh_token\": \"8xLO…\",\n  \"scope\": \"read:photos\"\n}" }],
+      notes: ["リフレッシュトークンは長く使えるので、とくに大切に保管します。"]
+    },
+    {
+      id: "oidc", name: "OpenID Connect", en: "OpenID Connect (OIDC)",
+      desc: "OAuth 2.0 の上に、ログインした人がだれかを伝える「IDトークン」を足したしくみです。「Google でログイン」などに使われます。スコープに `openid` を入れて要求します。",
+      options: [
+        ["iss", "トークンを発行したサーバー"],
+        ["sub", "利用者を表す一意のID"],
+        ["aud", "トークンを受け取るはずのアプリ(クライアントID)"],
+        ["exp", "有効期限"]
+      ],
+      notes: ["IDトークンは JWT で、受け取ったアプリは署名と iss・aud・exp を確かめます。"]
+    },
+    {
+      id: "jwt-verify", name: "JWT の検証", en: "JWT validation",
+      desc: "JWT を受け取ったサーバーは、決めておいたアルゴリズムで署名を確かめ、期限(exp)や発行者(iss)、受け取り手(aud)も確かめます。",
+      code: [{ cap: "JWT の3つの部分", lang: "text", text: "ヘッダー.ペイロード.署名\neyJhbGciOiJ… . eyJzdWIiOi… . SflKxw…" }],
+      notes: [
+        "ヘッダーの `alg` をそのまま信じてはいけません。`\"alg\": \"none\"`(署名なし)を受け入れると、だれでも中身を書きかえたトークンを通せてしまいます。",
+        "ペイロードは暗号化されていないので、秘密の情報を入れません。"
+      ]
+    },
+    {
+      id: "passkey-mfa", name: "パスキーと多要素認証", en: "Passkeys (WebAuthn) / Multi-factor authentication",
+      desc: "パスキーは、端末の中の秘密鍵で署名してログインするしくみ(WebAuthn)です。サーバーには公開鍵だけを置き、鍵はサイトに結びつくので、偽サイトでは使われません。多要素認証は、知識・所持・生体のうち2つ以上を組み合わせます。",
+      options: [
+        ["知識", "パスワード・暗証番号"],
+        ["所持", "スマホ・セキュリティキー"],
+        ["生体", "指紋・顔"]
+      ],
+      notes: ["パスワードを2回入れるのは、同じ「知識」なので多要素ではありません。"]
+    }
+  ],
+  questions: [
+    {
+      id: "au01", level: "basic", q: "「あなたはだれか」を確かめることを何という?", kind: "text",
+      choices: ["認証", "認可", "暗号化", "署名"],
+      explain: "本人を確かめるのが認証、その人に何を許すか決めるのが認可です。",
+      ref: "authn-authz"
+    },
+    {
+      id: "au02", level: "basic", q: "多要素認証の例として正しいのは?", kind: "text",
+      choices: [
+        "パスワードと、スマホのアプリに出るコードを入れる",
+        "同じパスワードを、確認のために2回入力する",
+        "長くて複雑なパスワードを、1つだけずっと使い続ける",
+        "秘密の質問に、2つ続けて答えるようにする"
+      ],
+      explain: "パスワード(知識)とスマホ(所持)という、種類の違う要素を組み合わせています。パスワードや秘密の質問をいくつ重ねても、知識の1種類だけです。",
+      ref: "passkey-mfa"
+    },
+    {
+      id: "au03", level: "std", q: "Basic認証について正しいのは?", kind: "text",
+      choices: [
+        "中身は Base64 にしただけなので、HTTPS が必須",
+        "パスワードはハッシュ化して送られるので、HTTP でも安全",
+        "トークンの期限が切れると、自動で新しいものに更新される",
+        "ID だけを送り、パスワードはサーバーが自分で調べる"
+      ],
+      explain: "Base64 はだれでも元に戻せるので、HTTP で送ると盗み見でパスワードがわかってしまいます。",
+      ref: "basic-auth"
+    },
+    {
+      id: "au04", level: "std", q: "OAuth 2.0 のアクセストークンを API に送る。空欄に入るのは?", kind: "code",
+      code: [{ cap: "リクエスト", lang: "http", text: "GET /v1/me HTTP/1.1\nAuthorization: ____ eyJhbGc…" }],
+      choices: ["Bearer", "Basic", "Cookie", "Session"],
+      explain: "アクセストークンは `Authorization: Bearer <トークン>` で送ります。Basic は「ユーザー名:パスワード」を送る方式です。",
+      ref: "bearer-apikey"
+    },
+    {
+      id: "au05", level: "std", q: "OAuth 2.0 の主な目的は?", kind: "text",
+      choices: [
+        "パスワードを渡さずに、ほかのアプリに限られた権限を与える",
+        "利用者のパスワードを、暗号化して安全にほかのサイトへ送り届ける",
+        "通信を暗号化して、途中での盗み見を防ぐためのしくみ",
+        "サイトのページを、検索エンジンに知らせるためのしくみ"
+      ],
+      explain: "利用者は認可サーバーで同意するだけで、アプリにはパスワードではなく、範囲と期限のあるアクセストークンが渡されます。",
+      ref: "oauth2"
+    },
+    {
+      id: "au06", level: "std", q: "リフレッシュトークンの役割は?", kind: "text",
+      choices: [
+        "期限が切れたアクセストークンを、新しく取り直す",
+        "ページを再読み込みしたとき、キャッシュを消す",
+        "ログインした人の名前やメールを、画面に表示する",
+        "API の呼び出し回数の上限を、一時的に増やす"
+      ],
+      explain: "アクセストークンは盗まれたときの被害を小さくするため期限を短くし、切れたらリフレッシュトークンで取り直します。",
+      ref: "token-types"
+    },
+    {
+      id: "au07", level: "std", q: "OAuth 2.0 の「スコープ」が表すのは?", kind: "text",
+      choices: [
+        "トークンで許される操作の範囲",
+        "トークンを使える期限の長さ",
+        "トークンを発行したサーバーの名前",
+        "トークンを受け取るアプリの URL"
+      ],
+      explain: "`read:photos` のように、許す操作を絞ります。アプリには必要な最小限のスコープだけを与えます。",
+      ref: "token-types"
+    },
+    {
+      id: "au08", level: "std", q: "署名つきの JWT を使うトークン方式の弱点は?", kind: "text",
+      choices: [
+        "発行したトークンを、期限の前に無効にしにくい",
+        "サーバーどうしでセッションを共有しないと使えない",
+        "ブラウザ以外のアプリからは、送ることができない",
+        "署名があるので、だれも中身を読むことができない"
+      ],
+      explain: "サーバーは署名を確かめるだけで状態を持たないので、盗まれたトークンも期限までは使えてしまいます。そのため期限を短くします。セッションの共有が要るのはセッション方式です。",
+      ref: "session-vs-token"
+    },
+    {
+      id: "au09", level: "pro", q: "SPA やスマホアプリが OAuth 2.0 でトークンを得るとき、推奨される方法は?", kind: "text",
+      choices: [
+        "認可コードフロー + PKCE",
+        "インプリシットフロー",
+        "パスワードをアプリが受け取って送る方式",
+        "Basic認証で毎回パスワードを送る方式"
+      ],
+      explain: "インプリシットフローはトークンを URL で受け取るため漏れやすく、現在は非推奨です。秘密を持てないアプリも、認可コードフローに PKCE を組み合わせます。",
+      ref: "pkce"
+    },
+    {
+      id: "au10", level: "pro", q: "PKCE が防ぐのは?", kind: "text",
+      choices: [
+        "横取りされた認可コードを、トークンに換えられること",
+        "利用者が、認可サーバーで同意を取り消すこと",
+        "アクセストークンの期限が、短くなりすぎること",
+        "ログイン画面の見た目を、攻撃者に偽物へ変えられること"
+      ],
+      explain: "クライアントは code_verifier のハッシュを先に送っておき、コードをトークンに換えるときに code_verifier そのものを見せます。コードだけを盗んだ者は、それを知らないので換えられません。",
+      ref: "pkce"
+    },
+    {
+      id: "au11", level: "pro", q: "OpenID Connect と OAuth 2.0 の関係として正しいのは?", kind: "text",
+      choices: [
+        "OAuth 2.0 の上に、ログインした人を伝える IDトークンを足したもの",
+        "OAuth 2.0 の古い名前で、中身はまったく同じもの",
+        "OAuth 2.0 の代わりに、パスワードを暗号化してほかのサイトに渡すもの",
+        "OAuth 2.0 とは関係なく、API のレート制限を決める規格"
+      ],
+      explain: "OAuth 2.0 は「何をしてよいか」を渡すしくみで、ログインした人がだれかは決めていません。OIDC が IDトークンでそれを伝えます。",
+      ref: "oidc"
+    },
+    {
+      id: "au12", level: "pro", q: "受け取った JWT のヘッダーが `{\"alg\": \"none\"}` だったのに、そのまま受け入れた。何が危ない?", kind: "text",
+      choices: [
+        "署名なしのトークンが通り、だれでも中身を書きかえて使える",
+        "トークンの期限が短くなり、利用者がすぐにログアウトされる",
+        "ペイロードが暗号化されて、サーバーが読めなくなる",
+        "トークンが長くなりすぎて、Cookie に入りきらなくなる"
+      ],
+      explain: "alg: none は「署名なし」という意味です。サーバーは使うアルゴリズムを自分で決めておき、それ以外のトークンは拒否します。",
+      ref: "jwt-verify"
+    },
+    {
+      id: "au13", level: "pro", q: "IDトークンの `aud` を確かめる目的は?", kind: "text",
+      choices: [
+        "自分のアプリ向けに発行されたトークンか確かめる",
+        "トークンを発行したのが、どのサーバーか確かめる",
+        "トークンの有効期限が、切れていないか確かめる",
+        "ログインした人を表す、一意のIDを取り出す"
+      ],
+      explain: "aud(audience)は受け取り手です。別のアプリ向けのトークンを使い回されないように確かめます。発行者は iss、期限は exp、利用者のIDは sub です。",
+      ref: "oidc"
+    },
+    {
+      id: "au14", level: "pro", q: "パスキーがフィッシングに強い理由は?", kind: "text",
+      choices: [
+        "鍵がサイトに結びつき、偽のサイトでは使われないから",
+        "パスワードを長く複雑にして、推測されにくくしているから",
+        "サーバーに秘密鍵を預けて、管理を任せているから",
+        "ログインのたびに、メールで確認コードを送るから"
+      ],
+      explain: "パスキーは登録したサイトのためだけに使われ、偽サイトには署名を返しません。秘密鍵は端末の中にあり、サーバーには公開鍵しかないので、漏れても悪用できません。",
+      ref: "passkey-mfa"
+    },
+    {
+      id: "au15", level: "pro", q: "OAuth 2.0 の認可リクエストに `state` を付ける目的は?", kind: "text",
+      choices: [
+        "戻ってきた応答が、自分の始めた手続きかを確かめる",
+        "利用者の住む国や地域を、認可サーバーに伝える",
+        "アクセストークンの有効期限を、クライアントが決める",
+        "ログイン画面を表示する言語を、認可サーバーに伝える"
+      ],
+      explain: "推測できない値を送り、戻ってきたときに同じ値か確かめます。攻撃者が自分の認可コードを利用者に送りこむ CSRF を防ぎます。",
+      ref: "pkce"
+    }
+  ]
+});
+
+
+// =====================================================================
+// リアルタイム通信(id: realtime)
+// =====================================================================
+WEBD.register("realtime", {
+  cards: [
+    {
+      id: "polling", name: "ポーリングとロングポーリング", en: "Polling / Long polling",
+      desc: "ポーリングは、クライアントが一定の間隔でサーバーに「新しいデータはある?」と問い合わせる方法です。ロングポーリングは、サーバーが新しいデータが出るまで返事を待たせ、返したらクライアントがすぐまた問い合わせる方法です。",
+      code: [{ cap: "ポーリング", lang: "js", text: "setInterval(async () => {\n  const r = await fetch(\"/news\");\n  show(await r.json());\n}, 10000);" }],
+      notes: ["ふつうの HTTP だけで作れますが、ポーリングは新しいデータがなくても問い合わせるので、むだな通信と遅れが出ます。"]
+    },
+    {
+      id: "sse", name: "Server-Sent Events", en: "Server-Sent Events (EventSource)",
+      desc: "サーバーからクライアントへ、1本の HTTP の接続でイベントを送り続けるしくみです。向きは一方向(サーバー → クライアント)だけで、ブラウザは `EventSource` で受け取ります。切れると自動で再接続します。",
+      code: [
+        { cap: "レスポンス", lang: "http", text: "HTTP/1.1 200 OK\nContent-Type: text/event-stream\n\nid: 1\ndata: 株価 1200\n\nid: 2\ndata: 株価 1210" },
+        { cap: "ブラウザ", lang: "js", text: "const es = new EventSource(\"/s\");\nes.onmessage = (e) => {\n  show(e.data);\n};" }
+      ],
+      notes: ["再接続のとき、ブラウザは最後に受け取った id を `Last-Event-ID` ヘッダーで送るので、サーバーは続きから送れます。"]
+    },
+    {
+      id: "websocket", name: "WebSocket", en: "The WebSocket Protocol (RFC 6455)",
+      desc: "1本の接続で、クライアントとサーバーが好きなときに双方向でメッセージを送り合えるプロトコルです。HTTP のリクエストで「切りかえたい」と伝え、サーバーが 101 Switching Protocols を返すと、WebSocket の通信に変わります。",
+      code: [
+        { cap: "リクエスト", lang: "http", text: "GET /chat HTTP/1.1\nHost: example.com\nUpgrade: websocket\nConnection: Upgrade\nOrigin: https://example.com" },
+        { cap: "レスポンス", lang: "http", text: "HTTP/1.1 101 Switching Protocols\nUpgrade: websocket\nConnection: Upgrade" }
+      ],
+      options: [
+        ["ws://", "暗号化なし"],
+        ["wss://", "TLS で暗号化(https と同じく、ふつうはこちら)"]
+      ],
+      notes: ["WebSocket には同一オリジンポリシーや CORS が働きません。サーバーは `Origin` ヘッダーを確かめ、許可したページからの接続だけを受け付けます。"]
+    },
+    {
+      id: "ws-api", name: "WebSocket の使い方", en: "WebSocket API",
+      desc: "ブラウザでは `new WebSocket(URL)` で接続し、`send` で送り、`message` イベントで受け取ります。テキストとバイナリを送れます。",
+      code: [{ lang: "js", text: "const ws = new WebSocket(\n  \"wss://example.com/chat\");\nws.onopen = () => ws.send(\"hi\");\nws.onmessage = (e) => {\n  show(e.data);\n};" }],
+      notes: ["WebSocket API には自動の再接続がありません。切れたら(`close` イベント)、間隔を少しずつ広げながら自分でつなぎ直します。"]
+    },
+    {
+      id: "webrtc", name: "WebRTC", en: "Web Real-Time Communication",
+      desc: "ブラウザどうしが直接(P2P)つながって、映像・音声・データを送り合うしくみです。通信はかならず暗号化されます。",
+      options: [
+        ["シグナリング", "つなぐ前に接続の情報を交換すること。方法は決まっておらず、WebSocket などで用意する"],
+        ["STUN", "NAT の外から見た自分のアドレスを調べるサーバー"],
+        ["TURN", "直接つながれないとき、通信を中継するサーバー"]
+      ]
+    },
+    {
+      id: "realtime-choice", name: "方式の使い分け", en: "Choosing a real-time method",
+      desc: "必要な向きと頻度で、方式を選びます。",
+      options: [
+        ["ポーリング", "更新がたまにで、少し遅れてもよい"],
+        ["Server-Sent Events", "サーバーからの通知・配信だけ(株価・進み具合など)"],
+        ["WebSocket", "双方向に頻繁にやりとりする(チャット・共同編集・ゲーム)"],
+        ["WebRTC", "ブラウザどうしの通話・画面共有"]
+      ]
+    },
+    {
+      id: "keepalive", name: "接続の維持", en: "Keepalive / Idle timeout",
+      desc: "長く開いたままの接続は、途中のプロキシやロードバランサーに、しばらく通信がないと切られることがあります。定期的に小さなメッセージ(ハートビート)を送って、接続を保ちます。",
+      notes: ["WebSocket のプロトコルには ping と pong のしくみがあり、サーバーから送って相手が生きているかを確かめられます。"]
+    }
+  ],
+  questions: [
+    {
+      id: "rt01", level: "basic", q: "サーバーからクライアントへ一方向にイベントを送り続け、ブラウザが `EventSource` で受け取るしくみは?", kind: "code",
+      choices: ["Server-Sent Events", "WebSocket", "WebRTC", "Web Worker"],
+      explain: "Server-Sent Events(SSE)は、ふつうの HTTP の接続を開いたままにして、サーバーから送り続けます。",
+      ref: "sse"
+    },
+    {
+      id: "rt02", level: "basic", q: "「ポーリング」の説明として正しいのは?", kind: "text",
+      choices: [
+        "クライアントが一定の間隔で、新しいデータを問い合わせる",
+        "サーバーが接続を開いたままにして、データを押し出し続ける",
+        "ブラウザどうしが直接つながって、データを送り合う",
+        "1回だけ問い合わせて、その結果をずっと使い続ける"
+      ],
+      explain: "ポーリングは、ふつうの HTTP のリクエストをくり返す方法です。簡単ですが、新しいデータがなくても通信が発生します。",
+      ref: "polling"
+    },
+    {
+      id: "rt03", level: "std", q: "WebSocket に切りかえるときの、サーバーのレスポンスの空欄に入るのは?", kind: "code",
+      code: [{ cap: "レスポンス", lang: "http", text: "HTTP/1.1 ____ Switching Protocols\nUpgrade: websocket\nConnection: Upgrade" }],
+      choices: ["101", "200", "301", "426"],
+      explain: "101 Switching Protocols で、この接続を WebSocket に切りかえます。以後は HTTP ではなく、WebSocket のフレームでやりとりします。",
+      ref: "websocket"
+    },
+    {
+      id: "rt04", level: "std", q: "TLS で暗号化した WebSocket の URL のスキームは?", kind: "code",
+      choices: ["wss://", "ws://", "https://", "socket://"],
+      explain: "暗号化ありは `wss://`、なしは `ws://` です。HTTPS のページからは、wss を使います。",
+      ref: "websocket"
+    },
+    {
+      id: "rt05", level: "std", q: "Server-Sent Events のレスポンスの Content-Type は?", kind: "code",
+      choices: ["text/event-stream", "application/json", "text/plain", "application/websocket"],
+      explain: "`text/event-stream` で、`data:` などの行を空行で区切ったイベントを送ります。",
+      ref: "sse"
+    },
+    {
+      id: "rt06", level: "std", q: "「ロングポーリング」の説明として正しいのは?", kind: "text",
+      choices: [
+        "サーバーがデータが出るまで返事を待たせ、返したらまた聞く",
+        "クライアントが長い間隔をあけて、ときどき問い合わせる",
+        "1本の接続を使って、クライアントとサーバーが双方向に送り合う",
+        "ブラウザどうしが直接つながり、映像を送り合う"
+      ],
+      explain: "サーバーは新しいデータが出たときにはじめて返事をするので、ふつうのポーリングより遅れとむだな問い合わせが減ります。",
+      ref: "polling"
+    },
+    {
+      id: "rt07", level: "std", q: "WebRTC の説明として正しいのは?", kind: "text",
+      choices: [
+        "ブラウザどうしが直接つながり、映像や音声を送り合う",
+        "サーバーから一方向に、更新を送り続けるしくみ",
+        "サーバーに定期的に、新しいデータを問い合わせるしくみ",
+        "ページをオフラインでも開けるようにするしくみ"
+      ],
+      explain: "WebRTC は P2P の通話やデータのやりとりのためのしくみです。2つ目は SSE、3つ目はポーリング、4つ目は Service Worker の説明です。",
+      ref: "webrtc"
+    },
+    {
+      id: "rt08", level: "std", q: "チャットのように、クライアントとサーバーが双方向に頻繁にやりとりする。最も適した方式は?", kind: "code",
+      choices: ["WebSocket", "Server-Sent Events", "Service Worker", "Cache-Control"],
+      explain: "WebSocket は1本の接続で双方向に送り合えます。SSE はサーバーから一方向だけなので、クライアントから送るには別のリクエストが要ります。",
+      ref: "realtime-choice"
+    },
+    {
+      id: "rt09", level: "pro", q: "Server-Sent Events の特徴として正しいのは?", kind: "text",
+      choices: [
+        "接続が切れると、ブラウザが自動で再接続する",
+        "クライアントからも、同じ接続でサーバーへ送れる",
+        "UDP の上で動き、HTTP の接続は使わない",
+        "バイナリのデータだけを送るための形式"
+      ],
+      explain: "EventSource は切れると自動でつなぎ直し、最後の id を `Last-Event-ID` で送ります。データはテキストで、向きはサーバーからの一方向です。",
+      ref: "sse"
+    },
+    {
+      id: "rt10", level: "pro", q: "WebRTC の TURN サーバーの役割は?", kind: "text",
+      choices: [
+        "直接つながれないとき、通信を中継する",
+        "NAT の外から見た、自分のアドレスを調べる",
+        "相手の映像を録画して、あとで見られるように保存する",
+        "接続の情報を交換する方法を、すべての端末に決める"
+      ],
+      explain: "NAT やファイアウォールで直接つながれないとき、TURN が通信を中継します。自分のアドレスを調べるのは STUN です。",
+      ref: "webrtc"
+    },
+    {
+      id: "rt11", level: "pro", q: "WebRTC で、つなぐ前に接続の情報を交換する方法(シグナリング)について正しいのは?", kind: "text",
+      choices: [
+        "方法は決まっておらず、WebSocket などで用意する",
+        "WebRTC の中に決まった方法があり、ブラウザが自動で行う",
+        "かならず電子メールで、相手に接続の情報を送る",
+        "DNS の TXT レコードに書いて、相手に読ませる"
+      ],
+      explain: "WebRTC は、つないだあとの通信を決めていますが、相手と情報を交換する方法は決めていません。アプリが WebSocket などでサーバーを用意します。",
+      ref: "webrtc"
+    },
+    {
+      id: "rt12", level: "pro", q: "WebSocket のサーバーが、許可したページからの接続かを確かめるのに使うリクエストヘッダーは?", kind: "code",
+      choices: ["Origin", "Referer", "User-Agent", "Accept"],
+      explain: "WebSocket には同一オリジンポリシーや CORS が働かないので、別のサイトのページからも接続できてしまいます。ブラウザが付ける `Origin` を確かめて、知らないページからの接続を断ります。",
+      ref: "websocket"
+    },
+    {
+      id: "rt13", level: "pro", q: "`new WebSocket()` で開いた接続が切れた。正しいのは?", kind: "text",
+      choices: [
+        "自動では再接続しないので、間隔をあけて自分でつなぎ直す",
+        "ブラウザが自動で、同じ接続をすぐに作り直してくれる",
+        "切れているあいだのメッセージは、サーバーが必ず送り直す",
+        "ページを再読み込みしないと、二度と接続できない"
+      ],
+      explain: "WebSocket API に再接続の機能はありません。close イベントで気づき、間隔を少しずつ広げながら(バックオフ)つなぎ直します。",
+      ref: "ws-api"
+    },
+    {
+      id: "rt14", level: "pro", q: "株価をサーバーから配信するだけで、ふつうの HTTP のまま、切れたら自動でつなぎ直したい。適した方式は?", kind: "code",
+      choices: ["Server-Sent Events", "WebSocket", "WebRTC", "ポーリング(1時間ごと)"],
+      explain: "一方向の配信なら SSE が簡単です。HTTP のままなので、プロキシなどもそのまま通り、再接続も自動です。",
+      ref: "realtime-choice"
+    },
+    {
+      id: "rt15", level: "pro", q: "WebSocket の接続が、しばらく何も送らないと途中で切られてしまう。よくある対策は?", kind: "text",
+      choices: [
+        "定期的に小さなメッセージを送って、接続を保つ",
+        "メッセージを大きくまとめて、たまに送るようにする",
+        "接続のたびに、ブラウザのキャッシュを消しておく",
+        "WebSocket をやめて、画像の読み込みで代わりにする"
+      ],
+      explain: "途中のプロキシやロードバランサーは、通信のない接続を一定時間で切ることがあります。ping・pong やハートビートで、接続が生きていることを示します。",
+      ref: "keepalive"
+    }
+  ]
+});
+
+
+// =====================================================================
+// Webサーバーとインフラ(id: server)
+// =====================================================================
+WEBD.register("server", {
+  cards: [
+    {
+      id: "web-app-server", name: "Webサーバーとアプリケーションサーバー", en: "Web server / Application server",
+      desc: "Webサーバー(nginx・Apache など)は、HTTP のリクエストを受け、ファイルを返したり、裏のサーバーへ渡したりします。アプリケーションサーバーは、プログラム(Node.js・Python・Java など)を動かして、データベースを使いながら応答を作ります。",
+      notes: ["1つのソフトが両方の役目をすることもあります。"]
+    },
+    {
+      id: "static-dynamic", name: "静的と動的", en: "Static / Dynamic content",
+      desc: "静的なコンテンツは、画像・CSS・作っておいた HTML のように、だれにでも同じファイルを返すものです。動的なコンテンツは、リクエストのたびにプログラムが作るもの(ログイン後のページ・検索結果など)です。",
+      notes: ["静的なファイルは CDN で配りやすく、速く安く届けられます。"]
+    },
+    {
+      id: "proxy", name: "リバースプロキシとフォワードプロキシ", en: "Reverse proxy / Forward proxy",
+      desc: "リバースプロキシは、サーバーの手前でリクエストを受け、裏のサーバーへ振り分けます。TLS の処理・キャッシュ・圧縮などもまとめて受け持ちます。フォワードプロキシは、利用者の手前に置き、外のサイトへの通信を代わりに出します(会社の中から外へ出るときなど)。",
+      code: [{ cap: "nginx の設定(一部)", lang: "text", text: "location /api/ {\n  proxy_pass http://app:3000;\n}" }]
+    },
+    {
+      id: "load-balancer", name: "ロードバランサー", en: "Load balancer",
+      desc: "リクエストを複数のサーバーに振り分けて、負荷を分けます。止まったサーバーには送らないよう、定期的にヘルスチェックをします。",
+      options: [
+        ["L4", "IPアドレスとポート番号(TCP・UDP)で振り分ける"],
+        ["L7", "URL のパスやヘッダーなど、HTTP の中身を見て振り分ける"],
+        ["ヘルスチェック", "各サーバーが正常に応答するか、定期的に確かめる"],
+        ["スティッキーセッション", "同じ利用者を、いつも同じサーバーへ送る"]
+      ],
+      notes: ["スティッキーセッションに頼ると、そのサーバーが止まったときに状態が失われます。状態は共有の保存先に置くほうが安全です。"]
+    },
+    {
+      id: "xff", name: "X-Forwarded-For", mono: true, en: "X-Forwarded-For header",
+      desc: "プロキシやロードバランサーを通ると、サーバーから見た送り主はプロキシになります。もとの利用者の IP アドレスを伝えるため、プロキシが付けるヘッダーです。通ったプロキシの順に、カンマで並びます。",
+      code: [{ lang: "http", text: "X-Forwarded-For: 203.0.113.7,\n  198.51.100.2" }],
+      notes: [
+        "利用者が自分で書いて送ることもできるので、自分の管理するプロキシが付けた部分だけを信用します。",
+        "標準化された同じ目的のヘッダーに `Forwarded`(RFC 7239)もあります。"
+      ]
+    },
+    {
+      id: "scaling", name: "スケールアップとスケールアウト", en: "Vertical / Horizontal scaling",
+      desc: "スケールアップは、1台のサーバーの CPU やメモリを増やすこと、スケールアウトは、サーバーの台数を増やして処理を分け合うことです。",
+      notes: ["スケールアウトしやすくするには、セッションなどの状態を各サーバーのメモリに持たず、共有の保存先(データベースやキャッシュのサーバー)に置きます。"]
+    },
+    {
+      id: "vm-container", name: "仮想マシンとコンテナ", en: "Virtual machine / Container",
+      desc: "仮想マシンは、1台の物理マシンの上で、OS ごと別のマシンのように動かします。コンテナは、ホストの OS のカーネルを共有し、アプリと必要なライブラリだけをまとめて動かすので、軽くすばやく起動します。",
+      code: [{ lang: "shell", text: "$ docker run -p 8080:80 nginx" }],
+      notes: ["コンテナの元になるファイルをイメージといいます。同じイメージから、どこでも同じ環境を作れます。"]
+    },
+    {
+      id: "serverless", name: "サーバーレス", en: "Serverless / FaaS",
+      desc: "リクエストなどのイベントのたびに関数を動かし、サーバーの管理や台数の調整を事業者に任せる方式です。使った分だけ料金がかかります。",
+      notes: [
+        "サーバーがないわけではなく、自分で管理しなくてよいという意味です。",
+        "しばらく使われていないと、最初の1回の起動に時間がかかることがあります(コールドスタート)。"
+      ]
+    },
+    {
+      id: "logs-env", name: "アクセスログと環境変数", en: "Access log / Environment variables",
+      desc: "アクセスログには、リクエストごとに時刻・送り主のIP・メソッドとパス・ステータスコード・大きさなどが1行ずつ記録されます。データベースのパスワードなどの設定は、コードに書かず環境変数などで渡します。",
+      code: [
+        { cap: "アクセスログ(1行)", lang: "text", text: "203.0.113.7 [01/Nov/2026:10:00:00]\n\"GET /a HTTP/1.1\" 200 512" },
+        { cap: "環境変数を読む(Node.js)", lang: "js", text: "const url = process.env.DB_URL;" }
+      ],
+      notes: ["秘密の値をリポジトリに入れると、履歴から消すのが大変です。ログにも出さないようにします。"]
+    },
+    {
+      id: "deploy", name: "デプロイの方式", en: "Deployment strategies",
+      desc: "新しい版を本番に出すときの方式です。止める時間をなくし、問題が出たらすぐ戻せるようにします。",
+      options: [
+        ["ブルーグリーン", "新旧2つの環境を用意し、準備ができたら通信をまとめて切りかえる"],
+        ["カナリア", "一部の利用者にだけ新しい版を出し、様子を見て広げる"],
+        ["ローリング", "サーバーを1台ずつ順番に新しい版へ入れかえる"]
+      ]
+    }
+  ],
+  questions: [
+    {
+      id: "sv01", level: "basic", q: "「静的なコンテンツ」の例として正しいのは?", kind: "text",
+      choices: [
+        "だれにでも同じものを返す、画像や CSS のファイル",
+        "ログインした人ごとに中身をそのつど作って返す、マイページ",
+        "入力した言葉で、そのたびに作る検索の結果ページ",
+        "いまの時刻と天気を、毎回計算して返すページ"
+      ],
+      explain: "静的なコンテンツは、作っておいたファイルをそのまま返します。人や時刻によって中身が変わるものは、動的なコンテンツです。",
+      ref: "static-dynamic"
+    },
+    {
+      id: "sv02", level: "basic", q: "「スケールアウト」の説明として正しいのは?", kind: "text",
+      choices: [
+        "サーバーの台数を増やして、処理を分け合う",
+        "1台のサーバーの CPU やメモリを増やす",
+        "サーバーの台数を減らして、費用を下げる",
+        "サーバーを別の国へ移して、速くする"
+      ],
+      explain: "台数を増やすのがスケールアウト、1台を強くするのがスケールアップです。",
+      ref: "scaling"
+    },
+    {
+      id: "sv03", level: "basic", q: "Webサーバーのアクセスログに、ふつう記録されるものは?", kind: "text",
+      choices: [
+        "時刻・IP・パス・ステータスコードなど",
+        "利用者が入力したパスワードの平文",
+        "ブラウザに表示された画面の画像",
+        "利用者の PC にあるファイルの一覧"
+      ],
+      explain: "アクセスログは、リクエストごとの記録です。どこへのアクセスがエラーになったかなどを調べるのに使います。",
+      ref: "logs-env"
+    },
+    {
+      id: "sv04", level: "std", q: "リバースプロキシの説明として正しいのは?", kind: "text",
+      choices: [
+        "サーバーの手前でリクエストを受け、裏のサーバーへ振り分ける",
+        "利用者のネットワークの手前に置き、外のサイトへの通信を代わりに出す",
+        "ドメイン名から IP アドレスを調べて、端末に教える",
+        "ブラウザの中で動き、ページのキャッシュを管理する"
+      ],
+      explain: "リバースプロキシはサーバー側の入口で、TLS やキャッシュも受け持ちます。利用者側に置くのはフォワードプロキシです。",
+      ref: "proxy"
+    },
+    {
+      id: "sv05", level: "std", q: "ロードバランサーの「ヘルスチェック」とは?", kind: "text",
+      choices: [
+        "各サーバーが正常に応答するかを、定期的に確かめる",
+        "サーバーの証明書が、期限切れでないかを確かめる",
+        "アクセスログを集めて、攻撃のあとを探す",
+        "データベースのバックアップを、毎日自動で取る"
+      ],
+      explain: "応答しないサーバーを振り分け先から外し、直ったら戻します。",
+      ref: "load-balancer"
+    },
+    {
+      id: "sv06", level: "std", q: "「スティッキーセッション」の説明として正しいのは?", kind: "text",
+      choices: [
+        "同じ利用者のリクエストを、いつも同じサーバーへ送る",
+        "セッションIDを、Cookie ではなく URL に付けて送る",
+        "すべてのサーバーの負荷を、ちょうど同じにそろえる",
+        "セッションが切れないよう、有効期限をなくしておく"
+      ],
+      explain: "セッションの状態を各サーバーのメモリに持つとき、同じサーバーへ送り続けるしくみです。サーバーが止まると状態が失われます。",
+      ref: "load-balancer"
+    },
+    {
+      id: "sv07", level: "std", q: "コンテナと仮想マシンの違いとして正しいのは?", kind: "text",
+      choices: [
+        "コンテナはホストの OS のカーネルを共有するので軽い",
+        "コンテナは中に OS を丸ごと入れるので、仮想マシンより重い",
+        "仮想マシンはカーネルを共有するので、コンテナより軽い",
+        "コンテナは物理サーバーの上でしか動かせない"
+      ],
+      explain: "仮想マシンはそれぞれが OS を持ちますが、コンテナはホストのカーネルを共有するので、起動が速く、たくさん並べられます。",
+      ref: "vm-container"
+    },
+    {
+      id: "sv08", level: "std", q: "「サーバーレス」の説明として正しいのは?", kind: "text",
+      choices: [
+        "イベントのたびに関数が動き、サーバーの管理は事業者に任せる",
+        "サーバーを1台も使わずに、利用者のブラウザだけで処理をすませる",
+        "自分でサーバーを買って、社内に置いて動かし続ける",
+        "1台の大きなサーバーで、すべての処理をまとめて行う"
+      ],
+      explain: "サーバーは事業者の側にあり、利用者は関数を置くだけです。台数の調整も自動で行われ、使った分だけ料金がかかります。",
+      ref: "serverless"
+    },
+    {
+      id: "sv09", level: "std", q: "データベースのパスワードの置き場所として適切なのは?", kind: "text",
+      choices: [
+        "環境変数や秘密の管理サービスに置き、コードには書かない",
+        "ソースコードに直接書き、リポジトリでみんなと共有する",
+        "HTML のコメントに書いて、忘れないようにしておく",
+        "起動のたびにログに出して、いつでも確かめられるようにする"
+      ],
+      explain: "コードやログに秘密を書くと、リポジトリやログを見られる人すべてに漏れます。環境ごとに違う設定も、環境変数で渡せば切りかえやすくなります。",
+      ref: "logs-env"
+    },
+    {
+      id: "sv10", level: "std", q: "`X-Forwarded-For` ヘッダーが伝えるのは?", kind: "text",
+      choices: [
+        "プロキシを通る前の、利用者の IP アドレス",
+        "ブラウザに次に開かせる、リダイレクト先の URL",
+        "キャッシュに保存されてから経った秒数",
+        "利用者が好む言語を、好きな順に並べた一覧"
+      ],
+      explain: "プロキシを通ると、サーバーから見た送り主はプロキシになるので、もとの IP アドレスをこのヘッダーで伝えます。2つ目は Location、3つ目は Age、4つ目は Accept-Language です。",
+      ref: "xff"
+    },
+    {
+      id: "sv11", level: "pro", q: "L7 のロードバランサーにはできて、L4 にはできないことは?", kind: "text",
+      choices: [
+        "URL のパスを見て、/api だけ別のサーバーへ送る",
+        "IP アドレスとポート番号で、振り分け先を決める",
+        "止まったサーバーを外し、ほかのサーバーへ送る",
+        "TCP の接続を、複数のサーバーに分けて流す"
+      ],
+      explain: "L7 は HTTP の中身(パス・ヘッダーなど)を見て振り分けられます。L4 は TCP・UDP の情報だけを見ます。ヘルスチェックはどちらにもあります。",
+      ref: "load-balancer"
+    },
+    {
+      id: "sv12", level: "pro", q: "`X-Forwarded-For` の値を使うときの注意として正しいのは?", kind: "text",
+      choices: [
+        "利用者も書いて送れるので、自分のプロキシが付けた部分だけを信じる",
+        "暗号化されているので、復号してから使わなければならない",
+        "HTTP/2 では送れないので、HTTP/1.1 のときだけ使える",
+        "値はいつも1つと決まっているので、そのまま信じてよい"
+      ],
+      explain: "利用者が偽の値を入れて送れば、そのあとにプロキシが追記するだけです。アクセス制限などに使うときは、自分の管理するプロキシが付けた位置の値を使います。",
+      ref: "xff"
+    },
+    {
+      id: "sv13", level: "pro", q: "「ブルーグリーンデプロイ」の説明として正しいのは?", kind: "text",
+      choices: [
+        "新旧2つの環境を用意し、準備ができたら通信をまとめて切りかえる",
+        "まず一部の利用者にだけ新しい版を出し、様子を見ながら少しずつ広げていく",
+        "サーバーを1台ずつ順番に、新しい版へ入れかえていく",
+        "夜中にサーバーをすべて止めて、まとめて入れかえる"
+      ],
+      explain: "切りかえが一瞬で、問題があれば古い環境へすぐ戻せます。2つ目はカナリア、3つ目はローリングです。",
+      ref: "deploy"
+    },
+    {
+      id: "sv14", level: "pro", q: "サーバーを何台にも増やしやすい(スケールアウトしやすい)アプリの作り方は?", kind: "text",
+      choices: [
+        "セッションなどの状態を各サーバーに持たず、共有の保存先に置く",
+        "利用者ごとの状態を、それぞれのサーバーのメモリの中に持たせる",
+        "すべての処理を、1台のサーバーで順番に行うようにする",
+        "サーバーごとに、内容の違う別のデータベースを持たせる"
+      ],
+      explain: "どのサーバーが受けても同じように処理できれば、台数を増やすだけで負荷を分けられます。状態はデータベースやキャッシュのサーバーで共有します。",
+      ref: "scaling"
+    },
+    {
+      id: "sv15", level: "std", q: "nginx などの Webサーバーと、アプリケーションサーバーの役割分担として正しいのは?", kind: "text",
+      choices: [
+        "Webサーバーが静的ファイルと中継を受け持ち、プログラムはアプリ側で動かす",
+        "Webサーバーがデータベースになり、アプリ側が画像のファイルを配る",
+        "アプリケーションサーバーがDNSを受け持ち、Webサーバーがメールを送る",
+        "どちらも同じ役目なので、かならず両方に同じプログラムを入れる"
+      ],
+      explain: "よくある構成では、Webサーバー(リバースプロキシ)が入口になり、静的ファイルを返し、残りをアプリケーションサーバーへ渡します。",
+      ref: "web-app-server"
+    }
+  ]
+});
+
+
+// =====================================================================
+// フロントエンドの構成(id: frontend)
+// =====================================================================
+WEBD.register("frontend", {
+  cards: [
+    {
+      id: "mpa-spa", name: "MPA と SPA", en: "Multi-page / Single-page application",
+      desc: "MPA は、画面を移るたびにサーバーから新しい HTML を受け取る作り方です。SPA は、最初に1つのページを読み込み、そのあとは JavaScript がデータだけを取ってきて画面を書きかえる作り方です。",
+      options: [
+        ["MPA", "作りが単純。ページごとに読み込み直す"],
+        ["SPA", "画面の切りかえがなめらか。最初の JavaScript が大きくなりやすい"]
+      ]
+    },
+    {
+      id: "rendering-modes", name: "CSR・SSR・SSG・ISR", en: "Rendering strategies",
+      desc: "HTML を、いつ・どこで作るかの違いです。",
+      options: [
+        ["CSR", "ほぼ空の HTML を返し、ブラウザの JavaScript が画面を作る"],
+        ["SSR", "リクエストのたびに、サーバーで HTML を作って返す"],
+        ["SSG", "ビルドのときに、すべてのページの HTML を作っておく"],
+        ["ISR", "作っておいた静的なページを、公開後も一定の時間ごとなどに作り直す"]
+      ],
+      notes: ["内容がめったに変わらないページは SSG、人ごとに違うページは SSR や CSR が向きます。1つのサイトの中で混ぜて使うこともよくあります。"]
+    },
+    {
+      id: "hydration", name: "ハイドレーション", en: "Hydration",
+      desc: "SSR や SSG で作った HTML に、ブラウザで JavaScript を結びつけて、ボタンなどが動くようにすることです。終わるまでは、見えていても押せないことがあります。",
+      notes: ["サーバーで作った HTML と、ブラウザで作る画面が食いちがうと、警告が出たり作り直しが起きたりします。"]
+    },
+    {
+      id: "history-api", name: "History API", en: "History API",
+      desc: "ページを読み込み直さずに、アドレスバーの URL と履歴を変えるための API です。SPA の画面の切りかえ(クライアント側のルーティング)に使います。",
+      code: [{ lang: "js", text: "history.pushState(\n  { id: 3 }, \"\", \"/items/3\");\nwindow.onpopstate = (e) => {\n  render(e.state);\n};" }],
+      options: [
+        ["pushState", "履歴に1つ足して、URL を変える(popstate は起きない)"],
+        ["replaceState", "いまの履歴の URL を置きかえる"],
+        ["popstate", "戻る・進むで履歴を移動したときに起きる"]
+      ],
+      notes: ["`/items/3` を直接開いたり再読み込みしたりすると、サーバーにそのパスのリクエストが届きます。どのパスでもアプリの HTML を返すよう、サーバーを設定します。"]
+    },
+    {
+      id: "es-modules", name: "ES Modules", en: "ECMAScript modules",
+      desc: "JavaScript を、ファイルごとの部品(モジュール)に分ける標準のしくみです。`export` で外に出し、`import` で読み込みます。ブラウザでは `<script type=\"module\">` で使います。",
+      code: [
+        { cap: "math.js", lang: "js", text: "export function add(a, b) {\n  return a + b;\n}" },
+        { cap: "main.js", lang: "js", text: "import { add } from \"./math.js\";\nadd(1, 2);" }
+      ],
+      notes: [
+        "モジュールの中は、自動で strict モードになります。トップレベルの変数は、ほかのスクリプトと共有されません。",
+        "ブラウザでファイル(file://)を直接開くと、モジュールは読み込めません。ローカルのサーバーを使います。"
+      ]
+    },
+    {
+      id: "bundler", name: "バンドラーとトランスパイル", en: "Bundler / Transpiler",
+      desc: "バンドラーは、たくさんのモジュールをまとめて、本番向けに小さくする(圧縮・使わないコードの削除)道具です。トランスパイルは、TypeScript や JSX などを、ブラウザで動く JavaScript に変換することです。",
+      notes: ["変換・圧縮したコードと元のコードを対応づけるソースマップを作ると、ブラウザの開発ツールで元のコードのまま調べられます。"]
+    },
+    {
+      id: "npm", name: "npm と依存関係", en: "npm packages / Dependencies",
+      desc: "npm は JavaScript のパッケージを入れる道具で、使うパッケージ(依存関係)を `package.json` に書きます。実際に入った正確な版は、ロックファイル(`package-lock.json`)に記録されます。",
+      code: [{ cap: "package.json(一部)", lang: "json", text: "{\n  \"dependencies\": {\n    \"date-fns\": \"^3.6.0\"\n  },\n  \"devDependencies\": {\n    \"vite\": \"^5.4.0\"\n  }\n}" }],
+      options: [
+        ["dependencies", "本番で動くときに要るもの"],
+        ["devDependencies", "ビルドやテストのときだけ要るもの"],
+        ["^3.6.0", "3.6.0 以上、4.0.0 未満を許す"],
+        ["~3.6.0", "3.6.0 以上、3.7.0 未満を許す"]
+      ],
+      notes: ["依存するパッケージが乗っ取られると、自分のアプリにも悪いコードが入ります(サプライチェーン攻撃)。入れるものは必要なものに絞ります。"]
+    },
+    {
+      id: "components", name: "コンポーネント指向", en: "Component-based UI",
+      desc: "画面を、見た目と動きをまとめた部品(コンポーネント)に分け、組み合わせて作る考え方です。同じ部品を何度も使え、部品ごとに直したり試したりできます。",
+      notes: ["親から子へはデータ(props など)を渡し、子から親へはイベントで知らせる形がよく使われます。"]
+    },
+    {
+      id: "state-management", name: "状態管理", en: "State management",
+      desc: "画面に出すデータ(状態)をどこに持ち、どう変えるかの決め方です。画面は状態から作り、状態を変えると画面がそれに合わせて描き直される、という考え方(宣言的 UI)が広く使われています。",
+      notes: ["同じデータを何か所にもコピーして持つと、食いちがいが起きます。もとになる場所を1つに決めます。"]
+    }
+  ],
+  questions: [
+    {
+      id: "fe01", level: "basic", q: "SPA(シングルページアプリケーション)の説明として正しいのは?", kind: "text",
+      choices: [
+        "最初に1つのページを読み込み、あとは JavaScript で画面を書きかえる",
+        "画面を移るたびに、サーバーから新しい HTML を丸ごと受け取る",
+        "JavaScript をまったく使わずに、HTML と CSS だけで作るサイト",
+        "ページを1枚だけにして、すべての内容を縦に並べたサイト"
+      ],
+      explain: "SPA は最初の読み込みのあと、データだけを取ってきて画面を作りかえます。2つ目は MPA の説明です。",
+      ref: "mpa-spa"
+    },
+    {
+      id: "fe02", level: "basic", q: "math.js の関数を読み込む。空欄に入るのは?", kind: "code",
+      code: [
+        { cap: "math.js", lang: "js", text: "export function add(a, b) {\n  return a + b;\n}" },
+        { cap: "main.js", lang: "js", text: "import { ____ } from \"./math.js\";" }
+      ],
+      choices: ["add", "math", "export", "function"],
+      explain: "名前つきで export したものは、`import { 名前 }` で読み込みます。",
+      ref: "es-modules"
+    },
+    {
+      id: "fe03", level: "std", q: "SSR(サーバーサイドレンダリング)の説明として正しいのは?", kind: "text",
+      choices: [
+        "リクエストのたびに、サーバーで HTML を作って返す",
+        "ビルドのときに、すべてのページの HTML を作っておく",
+        "ほぼ空の HTML を返し、ブラウザの JavaScript で画面を作る",
+        "画像を、サーバーで小さく作り直してから返す"
+      ],
+      explain: "SSR はリクエストごとに HTML を作ります。2つ目は SSG、3つ目は CSR です。",
+      ref: "rendering-modes"
+    },
+    {
+      id: "fe04", level: "std", q: "SSG(静的サイト生成)が最も向いているのは?", kind: "text",
+      choices: [
+        "内容があまり変わらない、ブログや説明書のサイト",
+        "利用者ごとに中身が違う、ログイン後のマイページ",
+        "1秒ごとに値が変わる、株価を表示する画面",
+        "入力のたびに結果が変わる、サイト内の検索結果"
+      ],
+      explain: "SSG はビルドのときに HTML を作るので、どの人にも同じで、めったに変わらない内容に向きます。作ったファイルは CDN で速く配れます。",
+      ref: "rendering-modes"
+    },
+    {
+      id: "fe05", level: "std", q: "このコードの働きは?", kind: "text",
+      code: [{ lang: "js", text: "history.pushState(\n  {}, \"\", \"/items/3\");" }],
+      choices: [
+        "ページを読み込み直さずに、URL と履歴を変える",
+        "/items/3 のページを、サーバーから読み込み直す",
+        "1つ前の履歴に戻り、popstate イベントを起こす",
+        "/items/3 へのリンクを、ページの中に追加する"
+      ],
+      explain: "pushState は URL を変えて履歴に足すだけで、リクエストは送りません。画面の書きかえは自分のコードで行います。",
+      ref: "history-api"
+    },
+    {
+      id: "fe06", level: "std", q: "package.json の `\"^1.4.2\"` が許す版の範囲は?", kind: "text",
+      choices: [
+        "1.4.2 以上、2.0.0 未満",
+        "1.4.2 だけ(ほかの版は許さない)",
+        "1.4.2 以上なら、2.x や 3.x も許す",
+        "1.4.2 以上、1.5.0 未満"
+      ],
+      explain: "`^` は、いちばん左の0でない数(ここでは 1)を変えない範囲を許します。1.5.0 未満に限るのは `~1.4.2` です。",
+      ref: "npm"
+    },
+    {
+      id: "fe07", level: "std", q: "「コンポーネント指向」の説明として正しいのは?", kind: "text",
+      choices: [
+        "見た目と動きをまとめた部品に分け、組み合わせて画面を作る",
+        "1つの大きなファイルに、すべての画面のコードをまとめて書く",
+        "CSS だけを使って、すべての画面の動きを作る",
+        "画面ごとに、別々のサーバーを用意して配る"
+      ],
+      explain: "部品に分けると、同じものを使い回したり、部品ごとに直したり試したりできます。",
+      ref: "components"
+    },
+    {
+      id: "fe08", level: "pro", q: "ロックファイル(package-lock.json など)の役割は?", kind: "text",
+      choices: [
+        "入った依存の正確な版を記録し、だれが入れても同じにする",
+        "パッケージを勝手に更新されないよう、パスワードをかける",
+        "使われていないパッケージを、見つけて自動で削除する",
+        "パッケージのソースコードを、暗号化して盗まれないようにする"
+      ],
+      explain: "package.json の `^` などは範囲を表すので、入れる時期で版が変わりえます。ロックファイルをリポジトリに入れておけば、全員と本番で同じ版になります。",
+      ref: "npm"
+    },
+    {
+      id: "fe09", level: "pro", q: "「ハイドレーション」の説明として正しいのは?", kind: "text",
+      choices: [
+        "サーバーで作った HTML に、ブラウザで処理を結びつけて動かす",
+        "HTML の中の画像を、画面に近づいてからあとで読み込んで差しこむ",
+        "古いブラウザでも動くように、新しい JavaScript を書きかえる",
+        "ページのデータを、次に開くときのために localStorage に保存する"
+      ],
+      explain: "SSR や SSG の HTML は表示は速いですが、そのままではボタンなどが動きません。ハイドレーションでイベント処理などを結びつけます。",
+      ref: "hydration"
+    },
+    {
+      id: "fe10", level: "pro", q: "SPA で `/items/3` を直接開くと、サーバーが 404 を返した。よくある対策は?", kind: "text",
+      choices: [
+        "どのパスでもアプリの HTML を返すよう、サーバーを設定する",
+        "History API をやめて、すべてのリンクを外部サイトにする",
+        "ブラウザのキャッシュを消してから開くよう、利用者に頼む",
+        "404 のページに、トップページへのリンクを置くだけにする"
+      ],
+      explain: "/items/3 という URL はブラウザの中だけで作ったもので、サーバーにはそのファイルがありません。どのパスにもアプリの HTML を返し、画面はブラウザで作らせます。",
+      ref: "history-api"
+    },
+    {
+      id: "fe11", level: "pro", q: "`popstate` イベントが起きるのは?", kind: "text",
+      choices: [
+        "戻る・進むで履歴を移動したとき",
+        "pushState で URL を変えたとき",
+        "ページを最初に読み込んだとき",
+        "リンクの href を書きかえたとき"
+      ],
+      explain: "popstate は、利用者の戻る・進む(または history.back など)で起きます。pushState を呼んだだけでは起きません。",
+      ref: "history-api"
+    },
+    {
+      id: "fe12", level: "pro", q: "ISR の説明として正しいのは?", kind: "text",
+      choices: [
+        "静的に作ったページを、公開後も一定の時間ごとなどに作り直す",
+        "リクエストのたびに、サーバーでかならず HTML を作り直す",
+        "サーバーでは何も作らず、ブラウザの中で画面をすべて作る",
+        "ビルドのときに一度だけ作り、それからは二度と作り直さない"
+      ],
+      explain: "ISR(Incremental Static Regeneration)は、SSG の速さを保ちつつ、全体をビルドし直さずにページを新しくします。",
+      ref: "rendering-modes"
+    },
+    {
+      id: "fe13", level: "std", q: "「トランスパイル」の説明として正しいのは?", kind: "text",
+      choices: [
+        "TypeScript などを、ブラウザで動く JS に変換する",
+        "たくさんのファイルを、1つの大きなファイルにまとめて小さくする",
+        "画像を、WebP などの小さい形式に変換してから保存する",
+        "コードの不具合を見つけて、自動で正しく書き直してくれる"
+      ],
+      explain: "TypeScript の型を取り除いたり、JSX をふつうの関数の呼び出しに直したりします。ファイルをまとめるのはバンドラーの役目です。",
+      ref: "bundler"
+    },
+    {
+      id: "fe14", level: "std", q: "package.json の `devDependencies` に入れるものは?", kind: "text",
+      choices: [
+        "ビルドやテストにだけ使い、本番の実行には要らないもの",
+        "本番で動くときに、かならず読み込まれて必要なもの",
+        "開発者のパソコンにだけ入れる、OS そのものの設定",
+        "ほかのパッケージが、自分の判断で勝手に入れたもの"
+      ],
+      explain: "バンドラーやテストの道具などは devDependencies、本番で動くライブラリは dependencies に入れます。",
+      ref: "npm"
+    },
+    {
+      id: "fe15", level: "pro", q: "宣言的 UI の考え方として正しいのは?", kind: "text",
+      choices: [
+        "画面は状態から作り、状態を変えると画面がそれに合わせて描き直される",
+        "状態を変えるたびに、自分で DOM の要素を1つずつ探して書きかえる",
+        "状態は画面の中の文字に持たせ、必要なときに読み取って使う",
+        "画面を変えないよう、状態は一度決めたら変えてはいけない"
+      ],
+      explain: "「この状態ならこう見える」を書いておき、状態だけを変えれば、画面の更新はしくみに任せられます。同じデータを何か所にも持たないことも大切です。",
+      ref: "state-management"
+    }
+  ]
+});
+
+
+// =====================================================================
+// ブラウザのAPIとPWA(id: browser-api)
+// =====================================================================
+WEBD.register("browser-api", {
+  cards: [
+    {
+      id: "service-worker", name: "Service Worker", en: "Service Worker API",
+      desc: "ページとネットワークのあいだに入って動くスクリプトです。ページを閉じても登録は残り、リクエストを横取りして、キャッシュから返すなどができます。DOM には触れません。",
+      code: [{ lang: "js", text: "if (\"serviceWorker\" in navigator) {\n  navigator.serviceWorker\n    .register(\"/sw.js\");\n}" }],
+      options: [
+        ["スコープ", "制御するページの範囲。既定は sw.js の置き場所より下"],
+        ["HTTPS 必須", "開発用の localhost は例外"],
+        ["install → activate", "新しい版は、古い版のページがなくなるまで待機する"]
+      ]
+    },
+    {
+      id: "sw-cache", name: "Cache Storage とオフライン", en: "Cache API / Offline strategies",
+      desc: "Service Worker は、`fetch` イベントでリクエストを受け、Cache Storage に保存した応答を返せます。これでオフラインでもページを開けます。",
+      code: [{ cap: "sw.js(キャッシュ優先)", lang: "js", text: "self.onfetch = (e) => {\n  const q = e.request;\n  e.respondWith(caches.match(q)\n    .then(r => r || fetch(q)));\n};" }],
+      options: [
+        ["キャッシュ優先", "あればキャッシュ、なければネットワーク"],
+        ["ネットワーク優先", "まずネットワーク、失敗したらキャッシュ"],
+        ["stale-while-revalidate", "すぐキャッシュを返し、裏で取り直して更新する"]
+      ]
+    },
+    {
+      id: "manifest", name: "Web App Manifest", en: "Web App Manifest",
+      desc: "アプリとしてインストールされたときの名前・アイコン・開くURL・表示のしかたなどを書く JSON のファイルです。HTML から `<link rel=\"manifest\">` で読み込みます。",
+      code: [{ cap: "manifest.json", lang: "json", text: "{\n  \"name\": \"Web道場\",\n  \"short_name\": \"道場\",\n  \"start_url\": \"/\",\n  \"display\": \"standalone\",\n  \"icons\": [{\n    \"src\": \"/icon-512.png\",\n    \"sizes\": \"512x512\",\n    \"type\": \"image/png\"\n  }]\n}" }],
+      options: [
+        ["standalone", "アドレスバーなどを出さず、アプリの窓のように開く"],
+        ["browser", "ふつうのブラウザのタブで開く"],
+        ["fullscreen", "画面全体を使う"]
+      ]
+    },
+    {
+      id: "pwa", name: "PWA", en: "Progressive Web App",
+      desc: "Web の技術で作り、インストールしてアプリのように使えるようにしたものです。マニフェストでホーム画面のアイコンと開き方を決め、Service Worker でオフラインや速い表示を実現します。",
+      notes: ["インストールできる条件や見え方は、ブラウザや OS によって違います。HTTPS で配信することは共通の前提です。"]
+    },
+    {
+      id: "web-worker", name: "Web Worker", en: "Web Workers API",
+      desc: "重い計算を、画面とは別のスレッドで動かすしくみです。メインスレッドが止まらないので、操作への反応が悪くなりません。Worker の中からは DOM に触れず、`postMessage` でデータをやりとりします。",
+      code: [
+        { cap: "main.js", lang: "js", text: "const w = new Worker(\"calc.js\");\nw.postMessage(42);\nw.onmessage = (e) => log(e.data);" },
+        { cap: "calc.js", lang: "js", text: "onmessage = (e) => {\n  postMessage(e.data * 2);\n};" }
+      ],
+      notes: ["渡したデータは複製されて届きます(構造化複製)。関数や DOM の要素は渡せません。"]
+    },
+    {
+      id: "intersection-observer", name: "Intersection Observer", mono: true, en: "Intersection Observer API",
+      desc: "要素が画面(または指定した親要素)に入ったか・出たかを知らせてくれる API です。画像の遅延読み込みや、下までスクロールしたら続きを読み込む処理に使います。",
+      code: [{ lang: "js", text: "const io = new IntersectionObserver(\n  (list) => list.forEach((en) => {\n    if (en.isIntersecting) load(en);\n  }));\nio.observe(item);" }],
+      notes: ["scroll イベントで毎回位置を計算するより、ブラウザに任せるほうが軽く済みます。"]
+    },
+    {
+      id: "permissions", name: "権限の許可", en: "Permission prompts",
+      desc: "通知・位置情報・カメラなど、利用者の情報や端末に関わる機能は、使う前にブラウザが利用者に許可を求めます。拒否されたら、その機能なしでも使えるようにしておきます。",
+      code: [{ lang: "js", text: "btn.onclick = async () => {\n  const p = await Notification\n    .requestPermission();\n  // \"granted\" / \"denied\" /\n  // \"default\"(閉じただけ)\n};" }],
+      notes: ["ページを開いた直後にいきなり求めると、拒否されやすく、ブラウザが表示を控えめにすることもあります。理由がわかる操作のあとに求めます。"]
+    },
+    {
+      id: "clipboard", name: "Clipboard API", en: "Async Clipboard API",
+      desc: "`navigator.clipboard` で、クリップボードに文字を書いたり読んだりします。結果は Promise で返り、セキュアコンテキストでしか使えません。",
+      code: [{ lang: "js", text: "await navigator.clipboard\n  .writeText(\"コピーする文字\");" }],
+      notes: ["読み取り(`readText`)は利用者の情報に関わるので、許可が必要です。"]
+    },
+    {
+      id: "secure-context", name: "セキュアコンテキスト", en: "Secure contexts",
+      desc: "HTTPS で配信されたページなど、安全な通信で読み込まれた環境です。Service Worker・位置情報・Clipboard API・パスキー(WebAuthn)などの強い機能は、セキュアコンテキストでしか使えません。`window.isSecureContext` で確かめられます。",
+      options: [
+        ["https://", "セキュア"],
+        ["http://localhost・http://127.0.0.1", "開発のために、セキュアとみなされる"],
+        ["http://(それ以外)", "セキュアではない。LAN の中の IP アドレスでも同じ"]
+      ]
+    }
+  ],
+  questions: [
+    {
+      id: "ba01", level: "basic", q: "重い計算を画面とは別のスレッドで動かし、DOM には触れない。このしくみは?", kind: "code",
+      choices: ["Web Worker", "Service Worker", "Intersection Observer", "EventSource"],
+      explain: "Web Worker は計算のための別スレッドです。Service Worker もページとは別に動きますが、ネットワークとキャッシュの仲立ちが役目です。",
+      ref: "web-worker"
+    },
+    {
+      id: "ba02", level: "basic", q: "インストールしたときのアプリの名前やアイコンを書くファイルは?", kind: "code",
+      choices: ["Web App Manifest", "robots.txt", "sitemap.xml", "package.json"],
+      explain: "Web App Manifest(manifest.json など)に名前・アイコン・開き方を書き、`<link rel=\"manifest\">` で読み込みます。",
+      ref: "manifest"
+    },
+    {
+      id: "ba03", level: "std", q: "Service Worker を登録できるページは?", kind: "text",
+      choices: [
+        "HTTPS のページ(localhost は例外)",
+        "HTTP のページだけ(HTTPS では動かない)",
+        "ブラウザの拡張機能として入れたページの中だけ",
+        "利用者がログインしたあとに開いたページだけ"
+      ],
+      explain: "Service Worker はリクエストを横取りできる強い機能なので、改ざんされない HTTPS が必要です。開発しやすいよう、localhost は例外です。",
+      ref: "service-worker"
+    },
+    {
+      id: "ba04", level: "std", q: "Web Worker の中でできないことは?", kind: "text",
+      choices: [
+        "document を使って DOM を書きかえる",
+        "fetch でサーバーからデータを取ってくる",
+        "postMessage で、結果をページに返す",
+        "時間のかかるループの計算をする"
+      ],
+      explain: "Worker には document がなく、DOM に触れません。画面を変えたいときは、結果を postMessage でページに送り、ページ側で書きかえます。",
+      ref: "web-worker"
+    },
+    {
+      id: "ba05", level: "std", q: "Intersection Observer の主な用途は?", kind: "text",
+      choices: [
+        "要素が画面に入ったことを知り、画像などを読み込む",
+        "要素の大きさが変わったことを知り、配置を計算し直す",
+        "DOM に子要素が足されたことを知り、記録する",
+        "利用者がページを閉じることを知り、保存する"
+      ],
+      explain: "画面に入ったかを知らせる API です。大きさの変化は ResizeObserver、DOM の変化は MutationObserver が受け持ちます。",
+      ref: "intersection-observer"
+    },
+    {
+      id: "ba06", level: "std", q: "Worker にデータを渡す。空欄に入るのは?", kind: "code",
+      code: [{ lang: "js", text: "const w = new Worker(\"calc.js\");\nw.____(42);\nw.onmessage = (e) => log(e.data);" }],
+      choices: ["postMessage", "send", "emit", "dispatchEvent"],
+      explain: "ページと Worker は `postMessage` で送り、`message` イベントで受け取ります。データは複製されて届きます。",
+      ref: "web-worker"
+    },
+    {
+      id: "ba07", level: "std", q: "通知の許可を求めるタイミングとして適切なのは?", kind: "text",
+      choices: [
+        "「通知を受け取る」を押したなど、理由がわかる操作のあと",
+        "ページを開いた直後、まだ何も操作していないうちに",
+        "許可は求めずに、ページを開くなりいきなり通知を送る",
+        "拒否されたあと、許可されるまで何度もくり返して"
+      ],
+      explain: "理由がわからないまま求められると、多くの人は拒否します。一度拒否されると、ページからはもう一度求められません。",
+      ref: "permissions"
+    },
+    {
+      id: "ba08", level: "pro", q: "`navigator.clipboard.writeText()` について正しいのは?", kind: "text",
+      choices: [
+        "Promise を返し、セキュアコンテキストでだけ使える",
+        "コピーした文字を、サーバーへ自動で送り届ける",
+        "HTTP のページでも、許可なしで自由に読み書きできる",
+        "同期的に動き、すぐに true か false を返す"
+      ],
+      explain: "Clipboard API は非同期で、`await` して使います。HTTPS などのセキュアコンテキストでしか使えません。",
+      ref: "clipboard"
+    },
+    {
+      id: "ba09", level: "pro", q: "`/app/sw.js` を、scope を指定せずに登録した。この Service Worker が制御するのは?", kind: "text",
+      choices: [
+        "/app/ より下のページ",
+        "サイトのすべてのページ",
+        "sw.js というファイルだけ",
+        "/app/ より上のページ"
+      ],
+      explain: "既定のスコープは、スクリプトが置かれた場所(/app/)より下です。サイト全体を制御したいときは、sw.js をルートに置くのが一般的です。",
+      ref: "service-worker"
+    },
+    {
+      id: "ba10", level: "pro", q: "この Service Worker の動きは?", kind: "text",
+      code: [{ cap: "sw.js", lang: "js", text: "self.onfetch = (e) => {\n  const q = e.request;\n  e.respondWith(caches.match(q)\n    .then(r => r || fetch(q)));\n};" }],
+      choices: [
+        "キャッシュにあればそれを返し、なければネットワークから取る",
+        "いつもネットワークから取り、失敗したらキャッシュを返す",
+        "ネットワークから取ったものを、毎回すべてキャッシュに保存する",
+        "キャッシュをすべて消してから、ネットワークから取り直す"
+      ],
+      explain: "`caches.match` で見つかればそれを返し(r)、なければ `fetch` します。キャッシュ優先の戦略です。このコードは、取ってきたものを保存はしません。",
+      ref: "sw-cache"
+    },
+    {
+      id: "ba11", level: "pro", q: "sw.js を書きかえて公開した。新しい版の動きとして正しいのは?", kind: "text",
+      choices: [
+        "既定では待機し、古い版のページがすべて閉じられてから有効になる",
+        "書きかえた瞬間、いま開いているページもすぐ新しい版に切りかわる",
+        "古い版が残り続け、ブラウザを入れ直すまで新しい版は使われない",
+        "新しい版と古い版が、同じページの中で同時に動き続ける"
+      ],
+      explain: "新しい版はインストールされたあと、古い版が制御するページがなくなるまで待ちます。すぐに切りかえたいときは `skipWaiting()` などを使います。",
+      ref: "service-worker"
+    },
+    {
+      id: "ba12", level: "pro", q: "セキュアコンテキストにならないのは?", kind: "code",
+      choices: ["http://192.168.0.5:8080", "https://example.com", "http://localhost:3000", "http://127.0.0.1:8080"],
+      explain: "HTTPS と、開発用の localhost・127.0.0.1 はセキュアとみなされます。LAN の中でも、ほかの IP アドレスへの HTTP はセキュアではありません。",
+      ref: "secure-context"
+    },
+    {
+      id: "ba13", level: "pro", q: "マニフェストの `\"display\": \"standalone\"` の意味は?", kind: "text",
+      choices: [
+        "アドレスバーなどを出さず、アプリの窓のように開く",
+        "ふつうのブラウザのタブで、ページとして開く",
+        "画面全体を使い、時計などの表示まで隠す",
+        "ホーム画面には置かず、通知だけを出す"
+      ],
+      explain: "standalone は、独立したアプリのような窓で開きます。ふつうのタブは browser、画面全体は fullscreen です。",
+      ref: "manifest"
+    },
+    {
+      id: "ba14", level: "pro", q: "Service Worker の「stale-while-revalidate」の説明は?", kind: "text",
+      choices: [
+        "すぐキャッシュを返し、裏でネットワークから取り直して更新する",
+        "まずネットワークを試してみて、失敗したときだけキャッシュを返す",
+        "キャッシュは使わず、いつもネットワークから取ってくる",
+        "キャッシュの期限が切れるまで、ネットワークを一切使わない"
+      ],
+      explain: "表示は速く、次に開いたときには新しい内容になります。少し古い内容を見せてもよいものに向きます。",
+      ref: "sw-cache"
+    },
+    {
+      id: "ba15", level: "std", q: "PWA の説明として正しいのは?", kind: "text",
+      choices: [
+        "Web の技術で作り、アプリのように入れて使えるもの",
+        "スマホの OS ごとに、専用の言語で書いたアプリのこと",
+        "サーバーの中だけで動き、画面を持たないプログラム",
+        "ブラウザの拡張機能として配る、小さな追加の道具"
+      ],
+      explain: "PWA は、マニフェストと Service Worker などを使って、Web のページをアプリのように使えるようにしたものです。",
+      ref: "pwa"
     }
   ]
 });
