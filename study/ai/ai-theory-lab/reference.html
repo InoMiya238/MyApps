@@ -289,6 +289,143 @@
   .fig .box-hi { fill: var(--plot-region); stroke: var(--plot-model); stroke-width: 1.8; }
   .fig .panel-frame { fill: none; stroke: var(--plot-grid); stroke-width: 1.2; }
 
+  /* ---------- この帳の読み方・記号の読み方一覧 ---------- */
+  .toc-pre {
+    margin: 0 0 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    font-size: 14px;
+  }
+  .guide { display: flex; flex-direction: column; gap: 12px; scroll-margin-top: 16px; min-width: 0; }
+  .guide-head { padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .guide-head h2 { margin: 0; font-family: var(--font-display); font-size: 22px; font-weight: 600; }
+  .sym-list { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .unit-card .sym-list { padding: 0; }
+  .unit-card .sym-list li + li { margin-top: 0; }
+  .sym-row {
+    display: grid;
+    grid-template-columns: 4.6em 9.5em 1fr;
+    gap: 2px 12px;
+    align-items: baseline;
+    padding: 7px 10px;
+    border-radius: 8px;
+    background: var(--surface-2);
+    font-size: 13.5px;
+    line-height: 1.65;
+  }
+  .sym-row .sym { font-size: 17px; font-weight: 600; color: var(--ink); text-align: center; white-space: nowrap; }
+  .sym-row .sym-read { font-weight: 700; color: var(--accent); min-width: 0; overflow-wrap: anywhere; }
+  .sym-row .sym-mean { color: var(--ink-muted); min-width: 0; overflow-wrap: anywhere; }
+  .sym-row .sym-mean a, .unit-card a:not(.go-link):not(.to-top) { color: var(--accent); font-weight: 600; }
+
+  /* ---------- 数学メモ ---------- */
+  .math-note {
+    padding: 14px 16px;
+    border: 1.5px dashed var(--accent);
+    border-radius: 12px;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 1.75;
+  }
+  .math-note > * { margin: 0; min-width: 0; }
+  .math-note-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    color: var(--accent);
+  }
+  .math-note-label b { color: var(--ink); letter-spacing: 0; font-size: 14px; margin-left: 6px; }
+  .math-note .say { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+  .math-note .say li { margin: 0; }
+  .say li {
+    display: grid;
+    grid-template-columns: minmax(7em, max-content) 1fr;
+    gap: 2px 12px;
+    align-items: baseline;
+    padding: 6px 10px;
+    background: var(--surface-2);
+    border-radius: 8px;
+  }
+  .say .f { font-weight: 600; color: var(--ink); min-width: 0; overflow-wrap: anywhere; }
+  .say .w { color: var(--ink-muted); min-width: 0; overflow-wrap: anywhere; }
+  .math-note .formula { font-size: 14.5px; }
+  .math-note.in-list { margin: 10px 0 4px; }
+  .big-op { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.05; margin-right: 2px; }
+  .big-op .op { font-size: 1.5em; line-height: 1; }
+  .big-op .op-lim { font-size: 0.7em; }
+
+  /* 数学の準備の中の小見出しと、その一覧 */
+  .unit-card h3[id] { scroll-margin-top: 16px; }
+  .mini-toc { display: flex; flex-wrap: wrap; gap: 6px 8px; padding: 0 !important; list-style: none; font-size: 13px; }
+  .unit-card .mini-toc li + li { margin-top: 0; }
+  .mini-toc a {
+    display: inline-block;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--ink) !important;
+    text-decoration: none;
+    line-height: 1.5;
+  }
+  .mini-toc a:hover { border-color: var(--accent); color: var(--accent) !important; }
+
+  /* 因果マスクの表 */
+  .q-table td.ok { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
+  .q-table td.ng { color: var(--ink-faint); }
+  .fig .s-arrow { stroke: var(--plot-axis); stroke-width: 1.5; fill: none; }
+  .fig .s-vec-a { stroke: var(--plot-point); stroke-width: 2.5; fill: none; }
+  .fig .s-vec-b { stroke: var(--plot-model); stroke-width: 2.5; fill: none; }
+  .fig .f-vec-a { fill: var(--plot-point); }
+  .fig .f-vec-b { fill: var(--plot-model); }
+  .fig .f-axis { fill: var(--plot-axis); }
+  .fig text.t-a { fill: var(--plot-point); font-weight: 700; }
+  .fig .f-shade { fill: var(--plot-train); fill-opacity: var(--plot-fill-alpha); stroke: none; }
+  .fig .f-dots circle { fill: var(--plot-axis); }
+  .fig .s-curve2 { stroke: var(--plot-model); stroke-width: 2.5; fill: none; stroke-linejoin: round; }
+
+  /* ---------- 右下の「目次へ」ボタン(目次を過ぎたら出す) ---------- */
+  .float-toc {
+    position: fixed;
+    right: 12px;
+    bottom: 12px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: calc(100vw - 24px);
+    padding: 7px 12px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: 0 2px 8px var(--shadow);
+    color: var(--accent);
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.3;
+    text-decoration: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity .2s, transform .2s, visibility .2s;
+  }
+  .float-toc.show { opacity: 1; visibility: visible; transform: none; }
+  .float-toc:hover { border-color: var(--accent); }
+  .float-toc:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .float-toc .ft-no { font-family: var(--font-mono); color: var(--ink-muted); }
+  .float-toc .ft-name { display: none; color: var(--ink); font-weight: 600; max-width: 13em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .float-toc .ft-no:empty, .float-toc .ft-name:empty { display: none; }
+  /* 本文の横に余白がある広い画面だけ、単元名も出す */
+  @media (min-width: 1180px) { .float-toc .ft-name:not(:empty) { display: inline; } }
+  @media (prefers-reduced-motion: reduce) { .float-toc { transition: none; } }
+  .page-foot { margin-bottom: 40px; }
+
   /* ---------- フッター ---------- */
   .page-foot {
     text-align: center;
@@ -320,6 +457,11 @@
     .cm th { padding: 3px 4px; }
     .cm td { min-width: 4.6em; padding: 6px 6px; }
     .to-top { margin-left: 0; }
+    .math-note { padding: 12px 12px; }
+    .say li { grid-template-columns: 1fr; }
+    .sym-row { grid-template-columns: 3.6em 1fr; }
+    .sym-row .sym { grid-row: span 2; align-self: center; }
+    .guide-head h2 { font-size: 20px; }
   }
 </style>
 </head>
@@ -333,7 +475,7 @@
   <header class="hero">
     <p class="eyebrow">AI THEORY LAB · 理論帳</p>
     <h1>AI理論帳</h1>
-    <p class="tagline" id="tagline">道場の8単元のしくみを、式・図・小さな計算例で解説します。読んだら、実験室で動かし、道場の問題で確かめましょう。</p>
+    <p class="tagline" id="tagline">道場の11単元のしくみを、式・図・小さな計算例で解説します。式は「数学メモ」で1行ずつ言葉にしています。読んだら、実験室で動かし、道場の問題で確かめましょう。</p>
     <nav class="site-nav" aria-label="AI理論ラボのページ">
       <a href="index.html">道場</a>
       <a href="lab.html">実験室</a>
@@ -343,10 +485,413 @@
 
   <nav class="toc" id="toc" aria-labelledby="tocTitle">
     <h2 class="toc-title" id="tocTitle">目次</h2>
+    <p class="toc-pre"><a href="#how-to-read">はじめに: この帳の読み方</a><a href="#symbols">記号の読み方一覧</a></p>
     <div class="toc-grid" id="tocBody"></div>
   </nav>
 
+  <!-- ==================== この帳の読み方 ==================== -->
+  <section class="guide" id="how-to-read" aria-labelledby="how-to-read-title">
+    <header class="guide-head"><h2 id="how-to-read-title">この帳の読み方</h2></header>
+    <div class="card unit-card">
+      <div class="point"><span class="point-label">ひとことで</span><p>式は「記号を言葉に置きかえる」「小さな数を入れてみる」の2つで読めます。数学に自信がなければ、01「数学の準備」から読み、ほかの単元で式につまずいたら、そこへ戻ってきてください。</p></div>
+
+      <h3>どこから読むか</h3>
+      <ul>
+        <li><b>はじめて学ぶ人</b>: 01「数学の準備」→ 02「機械学習の基本」→ … と番号順に読むと、前の単元の道具が次で使われる順になっています。</li>
+        <li><b>LLM(大規模言語モデル)を知りたい人</b>: 09「生成AIのしくみ」→ 10「LLMのしくみ」→ 11「LLMの学習と活用」。わからない言葉や式が出たら、リンクから「数学の準備」や前の単元へ戻ります。</li>
+        <li><b>数学は大丈夫な人</b>: 「数学の準備」は飛ばしてかまいません。</li>
+      </ul>
+
+      <h3>各単元の並び</h3>
+      <ol>
+        <li><span class="rule">ひとことで</span>: その単元の要点を2〜3文で。</li>
+        <li><span class="rule">しくみ</span>: 考え方・式・図。</li>
+        <li><span class="rule">数学メモ</span>(点線の枠): 式を1行ずつ言葉にし、小さな数値例で確かめます。式が苦手な人は、ここだけ先に読んでもかまいません。</li>
+        <li><span class="rule">例で確かめる</span>: 手で計算できる大きさの例。紙とペンで追うと身につきます。</li>
+        <li><span class="rule">よくある誤解・注意</span>と<span class="rule">用語ミニ辞典</span>。</li>
+        <li>最後に、実験室(実際に動かす)と道場(問題で確かめる)へのリンク。</li>
+      </ol>
+
+      <h3>式を読むコツ</h3>
+      <ul>
+        <li><b>斜体の文字は「入れものの名前」。</b><span class="var">x</span> や <span class="var">w</span> のような斜体は、あとで数が入る変数です。名前に意味はなく、<span class="var">w</span> は weight(重み)、<span class="var">b</span> は bias(バイアス)の頭文字、くらいの目印です。</li>
+        <li><b>右下の小さな数字は「何番目か」。</b><span class="var">x</span><sub>1</sub>、<span class="var">x</span><sub>2</sub> は「1番目の <span class="var">x</span>」「2番目の <span class="var">x</span>」。かけ算ではありません。右上の小さな数字 <span class="var">x</span><sup>2</sup> は「2乗」です。</li>
+        <li><b>文字が並んでいたら、かけ算。</b><span class="var">w</span><span class="var">x</span> は <span class="var">w</span> × <span class="var">x</span>、2<span class="var">w</span> は 2 × <span class="var">w</span> です。</li>
+        <li><b>まず小さな数を入れる。</b>式の意味がわからないときは、<span class="var">x</span> = 1、2、3 などを入れて計算してみると、何をしている式かが見えてきます。</li>
+        <li><b>「≒」は四捨五入した値。</b>この帳の数値例は、四捨五入した値に「≒」をつけています。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ==================== 記号の読み方一覧 ==================== -->
+  <section class="guide" id="symbols" aria-labelledby="symbols-title">
+    <header class="guide-head"><h2 id="symbols-title">記号の読み方一覧</h2></header>
+    <div class="card unit-card">
+      <p>この帳と道場に出てくる記号です。読み方がわかるだけで、式はずっと読みやすくなります。くわしい説明は、リンク先の「数学の準備」にあります。</p>
+      <ul class="sym-list">
+        <li class="sym-row"><span class="sym">Σ</span><span class="sym-read">シグマ</span><span class="sym-mean">「全部足す」。Σ<span class="var">x</span><sub><span class="var">i</span></sub> は <span class="var">x</span><sub>1</sub> + <span class="var">x</span><sub>2</sub> + … の合計。<a href="#mb-sigma">Σ と平均</a></span></li>
+        <li class="sym-row"><span class="sym"><span class="var bar">x</span></span><span class="sym-read">エックスバー</span><span class="sym-mean"><span class="var">x</span> の平均。上の横線が「平均」のしるし。</span></li>
+        <li class="sym-row"><span class="sym"><span class="var">ŷ</span></span><span class="sym-read">ワイハット</span><span class="sym-mean">モデルの予測値。帽子(ハット)のない <span class="var">y</span> は実際の値(正解)。</span></li>
+        <li class="sym-row"><span class="sym"><span class="var">x</span><sub><span class="var">i</span></sub></span><span class="sym-read">エックスアイ</span><span class="sym-mean"><span class="var">i</span> 番目の <span class="var">x</span>。<span class="var">i</span> は 1、2、3 … と動く番号。</span></li>
+        <li class="sym-row"><span class="sym">|<span class="var">x</span>|</span><span class="sym-read">絶対値</span><span class="sym-mean">符号をとった大きさ。|−3| = 3。</span></li>
+        <li class="sym-row"><span class="sym">√</span><span class="sym-read">ルート(平方根)</span><span class="sym-mean">2乗するとその数になる正の数。√9 = 3。</span></li>
+        <li class="sym-row"><span class="sym">‖<span class="var">v</span>‖</span><span class="sym-read">ノルム</span><span class="sym-mean">ベクトル <span class="var">v</span> の長さ。‖(3, 4)‖ = 5。<a href="#mb-vector">ベクトル</a></span></li>
+        <li class="sym-row"><span class="sym"><span class="var">v</span>·<span class="var">w</span></span><span class="sym-read">内積(ドット)</span><span class="sym-mean">同じ位置どうしをかけて足した数。(1, 2)·(3, 4) = 3 + 8 = 11。<a href="#mb-vector">ベクトル</a></span></li>
+        <li class="sym-row"><span class="sym"><span class="var">W</span><sup>T</sup></span><span class="sym-read">転置(ティー)</span><span class="sym-mean">行列の行と列を入れかえたもの。2×3 の行列なら 3×2 になる。<a href="#mb-matrix">行列</a></span></li>
+        <li class="sym-row"><span class="sym"><span class="var">f</span>′(<span class="var">x</span>)</span><span class="sym-read">エフプライム</span><span class="sym-mean"><span class="var">f</span> の微分(その点での傾き)。d<span class="var">y</span>/d<span class="var">x</span>(ディーワイ・ディーエックス)とも書く。<a href="#mb-derivative">微分</a></span></li>
+        <li class="sym-row"><span class="sym">∂</span><span class="sym-read">ラウンドディー(デル)</span><span class="sym-mean">偏微分。∂<span class="var">L</span>/∂<span class="var">w</span> は「ほかは止めて、<span class="var">w</span> だけ動かしたときの <span class="var">L</span> の傾き」。この帳では「<span class="var">L</span> の <span class="var">w</span> による微分」と言葉で書くことが多い。<a href="#mb-gradient">偏微分と勾配</a></span></li>
+        <li class="sym-row"><span class="sym">∇</span><span class="sym-read">ナブラ</span><span class="sym-mean">勾配。偏微分を全部並べたベクトル。∇<span class="var">L</span> = (∂<span class="var">L</span>/∂<span class="var">w</span><sub>1</sub>, ∂<span class="var">L</span>/∂<span class="var">w</span><sub>2</sub>, …)。</span></li>
+        <li class="sym-row"><span class="sym"><span class="var">e</span></span><span class="sym-read">イー(ネイピア数)</span><span class="sym-mean">≒ 2.718 という決まった数。<span class="var">e</span><sup><span class="var">x</span></sup> は exp(<span class="var">x</span>)(エクスポネンシャル)とも書く。<a href="#mb-exp-log">指数と対数</a></span></li>
+        <li class="sym-row"><span class="sym">ln</span><span class="sym-read">エルエヌ(自然対数)</span><span class="sym-mean">「<span class="var">e</span> を何乗するとその数になるか」。ln <span class="var">e</span> = 1、ln 1 = 0。log と書く本もある。<a href="#mb-exp-log">指数と対数</a></span></li>
+        <li class="sym-row"><span class="sym">σ</span><span class="sym-read">シグマ(小文字)</span><span class="sym-mean">2つの意味がある。σ(<span class="var">z</span>) とかっこがつけばシグモイド関数、分布の話なら標準偏差。<a href="#mb-stats">標準偏差</a></span></li>
+        <li class="sym-row"><span class="sym">μ</span><span class="sym-read">ミュー</span><span class="sym-mean">分布の平均(期待値)。<a href="#mb-normal">正規分布</a></span></li>
+        <li class="sym-row"><span class="sym"><span class="var">η</span></span><span class="sym-read">イータ</span><span class="sym-mean">学習率。勾配降下法の1歩の大きさ。</span></li>
+        <li class="sym-row"><span class="sym"><span class="var">λ</span></span><span class="sym-read">ラムダ</span><span class="sym-mean">正則化の強さ。大きいほど重みを小さくおさえる。</span></li>
+        <li class="sym-row"><span class="sym"><span class="var">θ</span></span><span class="sym-read">シータ</span><span class="sym-mean">モデルのパラメータ(重みやバイアス)をまとめて呼ぶ名前。</span></li>
+        <li class="sym-row"><span class="sym"><span class="var">ε</span></span><span class="sym-read">イプシロン</span><span class="sym-mean">とても小さい数(0 で割らないため)、または拡散モデルなどで足すノイズ。</span></li>
+        <li class="sym-row"><span class="sym"><span class="var">P</span>(<span class="var">A</span> | <span class="var">B</span>)</span><span class="sym-read">ピー・エー・ギブン・ビー</span><span class="sym-mean">条件付き確率。「<span class="var">B</span> が起きたとわかっているときの、<span class="var">A</span> の確率」。<a href="#mb-prob">確率</a></span></li>
+        <li class="sym-row"><span class="sym">E[<span class="var">X</span>]</span><span class="sym-read">イー・エックス(期待値)</span><span class="sym-mean">「値 × 確率」の合計。平均的に出る値。<a href="#mb-stats">期待値</a></span></li>
+        <li class="sym-row"><span class="sym">←</span><span class="sym-read">更新(代入)</span><span class="sym-mean">右の計算結果で、左の値を置きかえる。<span class="var">w</span> ← <span class="var">w</span> − 0.1 は「<span class="var">w</span> を 0.1 減らす」。</span></li>
+        <li class="sym-row"><span class="sym">≒</span><span class="sym-read">ニアリーイコール</span><span class="sym-mean">ほぼ等しい。四捨五入した値などにつける。</span></li>
+        <li class="sym-row"><span class="sym">∝</span><span class="sym-read">比例</span><span class="sym-mean"><span class="var">y</span> ∝ <span class="var">x</span> は「<span class="var">y</span> は <span class="var">x</span> に比例する(<span class="var">x</span> が2倍なら <span class="var">y</span> も2倍)」。</span></li>
+        <li class="sym-row"><span class="sym">∞</span><span class="sym-read">無限大</span><span class="sym-mean">限りなく大きいこと。−∞ は限りなく小さい(負に大きい)こと。</span></li>
+      </ul>
+    </div>
+  </section>
+
   <!-- 各単元: id は data.js の単元ID。見出し・分野・単元末のリンクはスクリプトが data.js から作る -->
+
+  <!-- ==================== 数学の準備 ==================== -->
+  <section class="unit" id="math-basics">
+    <div class="card unit-card">
+      <div class="point"><span class="point-label">ひとことで</span><p>AI の式に出てくる数学は、「関数とグラフ」「Σ と平均」「ベクトルと行列」「微分(傾き)」「指数と対数」「確率と分布」でほぼまかなえます。どれも、小さな数を入れて計算すれば意味がつかめます。</p></div>
+
+      <p>この単元は、ほかの単元から「ここを見て」とリンクされる、道具箱のような単元です。上から読んでも、必要なところだけ読んでもかまいません。</p>
+      <ul class="mini-toc" aria-label="数学の準備の中の項目">
+        <li><a href="#mb-function">関数と傾き</a></li>
+        <li><a href="#mb-sigma">Σ と平均</a></li>
+        <li><a href="#mb-vector">ベクトル・内積</a></li>
+        <li><a href="#mb-matrix">行列</a></li>
+        <li><a href="#mb-derivative">微分</a></li>
+        <li><a href="#mb-gradient">偏微分と勾配</a></li>
+        <li><a href="#mb-chain">連鎖律</a></li>
+        <li><a href="#mb-exp-log">指数と対数</a></li>
+        <li><a href="#mb-prob">確率</a></li>
+        <li><a href="#mb-stats">期待値・分散</a></li>
+        <li><a href="#mb-normal">正規分布</a></li>
+      </ul>
+
+      <!-- 関数とグラフ -->
+      <h3 id="mb-function">しくみ1: 関数とグラフ、傾き</h3>
+      <p><span class="rule">関数</span>は「数を入れると、決まった数が1つ出てくる箱」です。<span class="var">f</span>(<span class="var">x</span>) = 2<span class="var">x</span> + 1 なら、3 を入れると 2 × 3 + 1 = 7 が出ます。機械学習のモデルも、特徴量を入れると予測が出てくる関数です。</p>
+      <p>入れる数を横軸、出てくる数を縦軸にして点を打つと<span class="rule">グラフ</span>になります。直線のグラフ <span class="var">y</span> = <span class="var">a</span><span class="var">x</span> + <span class="var">b</span> の <span class="var">a</span> を<span class="rule">傾き</span>といい、「<span class="var">x</span> が 1 増えたとき <span class="var">y</span> がいくつ増えるか」を表します。</p>
+      <div class="formula"><span>傾き</span><span>=</span><span><span class="frac"><span class="num"><span class="var">y</span> の増え方</span><span class="den"><span class="var">x</span> の増え方</span></span></span></div>
+      <div class="example">
+        <p class="ex-title">例: 2点から傾きを求める</p>
+        <p><span class="var">y</span> = 2<span class="var">x</span> + 1 の上の2点 (1, 3) と (3, 7)。<span class="var">x</span> は 3 − 1 = 2 増え、<span class="var">y</span> は 7 − 3 = 4 増えたので、傾きは 4 ÷ 2 = <span class="ans">2</span>。式の <span class="var">x</span> の前の数と一致します。</p>
+      </div>
+
+      <!-- Σ と平均 -->
+      <h3 id="mb-sigma">しくみ2: Σ(シグマ)と平均</h3>
+      <p>たくさんの数を足すとき、「+ … +」と書くかわりに <span class="rule">Σ</span> を使います。</p>
+      <div class="formula"><span><span class="big-op"><span class="op-lim">4</span><span class="op">Σ</span><span class="op-lim"><span class="var">i</span>=1</span></span> <span class="var">x</span><sub><span class="var">i</span></sub></span><span>=</span><span><span class="var">x</span><sub>1</sub> + <span class="var">x</span><sub>2</sub> + <span class="var">x</span><sub>3</sub> + <span class="var">x</span><sub>4</sub></span></div>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>Σ の式を言葉にする</b></p>
+        <ol class="say">
+          <li><span class="f">Σ</span><span class="w">「足し合わせる」という命令。</span></li>
+          <li><span class="f">下の <span class="var">i</span> = 1、上の 4</span><span class="w">番号 <span class="var">i</span> を 1 から 4 まで動かす。</span></li>
+          <li><span class="f"><span class="var">x</span><sub><span class="var">i</span></sub></span><span class="w"><span class="var">i</span> 番目のデータ。<span class="var">i</span> = 1 なら <span class="var">x</span><sub>1</sub>。</span></li>
+        </ol>
+        <p>データが 2、5、4、7 なら Σ<span class="var">x</span><sub><span class="var">i</span></sub> = 2 + 5 + 4 + 7 = 18。範囲が明らかなときは、上下の数を省いて Σ<span class="var">x</span> とだけ書きます。</p>
+      </div>
+      <p>合計を個数 <span class="var">n</span> で割ったものが<span class="rule">平均</span>で、<span class="var bar">x</span>(エックスバー)と書きます。</p>
+      <div class="formula"><span><span class="var bar">x</span></span><span>=</span><span><span class="frac"><span class="num">Σ<span class="var">x</span><sub><span class="var">i</span></sub></span><span class="den"><span class="var">n</span></span></span></span></div>
+      <div class="example">
+        <p class="ex-title">例: 平均と、平均からのずれ</p>
+        <ol>
+          <li>2、5、4、7 の平均は 18 ÷ 4 = <span class="ans">4.5</span>。</li>
+          <li>平均からのずれ(<span class="var">x</span> − <span class="var bar">x</span>)は −2.5、0.5、−0.5、2.5。足すと <span class="ans">0</span>。平均からのずれは、いつも足すと 0 になります。だから「ずれの大きさ」を測るときは、2乗してから足します(<a href="#mb-stats">分散</a>、<a href="#regression">MSE</a>)。</li>
+        </ol>
+      </div>
+
+      <!-- ベクトル -->
+      <h3 id="mb-vector">しくみ3: ベクトル、内積、長さ、コサイン類似度</h3>
+      <p><span class="rule">ベクトル</span>は、数をいくつか順に並べた組です。(2, 1) は「右へ 2、上へ 1」の矢印とも、「特徴量が2つあるデータ」とも見られます。並んでいる数の個数を<span class="rule">次元</span>といいます。LLM では、1つの単語を数百〜数千次元のベクトルで表します。</p>
+      <p>2つのベクトルの<span class="rule">内積</span>は、同じ位置どうしをかけて、全部足した数です。</p>
+      <div class="formula"><span><span class="var">a</span>·<span class="var">b</span></span><span>=</span><span><span class="var">a</span><sub>1</sub><span class="var">b</span><sub>1</sub> + <span class="var">a</span><sub>2</sub><span class="var">b</span><sub>2</sub> + … + <span class="var">a</span><sub><span class="var">n</span></sub><span class="var">b</span><sub><span class="var">n</span></sub></span></div>
+      <p>ベクトルの<span class="rule">長さ</span>(<span class="rule">ノルム</span>)は、三平方の定理と同じで、各成分を2乗して足し、ルートをとります。</p>
+      <div class="formula"><span>‖<span class="var">a</span>‖</span><span>=</span><span>√(<span class="var">a</span><sub>1</sub><sup>2</sup> + <span class="var">a</span><sub>2</sub><sup>2</sup> + …)</span></div>
+      <p>内積は「長さ × 長さ × cos(間の角度)」と等しくなります。そこで、内積を長さの積で割ると、長さに関係なく<span class="rule">向きの近さ</span>だけが残ります。これが<span class="rule">コサイン類似度</span>です。</p>
+      <div class="formula"><span>コサイン類似度</span><span>=</span><span><span class="frac"><span class="num"><span class="var">a</span>·<span class="var">b</span></span><span class="den">‖<span class="var">a</span>‖ × ‖<span class="var">b</span>‖</span></span></span></div>
+      <figure class="fig">
+        <svg viewBox="0 0 320 200" role="img" aria-label="ベクトル a=(2,1) と b=(1,2)、その間の角度約37度。右に、同じ向き・直角・逆向きのときのコサイン類似度">
+          <defs>
+            <marker id="arA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-vec-a" d="M0 0 L10 5 L0 10 Z"/></marker>
+            <marker id="arB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-vec-b" d="M0 0 L10 5 L0 10 Z"/></marker>
+            <marker id="arK" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-axis" d="M0 0 L10 5 L0 10 Z"/></marker>
+          </defs>
+          <path class="s-grid" d="M110 40 V170 M160 40 V170 M60 120 H180 M60 70 H180"/>
+          <path class="s-axis" d="M60 170 H185 M60 170 V35"/>
+          <text x="110" y="185" text-anchor="middle">1</text><text x="160" y="185" text-anchor="middle">2</text>
+          <text x="53" y="124" text-anchor="end">1</text><text x="53" y="74" text-anchor="end">2</text>
+          <line class="s-vec-a" x1="60" y1="170" x2="158" y2="121" marker-end="url(#arA)"/>
+          <line class="s-vec-b" x1="60" y1="170" x2="109" y2="72" marker-end="url(#arB)"/>
+          <path class="s-guide" d="M93.5 153.2 A37.5 37.5 0 0 0 76.8 136.5"/>
+          <text class="t-a" x="166" y="122"><tspan class="v">a</tspan> = (2, 1)</text>
+          <text class="t-model" x="114" y="62"><tspan class="v">b</tspan> = (1, 2)</text>
+          <path class="s-guide" d="M91 149 L112 160"/><text class="t-ink" x="114" y="166">約37°</text>
+          <text class="t-ink" x="250" y="30" text-anchor="middle">コサイン類似度</text>
+          <line class="s-arrow" x1="215" y1="62" x2="255" y2="62" marker-end="url(#arK)"/><line class="s-arrow" x1="215" y1="70" x2="255" y2="70" marker-end="url(#arK)"/>
+          <text x="262" y="70">同じ向き 1</text>
+          <line class="s-arrow" x1="215" y1="118" x2="250" y2="118" marker-end="url(#arK)"/><line class="s-arrow" x1="215" y1="118" x2="215" y2="88" marker-end="url(#arK)"/>
+          <text x="262" y="110">直角 0</text>
+          <line class="s-arrow" x1="235" y1="150" x2="255" y2="150" marker-end="url(#arK)"/><line class="s-arrow" x1="235" y1="150" x2="215" y2="150" marker-end="url(#arK)"/>
+          <text x="262" y="154">逆向き −1</text>
+        </svg>
+        <figcaption><span class="var">a</span> = (2, 1) と <span class="var">b</span> = (1, 2)。内積 4、長さはどちらも √5 なので、コサイン類似度は 4 ÷ 5 = 0.8(角度は約37°)。</figcaption>
+      </figure>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>内積は「同じ向きにどれだけそろっているか」</b></p>
+        <ol class="say">
+          <li><span class="f"><span class="var">a</span>·<span class="var">b</span> = 2 × 1 + 1 × 2</span><span class="w">1番目どうし、2番目どうしをかけて足す。= 4。</span></li>
+          <li><span class="f">‖<span class="var">a</span>‖ = √(2<sup>2</sup> + 1<sup>2</sup>)</span><span class="w">= √5 ≒ 2.24。‖<span class="var">b</span>‖ も同じく √5。</span></li>
+          <li><span class="f">4 ÷ (√5 × √5)</span><span class="w">√5 × √5 = 5 なので、コサイン類似度 = 4 ÷ 5 = 0.8。</span></li>
+        </ol>
+        <p>内積が正なら同じ側を向き、0 なら直角、負なら反対側を向いています。(1, 0) と (0, 1) は 1 × 0 + 0 × 1 = 0 で直角です。(3, 4) の長さは √(9 + 16) = √25 = 5 です。</p>
+      </div>
+
+      <!-- 行列 -->
+      <h3 id="mb-matrix">しくみ4: 行列とベクトルの積(形の決まり)</h3>
+      <p><span class="rule">行列</span>は、数を長方形に並べたものです。横の並びを<span class="rule">行</span>、縦の並びを<span class="rule">列</span>といい、2行3列の行列を「2×3」と書きます。行列 × ベクトルは、「行列の各行とベクトルの内積」を縦に並べたものです。</p>
+      <div class="mat-row">
+        <figure class="mat-box"><figcaption>行列 <span class="var">W</span>(2×3)</figcaption><table class="mat"><tbody>
+          <tr><td class="hit">1</td><td class="hit">0</td><td class="hit">2</td></tr>
+          <tr><td>0</td><td>1</td><td>−1</td></tr>
+        </tbody></table></figure>
+        <figure class="mat-box"><figcaption>ベクトル <span class="var">x</span>(3)</figcaption><table class="mat"><tbody>
+          <tr><td>1</td></tr><tr><td>2</td></tr><tr><td>3</td></tr>
+        </tbody></table></figure>
+        <figure class="mat-box"><figcaption>結果 <span class="var">W</span><span class="var">x</span>(2)</figcaption><table class="mat"><tbody>
+          <tr><td class="hit">7</td></tr><tr><td>−1</td></tr>
+        </tbody></table></figure>
+      </div>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>行列の積を1行ずつ</b></p>
+        <ol class="say">
+          <li><span class="f">1行目 (1, 0, 2)·(1, 2, 3)</span><span class="w">1 × 1 + 0 × 2 + 2 × 3 = 7。</span></li>
+          <li><span class="f">2行目 (0, 1, −1)·(1, 2, 3)</span><span class="w">0 × 1 + 1 × 2 + (−1) × 3 = −1。</span></li>
+          <li><span class="f">形 (2×3) × (3) → (2)</span><span class="w">内側の 3 と 3 がそろっていないと計算できない。答えの形は外側の数で決まる。</span></li>
+        </ol>
+        <p>一般に (<span class="var">m</span>×<span class="var">n</span>) × (<span class="var">n</span>×<span class="var">p</span>) → (<span class="var">m</span>×<span class="var">p</span>)。たとえば (2×3) × (3×4) は 2×4 になり、(2×3) × (2×4) は内側が 3 と 2 でそろわないので計算できません。</p>
+      </div>
+      <p>ニューラルネットワークの全結合層は、まさに「重みの行列 × 入力ベクトル + バイアス」です。入力 3 個・出力 2 個の層なら重みの行列は 2×3 で 6 個、バイアスが 2 個です(<a href="#neural-network">ニューラルネットワーク</a>)。Transformer の自己注意も、行列の積の組み合わせでできています(<a href="#llm-mechanics">LLMのしくみ</a>)。</p>
+
+      <!-- 微分 -->
+      <h3 id="mb-derivative">しくみ5: 微分 = その点での傾き</h3>
+      <p>曲線にも、各点ごとの傾きがあります。その点にぴったり接する直線(<span class="rule">接線</span>)の傾きです。これを求めることを<span class="rule">微分</span>といいます。学習では「重みを少し動かすと、損失がどれだけ増えるか(減るか)」を知るために微分を使います。</p>
+      <p>求め方の考え方は、「ほんの少し動かして、増え方 ÷ 動かした量 を計算する」です。</p>
+      <div class="formula"><span>傾き</span><span>≒</span><span><span class="frac"><span class="num"><span class="var">f</span>(<span class="var">x</span> + <span class="var">h</span>) − <span class="var">f</span>(<span class="var">x</span>)</span><span class="den"><span class="var">h</span></span></span>(<span class="var">h</span> はとても小さい数)</span></div>
+      <figure class="fig">
+        <svg viewBox="0 0 320 200" role="img" aria-label="放物線 y=x^2 と、x=2 での接線 y=4x−4。右へ0.5進むと上へ2で、傾き4">
+          <path class="s-grid" d="M120 15 V180 M200 15 V180 M280 15 V180 M40 108 H290 M40 36 H290"/>
+          <path class="s-axis" d="M40 180 H295 M40 180 V10"/>
+          <text x="120" y="194" text-anchor="middle">1</text><text x="200" y="194" text-anchor="middle">2</text><text x="280" y="194" text-anchor="middle">3</text>
+          <text x="33" y="112" text-anchor="end">4</text><text x="33" y="40" text-anchor="end">8</text>
+          <text class="v t-big" x="300" y="184">x</text><text class="v t-big" x="44" y="10">y</text>
+          <path class="s-curve" d="M40 180 L48 179.8 L56 179.3 L64 178.4 L72 177.1 L80 175.5 L88 173.5 L96 171.2 L104 168.5 L112 165.4 L120 162 L128 158.2 L136 154.1 L144 149.6 L152 144.7 L160 139.5 L168 133.9 L176 128 L184 121.7 L192 115 L200 108 L208 100.6 L216 92.9 L224 84.8 L232 76.3 L240 67.5 L248 58.3 L256 48.8 L264 38.9 L272 28.6 L280 18"/>
+          <path class="s-model" d="M120 180 L280 36"/>
+          <path class="s-guide" d="M200 108 H240 V72"/>
+          <circle class="f-ball" cx="200" cy="108" r="5"/>
+          <text x="220" y="122" text-anchor="middle">右へ 0.5</text>
+          <text x="246" y="94">上へ 2</text>
+          <text class="t-model" x="128" y="70">接線 <tspan class="v">y</tspan> = 4<tspan class="v">x</tspan> − 4</text>
+          <text class="t-ink" x="60" y="140"><tspan class="v">y</tspan> = <tspan class="v">x</tspan>²</text>
+        </svg>
+        <figcaption><span class="var">y</span> = <span class="var">x</span><sup>2</sup> の <span class="var">x</span> = 2 での接線。傾きは 2 ÷ 0.5 = 4 で、微分 2<span class="var">x</span> に <span class="var">x</span> = 2 を入れた値と同じです。</figcaption>
+      </figure>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b><span class="var">x</span><sup>2</sup> の微分が 2<span class="var">x</span> になるのを、数で確かめる</b></p>
+        <ol class="say">
+          <li><span class="f"><span class="var">x</span> = 3、<span class="var">h</span> = 0.1</span><span class="w">(3.1<sup>2</sup> − 3<sup>2</sup>) ÷ 0.1 = (9.61 − 9) ÷ 0.1 = 6.1。</span></li>
+          <li><span class="f"><span class="var">x</span> = 3、<span class="var">h</span> = 0.01</span><span class="w">(3.01<sup>2</sup> − 9) ÷ 0.01 = 0.0601 ÷ 0.01 = 6.01。</span></li>
+          <li><span class="f"><span class="var">h</span> → 0</span><span class="w"><span class="var">h</span> を小さくするほど 6 に近づく。2<span class="var">x</span> = 2 × 3 = 6 と一致する。</span></li>
+        </ol>
+        <p>よく使う決まり: <span class="var">x</span><sup><span class="var">n</span></sup> の微分は <span class="var">n</span><span class="var">x</span><sup><span class="var">n</span>−1</sup>(<span class="var">x</span><sup>2</sup> → 2<span class="var">x</span>、<span class="var">x</span><sup>3</sup> → 3<span class="var">x</span><sup>2</sup>)。定数の微分は 0(傾きのない水平線)。3<span class="var">x</span><sup>2</sup> のような定数倍は 3 × 2<span class="var">x</span> = 6<span class="var">x</span>、足し算は項ごとに微分して足します。</p>
+      </div>
+      <p>微分が正なら右上がり(<span class="var">x</span> を増やすと増える)、負なら右下がり、0 なら山の頂上か谷の底などの平らな所です。勾配降下法は「微分が正なら <span class="var">x</span> を減らし、負なら増やす」ことで谷底に向かいます(<a href="#gradient-descent">勾配降下法</a>)。</p>
+
+      <!-- 偏微分と勾配 -->
+      <h3 id="mb-gradient">しくみ6: 偏微分と勾配ベクトル</h3>
+      <p>モデルには重みがたくさんあります。<span class="rule">偏微分</span>は「ほかの重みは止めて、1つの重みだけを動かしたときの傾き」です。記号 ∂(ラウンドディー)を使って ∂<span class="var">L</span>/∂<span class="var">w</span><sub>1</sub> と書きます。すべての重みの偏微分を並べたベクトルが<span class="rule">勾配</span>で、∇<span class="var">L</span>(ナブラ <span class="var">L</span>)と書きます。</p>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b><span class="var">L</span> = 2<span class="var">w</span><sub>1</sub><sup>2</sup> + <span class="var">w</span><sub>2</sub><sup>2</sup> の勾配</b></p>
+        <ol class="say">
+          <li><span class="f">∂<span class="var">L</span>/∂<span class="var">w</span><sub>1</sub> = 4<span class="var">w</span><sub>1</sub></span><span class="w"><span class="var">w</span><sub>2</sub> は止めた定数とみなす。<span class="var">w</span><sub>2</sub><sup>2</sup> は定数なので微分すると 0、2<span class="var">w</span><sub>1</sub><sup>2</sup> は 2 × 2<span class="var">w</span><sub>1</sub>。</span></li>
+          <li><span class="f">∂<span class="var">L</span>/∂<span class="var">w</span><sub>2</sub> = 2<span class="var">w</span><sub>2</sub></span><span class="w">今度は <span class="var">w</span><sub>1</sub> を止める。</span></li>
+          <li><span class="f">(<span class="var">w</span><sub>1</sub>, <span class="var">w</span><sub>2</sub>) = (1, 2) で</span><span class="w">∇<span class="var">L</span> = (4 × 1, 2 × 2) = (4, 4)。</span></li>
+        </ol>
+        <p>勾配は「損失がいちばん急に増える向き」を指します。だから、その逆向きに動かすと損失が減ります。勾配降下法の例2が、この計算の続きです。</p>
+      </div>
+
+      <!-- 連鎖律 -->
+      <h3 id="mb-chain">しくみ7: 合成関数の微分(連鎖律)</h3>
+      <p>関数を順につないだもの(<span class="rule">合成関数</span>)の微分は、「それぞれの段の微分をかけ算する」と求まります。これが<span class="rule">連鎖律</span>で、ニューラルネットワークの学習(誤差逆伝播法)の土台です。</p>
+      <div class="formula"><span>d<span class="var">y</span>/d<span class="var">x</span></span><span>=</span><span>(d<span class="var">y</span>/d<span class="var">u</span>) × (d<span class="var">u</span>/d<span class="var">x</span>)</span></div>
+      <figure class="fig">
+        <svg viewBox="0 0 320 170" role="img" aria-label="連鎖律の流れ: x=1 から u=3x+1=4、y=u^2=16 へ順に計算し、逆向きに微分 3 と 8 をかけて 24">
+          <defs>
+            <marker id="arC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-axis" d="M0 0 L10 5 L0 10 Z"/></marker>
+            <marker id="arC2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-vec-b" d="M0 0 L10 5 L0 10 Z"/></marker>
+          </defs>
+          <text class="t-ink" x="160" y="14" text-anchor="middle">前向き(値を計算)</text>
+          <rect class="box" x="10" y="30" width="60" height="36" rx="7"/><text class="t-ink t-big" x="40" y="53" text-anchor="middle"><tspan class="v">x</tspan> = 1</text>
+          <rect class="box" x="130" y="30" width="60" height="36" rx="7"/><text class="t-ink t-big" x="160" y="53" text-anchor="middle"><tspan class="v">u</tspan> = 4</text>
+          <rect class="box-hi" x="250" y="30" width="60" height="36" rx="7"/><text class="t-ink t-big" x="280" y="53" text-anchor="middle"><tspan class="v">y</tspan> = 16</text>
+          <line class="s-arrow" x1="72" y1="48" x2="127" y2="48" marker-end="url(#arC)"/>
+          <line class="s-arrow" x1="192" y1="48" x2="247" y2="48" marker-end="url(#arC)"/>
+          <text x="100" y="40" text-anchor="middle">3<tspan class="v">x</tspan> + 1</text>
+          <text x="220" y="40" text-anchor="middle"><tspan class="v">u</tspan>²</text>
+          <line class="s-vec-b" x1="247" y1="92" x2="194" y2="92" marker-end="url(#arC2)"/>
+          <line class="s-vec-b" x1="127" y1="92" x2="74" y2="92" marker-end="url(#arC2)"/>
+          <text class="t-model" x="220" y="110" text-anchor="middle">×2<tspan class="v">u</tspan> = ×8</text>
+          <text class="t-model" x="100" y="110" text-anchor="middle">×3</text>
+          <text class="t-ink" x="160" y="140" text-anchor="middle">後ろ向き(微分をかけて戻る)</text>
+          <text class="t-model" x="160" y="160" text-anchor="middle">d<tspan class="v">y</tspan>/d<tspan class="v">x</tspan> = 8 × 3 = 24</text>
+        </svg>
+        <figcaption>前向きに値を計算し、後ろ向きに各段の微分をかけていくと、全体の微分が求まります。誤差逆伝播法は、これを何層にもわたって行います。</figcaption>
+      </figure>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b><span class="var">y</span> = (3<span class="var">x</span> + 1)<sup>2</sup> を <span class="var">x</span> = 1 で微分する</b></p>
+        <ol class="say">
+          <li><span class="f"><span class="var">u</span> = 3<span class="var">x</span> + 1 とおく</span><span class="w">中身に名前をつける。<span class="var">x</span> = 1 なら <span class="var">u</span> = 4。</span></li>
+          <li><span class="f">d<span class="var">y</span>/d<span class="var">u</span> = 2<span class="var">u</span></span><span class="w"><span class="var">y</span> = <span class="var">u</span><sup>2</sup> の微分。<span class="var">u</span> = 4 で 8。</span></li>
+          <li><span class="f">d<span class="var">u</span>/d<span class="var">x</span> = 3</span><span class="w">3<span class="var">x</span> + 1 の傾き。</span></li>
+          <li><span class="f">8 × 3 = 24</span><span class="w">かけ算で全体の傾き。数で確かめると (4.003<sup>2</sup> − 16) ÷ 0.001 ≒ 24.009 で、ほぼ 24。</span></li>
+        </ol>
+        <p>勾配降下法で出てくる (<span class="var">w</span> − 3)<sup>2</sup> の微分 2(<span class="var">w</span> − 3) も、同じ考え方です(中身 <span class="var">w</span> − 3 の傾きは 1)。</p>
+      </div>
+
+      <!-- 指数と対数 -->
+      <h3 id="mb-exp-log">しくみ8: 指数関数 <span class="var">e</span><sup><span class="var">x</span></sup> と自然対数 ln</h3>
+      <p><span class="var">e</span> ≒ 2.718 は、数学でよく使う決まった数(ネイピア数)です。<span class="rule">指数関数</span> <span class="var">e</span><sup><span class="var">x</span></sup>(exp(<span class="var">x</span>) とも書く)は、<span class="var">x</span> が 1 増えるごとに約 2.718 倍になる関数で、どんな <span class="var">x</span> でも<span class="rule">必ず正</span>です。<span class="var">e</span><sup>0</sup> = 1、<span class="var">e</span><sup>1</sup> ≒ 2.718、<span class="var">e</span><sup>2</sup> ≒ 7.389、<span class="var">e</span><sup>−1</sup> ≒ 0.368。<span class="var">e</span><sup><span class="var">x</span></sup> を微分すると <span class="var">e</span><sup><span class="var">x</span></sup> のまま、という便利な性質もあります。</p>
+      <p><span class="rule">自然対数</span> ln <span class="var">x</span> はその逆で、「<span class="var">e</span> を何乗すると <span class="var">x</span> になるか」です。ln 1 = 0、ln <span class="var">e</span> = 1。正の数にしか使えず、1 より小さい数の ln は負になります。</p>
+      <figure class="fig">
+        <svg viewBox="0 0 320 245" role="img" aria-label="指数関数 y=e^x と自然対数 y=ln x のグラフ。直線 y=x について対称">
+          <path class="s-grid" d="M125 0 V240 M160 0 V240 M195 0 V240 M230 0 V240 M55 0 V240 M20 0 V240 M0 115 H310 M0 80 H310 M0 45 H310 M0 185 H310 M0 220 H310"/>
+          <path class="s-axis" d="M0 150 H312 M90 242 V0"/>
+          <path class="s-guide" d="M2.5 237.5 L237 3"/>
+          <path class="s-curve" d="M2.5 147.1 L7.1 146.7 L11.7 146.3 L16.3 145.7 L20.9 145.1 L25.5 144.5 L30 143.7 L34.6 142.8 L39.2 141.8 L43.8 140.6 L48.4 139.3 L53 137.8 L57.6 136.1 L62.2 134.2 L66.8 132 L71.4 129.4 L76 126.6 L80.5 123.3 L85.1 119.5 L89.7 115.3 L94.3 110.4 L98.9 104.9 L103.5 98.5 L108.1 91.3 L112.7 83.1 L117.3 73.7 L121.9 63 L126.5 50.8 L131 36.9 L135.6 21.1 L140.2 3"/>
+          <path class="s-curve2" d="M92.9 237.5 L93.8 227.9 L94.7 220.4 L95.6 214.2 L96.5 208.9 L97.4 204.4 L98.3 200.3 L99.2 196.7 L100.1 193.4 L101 190.4 L101.9 187.7 L102.8 185.1 L103.7 182.7 L104.7 180.5 L105.6 178.4 L106.5 176.4 L107.4 174.5 L108.3 172.7 L109.2 171 L110.1 169.4 L111 167.9 L120.5 154.9 L129.9 145.4 L139.4 138 L148.8 131.8 L158.3 126.6 L167.7 122.1 L177.2 118.1 L186.6 114.5 L196.1 111.2 L205.5 108.2 L215 105.5 L224.4 102.9 L233.9 100.5 L243.3 98.3 L252.7 96.2 L262.2 94.2 L271.7 92.4 L281.1 90.6 L290.6 88.9 L300 87.3"/>
+          <circle class="f-point" cx="90" cy="115" r="4"/><circle class="f-ball" cx="125" cy="150" r="4"/>
+          <circle class="f-point" cx="125" cy="54.9" r="4"/><circle class="f-ball" cx="185.1" cy="115" r="4"/>
+          <text x="195" y="164" text-anchor="middle">3</text><text x="82" y="49" text-anchor="end">3</text>
+          <text class="t-ink" x="84" y="108" text-anchor="end">(0, 1)</text>
+          <text class="t-ink" x="131" y="58">(1, <tspan class="v">e</tspan>)</text>
+          <text class="t-ink" x="190" y="130">(<tspan class="v">e</tspan>, 1)</text>
+          <text class="t-ink" x="133" y="166">(1, 0)</text>
+          <text class="t-a" x="140" y="18"><tspan class="v">y</tspan> = <tspan class="v">e</tspan><tspan baseline-shift="super" class="t-sm"><tspan class="v">x</tspan></tspan></text>
+          <text class="t-model" x="300" y="80" text-anchor="end"><tspan class="v">y</tspan> = ln <tspan class="v">x</tspan></text>
+          <text x="232" y="22" text-anchor="end"><tspan class="v">y</tspan> = <tspan class="v">x</tspan></text>
+          <text x="118" y="225">0 に近いと ln は −∞ へ</text>
+        </svg>
+        <figcaption><span class="var">y</span> = <span class="var">e</span><sup><span class="var">x</span></sup>(青)と <span class="var">y</span> = ln <span class="var">x</span>(赤紫)は、点線 <span class="var">y</span> = <span class="var">x</span> について折り返した形です。<span class="var">e</span><sup><span class="var">x</span></sup> は必ず正、ln <span class="var">x</span> は <span class="var">x</span> &lt; 1 で負になります。</figcaption>
+      </figure>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>ln の3つの性質と、損失に log を使う理由</b></p>
+        <ol class="say">
+          <li><span class="f">ln(<span class="var">a</span> × <span class="var">b</span>) = ln <span class="var">a</span> + ln <span class="var">b</span></span><span class="w">かけ算が足し算になる。</span></li>
+          <li><span class="f">ln(1/<span class="var">p</span>) = −ln <span class="var">p</span></span><span class="w">逆数はマイナスになる。ln 2 ≒ 0.693、ln 0.5 ≒ −0.693。</span></li>
+          <li><span class="f">0 &lt; <span class="var">p</span> &lt; 1 なら ln <span class="var">p</span> &lt; 0</span><span class="w">だから損失は −ln <span class="var">p</span> と、マイナスをつけて正にする。</span></li>
+        </ol>
+        <p>3問のそれぞれに、モデルが正解へ確率 0.9、0.8、0.5 をつけたとします。全部当たる確率はかけ算で 0.9 × 0.8 × 0.5 = 0.36。−ln 0.36 ≒ 1.022 は、1問ずつの −ln 0.9 ≒ 0.105、−ln 0.8 ≒ 0.223、−ln 0.5 ≒ 0.693 の合計と一致します。かけ算は、データが増えるとすぐ 0 に近い小さな数になって扱いにくいので、足し算にできる log を使います(<a href="#classification">交差エントロピー</a>)。</p>
+      </div>
+
+      <!-- 確率 -->
+      <h3 id="mb-prob">しくみ9: 確率と条件付き確率</h3>
+      <p><span class="rule">確率</span>は 0 から 1 の数で、起こりうることすべての確率を足すと<span class="rule">ちょうど 1</span> になります。さいころで偶数が出る確率は 3 ÷ 6 = 0.5。分類モデルやソフトマックスの出力が「合計 1」になっているのは、これを守るためです。</p>
+      <p><span class="rule">条件付き確率</span> <span class="var">P</span>(<span class="var">A</span> | <span class="var">B</span>) は、「<span class="var">B</span> だとわかっているときの、<span class="var">A</span> の確率」です。</p>
+      <div class="formula"><span><span class="var">P</span>(<span class="var">A</span> | <span class="var">B</span>)</span><span>=</span><span><span class="frac"><span class="num"><span class="var">A</span> と <span class="var">B</span> が両方起きる確率</span><span class="den"><span class="var">B</span> が起きる確率</span></span></span></div>
+      <div class="example">
+        <p class="ex-title">例: メール 100 通</p>
+        <p>「無料」をふくむメールが 30 通、そのうち迷惑メールが 20 通。迷惑メールは全部で 25 通。</p>
+        <ol>
+          <li><span class="var">P</span>(迷惑 | 「無料」をふくむ) = 20 ÷ 30 ≒ <span class="ans">0.67</span>。</li>
+          <li><span class="var">P</span>(「無料」をふくむ | 迷惑) = 20 ÷ 25 = <span class="ans">0.8</span>。</li>
+          <li>縦棒の左右を入れかえると、別の確率になります。</li>
+        </ol>
+      </div>
+      <p>LLM が出しているのも条件付き確率です。「今日 は」のあとに「晴れ」が来る確率 <span class="var">P</span>(晴れ | 今日 は) を計算しています。文全体の確率は、1トークンずつの条件付き確率のかけ算です。<span class="var">P</span>(今日) = 0.2、<span class="var">P</span>(は | 今日) = 0.5、<span class="var">P</span>(晴れ | 今日 は) = 0.3 なら、「今日 は 晴れ」の確率は 0.2 × 0.5 × 0.3 = 0.03 です。</p>
+
+      <!-- 期待値・分散 -->
+      <h3 id="mb-stats">しくみ10: 期待値・分散・標準偏差</h3>
+      <p><span class="rule">期待値</span> E[<span class="var">X</span>] は「値 × その確率」を全部足したもので、何度もくり返したときの平均です。さいころの期待値は (1 + 2 + 3 + 4 + 5 + 6) × 1/6 = 3.5。</p>
+      <p><span class="rule">分散</span>は「平均からのずれの2乗」の平均で、ばらつきの大きさを表します。<span class="rule">標準偏差</span>は分散のルートで、元のデータと同じ単位にもどります。</p>
+      <div class="formula"><span>分散</span><span>=</span><span><span class="frac"><span class="num">Σ(<span class="var">x</span><sub><span class="var">i</span></sub> − <span class="var bar">x</span>)<sup>2</sup></span><span class="den"><span class="var">n</span></span></span></span><span>標準偏差 = √分散</span></div>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>データ 2、4、4、4、5、5、7、9 で計算する</b></p>
+        <ol class="say">
+          <li><span class="f"><span class="var bar">x</span> = 40 ÷ 8</span><span class="w">平均は 5。</span></li>
+          <li><span class="f"><span class="var">x</span><sub><span class="var">i</span></sub> − <span class="var bar">x</span></span><span class="w">ずれは −3、−1、−1、−1、0、0、2、4。</span></li>
+          <li><span class="f">(<span class="var">x</span><sub><span class="var">i</span></sub> − <span class="var bar">x</span>)<sup>2</sup> の和</span><span class="w">9 + 1 + 1 + 1 + 0 + 0 + 4 + 16 = 32。</span></li>
+          <li><span class="f">÷ <span class="var">n</span></span><span class="w">分散 = 32 ÷ 8 = 4、標準偏差 = √4 = 2。</span></li>
+        </ol>
+        <p>データの個数ではなく <span class="var">n</span> − 1 で割る書き方もあります(手元のデータから全体のばらつきを見積もるとき)。どちらで割るかで値が少し変わります。</p>
+      </div>
+
+      <!-- 正規分布 -->
+      <h3 id="mb-normal">しくみ11: 正規分布</h3>
+      <p>身長や測定の誤差のように、平均のまわりに多く集まり、離れるほど少なくなる、左右対称のつりがね形の分布を<span class="rule">正規分布</span>といいます。平均 μ(ミュー)と標準偏差 σ(シグマ)の2つで形が決まります。σ が大きいほど低く横に広がります。</p>
+      <figure class="fig">
+        <svg viewBox="0 0 320 210" role="img" aria-label="正規分布のつりがね形の曲線。平均から標準偏差1つ分の範囲に約68%、2つ分の範囲に約95%">
+          <path class="f-shade" d="M120 97.4 L125 88.4 L130 79.7 L135 71.6 L140 64.4 L145 58.4 L150 54 L155 51.2 L160 50.3 L165 51.2 L170 54 L175 58.4 L180 64.4 L185 71.6 L190 79.7 L195 88.4 L200 97.4 L200 170 L120 170 Z"/>
+          <path class="s-axis" d="M15 170 H305"/>
+          <path class="s-guide" d="M80 153.8 V170 M240 153.8 V170 M160 40 V170"/>
+          <path class="s-curve" d="M20 169.7 L25 169.6 L30 169.4 L35 169.1 L40 168.7 L45 168.1 L50 167.3 L55 166.2 L60 164.7 L65 162.9 L70 160.5 L75 157.5 L80 153.8 L85 149.4 L90 144.1 L95 138 L100 131.1 L105 123.5 L110 115.2 L115 106.4 L120 97.4 L125 88.4 L130 79.7 L135 71.6 L140 64.4 L145 58.4 L150 54 L155 51.2 L160 50.3 L165 51.2 L170 54 L175 58.4 L180 64.4 L185 71.6 L190 79.7 L195 88.4 L200 97.4 L205 106.4 L210 115.2 L215 123.5 L220 131.1 L225 138 L230 144.1 L235 149.4 L240 153.8 L245 157.5 L250 160.5 L255 162.9 L260 164.7 L265 166.2 L270 167.3 L275 168.1 L280 168.7 L285 169.1 L290 169.4 L295 169.6 L300 169.7"/>
+          <text x="80" y="184" text-anchor="middle">μ−2σ</text><text x="120" y="184" text-anchor="middle">μ−σ</text><text class="t-ink" x="160" y="184" text-anchor="middle">μ</text><text x="200" y="184" text-anchor="middle">μ+σ</text><text x="240" y="184" text-anchor="middle">μ+2σ</text>
+          <text class="t-ink" x="160" y="140" text-anchor="middle">約68%</text>
+          <text x="160" y="203" text-anchor="middle">μ−2σ 〜 μ+2σ の範囲に 約95%</text>
+        </svg>
+        <figcaption>正規分布。平均 ± 標準偏差1つ分(塗った範囲)に約 68%、± 2つ分に約 95% が入ります。</figcaption>
+      </figure>
+      <div class="example">
+        <p class="ex-title">例: 平均 170、標準偏差 6 の正規分布</p>
+        <p>164〜176 に約 <span class="ans">68%</span>、158〜182 に約 <span class="ans">95%</span> が入ります。</p>
+      </div>
+      <p>AI では、重みの初期値をランダムに決めるときや、拡散モデルで画像に足すノイズなどに正規分布を使います(<a href="#generative-ai">生成AIのしくみ</a>)。</p>
+
+      <h3>よくある誤解・注意</h3>
+      <ul class="caution">
+        <li><b><span class="var">x</span><sub>2</sub> と <span class="var">x</span><sup>2</sup> はちがう。</b>右下は「2番目」、右上は「2乗」です。</li>
+        <li><b>コサイン類似度は長さを見ない。</b>(1, 2) と (2, 4) は長さがちがっても向きが同じなので 1 です。長さもふくめて比べたいなら内積や距離を使います。</li>
+        <li><b>行列のかけ算は順番を入れかえられない。</b>形がそろわないことがあり、そろっても結果が変わることがあります。</li>
+        <li><b>ln は 0 や負の数には使えない。</b>確率 0 の ln は −∞ になるので、損失 −ln <span class="var">p</span> は「正解に確率 0 をつける」と限りなく大きくなります。</li>
+        <li><b>σ は文脈で読む。</b>σ(<span class="var">z</span>) とかっこがあればシグモイド関数、分布の話なら標準偏差です。</li>
+        <li><b><span class="var">P</span>(<span class="var">A</span> | <span class="var">B</span>) と <span class="var">P</span>(<span class="var">B</span> | <span class="var">A</span>) はちがう。</b>上のメール例では 0.67 と 0.8 でした。</li>
+      </ul>
+
+      <h3>用語ミニ辞典</h3>
+      <dl class="glossary">
+        <dt>関数</dt><dd>入れた数に対して、決まった数を1つ返すもの。</dd>
+        <dt>傾き</dt><dd><span class="var">x</span> が 1 増えたときの <span class="var">y</span> の増え方。</dd>
+        <dt>Σ(シグマ)</dt><dd>番号を動かしながら全部足す記号。</dd>
+        <dt>ベクトル</dt><dd>数を順に並べた組。矢印としても見られる。</dd>
+        <dt>内積</dt><dd>同じ位置どうしをかけて足した数。向きがそろうほど大きい。</dd>
+        <dt>ノルム</dt><dd>ベクトルの長さ。成分の2乗和のルート。</dd>
+        <dt>コサイン類似度</dt><dd>内積 ÷ 長さの積。向きの近さで −1〜1。</dd>
+        <dt>行列</dt><dd>数を長方形に並べたもの。(<span class="var">m</span>×<span class="var">n</span>) × (<span class="var">n</span>×<span class="var">p</span>) → (<span class="var">m</span>×<span class="var">p</span>)。</dd>
+        <dt>微分</dt><dd>その点での傾き(接線の傾き)を求めること。</dd>
+        <dt>偏微分</dt><dd>ほかの変数を止めて、1つの変数で微分すること。</dd>
+        <dt>勾配</dt><dd>偏微分を並べたベクトル。損失が最も急に増える向き。</dd>
+        <dt>連鎖律</dt><dd>合成関数の微分は、各段の微分のかけ算になるという規則。</dd>
+        <dt>指数関数 <span class="var">e</span><sup><span class="var">x</span></sup></dt><dd><span class="var">e</span> ≒ 2.718 の <span class="var">x</span> 乗。必ず正。</dd>
+        <dt>自然対数 ln</dt><dd><span class="var">e</span> を何乗するとその数になるか。かけ算を足し算に変える。</dd>
+        <dt>条件付き確率</dt><dd>ある条件がわかっているときの確率 <span class="var">P</span>(<span class="var">A</span> | <span class="var">B</span>)。</dd>
+        <dt>期待値</dt><dd>値 × 確率 の合計。くり返したときの平均。</dd>
+        <dt>分散・標準偏差</dt><dd>平均からのずれの2乗の平均と、そのルート。ばらつきの大きさ。</dd>
+        <dt>正規分布</dt><dd>平均 μ と標準偏差 σ で決まる、左右対称のつりがね形の分布。</dd>
+      </dl>
+    </div>
+  </section>
 
   <!-- ==================== 機械学習の基本 ==================== -->
   <section class="unit" id="basics">
@@ -362,6 +907,15 @@
       </ul>
       <p>予測の手がかりとしてモデルに入れる値を<span class="rule">特徴量</span>、当てたい値を<span class="rule">ラベル</span>(目的変数)といいます。家の価格の予測なら、床面積・駅からの距離・築年数が特徴量、価格がラベルです。もっとも単純な線形モデルは、特徴量に<span class="rule">重み</span>をかけて足し、最後に<span class="rule">バイアス</span>を足します。</p>
       <div class="formula"><span><span class="var">y</span></span><span>=</span><span><span class="var">w</span><sub>1</sub><span class="var">x</span><sub>1</sub> + <span class="var">w</span><sub>2</sub><span class="var">x</span><sub>2</sub> + … + <span class="var">b</span></span></div>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>線形モデルの式を言葉にする</b></p>
+        <ol class="say">
+          <li><span class="f"><span class="var">x</span><sub>1</sub>、<span class="var">x</span><sub>2</sub></span><span class="w">1番目、2番目の特徴量(床面積、駅からの距離 など)。右下の数字は番号で、かけ算ではない。</span></li>
+          <li><span class="f"><span class="var">w</span><sub>1</sub><span class="var">x</span><sub>1</sub></span><span class="w"><span class="var">w</span><sub>1</sub> × <span class="var">x</span><sub>1</sub>。特徴量に「どれだけ効くか」の重みをかける。</span></li>
+          <li><span class="f">+ … + <span class="var">b</span></span><span class="w">特徴量の数だけ足して、最後にバイアス(底上げの数)を足す。</span></li>
+        </ol>
+        <p>重みを並べた (<span class="var">w</span><sub>1</sub>, <span class="var">w</span><sub>2</sub>) と特徴量 (<span class="var">x</span><sub>1</sub>, <span class="var">x</span><sub>2</sub>) の「同じ位置どうしをかけて足す」計算は、ベクトルの<a href="#mb-vector">内積</a>です。重みが負なら、その特徴量が大きいほど予測は小さくなります(駅から遠いほど安い、など)。</p>
+      </div>
       <p>重みやバイアスのように学習でデータから決まる値を<span class="rule">パラメータ</span>、学習率・エポック数・層の数のように学習の前に人が決める値を<span class="rule">ハイパーパラメータ</span>といいます。</p>
       <p>機械学習の本当の目標は、学習に使っていない新しいデータでもうまく予測できること(<span class="rule">汎化</span>)です。そこで、データを役割の違う3つに分けます。</p>
       <div class="q-table-wrap">
@@ -447,9 +1001,30 @@
       <div class="formula"><span>MSE</span><span>=</span><span><span class="frac"><span class="num">(残差の2乗の和)</span><span class="den"><span class="var">n</span></span></span></span></div>
       <div class="formula"><span>MAE</span><span>=</span><span><span class="frac"><span class="num">(残差の絶対値の和)</span><span class="den"><span class="var">n</span></span></span></span></div>
       <div class="formula"><span>RMSE</span><span>=</span><span>√MSE</span></div>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>MSE を Σ で書いて、1行ずつ読む</b></p>
+        <div class="formula"><span>MSE</span><span>=</span><span><span class="frac"><span class="num">1</span><span class="den"><span class="var">n</span></span></span> Σ(<span class="var">y</span><sub><span class="var">i</span></sub> − <span class="var">ŷ</span><sub><span class="var">i</span></sub>)<sup>2</sup></span></div>
+        <ol class="say">
+          <li><span class="f"><span class="var">y</span><sub><span class="var">i</span></sub> − <span class="var">ŷ</span><sub><span class="var">i</span></sub></span><span class="w"><span class="var">i</span> 番目のデータの残差(実測 − 予測)。<span class="var">ŷ</span>(ワイハット)は予測値。</span></li>
+          <li><span class="f">( … )<sup>2</sup></span><span class="w">2乗して、マイナスをなくす。</span></li>
+          <li><span class="f">Σ</span><span class="w">全データぶん足す(<a href="#mb-sigma">Σ の読み方</a>)。</span></li>
+          <li><span class="f"><span class="frac"><span class="num">1</span><span class="den"><span class="var">n</span></span></span></span><span class="w">件数で割って平均にする。</span></li>
+        </ol>
+        <p><b>なぜ2乗するのか。</b>下の例1の直線の残差は −0.4、1.2、−1.2、0.4 で、そのまま足すと 0 になり、「ずれがない」ように見えてしまいます。2乗すれば 0.16 + 1.44 + 1.44 + 0.16 = 3.2 と、ずれの大きさが残ります。2乗には、2倍のずれを4倍の罰にする(大きな外れを重く見る)効果と、微分しやすい(<a href="#mb-derivative">微分</a>)という利点もあります。</p>
+      </div>
       <p>MSE(平均二乗誤差)は誤差を2乗するので、大きな誤差ほど強く効きます。MAE(平均絶対誤差)は外れ値の影響を受けにくい指標です。RMSE は誤差と同じ単位にもどるので、「だいたい何ずれるか」をつかみやすくなります。</p>
       <p>残差の2乗の和が最小になるように傾きと切片を決めるのが<span class="rule">最小二乗法</span>です。線形回帰では、最小値を与える係数を式で直接求められます(<span class="var bar">x</span>、<span class="var bar">y</span> は平均)。</p>
       <div class="formula"><span><span class="var">w</span> = <span class="frac"><span class="num">Σ(<span class="var">x</span> − <span class="var bar">x</span>)(<span class="var">y</span> − <span class="var bar">y</span>)</span><span class="den">Σ(<span class="var">x</span> − <span class="var bar">x</span>)<sup>2</sup></span></span></span><span><span class="var">b</span> = <span class="var bar">y</span> − <span class="var">w</span><span class="var bar">x</span></span></div>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>傾き <span class="var">w</span> の式を読む</b></p>
+        <ol class="say">
+          <li><span class="f"><span class="var bar">x</span>、<span class="var bar">y</span></span><span class="w">エックスバー、ワイバー。<span class="var">x</span> と <span class="var">y</span> の平均。</span></li>
+          <li><span class="f">(<span class="var">x</span> − <span class="var bar">x</span>)(<span class="var">y</span> − <span class="var bar">y</span>)</span><span class="w">1点ごとに「<span class="var">x</span> の平均からのずれ × <span class="var">y</span> の平均からのずれ」。両方が平均より大きい(または両方小さい)点は正、片方だけなら負になる。</span></li>
+          <li><span class="f">分子の Σ</span><span class="w">それを全部足す。正が多ければ「<span class="var">x</span> が大きいと <span class="var">y</span> も大きい」右上がりの関係。</span></li>
+          <li><span class="f">分母 Σ(<span class="var">x</span> − <span class="var bar">x</span>)<sup>2</sup></span><span class="w"><span class="var">x</span> のばらつき。これで割って、<span class="var">x</span> 1 あたりの増え方(傾き)にそろえる。</span></li>
+          <li><span class="f"><span class="var">b</span> = <span class="var bar">y</span> − <span class="var">w</span><span class="var bar">x</span></span><span class="w">直線が平均の点 (<span class="var bar">x</span>, <span class="var bar">y</span>) を通るように切片を決める。</span></li>
+        </ol>
+      </div>
       <p>当てはまりのよさは<span class="rule">決定係数</span> <span class="var">R</span><sup>2</sup> でも表します。「いつも平均で予測する」ときと比べて、誤差をどれだけ減らせたかの割合です。</p>
       <div class="formula"><span><span class="var">R</span><sup>2</sup></span><span>=</span><span>1 − <span class="frac"><span class="num">残差の2乗和</span><span class="den">平均からのずれの2乗和</span></span></span></div>
       <figure class="fig">
@@ -527,6 +1102,16 @@
       <h3>しくみ</h3>
       <p>損失 <span class="var">L</span> を重み <span class="var">w</span> で微分した値(<span class="rule">勾配</span>)は、<span class="var">w</span> を増やしたときに損失が増える向きと急さを表します。損失を減らしたいので、勾配の<span class="rule">逆向き</span>に進みます。</p>
       <div class="formula"><span><span class="var">w</span></span><span>←</span><span><span class="var">w</span> − <span class="var">η</span> × (<span class="var">L</span> の <span class="var">w</span> による微分)</span></div>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>更新の式を1行ずつ</b></p>
+        <ol class="say">
+          <li><span class="f">(<span class="var">L</span> の <span class="var">w</span> による微分)</span><span class="w"><span class="var">w</span> を少し増やしたとき <span class="var">L</span> がどれだけ増えるか(その点での傾き)。正なら右上がり、負なら右下がり(<a href="#mb-derivative">微分</a>)。</span></li>
+          <li><span class="f"><span class="var">η</span> ×</span><span class="w">イータ(学習率)をかけて、1歩の大きさにする。</span></li>
+          <li><span class="f"><span class="var">w</span> − …</span><span class="w">傾きと反対向きに動かす。傾きが正なら <span class="var">w</span> は減り、負なら増える。</span></li>
+          <li><span class="f">←</span><span class="w">計算した値で <span class="var">w</span> を置きかえる。これを何度もくり返す。</span></li>
+        </ol>
+        <p>例: 傾きが 6、<span class="var">η</span> = 0.1 なら <span class="var">w</span> は 0.6 減ります。傾きが −6 なら 0.6 増えます。ほかの本では <span class="var">w</span> ← <span class="var">w</span> − <span class="var">η</span> ∂<span class="var">L</span>/∂<span class="var">w</span>、まとめて <span class="var">θ</span> ← <span class="var">θ</span> − <span class="var">η</span>∇<span class="var">L</span> とも書きます(<a href="#mb-gradient">偏微分と勾配</a>)。</p>
+      </div>
       <p>坂が急なほど1歩が大きく、谷底(勾配 0)に近づくほど1歩が小さくなります。パラメータが複数あるときは、それぞれの微分(偏微分)の分だけ、パラメータごとに動かします。</p>
       <p><span class="rule">学習率</span> <span class="var">η</span> の決め方が大切です。損失 <span class="var">L</span> = <span class="var">w</span><sup>2</sup> で考えると、微分は 2<span class="var">w</span> なので、1歩は次のように書けます。</p>
       <div class="formula"><span><span class="var">w</span></span><span>←</span><span><span class="var">w</span> − <span class="var">η</span> × 2<span class="var">w</span> = (1 − 2<span class="var">η</span>)<span class="var">w</span></span></div>
@@ -544,6 +1129,15 @@
         </table>
       </div>
       <p>損失が (<span class="var">w</span> − 3)<sup>2</sup> のように谷底がずれていても、「谷底からの距離」が毎回 (1 − 2<span class="var">η</span>) 倍になるので、同じことがいえます。</p>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>(<span class="var">w</span> − 3)<sup>2</sup> の微分が 2(<span class="var">w</span> − 3) になるわけ</b></p>
+        <ol class="say">
+          <li><span class="f">中身 <span class="var">u</span> = <span class="var">w</span> − 3</span><span class="w"><span class="var">L</span> = <span class="var">u</span><sup>2</sup> の微分は 2<span class="var">u</span>。</span></li>
+          <li><span class="f"><span class="var">u</span> の <span class="var">w</span> による微分 = 1</span><span class="w"><span class="var">w</span> が 1 増えると <span class="var">w</span> − 3 も 1 増える。</span></li>
+          <li><span class="f">2<span class="var">u</span> × 1</span><span class="w">= 2(<span class="var">w</span> − 3)。かけ算でつなぐのが<a href="#mb-chain">連鎖律</a>。</span></li>
+        </ol>
+        <p><span class="var">w</span> = 0 なら 2 × (0 − 3) = −6(右下がり)、<span class="var">w</span> = 3 なら 0(谷底で平ら)、<span class="var">w</span> = 5 なら 4(右上がり)。</p>
+      </div>
       <figure class="fig">
         <svg viewBox="0 0 320 200" role="img" aria-label="損失 L=(w−3)^2 の放物線の上を、w=0 から学習率0.25で谷底 w=3 へ下っていく点">
           <path class="s-grid" d="M40 130 H310 M40 85 H310 M40 40 H310 M120 20 V175 M240 20 V175"/>
@@ -645,6 +1239,15 @@
         </svg>
         <figcaption>シグモイド関数。<span class="var">z</span> が大きいほど 1 に、小さいほど 0 に近づきます。σ(2) と σ(−2) の和は 1。</figcaption>
       </figure>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>シグモイドの式を、内側から読む</b></p>
+        <ol class="say">
+          <li><span class="f"><span class="var">e</span><sup>−<span class="var">z</span></sup></span><span class="w"><span class="var">e</span> ≒ 2.718 の −<span class="var">z</span> 乗。必ず正(<a href="#mb-exp-log">指数関数</a>)。<span class="var">z</span> が大きいほど 0 に近く、<span class="var">z</span> が負で大きいほど巨大になる。</span></li>
+          <li><span class="f">1 + <span class="var">e</span><sup>−<span class="var">z</span></sup></span><span class="w">1 より大きい数。</span></li>
+          <li><span class="f">1 ÷ ( … )</span><span class="w">1 より大きい数で 1 を割るので、答えは 0 と 1 の間におさまる。</span></li>
+        </ol>
+        <p><span class="var">z</span> = 0: <span class="var">e</span><sup>0</sup> = 1 なので 1 ÷ (1 + 1) = 0.5。<span class="var">z</span> = 2: <span class="var">e</span><sup>−2</sup> ≒ 0.135 なので 1 ÷ 1.135 ≒ 0.88。<span class="var">z</span> = −2: <span class="var">e</span><sup>2</sup> ≒ 7.389 なので 1 ÷ 8.389 ≒ 0.12。どんな数を入れても「確率らしい」0〜1 の値になるのが、分類で使われる理由です。</p>
+      </div>
       <p>学習の損失には<span class="rule">交差エントロピー</span>を使います。正解のクラスにモデルがつけた確率を <span class="var">p</span> とすると、損失は −ln <span class="var">p</span>(ln は自然対数)。2クラスで正解が陽性なら −ln(陽性の確率)、陰性なら −ln(1 − 陽性の確率)です。<span class="var">p</span> が 1 に近いほど損失は 0 に近く、正解に低い確率をつける(自信をもって間違える)ほど、上限なく大きくなります。</p>
       <div class="q-table-wrap">
         <table class="q-table">
@@ -656,6 +1259,15 @@
             <tr><td class="num">0.01</td><td class="num">≒ 4.61</td></tr>
           </tbody>
         </table>
+      </div>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>−ln <span class="var">p</span> を読む</b></p>
+        <ol class="say">
+          <li><span class="f"><span class="var">p</span></span><span class="w">正解のクラスにモデルがつけた確率(0 より大きく 1 以下)。</span></li>
+          <li><span class="f">ln <span class="var">p</span></span><span class="w">自然対数。<span class="var">p</span> &lt; 1 なら負の数、<span class="var">p</span> = 1 なら 0(<a href="#mb-exp-log">ln</a>)。</span></li>
+          <li><span class="f">−</span><span class="w">マイナスをつけて正の数にする。損失は「小さいほどよい」数にしたいため。</span></li>
+        </ol>
+        <p>確率が半分になるごとに、損失は ln 2 ≒ 0.69 ずつ増えます(0.5 → 0.69、0.25 → 1.39)。データが複数あるときは、1件ずつの −ln <span class="var">p</span> の平均を損失にします。これは「全部当たる確率」のかけ算を、ln で足し算に直したものです。</p>
       </div>
       <p>判定は「陽性の確率(スコア)がしきい値以上なら陽性」とします。結果を数えた表が<span class="rule">混同行列</span>で、<span class="rule">行が実際、列が予測</span>です。TP・FN・FP・TN の頭の T/F は予測が当たったか外れたか、P/N は<span class="rule">予測の側</span>の答えを表します。</p>
       <div class="cm-wrap" data-cm="真陽性,偽陰性,偽陽性,真陰性"></div>
@@ -750,11 +1362,22 @@
       </figure>
       <p>この2つの失敗は<span class="rule">バイアスとバリアンス</span>で説明できます。<span class="rule">バイアス</span>は、モデルが単純すぎるために生じる系統的なずれ(未学習側)。<span class="rule">バリアンス</span>は、訓練データが少し変わるだけで予測が大きく変わる、ばらつき(過学習側)です。二乗誤差の期待値は次のように分けられます。</p>
       <div class="formula"><span>二乗誤差の期待値</span><span>=</span><span>バイアス<sup>2</sup> + バリアンス + 減らせないノイズ</span></div>
+      <p class="formula-note">「期待値」は、いろいろな訓練データで学習したときの平均、という意味です(<a href="#mb-stats">期待値・分散</a>)。</p>
       <p>モデルを複雑にするとバイアスは減りやすく、バリアンスは増えやすくなります。過学習をおさえる主な方法は次のとおりです。</p>
       <ul>
         <li><span class="rule">正則化</span>: 損失に「重みの大きさ」の罰を足す。係数 <span class="var">λ</span> が大きいほど、重みを小さくする力が強い。
           <div class="formula in-list"><span>L2: <span class="var">λ</span> × (<span class="var">w</span><sub>1</sub><sup>2</sup> + <span class="var">w</span><sub>2</sub><sup>2</sup> + …)</span><span>L1: <span class="var">λ</span> × (|<span class="var">w</span><sub>1</sub>| + |<span class="var">w</span><sub>2</sub>| + …)</span></div>
-          <span class="rule">L2 正則化</span>(Ridge)は重みを全体に小さくしますが、ちょうど 0 にはなりにくい。<span class="rule">L1 正則化</span>(Lasso)はいくつかの重みがちょうど 0 になりやすく(スパース)、使う特徴量をしぼりこめます。</li>
+          <span class="rule">L2 正則化</span>(Ridge)は重みを全体に小さくしますが、ちょうど 0 にはなりにくい。<span class="rule">L1 正則化</span>(Lasso)はいくつかの重みがちょうど 0 になりやすく(スパース)、使う特徴量をしぼりこめます。
+          <div class="math-note in-list">
+            <p class="math-note-label">数学メモ<b>正則化つきの損失を読む</b></p>
+            <div class="formula"><span>全体の損失</span><span>=</span><span>もとの損失(MSE など) + <span class="var">λ</span> × (<span class="var">w</span><sub>1</sub><sup>2</sup> + <span class="var">w</span><sub>2</sub><sup>2</sup> + …)</span></div>
+            <ol class="say">
+              <li><span class="f">もとの損失</span><span class="w">データに合っているか。</span></li>
+              <li><span class="f"><span class="var">w</span><sub>1</sub><sup>2</sup> + <span class="var">w</span><sub>2</sub><sup>2</sup> + …</span><span class="w">重みの大きさ。2乗するので、正でも負でも大きな重みほど罰が大きい。L1 なら |<span class="var">w</span>|(絶対値: 符号をとった大きさ)。</span></li>
+              <li><span class="f"><span class="var">λ</span> ×</span><span class="w">ラムダ。2つの「合わせる力」と「小さく保つ力」のどちらを重く見るかのつまみ。</span></li>
+            </ol>
+            <p>重み 3 は L2 で 9、L1 で 3 の罰。重み 0.5 は L2 で 0.25、L1 で 0.5。L2 は大きな重みを強くおさえ、小さな重みにはあまり効きません。L1 は大きさに関係なく同じ量ずつ 0 へ押すので(勾配は λ × 符号で一定)、小さな重みは 0 まで押し切られやすくなります。</p>
+          </div></li>
         <li><span class="rule">ドロップアウト</span>: 訓練中に、ランダムに選んだニューロンの出力を 0 にして学習する。特定のニューロンにたよりすぎるのを防ぐ。推論(予測)のときはふつう全ニューロンを使い、出力の大きさが訓練時とそろうように調整する。</li>
         <li><span class="rule">早期終了</span>: エポックごとに検証誤差を見て、下がらなくなったところで学習を止め、検証誤差が最小のときのモデルを使う。</li>
         <li><span class="rule">データ拡張</span>: 意味(正解ラベル)が変わらない範囲で画像を少し回す・ずらす・明るさを変えるなどして、訓練データを増やす。</li>
@@ -875,6 +1498,17 @@
       <p>層の間に活性化関数が必要なのは、それが<span class="rule">非線形</span>だからです。線形変換は何回重ねても、まとめると1つの線形変換になってしまいます。間に非線形な関数をはさむことで、曲がった複雑な関係を表せるようになります。</p>
       <p>隣の層のすべてのニューロンとつながる層を<span class="rule">全結合層</span>といいます。パラメータの数は次のとおりです。</p>
       <div class="formula"><span>全結合層のパラメータ数</span><span>=</span><span>入力数 × 出力数(重み) + 出力数(バイアス)</span></div>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>層の計算は「行列 × ベクトル + バイアス」</b></p>
+        <div class="formula"><span><span class="var">z</span></span><span>=</span><span><span class="var">W</span><span class="var">x</span> + <span class="var">b</span></span><span>出力 = <span class="var">φ</span>(<span class="var">z</span>)</span></div>
+        <ol class="say">
+          <li><span class="f"><span class="var">x</span>(入力数 3)</span><span class="w">入力を並べたベクトル。</span></li>
+          <li><span class="f"><span class="var">W</span>(4×3)</span><span class="w">重みの行列。行が出力のニューロン1個ぶん、列が入力1個ぶん。4 × 3 = 12 個(<a href="#mb-matrix">行列の形</a>)。</span></li>
+          <li><span class="f"><span class="var">W</span><span class="var">x</span> + <span class="var">b</span></span><span class="w">(4×3) × (3) → 4 個の重み付き和。そこにバイアス 4 個を足す。</span></li>
+          <li><span class="f"><span class="var">φ</span>( … )</span><span class="w">ファイ。活性化関数を1つずつにかける。</span></li>
+        </ol>
+        <p>下の図の 3 → 4 の層は、重み 12 + バイアス 4 = 16 個。ニューロン1個ずつ書いた式を、行列でまとめて書いたものです。</p>
+      </div>
       <figure class="fig">
         <svg viewBox="0 0 320 200" role="img" aria-label="入力層3、中間層4、出力層2の全結合ネットワークの図">
           <g>
@@ -900,7 +1534,25 @@
       </figure>
       <p>学習では、損失を各重みで微分した値(勾配)が必要です。<span class="rule">誤差逆伝播法</span>(バックプロパゲーション)は、出力側から入力側へ、<span class="rule">連鎖律</span>(合成関数の微分)で微分をかけ合わせて、すべての重みの勾配を効率よく求めます。求めた勾配で、勾配降下法によって重みを更新します。</p>
       <div class="formula"><span><span class="var">L</span> の <span class="var">w</span> による微分</span><span>=</span><span>(<span class="var">L</span> の <span class="var">z</span> による微分) × (<span class="var">z</span> の <span class="var">w</span> による微分)</span></div>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>連鎖律の式を記号で書くと</b></p>
+        <div class="formula"><span><span class="frac"><span class="num">∂<span class="var">L</span></span><span class="den">∂<span class="var">w</span></span></span></span><span>=</span><span><span class="frac"><span class="num">∂<span class="var">L</span></span><span class="den">∂<span class="var">z</span></span></span> × <span class="frac"><span class="num">∂<span class="var">z</span></span><span class="den">∂<span class="var">w</span></span></span></span></div>
+        <ol class="say">
+          <li><span class="f">∂<span class="var">L</span>/∂<span class="var">w</span></span><span class="w">「<span class="var">w</span> を少し動かしたら、損失 <span class="var">L</span> がどれだけ変わるか」。∂ はラウンドディー(<a href="#mb-gradient">偏微分</a>)。分数のように見えるが、これで1つの記号。</span></li>
+          <li><span class="f">∂<span class="var">L</span>/∂<span class="var">z</span></span><span class="w">「重み付き和 <span class="var">z</span> が変わると <span class="var">L</span> がどれだけ変わるか」。出力側から先に求まる。</span></li>
+          <li><span class="f">∂<span class="var">z</span>/∂<span class="var">w</span></span><span class="w"><span class="var">z</span> = <span class="var">w</span><span class="var">x</span> + <span class="var">b</span> なので、<span class="var">w</span> が 1 増えると <span class="var">z</span> は <span class="var">x</span> 増える。つまり <span class="var">x</span>。</span></li>
+        </ol>
+        <p>「<span class="var">w</span> の小さな変化が <span class="var">z</span> を <span class="var">x</span> 倍で動かし、<span class="var">z</span> の変化が <span class="var">L</span> を ∂<span class="var">L</span>/∂<span class="var">z</span> 倍で動かす」ので、全体の倍率はかけ算です。下の例3では −3 × 3 = −9。層が増えても、かけ算の段が増えるだけです(<a href="#mb-chain">連鎖律</a>)。</p>
+      </div>
       <p>層が深いと、逆伝播で微分を何度もかけ合わせるうちに勾配がとても小さくなり、入力に近い層が学習しにくくなることがあります(<span class="rule">勾配消失</span>)。シグモイドの微分 σ(<span class="var">z</span>)(1 − σ(<span class="var">z</span>)) は最大でも 0.25(<span class="var">z</span> = 0 のとき)なので起こりやすく、ReLU は正の範囲で微分が 1 なので起こりにくくなります。ほかに、層を飛びこす経路をつくる<span class="rule">残差接続</span>、重みの初期値の工夫、<span class="rule">バッチ正規化</span>なども使われます。</p>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>小さな数を何度もかけると</b></p>
+        <ol class="say">
+          <li><span class="f">σ′(0) = 0.5 × (1 − 0.5)</span><span class="w">σ′ はシグモイドの微分(傾き)。= 0.25 で、<span class="var">z</span> = 0 のここが最大。σ′(2) ≒ 0.88 × 0.12 ≒ 0.105 とさらに小さい。</span></li>
+          <li><span class="f">0.25 × 0.25 × …(10 層)</span><span class="w">0.25<sup>10</sup> ≒ 0.00000095。入力に近い層には、勾配がほとんど届かない。</span></li>
+          <li><span class="f">ReLU の傾き 1</span><span class="w">正の範囲なら 1 × 1 × … = 1 で、小さくならない。</span></li>
+        </ol>
+      </div>
 
       <h3>例で確かめる</h3>
       <div class="example">
@@ -1004,6 +1656,15 @@
       <p>出力の大きさは、入力の1辺 <span class="var">N</span>、フィルタの1辺 <span class="var">F</span>、<span class="rule">パディング</span>(まわりに足す 0 の幅)<span class="var">P</span>、<span class="rule">ストライド</span>(ずらす幅)<span class="var">S</span> で決まります。</p>
       <div class="formula"><span>出力の1辺</span><span>=</span><span>(<span class="var">N</span> − <span class="var">F</span> + 2<span class="var">P</span>) ÷ <span class="var">S</span> + 1</span></div>
       <p class="formula-note">割り切れないとき、多くの実装では小数点以下を切り捨てます。</p>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>出力の大きさの式を、数えて確かめる</b></p>
+        <ol class="say">
+          <li><span class="f"><span class="var">N</span> + 2<span class="var">P</span></span><span class="w">パディング後の1辺。両側に足すので 2 倍。5 + 0 = 5。</span></li>
+          <li><span class="f">− <span class="var">F</span></span><span class="w">フィルタが最初に置ける位置から、最後に置ける位置まで動ける距離。5 − 3 = 2。</span></li>
+          <li><span class="f">÷ <span class="var">S</span></span><span class="w">1回に <span class="var">S</span> ずつ動くので、動ける回数。2 ÷ 1 = 2。</span></li>
+          <li><span class="f">+ 1</span><span class="w">最初の位置の1つを足す。2 + 1 = 3。上の図のとおり、左端・中・右端の3か所に置ける。</span></li>
+        </ol>
+      </div>
       <p>畳み込み層のパラメータ数は、フィルタ1個の重み(<span class="var">F</span> × <span class="var">F</span> × 入力チャンネル数)× フィルタの数(出力チャンネル数)+ バイアス(フィルタ1個に1個)です。畳み込みのあとには、領域ごとに最大値を残す<span class="rule">最大値プーリング</span>(平均をとるなら平均値プーリング)で、特徴マップを小さくすることがよくあります。プーリングには学習するパラメータがありません。</p>
 
       <h3>しくみ: RNN と LSTM</h3>
@@ -1018,6 +1679,15 @@
       </ol>
       <div class="formula"><span>スコア</span><span>=</span><span><span class="frac"><span class="num"><span class="var">q</span> と <span class="var">k</span> の内積</span><span class="den">√<span class="var">d</span></span></span></span></div>
       <p class="formula-note">√<span class="var">d</span> で割るのは、次元が大きいと内積が大きくなりやすく、ソフトマックスが1つに極端に集中するのを防ぐためです。</p>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>スコアの式を1行ずつ</b></p>
+        <ol class="say">
+          <li><span class="f"><span class="var">q</span> と <span class="var">k</span> の内積</span><span class="w">同じ位置どうしをかけて足す。向きがそろっているほど大きい(<a href="#mb-vector">内積</a>)。<span class="var">q</span> = (1, 2)、<span class="var">k</span> = (1, 1) なら 1 + 2 = 3。</span></li>
+          <li><span class="f">÷ √<span class="var">d</span></span><span class="w"><span class="var">d</span> = 2 なら √2 ≒ 1.414 で割って、3 ÷ 1.414 ≒ 2.12。</span></li>
+          <li><span class="f">なぜ √<span class="var">d</span> か</span><span class="w">内積は <span class="var">d</span> 個の積の和なので、成分がランダムな値なら、次元が4倍になると値のばらつき(標準偏差)はおよそ2倍(√4)になる。√<span class="var">d</span> で割ると、次元によらず同じくらいの大きさにそろう。</span></li>
+        </ol>
+        <p>行列でまとめた書き方 softmax(<span class="var">Q</span><span class="var">K</span><sup>T</sup> ÷ √<span class="var">d</span>)<span class="var">V</span> は、<a href="#llm-mechanics">LLMのしくみ</a>でくわしく読みます。</p>
+      </div>
       <figure class="fig">
         <svg viewBox="0 0 320 272" role="img" aria-label="自己注意の流れ: キーとのスコア、ソフトマックスの重み、バリューの重み付き平均">
           <text class="t-ink" x="160" y="12" text-anchor="middle">① トークンごとにキー <tspan class="v">k</tspan> とバリュー <tspan class="v">v</tspan></text>
@@ -1047,7 +1717,7 @@
         <figcaption>「鳴いた」のクエリから見た自己注意(数値は下の例3の仮の値)。関連の強いトークンほど、出力に多くまざります。</figcaption>
       </figure>
       <p>自己注意では、離れた位置のトークンどうしも1回で直接参照できます。そのかわり、長さ <span class="var">n</span> の系列では <span class="var">n</span> × <span class="var">n</span> 組の重みを計算するので、長さが2倍になると4倍になります。また、自己注意はトークンの並びを入れかえても同じように計算されるので、並び順を区別するために<span class="rule">位置エンコーディング</span>(位置を表すベクトルを埋め込みに足す、などの方法)で位置の情報を加えます。</p>
-      <p>トークンは最初に<span class="rule">埋め込み</span>で、単語ごとに1本のベクトルに変えます。埋め込み表のパラメータ数は 語彙数 × 次元 です。意味の近い語は近い向きのベクトルになるように学習され、向きの近さは<span class="rule">コサイン類似度</span>(内積 ÷ 長さの積。−1〜1)で測ります。</p>
+      <p>トークンは最初に<span class="rule">埋め込み</span>で、単語ごとに1本のベクトルに変えます。埋め込み表のパラメータ数は 語彙数 × 次元 です。意味の近い語は近い向きのベクトルになるように学習され、向きの近さは<span class="rule">コサイン類似度</span>(内積 ÷ 長さの積。−1〜1)で測ります(<a href="#mb-vector">内積とコサイン類似度</a>)。Transformer が LLM の中でどう組み立てられているかは、<a href="#llm-mechanics">LLMのしくみ</a>で順に見ます。</p>
 
       <h3>例で確かめる</h3>
       <div class="example">
@@ -1131,11 +1801,26 @@
   <!-- ==================== 生成AIのしくみ ==================== -->
   <section class="unit" id="generative-ai">
     <div class="card unit-card">
-      <div class="point"><span class="point-label">ひとことで</span><p>大規模言語モデル(LLM)は、それまでのトークンから「次のトークンの確率」を計算し、1つ選んで後ろに足す、をくり返して文章を作ります。選び方は温度・top-k・top-p で調整します。</p></div>
+      <div class="point"><span class="point-label">ひとことで</span><p>生成AIは、データがどう分布しているかを学び、そこから新しいデータを作るモデルです。大規模言語モデル(LLM)は「次のトークンの確率」を計算して1つ選ぶ、をくり返して文章を作り、画像生成でよく使われる拡散モデルは、ノイズから少しずつノイズを取り除いて画像を作ります。</p></div>
 
-      <h3>しくみ</h3>
+      <h3>しくみ: 生成モデルと識別モデル</h3>
+      <p>これまでの単元の分類モデルは、入力 <span class="var">x</span> を見て答え <span class="var">y</span> を当てる<span class="rule">識別モデル</span>でした。確率でいえば <span class="var">P</span>(<span class="var">y</span> | <span class="var">x</span>)(「このメールが与えられたとき、迷惑メールである確率」)を学びます(<a href="#mb-prob">条件付き確率</a>)。</p>
+      <p><span class="rule">生成モデル</span>は、データそのものがどう分布しているか(どんな文章・画像が「ありそう」か)を学び、そこから新しいデータを<span class="rule">サンプリング</span>(確率に従って取り出す)できるモデルです。「猫の絵」「やさしい口調で」のような条件をつけて、<span class="var">P</span>(データ | 条件) から作ることもよくあります。</p>
+      <div class="q-table-wrap">
+        <table class="q-table">
+          <thead><tr><th></th><th>識別モデル</th><th>生成モデル</th></tr></thead>
+          <tbody>
+            <tr><td>学ぶもの</td><td>入力 → 答え</td><td>データの分布</td></tr>
+            <tr><td>出力</td><td>ラベルや確率</td><td>新しい文章・画像など</td></tr>
+            <tr><td>例</td><td>迷惑メールの判定、画像の分類</td><td>LLM、拡散モデル</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>生成モデルには、LLM のような自己回帰モデルと拡散モデルのほかに、作る側と見分ける側を競わせる GAN(敵対的生成ネットワーク)や、データを小さな表現に圧縮して戻す VAE(変分オートエンコーダ)などもあります。</p>
+
+      <h3>しくみ: 次トークン予測と自己回帰</h3>
       <p>LLM は文章を<span class="rule">トークン</span>(単語・単語の一部・文字などの小さな単位)に区切り、トークンの番号の列として扱います。どこで区切るかはモデルの<span class="rule">トークナイザー</span>で決まり、1文字が1トークンとも、1単語が1トークンとも限りません。</p>
-      <p><span class="rule">事前学習</span>では、大量のテキストで「次のトークンは何か」を当てる<span class="rule">次トークン予測</span>をくり返します。正解は文章そのものの中にあるので、人がラベルをつけなくても学習できます。多くの LLM は Transformer を使い、予測のときに先のトークンを見ないようにして学習します。</p>
+      <p><span class="rule">事前学習</span>では、大量のテキストで「次のトークンは何か」を当てる<span class="rule">次トークン予測</span>をくり返します。正解は文章そのものの中にあるので、人がラベルをつけなくても学習できます。多くの LLM は Transformer を使い、予測のときに先のトークンを見ないようにして学習します。トークンの区切り方や、Transformer の中の計算は<a href="#llm-mechanics">LLMのしくみ</a>で説明します。</p>
       <p>文章を作るときは、予測した確率から次のトークンを1つ選んで入力の後ろに加え、それをもとにまた次を予測する、をくり返します(<span class="rule">自己回帰</span>生成)。10 トークン作るには、次トークン予測を 10 回行います。</p>
       <ol>
         <li>入力「今日の天気は」→ 次のトークンの確率を計算 → 「晴れ」を選ぶ。</li>
@@ -1145,6 +1830,16 @@
       <p>モデルは候補ごとのスコア(<span class="rule">ロジット</span>)を出し、<span class="rule">ソフトマックス</span>で確率にします。温度 <span class="var">T</span> つきでは、ロジットを <span class="var">T</span> で割ってから確率にします(<span class="var">T</span> = 1 なら元のまま)。</p>
       <div class="formula"><span>候補 <span class="var">i</span> の確率</span><span>=</span><span><span class="frac"><span class="num">exp(<span class="var">z</span><sub><span class="var">i</span></sub> ÷ <span class="var">T</span>)</span><span class="den">すべての候補の exp(<span class="var">z</span> ÷ <span class="var">T</span>) の和</span></span></span></div>
       <p class="formula-note">exp(<span class="var">a</span>) は <span class="var">e</span><sup><span class="var">a</span></sup>(<span class="var">e</span> ≒ 2.718 の <span class="var">a</span> 乗)、<span class="var">z</span><sub><span class="var">i</span></sub> は候補 <span class="var">i</span> のロジット。</p>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>ソフトマックスを1行ずつ(ロジット 2、1、0、<span class="var">T</span> = 1)</b></p>
+        <ol class="say">
+          <li><span class="f">exp( … )</span><span class="w">それぞれ <span class="var">e</span> の何乗かにする: <span class="var">e</span><sup>2</sup> ≒ 7.389、<span class="var">e</span><sup>1</sup> ≒ 2.718、<span class="var">e</span><sup>0</sup> = 1。負のロジットでも必ず正になる(<a href="#mb-exp-log">指数関数</a>)。</span></li>
+          <li><span class="f">分母: すべての和</span><span class="w">7.389 + 2.718 + 1 ≒ 11.107。</span></li>
+          <li><span class="f">分子 ÷ 分母</span><span class="w">7.389 ÷ 11.107 ≒ 0.67、2.718 ÷ 11.107 ≒ 0.24、1 ÷ 11.107 ≒ 0.09。全体で割るので合計は 1。</span></li>
+          <li><span class="f">÷ <span class="var">T</span></span><span class="w">温度があるときは、exp の前にロジットを <span class="var">T</span> で割るだけ。</span></li>
+        </ol>
+        <p><b>なぜ exp を使うのか。</b>ロジットの差が 1 あると、確率の比は <span class="var">e</span> ≒ 2.718 倍になります(晴れ ÷ 曇り = 7.389 ÷ 2.718 ≒ 2.718)。差が 2 なら <span class="var">e</span><sup>2</sup> ≒ 7.4 倍。「差」を「倍率」に変えるので、全部に同じ数を足しても確率が変わらない、という性質が出てきます。</p>
+      </div>
       <p>どの候補の確率も 0 より大きく、合計は 1 です。すべてのロジットに同じ数を足しても、分子も分母も同じ倍率になるので確率は変わりません。確率を決めるのはロジットどうしの差です。<span class="var">T</span> を小さくするとロジットの差が広がり、最大の候補に確率が集中します。<span class="var">T</span> を大きくすると差が縮まり、確率は均等に近づいて、出力が多様になります。</p>
       <figure class="fig">
         <svg viewBox="0 28 320 172" role="img" aria-label="ロジット2,1,0のソフトマックス確率を温度0.5、1、2で比べた棒グラフ">
@@ -1168,12 +1863,58 @@
       </figure>
       <p>確率からの選び方にも種類があります。</p>
       <ul>
-        <li><span class="rule">貪欲法</span>: 毎回、最も確率の高いトークンを選ぶ。ランダムさがなく、同じ入力なら同じ出力になりやすい。温度を 0 に近づけたときの選び方に近い。</li>
+        <li><span class="rule">貪欲法</span>: 毎回、最も確率の高いトークンを選ぶ。ランダムさがなく、同じ入力なら同じ出力になる。温度を 0 に近づけたときの選び方に近い。</li>
         <li><span class="rule">top-k</span>: 確率の大きい上位 <span class="var">k</span> 個だけを残し、合計が 1 になるように直してから選ぶ。</li>
         <li><span class="rule">top-p</span>: 確率の大きい順に足していき、累積が <span class="var">p</span> 以上になるまでの候補を残して選ぶ。</li>
       </ul>
       <p>事前学習のあと、目的に合ったデータで追加学習して調整するのが<span class="rule">ファインチューニング</span>です。ゼロから学習するより少ないデータで、特定の目的や話し方に合わせられます。対話向けのモデルでは <span class="rule">RLHF</span>(人間のフィードバックによる強化学習)も使われます。人がどちらの応答がよいかを比べたデータで<span class="rule">報酬モデル</span>を学習し、その報酬が高くなるように、強化学習で言語モデルを調整します。</p>
-      <p>モデルが一度に扱えるトークン数の上限を<span class="rule">コンテキスト長</span>といいます。多くのモデルでは、入力と出力を合わせたトークン数がこの上限以内でなければなりません。なお、画像を作る生成AIでは、拡散モデルなど別のしくみもよく使われます。</p>
+      <p>モデルが一度に扱えるトークン数の上限を<span class="rule">コンテキスト長</span>といいます。多くのモデルでは、入力と出力を合わせたトークン数がこの上限以内でなければなりません。</p>
+      <p>事前学習・ファインチューニング・RLHF などの学習の段階と、プロンプトや RAG などの使い方は、<a href="#llm-practice">LLMの学習と活用</a>でくわしく扱います。</p>
+
+      <h3>しくみ: 拡散モデル(画像の生成)</h3>
+      <p>画像の生成でよく使われるのが<span class="rule">拡散モデル</span>です。考え方は「ノイズを足すのは簡単なので、その逆の、ノイズを取り除く方法を学ばせる」です。</p>
+      <ol>
+        <li><b>ノイズを足す(前向き)</b>: 本物の画像に、正規分布のノイズ(<a href="#mb-normal">正規分布</a>)を少しずつ足していく。何段階も足すと、元の画像がわからない、ただのノイズになる。これは計算だけでできるので、学習用の問題がいくらでも作れる。</li>
+        <li><b>ノイズの取り除き方を学ぶ</b>: モデルに「ノイズが足された画像」と「何段階目か」を見せ、足されたノイズを当てさせる。損失は、予想したノイズと本当のノイズの差の2乗(MSE)。</li>
+        <li><b>生成(後ろ向き)</b>: ただのノイズから出発し、モデルが予想したノイズを少しずつ引く、を何回もくり返すと、画像が浮かび上がる。</li>
+      </ol>
+      <figure class="fig">
+        <svg viewBox="0 0 320 150" role="img" aria-label="拡散モデル: 画像に少しずつノイズを足すと最後はノイズだけになる。生成では逆に、ノイズから少しずつノイズを取り除いて画像を作る">
+          <defs>
+            <marker id="arD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-axis" d="M0 0 L10 5 L0 10 Z"/></marker>
+            <marker id="arD2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-vec-b" d="M0 0 L10 5 L0 10 Z"/></marker>
+          </defs>
+          <line class="s-arrow" x1="30" y1="28" x2="290" y2="28" marker-end="url(#arD)"/>
+          <text class="t-ink" x="160" y="20" text-anchor="middle">ノイズを足す(学習用の問題を作る)</text>
+          <rect class="box" x="18" y="40" width="44" height="44" rx="4"/><circle class="f-point" cx="40" cy="62" r="12" opacity="1"/>
+          <rect class="box" x="78" y="40" width="44" height="44" rx="4"/><circle class="f-point" cx="100" cy="62" r="12" opacity="0.75"/><g class="f-dots"><circle cx="103.7" cy="54.4" r="1.7"/><circle cx="118.5" cy="68.5" r="1.6"/><circle cx="114.1" cy="77.8" r="1.1"/><circle cx="118.9" cy="51.0" r="1.2"/><circle cx="118.7" cy="45.2" r="1.5"/><circle cx="82.1" cy="45.7" r="1.8"/><circle cx="116.1" cy="73.8" r="1.9"/><circle cx="83.4" cy="66.5" r="1.6"/><circle cx="88.7" cy="76.9" r="1.1"/><circle cx="111.5" cy="48.6" r="1.0"/></g>
+          <rect class="box" x="138" y="40" width="44" height="44" rx="4"/><circle class="f-point" cx="160" cy="62" r="12" opacity="0.5"/><g class="f-dots"><circle cx="168.2" cy="71.1" r="2.0"/><circle cx="172.1" cy="74.8" r="1.9"/><circle cx="142.4" cy="55.9" r="1.2"/><circle cx="166.0" cy="57.6" r="1.4"/><circle cx="171.0" cy="54.9" r="2.0"/><circle cx="162.2" cy="50.6" r="1.6"/><circle cx="162.8" cy="58.8" r="1.4"/><circle cx="172.9" cy="65.8" r="1.4"/><circle cx="168.3" cy="65.3" r="1.5"/><circle cx="162.8" cy="52.0" r="1.1"/><circle cx="163.5" cy="63.0" r="1.5"/><circle cx="152.2" cy="60.2" r="1.1"/><circle cx="170.3" cy="50.7" r="1.1"/><circle cx="173.3" cy="65.9" r="1.7"/><circle cx="176.4" cy="52.5" r="1.6"/><circle cx="156.0" cy="67.0" r="1.8"/><circle cx="149.8" cy="50.3" r="1.7"/><circle cx="141.0" cy="53.8" r="1.9"/><circle cx="170.1" cy="59.4" r="1.4"/><circle cx="160.4" cy="52.6" r="1.4"/><circle cx="173.1" cy="53.7" r="1.7"/><circle cx="143.2" cy="76.3" r="1.8"/></g>
+          <rect class="box" x="198" y="40" width="44" height="44" rx="4"/><circle class="f-point" cx="220" cy="62" r="12" opacity="0.25"/><g class="f-dots"><circle cx="218.0" cy="49.6" r="2.0"/><circle cx="212.0" cy="51.4" r="1.5"/><circle cx="230.4" cy="56.8" r="1.0"/><circle cx="217.0" cy="47.1" r="2.2"/><circle cx="211.6" cy="64.9" r="1.7"/><circle cx="235.2" cy="70.4" r="2.2"/><circle cx="210.8" cy="51.6" r="1.6"/><circle cx="216.0" cy="72.9" r="1.6"/><circle cx="236.9" cy="72.6" r="1.6"/><circle cx="235.8" cy="57.8" r="1.7"/><circle cx="234.8" cy="60.6" r="1.4"/><circle cx="229.3" cy="77.1" r="2.0"/><circle cx="207.9" cy="52.3" r="1.4"/><circle cx="202.9" cy="48.2" r="1.8"/><circle cx="232.0" cy="51.9" r="1.7"/><circle cx="211.8" cy="50.1" r="1.7"/><circle cx="225.4" cy="77.9" r="2.1"/><circle cx="210.3" cy="68.9" r="1.1"/><circle cx="232.3" cy="55.7" r="1.4"/><circle cx="227.3" cy="47.2" r="2.0"/><circle cx="214.5" cy="53.5" r="1.7"/><circle cx="219.0" cy="64.1" r="2.1"/><circle cx="218.1" cy="80.3" r="1.1"/><circle cx="223.2" cy="67.7" r="1.2"/><circle cx="224.1" cy="72.1" r="1.7"/><circle cx="203.0" cy="77.0" r="1.6"/><circle cx="217.5" cy="74.4" r="1.9"/><circle cx="207.0" cy="77.2" r="1.4"/><circle cx="204.7" cy="51.3" r="1.1"/><circle cx="230.0" cy="72.1" r="1.7"/><circle cx="201.5" cy="58.5" r="2.0"/><circle cx="217.9" cy="50.0" r="1.3"/><circle cx="207.1" cy="65.7" r="1.7"/><circle cx="212.8" cy="68.0" r="1.1"/><circle cx="233.5" cy="47.2" r="2.2"/><circle cx="206.3" cy="52.8" r="1.1"/></g>
+          <rect class="box" x="258" y="40" width="44" height="44" rx="4"/><g class="f-dots"><circle cx="287.2" cy="59.6" r="1.8"/><circle cx="262.2" cy="45.3" r="1.0"/><circle cx="265.6" cy="61.7" r="1.1"/><circle cx="298.5" cy="54.9" r="1.2"/><circle cx="269.1" cy="55.3" r="1.6"/><circle cx="280.5" cy="80.2" r="1.9"/><circle cx="283.7" cy="49.0" r="1.3"/><circle cx="291.1" cy="71.5" r="1.6"/><circle cx="264.3" cy="70.6" r="1.9"/><circle cx="263.3" cy="47.3" r="1.4"/><circle cx="269.4" cy="52.9" r="1.8"/><circle cx="282.2" cy="75.5" r="1.6"/><circle cx="293.7" cy="62.3" r="1.2"/><circle cx="285.5" cy="62.5" r="1.6"/><circle cx="290.5" cy="80.5" r="1.7"/><circle cx="287.2" cy="76.4" r="1.4"/><circle cx="295.9" cy="62.0" r="2.1"/><circle cx="297.4" cy="78.5" r="2.0"/><circle cx="281.8" cy="44.4" r="1.8"/><circle cx="264.2" cy="66.0" r="1.0"/><circle cx="297.3" cy="43.5" r="2.0"/><circle cx="293.0" cy="44.7" r="1.5"/><circle cx="265.0" cy="62.6" r="1.1"/><circle cx="274.0" cy="51.0" r="1.5"/><circle cx="290.7" cy="72.6" r="2.1"/><circle cx="274.8" cy="74.2" r="1.7"/><circle cx="280.5" cy="47.9" r="1.7"/><circle cx="281.0" cy="46.6" r="1.3"/><circle cx="261.4" cy="49.4" r="1.4"/><circle cx="272.6" cy="63.2" r="2.2"/><circle cx="281.2" cy="65.0" r="2.1"/><circle cx="296.4" cy="78.4" r="1.7"/><circle cx="289.2" cy="46.3" r="1.2"/><circle cx="279.0" cy="78.4" r="1.8"/><circle cx="261.8" cy="50.3" r="1.9"/><circle cx="290.8" cy="70.6" r="1.9"/><circle cx="276.5" cy="44.6" r="1.3"/><circle cx="286.5" cy="69.2" r="1.5"/><circle cx="284.5" cy="51.8" r="1.3"/><circle cx="261.5" cy="76.4" r="2.1"/><circle cx="264.7" cy="57.9" r="1.4"/><circle cx="290.3" cy="76.5" r="1.1"/><circle cx="268.9" cy="47.2" r="1.8"/><circle cx="273.0" cy="62.3" r="2.2"/><circle cx="270.4" cy="68.9" r="2.2"/><circle cx="297.7" cy="67.6" r="1.8"/><circle cx="283.1" cy="74.8" r="1.8"/><circle cx="281.8" cy="73.1" r="1.6"/><circle cx="265.1" cy="53.7" r="2.2"/><circle cx="293.8" cy="80.9" r="1.8"/></g>
+          <text class="t-sm" x="40" y="97" text-anchor="middle">画像</text>
+          <text class="t-sm" x="280" y="97" text-anchor="middle">ノイズだけ</text>
+          <line class="s-vec-b" x1="290" y1="112" x2="30" y2="112" marker-end="url(#arD2)"/>
+          <text class="t-model" x="160" y="132" text-anchor="middle">ノイズを少しずつ取り除く(生成)</text>
+          <text class="t-sm" x="160" y="146" text-anchor="middle">1歩ごとに「足されたノイズ」をモデルが予想して引く</text>
+        </svg>
+        <figcaption>拡散モデルの考え方。右向き(ノイズを足す)は計算で簡単に作れます。モデルが学ぶのは左向き(ノイズを取り除く)の1歩です。</figcaption>
+      </figure>
+      <div class="formula"><span>ノイズを足した画像</span><span>=</span><span><span class="var">a</span> × 元の画像 + <span class="var">b</span> × ノイズ <span class="var">ε</span></span></div>
+      <p class="formula-note">よく使われる形では <span class="var">a</span><sup>2</sup> + <span class="var">b</span><sup>2</sup> = 1 で、段階が進むほど <span class="var">a</span> が小さく、<span class="var">b</span> が大きくなります。<span class="var">ε</span>(イプシロン)は正規分布のノイズ。</p>
+      <p>画像の1つ1つのピクセルを直接あつかうと計算が重いので、画像をいったん小さな表現(潜在表現)に圧縮し、その上で拡散を行う方法もよく使われます。生成は1回の計算ではなく何回ものくり返しなので、LLM の1トークンずつの生成と同じく、手順の数だけ時間がかかります。</p>
+
+      <h3>しくみ: 画像生成とテキストの条件</h3>
+      <p>「夕焼けの海を描いた水彩画」のような文章(プロンプト)から画像を作るときは、文章をまず<span class="rule">テキストエンコーダ</span>でベクトルの列に変え、ノイズを取り除くモデルに条件として渡します。モデルは、ノイズを予想するたびに注意(attention)などでこの条件を参照するので、文章に合う方向へ画像が仕上がっていきます。</p>
+      <p>条件ありの予想と条件なしの予想を比べ、その差の向きに強めに進める<span class="rule">ガイダンス</span>という工夫もよく使われます。強くすると文章に忠実になりやすいかわりに、画像の多様さや自然さが下がることがあります。温度と同じく、「強ければよい」というつまみではありません。</p>
+
+      <h3>しくみ: ハルシネーションはなぜ起きるか</h3>
+      <p>LLM は「学習データの中でありそうな続き」を確率で選んでいて、文を作るたびに事実を確かめているわけではありません。そのため、次のような場面で、事実と異なる内容をもっともらしく作ることがあります(<span class="rule">ハルシネーション</span>)。</p>
+      <ul>
+        <li>学習データにほとんど出てこない、めずらしい事実(細かい数値、人名、論文名など)。</li>
+        <li>学習したあとに起きた出来事。モデルの知識は、学習データを集めた時点で止まっています。</li>
+        <li>「わからない」と答えるより、それらしい答えを続けるほうが確率の高い流れになっているとき。</li>
+      </ul>
+      <p>減らす工夫には、信頼できる資料を検索して入力に入れる RAG、出典を示させて人が確かめる、「わからない場合はそう答える」よう指示する、などがあります。どれも完全には防げないので、重要な内容は人が確認します(<a href="#llm-practice">LLMの学習と活用</a>)。</p>
 
       <h3>例で確かめる</h3>
       <div class="example">
@@ -1197,6 +1938,23 @@
         <p class="ex-title">例3: コンテキスト長</p>
         <p>上限 4096 トークン、入力 3000 トークンなら、出力に使えるのは最大 4096 − 3000 = <span class="ans">1096 トークン</span>。</p>
       </div>
+      <div class="example">
+        <p class="ex-title">例4: ノイズを足して、取り除く(ピクセル1つだけで)</p>
+        <p>元のピクセルの値 1.0、ノイズ <span class="var">ε</span> = 0.5、<span class="var">a</span> = 0.8、<span class="var">b</span> = 0.6(0.8<sup>2</sup> + 0.6<sup>2</sup> = 0.64 + 0.36 = 1)。</p>
+        <ol>
+          <li>ノイズを足す: 0.8 × 1.0 + 0.6 × 0.5 = <span class="ans">1.1</span>。</li>
+          <li>モデルがノイズを 0.5 と正しく当てたら、元に戻せる: (1.1 − 0.6 × 0.5) ÷ 0.8 = 0.8 ÷ 0.8 = <span class="ans">1.0</span>。</li>
+          <li>実際の生成では、一度に戻さず、少しずつ引くことをくり返します。</li>
+        </ol>
+      </div>
+      <div class="example">
+        <p class="ex-title">例5: 識別モデルか、生成モデルか</p>
+        <ol>
+          <li>写真を見て「猫」「犬」を当てる → <span class="ans">識別モデル</span>(入力 → 答え)。</li>
+          <li>「猫の写真」という条件から、新しい写真を作る → <span class="ans">生成モデル</span>(条件 → データ)。</li>
+          <li>文章の続きを1トークンずつ確率で選んで書く LLM → <span class="ans">生成モデル</span>。</li>
+        </ol>
+      </div>
 
       <h3>よくある誤解・注意</h3>
       <ul class="caution">
@@ -1204,10 +1962,14 @@
         <li><b>もっともらしい = 正しい、ではない。</b>LLM は「ありそうな続き」を生成するので、事実と異なる内容や存在しない出典をもっともらしく作ることがあります(<span class="rule">ハルシネーション</span>)。重要な内容は出典で確かめます。信頼できる資料を検索して入力にふくめる <span class="rule">RAG</span> も、減らす工夫の1つです。</li>
         <li><b>ロジットが負でも確率は 0 にならない。</b><span class="var">e</span> の何乗かは必ず正なので、どの候補にも 0 より大きい確率が残ります。</li>
         <li><b>温度を上げるほど良い、ではない。</b>多様にはなりますが、ありそうもない語も選ばれやすくなります。</li>
+        <li><b>拡散モデルは1回で絵を描くのではない。</b>ノイズから少しずつノイズを取り除く手順を、何回もくり返して画像にします。</li>
+        <li><b>生成AIは、学習データをそのまま貼り合わせているわけではない。</b>分布を学んで新しく作りますが、学習データによく似たものを出してしまうこともあるので、権利や個人情報には注意が必要です。</li>
       </ul>
 
       <h3>用語ミニ辞典</h3>
       <dl class="glossary">
+        <dt>生成モデル</dt><dd>データの分布を学び、新しいデータを作れるモデル。</dd>
+        <dt>識別モデル</dt><dd>入力から答え(ラベル)を当てるモデル。<span class="var">P</span>(<span class="var">y</span> | <span class="var">x</span>) を学ぶ。</dd>
         <dt>トークン</dt><dd>LLM が文章を扱う単位。単語・単語の一部・文字など。</dd>
         <dt>次トークン予測</dt><dd>それまでのトークンから、次のトークンを当てる学習の問題。</dd>
         <dt>自己回帰生成</dt><dd>生成したトークンを入力に加え、次を予測することをくり返す作り方。</dd>
@@ -1220,9 +1982,486 @@
         <dt>ハルシネーション</dt><dd>事実と異なる内容を、もっともらしく生成すること。</dd>
         <dt>RAG</dt><dd>検索した資料を入力にふくめて生成する方法。</dd>
         <dt>コンテキスト長</dt><dd>モデルが一度に扱えるトークン数の上限。</dd>
+        <dt>拡散モデル</dt><dd>ノイズを足す過程の逆(ノイズの取り除き)を学び、ノイズから画像などを作るモデル。</dd>
+        <dt>テキストエンコーダ</dt><dd>プロンプトの文章を、条件として使うベクトルの列に変える部分。</dd>
+        <dt>ガイダンス</dt><dd>条件ありと条件なしの予想の差を使い、条件に合う向きへ強めに進める工夫。</dd>
       </dl>
     </div>
   </section>
+
+  <!-- ==================== LLMのしくみ ==================== -->
+  <section class="unit" id="llm-mechanics">
+    <div class="card unit-card">
+      <div class="point"><span class="point-label">ひとことで</span><p>LLM は、文章をトークンに区切って番号にし、埋め込みでベクトルに変え、位置の情報を足してから、Transformer ブロック(自己注意 → FFN)を何層も通します。最後に語彙のすべてのトークンのスコア(ロジット)を出し、ソフトマックスで次のトークンの確率にします。</p></div>
+
+      <p>この単元では、LLM の中で1つの文章がどう計算されるかを、入口から出口まで順に追います。行列の積(<a href="#mb-matrix">行列</a>)、内積とコサイン類似度(<a href="#mb-vector">ベクトル</a>)、ソフトマックス(<a href="#generative-ai">生成AIのしくみ</a>)を使います。</p>
+      <ul class="mini-toc" aria-label="LLMのしくみの中の項目">
+        <li><a href="#lm-token">トークン化</a></li>
+        <li><a href="#lm-embed">埋め込み</a></li>
+        <li><a href="#lm-pos">位置の情報</a></li>
+        <li><a href="#lm-attn">自己注意 Q・K・V</a></li>
+        <li><a href="#lm-mask">因果マスク</a></li>
+        <li><a href="#lm-block">Transformer ブロック</a></li>
+        <li><a href="#lm-output">出力層</a></li>
+        <li><a href="#lm-params">パラメータ数</a></li>
+        <li><a href="#lm-cost">計算量と KVキャッシュ</a></li>
+      </ul>
+
+      <h3 id="lm-token">しくみ1: トークン化(サブワードと BPE)</h3>
+      <p>LLM は文字を直接は扱えないので、まず文章を<span class="rule">トークン</span>に区切り、1つ1つを番号(トークンID)に置きかえます。区切り方を決めるのが<span class="rule">トークナイザー</span>で、使えるトークンの一覧を<span class="rule">語彙</span>といいます。</p>
+      <p>単語ごとに区切ると語彙が巨大になり、辞書にない語を表せません。1文字ずつ区切ると、どんな語も表せるかわりに列が長くなりすぎます。そこで多くの LLM は、その中間の<span class="rule">サブワード</span>を使います。よく出る語は1トークン、めったに出ない語は部品に分けて表します。</p>
+      <figure class="fig">
+        <svg viewBox="0 0 320 150" role="img" aria-label="トークン化の例: 機械学習はたのしい を 機械・学習・は・たの・しい の5トークンに、unbelievable を un・believ・able の3トークンに区切り、それぞれに番号をつける">
+          <text class="t-ink" x="160" y="14" text-anchor="middle">「機械学習はたのしい」→ 5トークン</text>
+          <rect class="box" x="11" y="24" width="60" height="30" rx="6"/><rect class="box" x="77" y="24" width="60" height="30" rx="6"/><rect class="box" x="143" y="24" width="34" height="30" rx="6"/><rect class="box" x="183" y="24" width="60" height="30" rx="6"/><rect class="box" x="249" y="24" width="60" height="30" rx="6"/>
+          <text class="t-ink t-big" x="41" y="44" text-anchor="middle">機械</text><text class="t-ink t-big" x="107" y="44" text-anchor="middle">学習</text><text class="t-ink t-big" x="160" y="44" text-anchor="middle">は</text><text class="t-ink t-big" x="213" y="44" text-anchor="middle">たの</text><text class="t-ink t-big" x="279" y="44" text-anchor="middle">しい</text>
+          <text class="t-mono t-sm" x="41" y="68" text-anchor="middle">2817</text><text class="t-mono t-sm" x="107" y="68" text-anchor="middle">9034</text><text class="t-mono t-sm" x="160" y="68" text-anchor="middle">15</text><text class="t-mono t-sm" x="213" y="68" text-anchor="middle">4410</text><text class="t-mono t-sm" x="279" y="68" text-anchor="middle">771</text>
+          <text class="t-ink" x="160" y="94" text-anchor="middle">「unbelievable」→ 3トークン</text>
+          <rect class="box" x="76" y="104" width="34" height="30" rx="6"/><rect class="box" x="116" y="104" width="70" height="30" rx="6"/><rect class="box" x="192" y="104" width="52" height="30" rx="6"/>
+          <text class="t-ink t-mono" x="93" y="124" text-anchor="middle">un</text><text class="t-ink t-mono" x="151" y="124" text-anchor="middle">believ</text><text class="t-ink t-mono" x="218" y="124" text-anchor="middle">able</text>
+          <text class="t-mono t-sm" x="93" y="147" text-anchor="middle">403</text><text class="t-mono t-sm" x="151" y="147" text-anchor="middle">27511</text><text class="t-mono t-sm" x="218" y="147" text-anchor="middle">540</text>
+        </svg>
+        <figcaption>区切り方の一例(番号は説明用の架空のもの)。実際の区切り方と番号は、トークナイザーごとにちがいます。</figcaption>
+      </figure>
+      <p>サブワードの語彙を作る代表的な方法が <span class="rule">BPE</span>(バイトペア符号化)です。1文字ずつに分けた状態から始め、「学習用の文章の中で、いちばん多く隣り合っている2つの組」を1つの新しいトークンにまとめる、を決めた回数(語彙が決めた大きさになるまで)くり返します。</p>
+      <p>トークン数は、文字数とも単語数とも一致しません。日本語は、トークナイザーによっては同じ内容の英語よりトークン数が多くなることがあります。コンテキスト長の上限や料金・処理時間はトークン数で決まるので、文字数ではなくトークン数で考えます。</p>
+
+      <h3 id="lm-embed">しくみ2: 語彙と埋め込み</h3>
+      <p>トークンIDは単なる番号で、番号の大小に意味はありません。そこで<span class="rule">埋め込み表</span>(語彙数 × 次元 <span class="var">d</span> の行列)を用意し、ID の行を取り出して、そのトークンのベクトルにします。これが<span class="rule">埋め込み</span>です。表の中身は学習で決まり、意味や使われ方の近いトークンほど、近い向きのベクトルになっていきます。向きの近さはコサイン類似度で測ります(<a href="#mb-vector">コサイン類似度</a>)。</p>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>「行を取り出す」は、行列の積でも書ける</b></p>
+        <div class="mat-row">
+          <figure class="mat-box"><figcaption>ワンホット(ID = 1)</figcaption><table class="mat"><tbody>
+            <tr><td>0</td><td class="hit">1</td><td>0</td></tr>
+          </tbody></table></figure>
+          <figure class="mat-box"><figcaption>埋め込み表 <span class="var">E</span>(3語 × 2次元)</figcaption><table class="mat"><tbody>
+            <tr><td>0.1</td><td>0.3</td></tr>
+            <tr><td class="hit">0.9</td><td class="hit">0.2</td></tr>
+            <tr><td>−0.4</td><td>0.7</td></tr>
+          </tbody></table></figure>
+          <figure class="mat-box"><figcaption>結果</figcaption><table class="mat"><tbody>
+            <tr><td class="hit">0.9</td><td class="hit">0.2</td></tr>
+          </tbody></table></figure>
+        </div>
+        <ol class="say">
+          <li><span class="f">ワンホット</span><span class="w">ID の位置だけ 1、ほかは 0 のベクトル。ID = 1(0 から数えて2番目)なら (0, 1, 0)。</span></li>
+          <li><span class="f">(1×3) × (3×2)</span><span class="w">1列目: 0 × 0.1 + 1 × 0.9 + 0 × (−0.4) = 0.9。2列目も同じく 0.2。結果は 1×2(<a href="#mb-matrix">形の決まり</a>)。</span></li>
+          <li><span class="f">= <span class="var">E</span> の2行目</span><span class="w">0 をかけた行は消えるので、2行目がそのまま出てくる。実際の計算では、かけ算をせずに行を引くだけで済ませる。</span></li>
+        </ol>
+      </div>
+      <p>よく知られた例に「王 − 男 + 女 ≒ 女王」があります。男 → 女 の向きの差を王に足すと、女王の近くに来る、というように、ベクトルの差が「関係」を表すことがあります。ただし、いつもきれいに成り立つわけではありません。<a href="lab.html#embedding">実験室の「埋め込み」</a>では、2次元の模型で内積・コサイン類似度・足し引きを試せます。実際の埋め込みは数百〜数千次元です。</p>
+
+      <h3 id="lm-pos">しくみ3: 位置の情報</h3>
+      <p>自己注意は、トークンの並びを入れかえても同じように計算されます。このままでは「ねこ が いぬ を 追う」と「いぬ が ねこ を 追う」の区別がつきません。そこで、何番目かを表すベクトル(<span class="rule">位置埋め込み</span>)をトークンの埋め込みに足したり、位置に応じてクエリとキーを回転させたりして、位置の情報を入れます。方式はモデルによってちがいます。</p>
+      <div class="example">
+        <p class="ex-title">例: 位置埋め込みを足す</p>
+        <p>「ねこ」の埋め込み (1, 2) に、3番目の位置を表すベクトル (0.5, −1) を足すと、(1 + 0.5, 2 − 1) = <span class="ans">(1.5, 1)</span>。同じ「ねこ」でも、別の位置なら別のベクトルになります。</p>
+      </div>
+
+      <h3 id="lm-attn">しくみ4: 自己注意(クエリ・キー・バリュー)</h3>
+      <p>自己注意は、各トークンが「文中のどのトークンの情報を、どれだけ取りこむか」を決めて混ぜる計算です。各トークンのベクトル <span class="var">x</span> に、学習で決まる3つの重み行列をかけて、3種類のベクトルを作ります。</p>
+      <ul>
+        <li><span class="rule">クエリ</span> <span class="var">q</span> = <span class="var">x</span><span class="var">W</span><sub>Q</sub>: 「自分はどんな情報を探しているか」。</li>
+        <li><span class="rule">キー</span> <span class="var">k</span> = <span class="var">x</span><span class="var">W</span><sub>K</sub>: 「自分はどんな情報を持っているか」(見出し)。</li>
+        <li><span class="rule">バリュー</span> <span class="var">v</span> = <span class="var">x</span><span class="var">W</span><sub>V</sub>: 「選ばれたら渡す中身」。</li>
+      </ul>
+      <p class="formula-note">ここでは <span class="var">x</span><span class="var">W</span>(横に並べたベクトル × 行列)と書いていますが、ほかの単元の <span class="var">W</span><span class="var">x</span>(行列 × 縦に並べたベクトル)と、書き方の向きがちがうだけで、やっていることは同じ「行列とベクトルの積」です(<a href="#mb-matrix">行列とベクトルの積</a>)。Transformer の説明では、トークンを1行ずつ積み重ねるので、この向きで書くことが多くあります。</p>
+      <p>クエリとキーの内積で関連の強さ(スコア)を出し、ソフトマックスで重みにして、バリューを重み付き平均します。全トークンぶんを行列でまとめて書くと、次の1行になります。</p>
+      <div class="formula"><span>注意の出力</span><span>=</span><span>softmax<span>(</span><span class="frac"><span class="num"><span class="var">Q</span><span class="var">K</span><sup>T</sup></span><span class="den">√<span class="var">d</span></span></span><span>)</span> <span class="var">V</span></span></div>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>行列の形を追いながら読む(トークン <span class="var">n</span> 個、次元 <span class="var">d</span>)</b></p>
+        <ol class="say">
+          <li><span class="f"><span class="var">Q</span>、<span class="var">K</span>、<span class="var">V</span>(<span class="var">n</span>×<span class="var">d</span>)</span><span class="w">各トークンの <span class="var">q</span>・<span class="var">k</span>・<span class="var">v</span> を1行ずつ積み重ねた行列。</span></li>
+          <li><span class="f"><span class="var">K</span><sup>T</sup>(<span class="var">d</span>×<span class="var">n</span>)</span><span class="w"><span class="var">K</span> の転置(行と列を入れかえたもの)。</span></li>
+          <li><span class="f"><span class="var">Q</span><span class="var">K</span><sup>T</sup>(<span class="var">n</span>×<span class="var">n</span>)</span><span class="w"><span class="var">i</span> 行 <span class="var">j</span> 列が「<span class="var">i</span> 番目のクエリ · <span class="var">j</span> 番目のキー」の内積。すべての組のスコアの表。</span></li>
+          <li><span class="f">÷ √<span class="var">d</span>、softmax</span><span class="w">大きさをそろえ、<span class="rule">行ごとに</span>ソフトマックスで重み(各行の合計 1)にする。</span></li>
+          <li><span class="f">× <span class="var">V</span>(<span class="var">n</span>×<span class="var">d</span>)</span><span class="w">(<span class="var">n</span>×<span class="var">n</span>) × (<span class="var">n</span>×<span class="var">d</span>) → <span class="var">n</span>×<span class="var">d</span>。各トークンに、バリューの重み付き平均が1本ずつできる。入力と同じ形にもどる。</span></li>
+        </ol>
+      </div>
+      <figure class="fig">
+        <svg viewBox="0 0 320 300" role="img" aria-label="自己注意の流れ: 入力Xに重みをかけてQ、K、Vを作り、QとKの転置の積を√dで割ってスコア、マスクとソフトマックスで重み、重みとVの積が出力">
+          <defs>
+            <marker id="arQ" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-axis" d="M0 0 L10 5 L0 10 Z"/></marker>
+          </defs>
+          <rect class="box" x="90" y="6" width="140" height="34" rx="7"/>
+          <text class="t-ink" x="160" y="28" text-anchor="middle">入力 <tspan class="v">X</tspan>(<tspan class="v">n</tspan>×<tspan class="v">d</tspan>)</text>
+          <line class="s-arrow" x1="140" y1="40" x2="62" y2="72" marker-end="url(#arQ)"/>
+          <line class="s-arrow" x1="160" y1="40" x2="160" y2="72" marker-end="url(#arQ)"/>
+          <line class="s-arrow" x1="180" y1="40" x2="258" y2="72" marker-end="url(#arQ)"/>
+          <text class="t-sm" x="86" y="56" text-anchor="end">×<tspan class="v">W</tspan>Q</text><text class="t-sm" x="166" y="60">×<tspan class="v">W</tspan>K</text><text class="t-sm" x="234" y="56">×<tspan class="v">W</tspan>V</text>
+          <rect class="box" x="10" y="74" width="90" height="32" rx="7"/><rect class="box" x="115" y="74" width="90" height="32" rx="7"/><rect class="box" x="220" y="74" width="90" height="32" rx="7"/>
+          <text class="t-ink" x="55" y="95" text-anchor="middle">クエリ <tspan class="v">Q</tspan></text><text class="t-ink" x="160" y="95" text-anchor="middle">キー <tspan class="v">K</tspan></text><text class="t-ink" x="265" y="95" text-anchor="middle">バリュー <tspan class="v">V</tspan></text>
+          <line class="s-arrow" x1="55" y1="106" x2="80" y2="138" marker-end="url(#arQ)"/>
+          <line class="s-arrow" x1="160" y1="106" x2="135" y2="138" marker-end="url(#arQ)"/>
+          <rect class="box" x="10" y="140" width="200" height="40" rx="7"/>
+          <text class="t-ink" x="110" y="158" text-anchor="middle">スコア <tspan class="v">Q</tspan><tspan class="v">K</tspan>ᵀ ÷ √<tspan class="v">d</tspan></text>
+          <text class="t-sm" x="110" y="173" text-anchor="middle">すべての組(<tspan class="v">n</tspan>×<tspan class="v">n</tspan>)</text>
+          <line class="s-arrow" x1="110" y1="180" x2="110" y2="204" marker-end="url(#arQ)"/>
+          <rect class="box" x="10" y="206" width="200" height="40" rx="7"/>
+          <text class="t-ink" x="110" y="224" text-anchor="middle">マスク → 行ごとに softmax</text>
+          <text class="t-sm" x="110" y="239" text-anchor="middle">重み(各行の合計 1)</text>
+          <line class="s-arrow" x1="110" y1="246" x2="130" y2="262" marker-end="url(#arQ)"/>
+          <line class="s-arrow" x1="265" y1="106" x2="232" y2="262" marker-end="url(#arQ)"/>
+          <rect class="box-hi" x="60" y="264" width="200" height="32" rx="7"/>
+          <text class="t-ink" x="160" y="285" text-anchor="middle">出力 = 重み × <tspan class="v">V</tspan>(<tspan class="v">n</tspan>×<tspan class="v">d</tspan>)</text>
+        </svg>
+        <figcaption>自己注意の計算の流れ。<span class="var">W</span><sub>Q</sub>・<span class="var">W</span><sub>K</sub>・<span class="var">W</span><sub>V</sub> は学習で決まる重み行列です。</figcaption>
+      </figure>
+      <p>1組の <span class="var">Q</span>・<span class="var">K</span>・<span class="var">V</span> で注意を1回計算するかわりに、次元を分けて何組も並行して計算するのが<span class="rule">マルチヘッド注意</span>です。次元 768 を 12 ヘッドに分けると、1ヘッドは 768 ÷ 12 = 64 次元。ヘッドごとに、文法上の関係・意味の関係など、ちがう種類の関連を見られます。最後に全ヘッドの出力をつなげて 768 次元にもどし、出力用の重み行列 <span class="var">W</span><sub>O</sub> をかけます。<a href="lab.html#attention">実験室の「自己注意」</a>で、重みが決まるようすを動かして見られます。</p>
+
+      <h3 id="lm-mask">しくみ5: 因果マスク(先を見ない)</h3>
+      <p>文章を作るとき、まだ書いていない先のトークンは存在しません。学習のときも同じ条件にするため、LLM の自己注意では、各トークンが<span class="rule">自分と自分より前</span>のトークンだけを見るようにします。これが<span class="rule">因果マスク</span>です。先のトークンのスコアを −∞ にしてからソフトマックスにかけると、<span class="var">e</span><sup>−∞</sup> = 0 なので重みが 0 になります。</p>
+      <div class="q-table-wrap">
+        <table class="q-table">
+          <thead><tr><th>クエリ \ キー</th><th>今日</th><th>は</th><th>晴れ</th><th>です</th></tr></thead>
+          <tbody>
+            <tr><th>今日</th><td class="ok">○</td><td class="ng">×</td><td class="ng">×</td><td class="ng">×</td></tr>
+            <tr><th>は</th><td class="ok">○</td><td class="ok">○</td><td class="ng">×</td><td class="ng">×</td></tr>
+            <tr><th>晴れ</th><td class="ok">○</td><td class="ok">○</td><td class="ok">○</td><td class="ng">×</td></tr>
+            <tr><th>です</th><td class="ok">○</td><td class="ok">○</td><td class="ok">○</td><td class="ok">○</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="formula-note">○ は見られる(重みが 0 より大きい)、× は −∞ にして重みを 0 にする組。4トークンなら ○ は 1 + 2 + 3 + 4 = 10 組。</p>
+      <p>マスクのおかげで、1つの文章から「今日 → は」「今日 は → 晴れ」「今日 は 晴れ → です」の予測問題を、1回の計算でまとめて学習できます。どの位置も、自分より先の答えを見ていないからです。</p>
+
+      <h3 id="lm-block">しくみ6: Transformer ブロック(注意 → FFN、残差接続、正規化)</h3>
+      <p>LLM の本体は、同じ形の<span class="rule">Transformer ブロック</span>を何層も(数十層になることも)重ねたものです。1つのブロックの中では、次の2つを順に行います。</p>
+      <ol>
+        <li><span class="rule">自己注意</span>: トークンどうしの間で情報を混ぜる(上で見た計算)。</li>
+        <li><span class="rule">FFN</span>(フィードフォワード層): トークンごとに別々に、2層の全結合層でベクトルを変換する。次元をいったん4倍ほどに広げ、活性化関数を通して、元にもどすことが多い。</li>
+      </ol>
+      <p>それぞれに<span class="rule">残差接続</span>(出力 = <span class="var">x</span> + 層の計算(<span class="var">x</span>))と<span class="rule">正規化</span>がつきます。残差接続があると、各層は「入力にどれだけ足すか」だけを学べばよく、勾配も入力側まで伝わりやすくなります(<a href="#neural-network">勾配消失</a>)。正規化(層正規化など)は、ベクトルの値の大きさをそろえて学習を安定させます。正規化を注意や FFN の前に置くか後に置くかは、モデルによってちがいます。</p>
+      <figure class="fig">
+        <svg viewBox="0 0 320 330" role="img" aria-label="Transformerブロックの図: 埋め込みと位置、正規化、自己注意、残差で足す、正規化、FFN、残差で足す、をN層重ね、最後に出力層で語彙数のロジットとソフトマックス">
+          <defs>
+            <marker id="arT" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-axis" d="M0 0 L10 5 L0 10 Z"/></marker>
+          </defs>
+          <rect class="box" x="60" y="4" width="200" height="30" rx="7"/>
+          <text class="t-ink" x="160" y="24" text-anchor="middle">トークンの埋め込み + 位置</text>
+          <rect class="panel-frame" x="30" y="46" width="270" height="214" rx="10" stroke-dasharray="5 4"/>
+          <text class="t-sm" x="38" y="60">ブロック(× <tspan class="v">N</tspan> 層)</text>
+          <path class="s-arrow" d="M160 34 V60"/>
+          <rect class="box" x="100" y="62" width="120" height="24" rx="6"/><text x="160" y="78" text-anchor="middle">正規化</text>
+          <line class="s-arrow" x1="160" y1="86" x2="160" y2="94" marker-end="url(#arT)"/>
+          <rect class="box-hi" x="80" y="96" width="160" height="28" rx="6"/><text class="t-ink" x="160" y="114" text-anchor="middle">自己注意(因果マスク)</text>
+          <line class="s-arrow" x1="160" y1="124" x2="160" y2="130" marker-end="url(#arT)"/>
+          <circle class="box" cx="160" cy="142" r="10"/><text class="t-ink" x="160" y="146" text-anchor="middle">+</text>
+          <path class="s-guide" d="M160 52 H282 V142 H172"/>
+          <text class="t-sm" x="286" y="104">残差</text>
+          <path class="s-arrow" d="M160 152 V160"/>
+          <rect class="box" x="100" y="162" width="120" height="24" rx="6"/><text x="160" y="178" text-anchor="middle">正規化</text>
+          <line class="s-arrow" x1="160" y1="186" x2="160" y2="194" marker-end="url(#arT)"/>
+          <rect class="box-hi" x="80" y="196" width="160" height="28" rx="6"/><text class="t-ink" x="160" y="214" text-anchor="middle">FFN(<tspan class="v">d</tspan> → 4<tspan class="v">d</tspan> → <tspan class="v">d</tspan>)</text>
+          <line class="s-arrow" x1="160" y1="224" x2="160" y2="230" marker-end="url(#arT)"/>
+          <circle class="box" cx="160" cy="242" r="10"/><text class="t-ink" x="160" y="246" text-anchor="middle">+</text>
+          <path class="s-guide" d="M160 155 H282 V242 H172"/>
+          <text class="t-sm" x="286" y="204">残差</text>
+          <line class="s-arrow" x1="160" y1="252" x2="160" y2="274" marker-end="url(#arT)"/>
+          <rect class="box" x="40" y="276" width="240" height="30" rx="7"/>
+          <text class="t-ink" x="160" y="296" text-anchor="middle">出力層: 語彙数ぶんのロジット</text>
+          <text x="160" y="324" text-anchor="middle">→ ソフトマックス → 次のトークンの確率</text>
+        </svg>
+        <figcaption>Transformer ブロックの一例(正規化を先に置く形)。点線は残差接続で、入力をそのまま後ろで足します。</figcaption>
+      </figure>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>正規化は「平均 0、ばらつき 1 にそろえる」</b></p>
+        <ol class="say">
+          <li><span class="f">ベクトル (2, 4, 6)</span><span class="w">1つのトークンのベクトルの中で計算する。平均は 4。</span></li>
+          <li><span class="f">平均を引く</span><span class="w">(−2, 0, 2)。</span></li>
+          <li><span class="f">標準偏差で割る</span><span class="w">分散 = (4 + 0 + 4) ÷ 3 ≒ 2.667、標準偏差 ≒ 1.633(<a href="#mb-stats">標準偏差</a>)。割ると ≒ (−1.22, 0, 1.22)。</span></li>
+        </ol>
+        <p>このあと、学習で決まる倍率とずらし幅をかけて足します。値が層を重ねるうちに大きくなりすぎたり小さくなりすぎたりするのを防ぎます。</p>
+      </div>
+
+      <h3 id="lm-output">しくみ7: 出力層(語彙サイズのロジット)</h3>
+      <p>最後のブロックを出たベクトル(次元 <span class="var">d</span>)に、<span class="var">d</span> × 語彙数 の行列をかけると、語彙のすべてのトークンについて1つずつスコア(<span class="rule">ロジット</span>)が出ます。語彙が 32000 なら 32000 個です。これをソフトマックスにかけたものが「次のトークンの確率」で、温度・top-k・top-p で1つを選びます(<a href="#generative-ai">生成AIのしくみ</a>)。生成のときに使うのは、列のいちばん後ろの位置の出力です。出力層の行列は、埋め込み表と共有することもあります。</p>
+
+      <h3 id="lm-params">しくみ8: パラメータ数の見積もり</h3>
+      <p>ブロック1層のパラメータは、次のようにおおまかに見積もれます(バイアスや正規化の分は小さいので除く)。</p>
+      <ul>
+        <li>自己注意: <span class="var">W</span><sub>Q</sub>・<span class="var">W</span><sub>K</sub>・<span class="var">W</span><sub>V</sub>・<span class="var">W</span><sub>O</sub> の4つが <span class="var">d</span> × <span class="var">d</span> → 4<span class="var">d</span><sup>2</sup>。</li>
+        <li>FFN: <span class="var">d</span> → 4<span class="var">d</span> と 4<span class="var">d</span> → <span class="var">d</span> の2つ → 4<span class="var">d</span><sup>2</sup> × 2 = 8<span class="var">d</span><sup>2</sup>。</li>
+      </ul>
+      <div class="formula"><span>ブロック全体</span><span>≒</span><span>12<span class="var">d</span><sup>2</sup> × 層の数</span><span>+ 埋め込み表(語彙数 × <span class="var">d</span>)</span></div>
+      <p class="formula-note">FFN の広げる倍率やヘッドの組み方はモデルによってちがうので、あくまで目安です。</p>
+
+      <h3 id="lm-cost">しくみ9: コンテキスト長と計算量、KVキャッシュ</h3>
+      <p>自己注意のスコアは、トークンのすべての組(<span class="var">n</span> × <span class="var">n</span>)について計算します。そのため、コンテキストの長さ <span class="var">n</span> が2倍になると、スコアの計算は約4倍(長さの2乗に比例)になります。長い文章を入れると急に重くなる理由の1つです。</p>
+      <p>文章を1トークンずつ生成するとき、因果マスクのおかげで、過去のトークンのキーとバリューは、あとから何が足されても変わりません。そこで、一度計算したキーとバリューを保存しておき、新しいトークンの分だけを計算します。これが <span class="rule">KVキャッシュ</span>です。計算は大きく減りますが、そのぶんメモリを使い、文脈が長いほど比例して増えます。</p>
+      <div class="formula"><span>KVキャッシュの大きさ</span><span>≒</span><span>2(キーとバリュー)× 層の数 × トークン数 × <span class="var">d</span> × 1つの数のバイト数</span></div>
+
+      <h3>例で確かめる</h3>
+      <div class="example">
+        <p class="ex-title">例1: BPE で組をまとめる</p>
+        <p>「ねこねこねこいぬ」を1文字ずつに分けた、ね・こ・ね・こ・ね・こ・い・ぬ(8トークン)から始める。</p>
+        <ol>
+          <li>隣り合う組を数える: 「ね こ」が 3 回、「こ ね」が 2 回、「こ い」「い ぬ」が 1 回ずつ。</li>
+          <li>最も多い「ね こ」を新しいトークン「ねこ」にまとめる: ねこ・ねこ・ねこ・い・ぬ で <span class="ans">5トークン</span>。</li>
+          <li>次は「ねこ ねこ」が 2 回で最多なので、もう1回まとめるなら「ねこねこ」が語彙に入る。これを語彙が決めた大きさになるまで続ける。</li>
+        </ol>
+      </div>
+      <div class="example">
+        <p class="ex-title">例2: 因果マスクつきの自己注意(3トークン、<span class="var">d</span> = 2)</p>
+        <div class="q-table-wrap">
+          <table class="q-table">
+            <thead><tr><th>トークン</th><th>クエリ <span class="var">q</span></th><th>キー <span class="var">k</span></th><th>バリュー <span class="var">v</span></th></tr></thead>
+            <tbody>
+              <tr><td>ねこ</td><td class="num">(1, 0)</td><td class="num">(1, 0)</td><td class="num">(4, 0)</td></tr>
+              <tr><td>が</td><td class="num">(0, 1)</td><td class="num">(0, 1)</td><td class="num">(0, 2)</td></tr>
+              <tr><td>走る</td><td class="num">(1, 1)</td><td class="num">(1, 1)</td><td class="num">(2, 4)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ol>
+          <li>「ねこ」は自分しか見られないので、重みは 1。出力は (4, 0) そのまま。</li>
+          <li>「が」: 内積は ねこ 0、が 1。√2 で割って 0、≒ 0.707。<span class="var">e</span><sup>0</sup> = 1、<span class="var">e</span><sup>0.707</sup> ≒ 2.028 なので、重みは ≒ 0.33、0.67。出力 ≒ 0.33 × (4, 0) + 0.67 × (0, 2) ≒ <span class="ans">(1.32, 1.34)</span>。</li>
+          <li>「走る」: 内積は 1、1、2。√2 で割って ≒ 0.707、0.707、1.414。<span class="var">e</span> の何乗かは ≒ 2.028、2.028、4.113(和 ≒ 8.169)。重みは ≒ 0.25、0.25、0.50。出力 ≒ 0.248 × (4, 0) + 0.248 × (0, 2) + 0.503 × (2, 4) ≒ <span class="ans">(2.0, 2.51)</span>。</li>
+          <li>マスクがなければ、「ねこ」も先の「が」「走る」を見てしまいます(重み ≒ 0.40、0.20、0.40)。</li>
+        </ol>
+      </div>
+      <div class="example">
+        <p class="ex-title">例3: パラメータ数を見積もる</p>
+        <p>次元 <span class="var">d</span> = 768、12 層、語彙 50000 のモデル。</p>
+        <ol>
+          <li>1層: 12 × 768<sup>2</sup> = 12 × 589,824 = 7,077,888。</li>
+          <li>12 層: 7,077,888 × 12 = 84,934,656(約 8500万)。</li>
+          <li>埋め込み表: 50000 × 768 = 38,400,000。</li>
+          <li>合計 ≒ 84,934,656 + 38,400,000 = <span class="ans">123,334,656(約 1.2億)</span>。</li>
+        </ol>
+      </div>
+      <div class="example">
+        <p class="ex-title">例4: 長さの2乗と、KVキャッシュの量</p>
+        <ol>
+          <li>コンテキストを 1000 → 4000 トークン(4倍)にすると、スコアの数は 1,000,000 → 16,000,000 で <span class="ans">16倍</span>。</li>
+          <li>KVキャッシュ: 12 層、<span class="var">d</span> = 768、1000 トークン、1つの数を 2 バイトで保存。2 × 12 × 1000 × 768 × 2 = 36,864,000 バイト ≒ <span class="ans">37 MB</span>。トークンが 2000 になれば約 74 MB と、長さに比例して増える。</li>
+        </ol>
+      </div>
+
+      <h3>よくある誤解・注意</h3>
+      <ul class="caution">
+        <li><b>1トークン = 1文字、でも 1単語、でもない。</b>区切り方はトークナイザーしだいで、同じ文章でもモデルによってトークン数が変わります。</li>
+        <li><b>トークンID の大小に意味はない。</b>意味を持つのは、埋め込みのベクトルです。</li>
+        <li><b>ソフトマックスは行ごと。</b>注意の重みは、1つのクエリ(行)について合計 1 になります。表全体で合計 1 ではありません。</li>
+        <li><b>注意の重みは、そのままモデルの「理由」ではない。</b>どこに重みが大きいかはヒントになりますが、層やヘッドが多く、出力の理由をそれだけで説明することはできません。</li>
+        <li><b>KVキャッシュは計算を減らすが、メモリを使う。</b>長い文脈ほど、層の数とトークン数に比例して増えます。</li>
+        <li><b>2次元の埋め込みの図は模型。</b>実際は数百〜数千次元で、「王 − 男 + 女 ≒ 女王」のような関係も、いつも成り立つわけではありません。</li>
+      </ul>
+
+      <h3>用語ミニ辞典</h3>
+      <dl class="glossary">
+        <dt>トークナイザー</dt><dd>文章をトークンに区切り、番号に変える部分。</dd>
+        <dt>語彙</dt><dd>モデルが使えるトークンの一覧。その数を語彙サイズという。</dd>
+        <dt>サブワード</dt><dd>単語より細かく文字より大きい単位。よく出る語は1つ、まれな語は部品に分ける。</dd>
+        <dt>BPE</dt><dd>バイトペア符号化。最も多く隣り合う組をまとめることをくり返して語彙を作る方法。</dd>
+        <dt>埋め込み</dt><dd>トークンID を、表の1行(意味を表すベクトル)に変えること。</dd>
+        <dt>位置埋め込み</dt><dd>トークンの位置を表すベクトル。埋め込みに足して並び順を伝える。</dd>
+        <dt>クエリ・キー・バリュー</dt><dd>自己注意で使う3種類のベクトル。探すもの・見出し・渡す中身。</dd>
+        <dt>マルチヘッド注意</dt><dd>次元を分けて、自己注意を何組も並行して計算する方法。</dd>
+        <dt>因果マスク</dt><dd>自分より先のトークンを見ないように、スコアを −∞ にする工夫。</dd>
+        <dt>FFN</dt><dd>トークンごとにかける2層の全結合層。次元を広げてからもどす。</dd>
+        <dt>残差接続</dt><dd>層の出力に入力をそのまま足す経路。出力 = <span class="var">x</span> + 層の計算(<span class="var">x</span>)。</dd>
+        <dt>層正規化</dt><dd>1つのベクトルの中で平均 0・ばらつき 1 にそろえる正規化。</dd>
+        <dt>ロジット</dt><dd>出力層が出す、語彙のトークンごとのスコア。ソフトマックスで確率になる。</dd>
+        <dt>KVキャッシュ</dt><dd>生成中に、過去のトークンのキーとバリューを保存して使い回すしくみ。</dd>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ==================== LLMの学習と活用 ==================== -->
+  <section class="unit" id="llm-practice">
+    <div class="card unit-card">
+      <div class="point"><span class="point-label">ひとことで</span><p>LLM は「事前学習(大量の文章で次トークン予測)→ 指示チューニング → 人の好みに合わせる調整」の段階を経て作られます。使うときは、プロンプトの工夫・RAG(検索した資料を入れる)・ツール利用で力を引き出し、評価の限界と安全性に気をつけます。</p></div>
+
+      <ul class="mini-toc" aria-label="LLMの学習と活用の中の項目">
+        <li><a href="#lp-pretrain">事前学習</a></li>
+        <li><a href="#lp-scaling">スケーリング則</a></li>
+        <li><a href="#lp-sft">指示チューニング</a></li>
+        <li><a href="#lp-pref">人の好みでの調整</a></li>
+        <li><a href="#lp-prompt">プロンプト</a></li>
+        <li><a href="#lp-rag">RAG</a></li>
+        <li><a href="#lp-tools">ツールとエージェント</a></li>
+        <li><a href="#lp-lora">LoRA</a></li>
+        <li><a href="#lp-eval">評価</a></li>
+        <li><a href="#lp-safety">ハルシネーションと安全性</a></li>
+      </ul>
+
+      <h3 id="lp-pretrain">しくみ1: 事前学習</h3>
+      <p><span class="rule">事前学習</span>では、大量の文章を使って、次トークン予測をひたすらくり返します。正解(次のトークン)は文章そのものの中にあるので、人がラベルをつけなくても学べます(<span class="rule">自己教師あり学習</span>)。損失は、正解のトークンにつけた確率 <span class="var">p</span> の −ln <span class="var">p</span>(交差エントロピー)の平均です。</p>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>損失とパープレキシティ</b></p>
+        <div class="formula"><span>損失</span><span>=</span><span><span class="frac"><span class="num">1</span><span class="den"><span class="var">n</span></span></span> Σ(−ln <span class="var">p</span><sub><span class="var">i</span></sub>)</span><span>パープレキシティ = <span class="var">e</span><sup>損失</sup></span></div>
+        <ol class="say">
+          <li><span class="f"><span class="var">p</span><sub><span class="var">i</span></sub></span><span class="w"><span class="var">i</span> 番目の位置で、正解のトークンにモデルがつけた確率。</span></li>
+          <li><span class="f">−ln <span class="var">p</span><sub><span class="var">i</span></sub></span><span class="w">確率が 1 なら 0、低いほど大きい(<a href="#mb-exp-log">ln</a>)。</span></li>
+          <li><span class="f"><span class="frac"><span class="num">1</span><span class="den"><span class="var">n</span></span></span> Σ</span><span class="w">全部の位置で平均する。</span></li>
+          <li><span class="f"><span class="var">e</span><sup>損失</sup></span><span class="w"><span class="rule">パープレキシティ</span>。「平均すると何択で迷っているか」の目安。どの位置でも 4 択を等しく迷うなら、損失 ln 4 で、パープレキシティ 4。</span></li>
+        </ol>
+      </div>
+      <p>事前学習を終えたモデルは、文章の続きを書くのは得意ですが、質問に答える・指示に従うといった話し方はまだ身についていません。</p>
+
+      <h3 id="lp-scaling">しくみ2: スケーリング則の考え方</h3>
+      <p>パラメータ数・学習データの量・計算量を大きくすると、損失がなめらかに下がっていく傾向が、さまざまな実験で見られています。この関係が、べき乗の形の式でよく近似できるという経験則を<span class="rule">スケーリング則</span>といいます。べき乗の関係では、たとえば「パラメータを10倍にするたびに、損失がほぼ同じ割合で下がる」ので、両方の軸を対数にしたグラフでは直線に近くなります。</p>
+      <ul>
+        <li>下がり方はしだいにゆるやかになり、同じだけ下げるには、何倍もの規模が必要になります。</li>
+        <li>計算量が決まっているとき、パラメータとデータのどちらにどれだけ配るかで結果が変わります。片方だけを大きくしても効率がよくありません。</li>
+        <li>損失が下がることと、使いたい用途で役に立つことは別です。データの質や評価も、あわせて確かめます。</li>
+      </ul>
+      <p>学習の計算量の目安として、「6 × パラメータ数 × 学習トークン数」回の計算、という見積もりがよく使われます。</p>
+
+      <h3 id="lp-sft">しくみ3: 指示チューニング(SFT)</h3>
+      <p>事前学習したモデルに、「指示や質問」と「よい応答」の組をたくさん見せて追加学習します。これを<span class="rule">指示チューニング</span>(教師ありファインチューニング、<span class="rule">SFT</span>)といいます。学習のしかたは次トークン予測と同じで、データが「指示 → 応答」の形にそろえてあるのがちがいです。損失は、応答の部分のトークンだけで計算することがよくあります。</p>
+
+      <h3 id="lp-pref">しくみ4: 人の好みに合わせる調整(RLHF・DPO)</h3>
+      <p>「どちらの応答がより役に立つか・安全か」は、1つの正解を決めにくい問題です。そこで、人が2つの応答を比べた<span class="rule">比較データ</span>を使って調整します。</p>
+      <ul>
+        <li><span class="rule">RLHF</span>(人間のフィードバックによる強化学習): 比較データで<span class="rule">報酬モデル</span>(応答の良さに点数をつけるモデル)を学習し、その点数が高くなるように、強化学習で言語モデルを調整する。元のモデルから離れすぎないようにする工夫も加える。</li>
+        <li><span class="rule">DPO</span>: 同じ比較データから、報酬モデルを別に作らず、好ましい応答の確率が相対的に上がるようにモデルを直接学習する方法。</li>
+      </ul>
+
+      <h3 id="lp-prompt">しくみ5: プロンプトの工夫</h3>
+      <p>モデルの重みを変えずに、入力(<span class="rule">プロンプト</span>)の書き方で答えを引き出す方法です。</p>
+      <ul>
+        <li><span class="rule">ゼロショット</span>: 例を入れず、指示だけで聞く。</li>
+        <li><span class="rule">少数例(few-shot)</span>: 「入力 → 答え」の例をいくつか書いてから本題を聞く。答えの形やルールをまねさせやすい。例の分だけ入力のトークンが増える。</li>
+        <li><span class="rule">段階的に考えさせる</span>: 「途中の考えを順に書いてから答えて」と頼む。モデルは自分が出力したトークンも次の予測の材料にできるので、計算や推論の問題で正しくなりやすいことがある。ただし途中の説明が正しいとは限らず、出力が長くなる分だけ時間もかかる。</li>
+        <li>役割・目的・出力の形(箇条書き、表、文字数)・してほしくないこと、を具体的に書く。あいまいな指示ほど、答えもぶれます。</li>
+      </ul>
+      <div class="example">
+        <p class="ex-title">例: 少数例(few-shot)のプロンプト</p>
+        <ol>
+          <li>「次の感想が、肯定か否定かを答えてください。」</li>
+          <li>「感想: とても使いやすい → 肯定」「感想: すぐに壊れた → 否定」(例を2つ)</li>
+          <li>「感想: 思ったより静かで快適 →」(本題。モデルは例の形をまねて「肯定」と続けやすい)</li>
+        </ol>
+      </div>
+
+      <h3 id="lp-rag">しくみ6: RAG(検索して文脈に入れる)</h3>
+      <p>LLM の知識は学習した時点で止まっていて、社内文書のような学習データにない情報も知りません。<span class="rule">RAG</span>(検索拡張生成)は、質問に関係する資料を検索し、プロンプトに入れてから答えさせる方法です。モデルの重みは変えません。</p>
+      <figure class="fig">
+        <svg viewBox="0 0 320 236" role="img" aria-label="RAGの流れ: 文書を断片に分けてベクトルにして保存。質問もベクトルにし、似た断片を上位いくつか検索。質問と資料をプロンプトに入れてLLMが出典つきで答える">
+          <defs>
+            <marker id="arR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-axis" d="M0 0 L10 5 L0 10 Z"/></marker>
+          </defs>
+          <text class="t-sm" x="8" y="12">準備(1回)</text>
+          <rect class="box" x="8" y="18" width="88" height="40" rx="7"/><text class="t-ink" x="52" y="42" text-anchor="middle">文書</text>
+          <rect class="box" x="116" y="18" width="88" height="40" rx="7"/><text class="t-ink" x="160" y="36" text-anchor="middle">断片に</text><text class="t-ink" x="160" y="51" text-anchor="middle">分ける</text>
+          <rect class="box" x="224" y="18" width="88" height="40" rx="7"/><text class="t-ink" x="268" y="36" text-anchor="middle">ベクトルに</text><text class="t-ink" x="268" y="51" text-anchor="middle">して保存</text>
+          <line class="s-arrow" x1="96" y1="38" x2="114" y2="38" marker-end="url(#arR)"/><line class="s-arrow" x1="204" y1="38" x2="222" y2="38" marker-end="url(#arR)"/>
+          <text class="t-sm" x="8" y="86">質問のたび</text>
+          <rect class="box" x="8" y="92" width="88" height="40" rx="7"/><text class="t-ink" x="52" y="116" text-anchor="middle">質問</text>
+          <rect class="box" x="116" y="92" width="88" height="40" rx="7"/><text class="t-ink" x="160" y="110" text-anchor="middle">質問も</text><text class="t-ink" x="160" y="125" text-anchor="middle">ベクトルに</text>
+          <rect class="box-hi" x="224" y="92" width="88" height="40" rx="7"/><text class="t-ink" x="268" y="110" text-anchor="middle">似た断片を</text><text class="t-ink" x="268" y="125" text-anchor="middle">上位 <tspan class="v">k</tspan> 件</text>
+          <line class="s-arrow" x1="96" y1="112" x2="114" y2="112" marker-end="url(#arR)"/><line class="s-arrow" x1="204" y1="112" x2="222" y2="112" marker-end="url(#arR)"/>
+          <line class="s-arrow" x1="268" y1="58" x2="268" y2="90" marker-end="url(#arR)"/>
+          <text class="t-sm" x="273" y="78">類似度</text>
+          <rect class="box-hi" x="8" y="172" width="120" height="44" rx="7"/><text class="t-ink" x="68" y="191" text-anchor="middle">プロンプト</text><text class="t-sm" x="68" y="207" text-anchor="middle">質問 + 見つけた資料</text>
+          <rect class="box" x="148" y="172" width="56" height="44" rx="7"/><text class="t-ink t-big" x="176" y="199" text-anchor="middle">LLM</text>
+          <rect class="box" x="224" y="172" width="88" height="44" rx="7"/><text class="t-ink" x="268" y="191" text-anchor="middle">回答</text><text class="t-sm" x="268" y="207" text-anchor="middle">(出典つき)</text>
+          <path class="s-arrow" d="M268 132 V150 H68 V170" marker-end="url(#arR)"/>
+          <line class="s-arrow" x1="128" y1="194" x2="146" y2="194" marker-end="url(#arR)"/><line class="s-arrow" x1="204" y1="194" x2="222" y2="194" marker-end="url(#arR)"/>
+        </svg>
+        <figcaption>RAG の流れ。検索には、埋め込みベクトルのコサイン類似度がよく使われます(キーワードでの検索と組み合わせることもあります)。</figcaption>
+      </figure>
+      <p>入れられる資料の量は、コンテキスト長で決まります。指示・質問・回答の分をあけておき、残りに資料を入れます。資料が多すぎると、大事な部分が埋もれたり、計算が重くなったりします。</p>
+
+      <h3 id="lp-tools">しくみ7: ツール利用とエージェント</h3>
+      <p>LLM は文章しか出力できませんが、「検索する: ○○」「計算する: 123 × 456」のような決まった形の呼び出しを出力させ、それを外のプログラムが実行して結果を入力にもどせば、検索・計算・ファイル操作などができます。これが<span class="rule">ツール利用</span>です。計算のように、LLM が苦手で道具なら確実な作業を任せられます。</p>
+      <p>「計画する → ツールを使う → 結果を見る → 次を決める」を何回もくり返して作業を進めるしくみを<span class="rule">エージェント</span>といいます。手順が長いほど、途中の小さな誤りが積み重なりやすくなります。使えるツールは必要なものだけに絞り、取り消せない操作(送信・削除・支払いなど)の前には人が確認するように作ります。</p>
+
+      <h3 id="lp-lora">しくみ8: ファインチューニングと LoRA</h3>
+      <p>特定の用途や話し方に合わせるため、目的のデータで追加学習するのが<span class="rule">ファインチューニング</span>です。すべての重みを学習しなおすと、計算もメモリも多く必要で、用途ごとにモデル全体を保存することになります。</p>
+      <p><span class="rule">LoRA</span> は、元の重み行列 <span class="var">W</span> を固定したまま、細長い2つの行列の積 <span class="var">B</span><span class="var">A</span> を足して、その小さな行列だけを学ぶ方法です。</p>
+      <div class="formula"><span>使う重み</span><span>=</span><span><span class="var">W</span>(固定)+ <span class="var">B</span><span class="var">A</span>(学ぶ)</span></div>
+      <div class="math-note">
+        <p class="math-note-label">数学メモ<b>形を追うと、なぜ少なくてすむかがわかる</b></p>
+        <ol class="say">
+          <li><span class="f"><span class="var">W</span>(<span class="var">d</span>×<span class="var">d</span>)</span><span class="w">元の重み。<span class="var">d</span> = 1000 なら 1,000,000 個。</span></li>
+          <li><span class="f"><span class="var">B</span>(<span class="var">d</span>×<span class="var">r</span>)、<span class="var">A</span>(<span class="var">r</span>×<span class="var">d</span>)</span><span class="w"><span class="var">r</span> は 8 などの小さな数(ランク)。</span></li>
+          <li><span class="f"><span class="var">B</span><span class="var">A</span>(<span class="var">d</span>×<span class="var">d</span>)</span><span class="w">(<span class="var">d</span>×<span class="var">r</span>) × (<span class="var">r</span>×<span class="var">d</span>) → <span class="var">d</span>×<span class="var">d</span> で、<span class="var">W</span> と同じ形になるので足せる(<a href="#mb-matrix">形の決まり</a>)。</span></li>
+          <li><span class="f">学ぶ数 = 2<span class="var">d</span><span class="var">r</span></span><span class="w">2 × 1000 × 8 = 16,000 個。元の 1,000,000 個の 1.6%。</span></li>
+        </ol>
+      </div>
+      <p>知識を足したいだけなら、ファインチューニングより RAG のほうが向いていることも多くあります。ファインチューニングは、答え方の形や口調、特定の作業のやり方を身につけさせたいときに向いています。</p>
+
+      <h3 id="lp-eval">しくみ9: 評価(ベンチマークの限界と汚染)</h3>
+      <p>LLM の性能は、決まった問題集(<span class="rule">ベンチマーク</span>)の点数で比べることがよくあります。ただし、次の限界があります。</p>
+      <ul>
+        <li>ベンチマークは決まった形式の問題での成績にすぎず、自分の使いたい場面で役に立つかは別です。</li>
+        <li>大量の Web の文章で学ぶため、公開された問題と答えが学習データにまぎれこむことがあります(<span class="rule">汚染</span>、コンタミネーション)。答えを覚えているだけなら、点数は本当の力より高く出ます。</li>
+        <li>プロンプトの書き方や採点のしかたで点数が変わります。比べるときは条件をそろえます。</li>
+      </ul>
+      <p>使う前には、自分の用途に近い問題を集めた評価セットを作り、人の目でも確かめるのが確実です。</p>
+
+      <h3 id="lp-safety">しくみ10: ハルシネーション対策と安全性</h3>
+      <p><b>ハルシネーション</b>(<a href="#generative-ai">生成AIのしくみ</a>)を減らすには、RAG で根拠の資料を与える、出典を示させる、わからないときは「わからない」と答えるよう指示する、答えを別の方法で確かめる、などを組み合わせます。どれも完全ではないので、重要な判断には人の確認を入れます。</p>
+      <ul>
+        <li><span class="rule">プロンプトインジェクション</span>: Web ページ・メール・文書の中に「これまでの指示を無視して〇〇せよ」のような文がまぎれていると、モデルがそれを指示と取りちがえることがあります。モデルにとって、もとの指示と、取りこんだ文章の中の「指示らしい文」を区別するのはむずかしいからです。完全に防ぐ方法はまだないので、ツールの権限を絞る・重要な操作の前に人が確かめる・取りこんだ内容と指示を分けて扱う、を組み合わせて被害を小さくします。</li>
+        <li><span class="rule">偏り</span>: モデルは学習した文章の傾向を引きつぐので、性別・国・職業などについて偏った表現が出ることがあります。</li>
+        <li><span class="rule">個人情報・機密</span>: 入力した内容がどう扱われるかはサービスによってちがいます。規約を確かめ、自分や他人の個人情報・機密はむやみに入れません。</li>
+      </ul>
+
+      <h3>例で確かめる</h3>
+      <div class="example">
+        <p class="ex-title">例1: 事前学習の損失とパープレキシティ</p>
+        <p>3つの位置で、正解のトークンにつけた確率が 0.5、0.25、0.8。</p>
+        <ol>
+          <li>−ln 0.5 ≒ 0.693、−ln 0.25 ≒ 1.386、−ln 0.8 ≒ 0.223。</li>
+          <li>平均: (0.693 + 1.386 + 0.223) ÷ 3 ≒ <span class="ans">0.767</span>。</li>
+          <li>パープレキシティ: <span class="var">e</span><sup>0.767</sup> ≒ <span class="ans">2.15</span>。平均すると約2つの候補で迷っている程度。</li>
+        </ol>
+      </div>
+      <div class="example">
+        <p class="ex-title">例2: RAG の検索と、入れられる量</p>
+        <p>質問のベクトル (2, 1)。断片 A (1, 0)、B (2, 2)、C (−1, 2)、D (3, 1)。</p>
+        <ol>
+          <li>コサイン類似度: A ≒ 0.894、B ≒ 0.949、C = 0(内積 −2 + 2 = 0)、D ≒ 0.990。</li>
+          <li>上位2件は <span class="ans">D と B</span>。C は質問と直角の向きで、関係が薄いと判断される。</li>
+          <li>コンテキスト長 8000、指示 300、質問 200、回答用に 1000 あけると、資料には 8000 − 300 − 200 − 1000 = 6500 トークン。1つ 500 トークンの断片なら 6500 ÷ 500 = <span class="ans">13 個</span>まで。</li>
+        </ol>
+      </div>
+      <div class="example">
+        <p class="ex-title">例3: 学習の計算量の目安</p>
+        <p>パラメータ 1億(10<sup>8</sup>)、学習トークン 100億(10<sup>10</sup>)なら、6 × 10<sup>8</sup> × 10<sup>10</sup> = <span class="ans">6 × 10<sup>18</sup></span> 回(指数は足し算: 8 + 10 = 18)。</p>
+      </div>
+      <div class="example">
+        <p class="ex-title">例4: 汚染で点数が高く出る</p>
+        <p>100 問のベンチマークのうち 30 問が学習データにまぎれていた。まぎれた問題の正解率 90%、まぎれていない問題の正解率 60%。</p>
+        <ol>
+          <li>全体の正解率: 0.3 × 90% + 0.7 × 60% = 27% + 42% = <span class="ans">69%</span>。</li>
+          <li>見たことのない問題での力は 60% なのに、9 ポイント高く見える。</li>
+        </ol>
+      </div>
+
+      <h3>よくある誤解・注意</h3>
+      <ul class="caution">
+        <li><b>プロンプトや RAG は、モデルを学習しなおしていない。</b>重みは変わらず、入力が変わるだけです。会話が終われば、その情報は残りません(サービス側の記憶機能などは別です)。</li>
+        <li><b>RAG を使えばハルシネーションがなくなる、ではない。</b>検索で関係のない資料を拾ったり、資料にないことを足したりすることがあります。出典を確かめます。</li>
+        <li><b>大きいモデルほど何でも正しい、ではない。</b>スケーリング則は損失の傾向で、個々の答えの正しさを保証するものではありません。</li>
+        <li><b>ベンチマークの点数 = 自分の用途での実力、ではない。</b>汚染や形式のちがいがあります。</li>
+        <li><b>エージェントに大きな権限を渡しすぎない。</b>プロンプトインジェクションや誤りが、そのまま実際の操作になってしまいます。</li>
+      </ul>
+
+      <h3>用語ミニ辞典</h3>
+      <dl class="glossary">
+        <dt>事前学習</dt><dd>大量の文章で、次トークン予測をくり返す最初の学習。</dd>
+        <dt>自己教師あり学習</dt><dd>正解をデータ自身から作って学ぶ方法。人のラベルがいらない。</dd>
+        <dt>パープレキシティ</dt><dd><span class="var">e</span><sup>平均の損失</sup>。何択で迷っているかの目安。小さいほどよい。</dd>
+        <dt>スケーリング則</dt><dd>規模(パラメータ・データ・計算量)と損失の関係が、べき乗の式でよく近似できるという経験則。</dd>
+        <dt>指示チューニング(SFT)</dt><dd>指示と応答の組で追加学習し、指示に従うようにすること。</dd>
+        <dt>RLHF</dt><dd>人の比較データで報酬モデルを作り、強化学習で調整する方法。</dd>
+        <dt>DPO</dt><dd>比較データから、報酬モデルを作らず直接モデルを調整する方法。</dd>
+        <dt>few-shot</dt><dd>プロンプトに答え方の例をいくつか入れる方法。例なしはゼロショット。</dd>
+        <dt>RAG</dt><dd>検索拡張生成。関係する資料を検索してプロンプトに入れ、答えさせる方法。</dd>
+        <dt>エージェント</dt><dd>計画・ツール利用・結果の確認をくり返して作業を進めるしくみ。</dd>
+        <dt>LoRA</dt><dd>元の重みを固定し、小さな行列の積 <span class="var">B</span><span class="var">A</span> だけを学ぶファインチューニング。</dd>
+        <dt>汚染</dt><dd>評価用の問題が学習データにまぎれこみ、点数が高く出ること。</dd>
+        <dt>プロンプトインジェクション</dt><dd>取りこんだ文章の中の指示らしい文で、モデルの動きを乗っ取ろうとする攻撃。</dd>
+      </dl>
+    </div>
+  </section>
+
+  <a class="float-toc" id="floatToc" href="#toc" aria-label="目次へ戻る"><span class="ft-no" id="ftNo"></span><span class="ft-name" id="ftName"></span><span>目次 ↑</span></a>
 
   <footer class="page-foot">
     数値の例は、四捨五入した値に「≒」をつけています。<br>
@@ -1247,7 +2486,7 @@
   if (typeof AITL === "undefined") return;   // data.js が読めないときは、本文だけを見せる
 
   var n = AITL.UNITS.length;
-  document.getElementById("tagline").textContent = "道場の" + n + "単元のしくみを、式・図・小さな計算例で解説します。読んだら、実験室で動かし、道場の問題で確かめましょう。";
+  document.getElementById("tagline").textContent = "道場の" + n + "単元のしくみを、式・図・小さな計算例で解説します。式は「数学メモ」で1行ずつ言葉にしています。読んだら、実験室で動かし、道場の問題で確かめましょう。";
 
   // 混同行列(道場と同じ AITL.cm で作る)
   Array.prototype.forEach.call(document.querySelectorAll("[data-cm]"), function (box) {
@@ -1312,6 +2551,31 @@
     target.scrollIntoView();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { target.scrollIntoView(); });
   }
+  // 右下の「目次 ↑」: 目次を過ぎたら出し、今いる単元の番号(広い画面では名前も)を示す
+  var btn = document.getElementById("floatToc");
+  var tocEl = document.getElementById("toc");
+  var ftNo = document.getElementById("ftNo"), ftName = document.getElementById("ftName");
+  var marks = [].slice.call(document.querySelectorAll("section.guide, section.unit"));
+  var ticking = false;
+  function update() {
+    ticking = false;
+    var show = tocEl.getBoundingClientRect().bottom < 0;
+    btn.classList.toggle("show", show);
+    if (!show) return;
+    var line = window.innerHeight * 0.3, cur = null;
+    marks.forEach(function (m) { if (m.getBoundingClientRect().top <= line) cur = m; });
+    var num = "", name = "";
+    if (cur && no[cur.id]) { num = pad(no[cur.id]); name = AITL.unit(cur.id).name; }
+    else if (cur) { name = cur.id === "symbols" ? "記号の読み方一覧" : "この帳の読み方"; }
+    if (ftNo.textContent !== num) ftNo.textContent = num;
+    if (ftName.textContent !== name) ftName.textContent = name;
+    btn.setAttribute("aria-label", "目次へ戻る" + (name ? "(いまは " + (num ? num + " " : "") + name + ")" : ""));
+  }
+  window.addEventListener("scroll", function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  window.addEventListener("resize", update);
+  update();
 })();
 </script>
 </body>

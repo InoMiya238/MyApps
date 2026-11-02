@@ -268,7 +268,7 @@
   }
   .cat-row {
     display: grid;
-    grid-template-columns: 5.5em 1fr 44px;
+    grid-template-columns: 6.5em 1fr 44px;
     align-items: center;
     gap: 10px;
   }
@@ -604,7 +604,7 @@
   <header class="hero">
     <p class="eyebrow" id="eyebrow">AI THEORY LAB · 道場</p>
     <h1>AI理論道場</h1>
-    <p class="tagline" id="tagline">機械学習の基礎から生成AIまでの8単元を、4択クイズで確かめます。用語だけでなく計算問題もあります。単元ごとの正答率が残るので、苦手がわかります。</p>
+    <p class="tagline" id="tagline">数学の準備から機械学習の基礎、LLMのしくみと活用までの11単元を、4択クイズで確かめます。用語だけでなく計算問題もあります。単元ごとの正答率が残るので、苦手がわかります。</p>
     <nav class="site-nav" aria-label="AI理論ラボのページ">
       <span aria-current="page">道場</span>
       <a href="lab.html">実験室</a>
@@ -648,7 +648,7 @@
       <div class="stat-grid">
         <div class="stat-box"><div class="stat-num" id="statTotal">0</div><div class="stat-label">回答数</div></div>
         <div class="stat-box"><div class="stat-num" id="statAccuracy">–</div><div class="stat-label">正答率</div></div>
-        <div class="stat-box"><div class="stat-num" id="statUnits">0/8</div><div class="stat-label">取り組んだ単元</div></div>
+        <div class="stat-box"><div class="stat-num" id="statUnits">0/11</div><div class="stat-label">取り組んだ単元</div></div>
       </div>
 
       <h3>分野ごとの正答率</h3>
@@ -762,7 +762,7 @@
   // 単元数は、データから作る
   (function initHero() {
     var n = AITL.UNITS.length;
-    document.getElementById("tagline").textContent = "機械学習の基礎から生成AIまでの" + n + "単元を、4択クイズで確かめます。用語だけでなく計算問題もあります。単元ごとの正答率が残るので、苦手がわかります。";
+    document.getElementById("tagline").textContent = "数学の準備から機械学習の基礎、LLMのしくみと活用までの" + n + "単元を、4択クイズで確かめます。用語だけでなく計算問題もあります。単元ごとの正答率が残るので、苦手がわかります。";
   })();
 
   // 保存済みの設定 → なければ、全単元を選ぶ
@@ -828,6 +828,8 @@
     return a;
   }
   function unitMeta(u) { return u.area; }
+  // 「分野 · 単元」。分野と単元が同じ名前(数学の準備)なら1つだけ
+  function unitTitle(u) { return u.area === u.name ? u.name : u.area + " · " + u.name; }
 
   // ---------- 画面の切り替え ----------
   function showScreen(name) {
@@ -843,7 +845,8 @@
     AITL.AREAS.forEach(function (area) {
       var inArea = AITL.UNITS.filter(function (u) { return u.area === area; });
       if (inArea.length === 0) return;
-      unitList.appendChild(el("p", "unit-area", area));
+      // 分野に単元が1つで、名前も同じ(数学の準備)なら、見出しは省く
+      if (!(inArea.length === 1 && inArea[0].name === area)) unitList.appendChild(el("p", "unit-area", area));
       inArea.forEach(function (u) {
         var ready = AITL.isReady(u.id), on = ready && !!selected[u.id], rec = recOf(u.id);
         var label = el("label", "cat-check" + (on ? " checked" : "") + (ready ? "" : " disabled"));
@@ -926,7 +929,7 @@
         var row = el("div", "miss-item");
         var left = el("span");
         left.appendChild(el("span", "name", w.unit.name));
-        left.appendChild(el("span", "detail", "(" + unitMeta(w.unit) + ")"));
+        if (w.unit.area !== w.unit.name) left.appendChild(el("span", "detail", "(" + unitMeta(w.unit) + ")"));
         row.appendChild(left);
         row.appendChild(el("span", "rate spacer", w.rec.correct + "/" + w.rec.total + " (" + pct(w.rec.correct, w.rec.total) + ")"));
         if (w.unit.lab) row.appendChild(labLink(w.unit.lab));
@@ -1020,7 +1023,7 @@
     session.answered = false;
     updateProgress();
 
-    document.getElementById("unitLabel").textContent = unitMeta(u) + " · " + u.name;
+    document.getElementById("unitLabel").textContent = unitTitle(u);
     questionText.innerHTML = q.text;
     questionText.classList.toggle("long", questionText.textContent.length > 38);
     questionMaterial.hidden = !q.material;
@@ -1163,7 +1166,7 @@
       var row = el("div", "miss-item");
       var left = el("span");
       left.appendChild(el("span", "name", u.name));
-      left.appendChild(el("span", "detail", "(" + unitMeta(u) + ")"));
+      if (u.area !== u.name) left.appendChild(el("span", "detail", "(" + unitMeta(u) + ")"));
       row.appendChild(left);
       row.appendChild(el("span", "rate spacer", per[u.id].correct + "/" + per[u.id].total));
       if (u.lab) row.appendChild(labLink(u.lab));
