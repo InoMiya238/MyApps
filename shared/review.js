@@ -3,7 +3,9 @@
 // 読み込む順番: shared/store.js → shared/review.js
 // 保存キーは "reviewPlannerLog"(各道場の成績キーとは別。道場の成績には触らない)。
 // 習慣プランナー(study/review/habit-planner/)用に、回答のたびに "habitPlannerAnswerLog" にも日ごとの回答数を数える。
-//   { days: { "YYYY-MM-DD": { "math": 12, ... } } }   直近120日だけ残す。読むときは Review.answersOn(日付)。
+//   { days: { "YYYY-MM-DD": { "math": 12, ... } },        その日の回答数
+//     reviewDays: { "YYYY-MM-DD": { "math": 5, ... } } }  そのうち、復習日が来ていた単元への回答数(その日最初の回答の時点で due <= その日)
+//   直近120日だけ残す。読むときは Review.answersOn(日付)・Review.reviewAnswersOn(日付)。
 //   数えられなくても、record の動作と戻り値は変わらない。
 //
 // ■ 記録の形
@@ -146,7 +148,7 @@ var Review = (function () {
       delete item.imported;
       decide(item, t);
       save(log);
-      countAnswer(app, t);
+      countAnswer(app, t, item.dayStartDue !== null && item.dayStartDue <= t);
       return item;
     } catch (e) {
       return null;
@@ -179,33 +181,42 @@ var Review = (function () {
   // 形がくずれていても、直近 ANSWER_DAYS 日の使える値だけを拾い直す
   function loadAnswerLog(t) {
     var raw = Store.load(ANSWER_KEY, null);
-    var out = { days: {} };
-    if (!raw || typeof raw !== "object" || !raw.days || typeof raw.days !== "object") return out;
-    Object.keys(raw.days).forEach(function (d) {
-      if (!isYmd(d)) return;
-      var age = daysBetween(d, t);
-      if (age < 0 || age >= ANSWER_DAYS) return;
-      var src = raw.days[d], day = {};
-      if (!src || typeof src !== "object") return;
-      Object.keys(src).forEach(function (app) {
-        if (APPS.indexOf(app) >= 0 && cleanNum(src[app]) > 0) day[app] = cleanNum(src[app]);
+    var out = { days: {}, reviewDays: {} };
+    if (!raw || typeof raw !== "object") return out;
+    function pick(srcDays, outDays) {
+      if (!srcDays || typeof srcDays !== "object") return;
+      Object.keys(srcDays).forEach(function (d) {
+        if (!isYmd(d)) return;
+        var age = daysBetween(d, t);
+        if (age < 0 || age >= ANSWER_DAYS) return;
+        var src = srcDays[d], day = {};
+        if (!src || typeof src !== "object") return;
+        Object.keys(src).forEach(function (app) {
+          if (APPS.indexOf(app) >= 0 && cleanNum(src[app]) > 0) day[app] = cleanNum(src[app]);
+        });
+        outDays[d] = day;
       });
-      out.days[d] = day;
-    });
+    }
+    pick(raw.days, out.days);
+    pick(raw.reviewDays, out.reviewDays);
     return out;
   }
-  function countAnswer(app, t) {
+  function countAnswer(app, t, isReview) {
     try {
       var a = loadAnswerLog(t);
       var day = a.days[t] || (a.days[t] = {});
       day[app] = (day[app] || 0) + 1;
+      if (isReview) {
+        var rday = a.reviewDays[t] || (a.reviewDays[t] = {});
+        rday[app] = (rday[app] || 0) + 1;
+      }
       Store.save(ANSWER_KEY, a);
     } catch (e) { /* 数えられなくても record は止めない */ }
   }
   // その日の道場ごとの回答数: { app: 数 }
-  function answersOn(ymd) {
+  function answersOn(ymd, which) {
     try {
-      var d = loadAnswerLog(today()).days[ymd];
+      var d = loadAnswerLog(today())[which === "review" ? "reviewDays" : "days"][ymd];
       var out = {};
       if (d) Object.keys(d).forEach(function (k) { out[k] = d[k]; });
       return out;
@@ -228,6 +239,7 @@ var Review = (function () {
     KEY: KEY, INTERVALS: INTERVALS, MAX_STAGE: MAX_STAGE, MIN_ANSWERS: MIN_ANSWERS, APPS: APPS,
     today: today, addDays: addDays, daysBetween: daysBetween, isYmd: isYmd,
     load: load, save: save, clear: clear, list: list,
-    record: record, importStats: importStats, answersOn: answersOn
+    record: record, importStats: importStats, answersOn: answersOn,
+    reviewAnswersOn: function (ymd) { return answersOn(ymd, "review"); }
   };
 })();
