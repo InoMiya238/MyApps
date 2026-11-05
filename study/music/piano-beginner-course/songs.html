@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>曲集 | ピアノ入門コース</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Music&text=%F0%9D%84%9E%F0%9D%84%A2%E2%99%AF%E2%99%AD%E2%99%AE&display=block" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 980px; gap: 22px; }
+  [hidden] { display: none !important; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+  .hero.is-compact { padding-bottom: 12px; }
+  .hero.is-compact h1 { font-size: 24px; margin-bottom: 4px; }
+  .hero.is-compact .tagline { display: none; }
+  button:focus-visible, a:focus-visible, input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  h2[tabindex="-1"]:focus { outline: none; }
+
+  /* ---------- カード・ボタン・チップ ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .btn-primary, .btn-secondary {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    padding: 10px 14px;
+    min-height: 44px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none;
+    line-height: 1.4;
+  }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-secondary { background: var(--surface-2); color: var(--ink); border: 1px solid var(--border); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip-btn {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 36px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .chip-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .chip {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .chip.is-last { background: var(--good-soft); color: var(--good); }
+  .val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  /* ---------- 一覧 ---------- */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .count { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--ink-muted); }
+  .legend {
+    margin: 0;
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--ink-muted);
+  }
+  .legend b { color: var(--ink); }
+  .legend a { color: var(--accent); font-weight: 600; }
+  .view-list { display: flex; flex-direction: column; gap: 18px; }
+  .song-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .song-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: var(--ink);
+    text-decoration: none;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .song-card:hover { border-color: var(--accent); }
+  .song-no { font-family: var(--font-mono); font-size: 11.5px; font-weight: 700; color: var(--ink-faint); letter-spacing: 0.08em; }
+  .song-title { font-family: var(--font-display); font-size: 18px; font-weight: 600; line-height: 1.4; }
+  .song-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+  .song-desc { font-size: 13px; line-height: 1.6; color: var(--ink-muted); }
+
+  /* ---------- 演奏画面 ---------- */
+  .view-song { display: flex; flex-direction: column; gap: 14px; }
+  .back-list { align-self: flex-start; color: var(--accent); font-size: 14px; font-weight: 600; text-decoration: none; padding: 4px 0; }
+  .back-list:hover { text-decoration: underline; }
+  .song-head h2 { margin: 0 0 6px; font-family: var(--font-display); font-size: 26px; font-weight: 700; line-height: 1.3; }
+  .song-head .song-meta { margin-bottom: 8px; }
+  .song-head p { margin: 0; font-size: 14px; line-height: 1.7; color: var(--ink-muted); }
+  .player-ctl { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 22px; }
+  .ctl { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .ctl-label { font-size: 12.5px; font-weight: 600; color: var(--ink-muted); }
+  .ctl-bpm { flex: 1 1 180px; max-width: 280px; }
+  input[type="range"] { width: 100%; accent-color: var(--accent); margin: 6px 0 0; }
+  .check-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; min-height: 36px; }
+  input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); flex: none; margin: 0; cursor: pointer; }
+
+  .score-card { padding: 14px 12px; }
+  .score-systems { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .score-systems svg { scroll-margin-top: 16px; scroll-margin-bottom: 230px; }
+  .score-legend { margin: 8px 4px 0; font-size: 12px; color: var(--ink-faint); line-height: 1.6; }
+
+  .kb-dock {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -6px 16px var(--shadow);
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .dock-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+  .dock-btns { display: flex; gap: 8px; }
+  .dock-btns .btn-primary, .dock-btns .btn-secondary { min-width: 120px; }
+  .score-status { flex: 1 1 200px; margin: 0; font-size: 14px; font-weight: 600; line-height: 1.5; color: var(--ink); min-height: 21px; }
+  .score-status.is-done { color: var(--good); }
+  .dock-side { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  .pc-hint { font-size: 12px; color: var(--ink-faint); white-space: nowrap; }
+  .pc-hint b { font-family: var(--font-mono); color: var(--ink-muted); }
+  .midi-chip { background: var(--good-soft); color: var(--good); }
+  .kb-wrap { min-width: 0; }
+  .pager { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+  .pager .btn-secondary { font-size: 14px; }
+
+  .page-foot {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    line-height: 1.8;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .page-foot a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .page-foot a:hover { text-decoration: underline; }
+
+  .midi-btn {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 36px;
+    padding: 6px 12px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .midi-btn:disabled { opacity: 0.75; cursor: default; }
+  .ctl .midi-btn { align-self: flex-start; }
+  @media (hover: none) { .pc-hint { display: none; } }
+  @media (max-width: 640px) {
+    .player-ctl { flex-direction: column; align-items: stretch; gap: 10px; }
+    .ctl-bpm { flex: none; max-width: none; }
+    .dock-btns { flex: 1 1 100%; }
+    .dock-btns > * { flex: 1 1 50%; min-width: 0; }
+    .score-status { flex-basis: 100%; font-size: 13px; min-height: 0; }
+    .dock-side { margin-left: 0; }
+    .dock-side:not(:has(.midi-chip:not([hidden]))) { display: none; }
+    .pc-hint { display: none; }
+    .kb-dock { gap: 5px; }
+    .dock-btns > * { min-height: 40px; padding: 6px 10px; }
+  }
+  @media (max-width: 480px) {
+    body { padding: 24px 12px 0; }
+    .song-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .filter-bar { padding: 12px; }
+    .chip-btn { padding: 6px 11px; }
+    .card { padding: 14px 12px; }
+    .score-card { padding: 12px 8px; }
+    .song-head h2 { font-size: 22px; }
+    .kb-dock { padding: 6px 8px 8px; margin: 0 -4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <nav class="page-links" aria-label="ページの移動">
+    <a class="back-link" href="../../../index.html">← ページ一覧</a>
+    <a class="back-link" href="../../../study/review/habit-planner/index.html">習慣プランナー →</a>
+  </nav>
+  <header class="hero" id="hero">
+    <p class="eyebrow">PIANO · SONG BOOK</p>
+    <h1>曲集</h1>
+    <p class="tagline">曲を選んで、楽譜を見ながら聴く・弾く。ピアノ入門コースで習ったことを、やさしい曲から順に試せます。</p>
+    <nav class="site-nav" aria-label="ピアノのページ">
+      <a href="index.html">コース</a>
+      <span aria-current="page">曲集</span>
+      <a href="../staff-notation-quiz/index.html">五線譜ノート道場</a>
+      <a href="../staff-notation-quiz/reference.html">音符の読み方帳</a>
+    </nav>
+  </header>
+
+  <main id="view"></main>
+
+  <footer class="page-foot">
+    音はブラウザの中でつくっています。音が出ないときは、端末のマナーモードと音量を確かめてください。<br>
+    <a href="index.html">ピアノ入門コース →</a> ・ <a href="../staff-notation-quiz/reference.html">音符の読み方帳 →</a>
+  </footer>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="piano.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var KEY = "pianoBeginnerSongs";
+  var P = Piano;
+  var SONGS = P.SONGS;
+  var IDS = SONGS.map(function (s) { return s.id; });
+  var CAT_LABEL = {};
+  P.CATS.forEach(function (c) { CAT_LABEL[c.id] = c.label; });
+  var HANDS = [{ v: "both", label: "両手" }, { v: "rh", label: "右手" }, { v: "lh", label: "左手" }];
+  var LABELS = [{ v: "doremi", label: "ドレミ" }, { v: "cde", label: "CDE" }, { v: "pc", label: "PCキー" }, { v: "none", label: "なし" }];
+  var ZOOMS = [{ v: "normal", label: "標準" }, { v: "large", label: "大きい" }];
+  var IDLE = "▶ 再生で聴く。弾いてみるで光った音を押す";
+
+  // ---------- 保存 ----------
+  // { lastId, hand, metronome, labels, zoom, bpm: { [曲id]: 数 } }
+  function pick(v, list, def) { return list.some(function (o) { return o.v === v; }) ? v : def; }
+  function sanitize(raw) {
+    raw = raw && typeof raw === "object" ? raw : {};
+    var bpm = {};
+    if (raw.bpm && typeof raw.bpm === "object") {
+      IDS.forEach(function (id) {
+        var n = raw.bpm[id];
+        if (typeof n === "number" && isFinite(n)) bpm[id] = Math.max(40, Math.min(160, Math.round(n)));
+      });
+    }
+    return {
+      lastId: typeof raw.lastId === "string" && IDS.indexOf(raw.lastId) >= 0 ? raw.lastId : "",
+      hand: pick(raw.hand, HANDS, "both"),
+      metronome: raw.metronome === true,
+      labels: pick(raw.labels, LABELS, "doremi"),
+      zoom: pick(raw.zoom, ZOOMS, "normal"),
+      bpm: bpm
+    };
+  }
+  var state = sanitize(Store.load(KEY, null));
+  function save() { Store.save(KEY, state); }
+
+  // ---------- 小さな道具 ----------
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function button(cls, text, onClick) {
+    var b = el("button", cls, text);
+    b.type = "button";
+    if (onClick) b.addEventListener("click", onClick);
+    return b;
+  }
+  function chipGroup(label, opts, cur, onChange) {
+    var wrap = el("div", "ctl");
+    if (label) wrap.appendChild(el("div", "ctl-label", label));
+    var box = el("div", "chips");
+    box.setAttribute("role", "group");
+    if (label) box.setAttribute("aria-label", label);
+    var btns = opts.map(function (o) {
+      var b = button("chip-btn", o.label, function () { set(o.v); onChange(o.v); });
+      b.setAttribute("aria-pressed", String(o.v === cur));
+      box.appendChild(b);
+      return b;
+    });
+    function set(v) { btns.forEach(function (b, i) { b.setAttribute("aria-pressed", String(opts[i].v === v)); }); }
+    wrap.appendChild(box);
+    wrap.set = set;
+    return wrap;
+  }
+  function checkField(text, on, onChange) {
+    var lab = el("label", "check-label");
+    var cb = el("input");
+    cb.type = "checkbox";
+    cb.checked = on;
+    cb.addEventListener("change", function () { onChange(cb.checked); });
+    lab.appendChild(cb);
+    lab.appendChild(document.createTextNode(text));
+    return lab;
+  }
+  function metaChips(s, withBpm) {
+    var box = el("div", "song-meta");
+    box.appendChild(el("span", "chip", P.keyName(s.key) + "・" + P.timeName(s.time)));
+    if (withBpm) box.appendChild(el("span", "chip", "BPM " + s.bpm));
+    box.appendChild(el("span", "chip", CAT_LABEL[s.cat]));
+    box.appendChild(el("span", "chip", "レッスン" + s.lesson + "〜"));
+    return box;
+  }
+
+  var view = document.getElementById("view");
+  var hero = document.getElementById("hero");
+  var filter = "all";
+  var cleanup = null;
+
+  // ---------- 一覧 ----------
+  function renderList() {
+    document.title = "曲集 | ピアノ入門コース";
+    hero.classList.remove("is-compact");
+    var wrap = el("div", "view-list");
+    var bar = el("section", "filter-bar");
+    bar.setAttribute("aria-label", "絞り込み");
+    var count = el("span", "count");
+    count.setAttribute("aria-live", "polite");
+    var grid = el("div", "song-grid");
+    var opts = [{ v: "all", label: "すべて" }].concat(P.CATS.map(function (c) { return { v: c.id, label: c.label }; }));
+    var chips = chipGroup("", opts, filter, function (v) { filter = v; fill(); });
+    chips.querySelector(".chips").setAttribute("aria-label", "曲の種類で絞り込む");
+    bar.appendChild(chips);
+    bar.appendChild(count);
+    wrap.appendChild(bar);
+    var legend = el("p", "legend");
+    legend.innerHTML = "<b>使い方</b>: 曲を選ぶと楽譜と鍵盤が出ます。<b>▶ 再生</b>で聴き、<b>弾いてみる</b>で光った音を押して進みます。" +
+      "画面の鍵盤のほか、パソコンのキー(A = ド)や、USB でつないだ電子ピアノでも弾けます。";
+    wrap.appendChild(legend);
+    wrap.appendChild(grid);
+    function fill() {
+      grid.replaceChildren();
+      var n = 0;
+      SONGS.forEach(function (s, i) {
+        if (filter !== "all" && s.cat !== filter) return;
+        var a = el("a", "song-card");
+        a.href = "#song-" + s.id;
+        a.appendChild(el("span", "song-no", "No." + (i + 1)));
+        a.appendChild(el("span", "song-title", s.title));
+        var meta = metaChips(s, false);
+        if (s.id === state.lastId) meta.appendChild(el("span", "chip is-last", "前回"));
+        a.appendChild(meta);
+        a.appendChild(el("span", "song-desc", s.desc));
+        grid.appendChild(a);
+        n++;
+      });
+      count.textContent = n + "曲";
+    }
+    fill();
+    view.replaceChildren(wrap);
+  }
+
+  // ---------- 演奏画面 ----------
+  function renderSong(s) {
+    document.title = s.title + " | 曲集 | ピアノ入門コース";
+    hero.classList.add("is-compact");
+    state.lastId = s.id;
+    save();
+    var wrap = el("div", "view-song");
+    var back = el("a", "back-list", "← 曲の一覧");
+    back.href = "#";
+    wrap.appendChild(back);
+
+    var head = el("div", "song-head");
+    var h2 = el("h2", "", s.title);
+    h2.tabIndex = -1;
+    head.appendChild(h2);
+    head.appendChild(metaChips(s, true));
+    head.appendChild(el("p", "", s.desc + "(" + s.origin + ")"));
+    wrap.appendChild(head);
+
+    var twoHands = !!(s.score.rh && s.score.lh);
+    var hand = twoHands ? state.hand : (s.score.rh ? "rh" : "lh");
+    var bpm = state.bpm[s.id] || s.bpm;
+
+    // 設定
+    var ctl = el("section", "card player-ctl");
+    ctl.setAttribute("aria-label", "演奏の設定");
+    if (twoHands) {
+      ctl.appendChild(chipGroup("手", HANDS, hand, function (v) {
+        hand = v; state.hand = v; save();
+        pl.setHand(v);
+        kb.setRange(range(v).from, range(v).to, need(v));
+        updateHint();
+      }));
+    }
+    var bf = el("div", "ctl ctl-bpm");
+    var bl = el("div", "ctl-label");
+    bl.appendChild(document.createTextNode("テンポ "));
+    var bv = el("span", "val", "BPM " + bpm);
+    bl.appendChild(bv);
+    bf.appendChild(bl);
+    var inp = el("input");
+    inp.type = "range"; inp.min = 40; inp.max = 160; inp.step = 1; inp.value = bpm;
+    inp.setAttribute("aria-label", "テンポ(BPM)");
+    inp.addEventListener("input", function () {
+      bpm = parseInt(inp.value, 10);
+      bv.textContent = "BPM " + bpm;
+      pl.setBpm(bpm);
+      state.bpm[s.id] = bpm;
+      save();
+    });
+    bf.appendChild(inp);
+    ctl.appendChild(bf);
+    var mf = el("div", "ctl");
+    mf.appendChild(el("div", "ctl-label", "拍"));
+    mf.appendChild(checkField("メトロノーム", state.metronome, function (on) { state.metronome = on; save(); pl.setMetronome(on); }));
+    ctl.appendChild(mf);
+    // 電子ピアノ(Web MIDI)。押したときだけ許可を求める
+    var midiCtl = null, midiBtn = null;
+    if (navigator.requestMIDIAccess) {
+      midiCtl = el("div", "ctl");
+      midiCtl.appendChild(el("div", "ctl-label", "電子ピアノ"));
+      midiBtn = button("btn-small midi-btn", "", function () { P.midi.enable(); });
+      midiCtl.appendChild(midiBtn);
+      ctl.appendChild(midiCtl);
+    }
+    ctl.appendChild(chipGroup("鍵盤の音名", LABELS, state.labels, function (v) { state.labels = v; save(); kb.setLabels(v); }));
+    ctl.appendChild(chipGroup("楽譜の大きさ", ZOOMS, state.zoom, function (v) { state.zoom = v; save(); sc.setZoom(v === "large" ? 1.3 : 1); }));
+    wrap.appendChild(ctl);
+
+    // 楽譜
+    var card = el("section", "card score-card");
+    card.setAttribute("aria-label", "楽譜");
+    var systems = el("div", "score-systems");
+    card.appendChild(systems);
+    card.appendChild(el("p", "score-legend", "黄色 = いま鳴っている音、紺 = 次に弾く音。音符をタップすると鳴ります。数字は指番号(1 親指〜5 小指)。"));
+    wrap.appendChild(card);
+
+    // 鍵盤のドック
+    var dock = el("section", "kb-dock");
+    dock.setAttribute("aria-label", "演奏");
+    var row = el("div", "dock-row");
+    var btns = el("div", "dock-btns");
+    var playBtn = button("btn-primary", "▶ 再生", function () { pl.togglePlay(); });
+    var waitBtn = button("btn-secondary", "弾いてみる", function () {
+      if (pl.mode === "wait") pl.stopWait(); else pl.startWait();
+    });
+    btns.appendChild(playBtn);
+    btns.appendChild(waitBtn);
+    row.appendChild(btns);
+    var status = el("p", "score-status", IDLE);
+    status.setAttribute("aria-live", "polite");
+    row.appendChild(status);
+    var side = el("div", "dock-side");
+    var midiChip = el("span", "chip midi-chip", "MIDI: 接続中");
+    midiChip.hidden = P.midi.status !== "connected";
+    side.appendChild(midiChip);
+    function syncMidiBtn(st) {
+      if (!midiBtn) return;
+      var t = { off: "つなぐ(MIDI)", requesting: "つないでいます…", waiting: "機器が見つかりません", connected: "接続中", denied: "使えません", none: "使えません" };
+      midiBtn.textContent = t[st] || t.off;
+      midiBtn.disabled = st !== "off";
+    }
+    syncMidiBtn(P.midi.status);
+    var hint = el("span", "pc-hint");
+    side.appendChild(hint);
+    row.appendChild(side);
+    dock.appendChild(row);
+    var kbWrap = el("div", "kb-wrap");
+    dock.appendChild(kbWrap);
+    wrap.appendChild(dock);
+
+    // 前後の曲
+    var i = IDS.indexOf(s.id);
+    var pager = el("nav", "pager");
+    pager.setAttribute("aria-label", "前後の曲");
+    [SONGS[i - 1], SONGS[i + 1]].forEach(function (o, k) {
+      if (!o) { pager.appendChild(el("span")); return; }
+      var a = el("a", "btn-secondary", k === 0 ? "← " + o.title : o.title + " →");
+      a.href = "#song-" + o.id;
+      pager.appendChild(a);
+    });
+    wrap.appendChild(pager);
+
+    view.replaceChildren(wrap);
+
+    function need(h) { var r = P.scoreRange(s.score, h); return [r.lo, r.hi]; }
+    function range(h) { var r = P.scoreRange(s.score, h); return P.kbRange(r.lo, r.hi); }
+    var r0 = range("both");
+    var sc = P.score(systems, s.score, { zoom: state.zoom === "large" ? 1.3 : 1 });
+    var kb = P.keyboard({ from: r0.from, to: r0.to, need: need("both"), labels: state.labels, maxHeight: 150, active: true });
+    kbWrap.appendChild(kb);
+    var pl = P.player(sc, kb, {
+      bpm: bpm, hand: hand, metronome: state.metronome, status: status, idleText: IDLE,
+      onState: function (mode) {
+        playBtn.textContent = mode === "play" ? "■ 停止" : "▶ 再生";
+        waitBtn.textContent = mode === "wait" ? "■ やめる" : mode === "done" ? "もう一度" : "弾いてみる";
+        status.classList.toggle("is-done", mode === "done");
+      }
+    });
+    kb.setPcBase(hand === "lh" ? 48 : 60);
+    function updateHint() {
+      hint.replaceChildren();
+      hint.appendChild(document.createTextNode("PCキー: "));
+      hint.appendChild(el("b", "", "A = " + P.noteName(kb.pcBase)));
+      hint.appendChild(document.createTextNode("(次の音に合わせて自動。Z/X でも変更)"));
+    }
+    kb.onPcBase(updateHint);
+    updateHint();
+    var alive = true;
+    function onMidi(st) { if (!alive) return; midiChip.hidden = st !== "connected"; syncMidiBtn(st); }
+    P.midi.onChange(onMidi);
+    h2.focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+    cleanup = function () { alive = false; pl.destroy(); sc.destroy(); if (kb.destroy) kb.destroy(); };
+  }
+
+  // ---------- 画面の切り替え ----------
+  function render() {
+    if (cleanup) { cleanup(); cleanup = null; }
+    P.stopAll();
+    var m = /^#song-([a-z0-9-]+)$/.exec(location.hash);
+    var s = m ? P.song(m[1]) : null;
+    if (s) renderSong(s);
+    else renderList();
+  }
+  window.addEventListener("hashchange", render);
+  render();
+})();
+</script>
+</body>
+</html>

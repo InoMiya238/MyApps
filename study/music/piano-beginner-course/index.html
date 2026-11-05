@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ピアノ入門コース</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Music&text=%F0%9D%84%9E%F0%9D%84%A2%E2%99%AF%E2%99%AD%E2%99%AE&display=block" rel="stylesheet">
+<link rel="stylesheet" href="../../../shared/base.css">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+  .app { max-width: 760px; gap: 22px; }
+  .app.is-lesson { max-width: 980px; }
+  [hidden] { display: none !important; }
+
+  /* ---------- Hero ---------- */
+  .tagline { max-width: 46ch; }
+  .site-nav {
+    margin: 14px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    font-size: 13px;
+  }
+  .site-nav a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .site-nav a:hover { text-decoration: underline; }
+  .site-nav [aria-current="page"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+  }
+  .hero.is-compact { padding-bottom: 12px; }
+  .hero.is-compact h1 { font-size: 24px; margin-bottom: 4px; }
+  .hero.is-compact .tagline { display: none; }
+
+  button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible, [role="button"]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  h2[tabindex="-1"]:focus { outline: none; }
+
+  /* ---------- カード・ボタン ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px var(--shadow);
+    min-width: 0;
+  }
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+  .btn-primary, .btn-secondary {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    padding: 12px 14px;
+    min-height: 44px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none;
+    line-height: 1.4;
+  }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-secondary { background: var(--surface-2); color: var(--ink); border: 1px solid var(--border); }
+  .btn-primary:disabled, .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-small {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    min-height: 36px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn-small.is-main { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .lbl-short { display: none; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 0 8px; }
+  .chip-btn {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 36px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .chip-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .chip {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    margin: 8px 0 0;
+    line-height: 1.6;
+  }
+  .val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  /* ---------- 進み具合 ---------- */
+  .progress { display: flex; align-items: center; gap: 12px; }
+  .progress-track { flex: 1; height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+  .progress-bar { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.2s ease; }
+  .progress-text {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+
+  /* ---------- コースのトップ ---------- */
+  .view-top { display: flex; flex-direction: column; gap: 18px; }
+  .course-intro ul { margin: 0; padding-left: 1.2em; }
+  .course-intro li { font-size: 14.5px; line-height: 1.75; color: var(--ink); margin-bottom: 4px; }
+  .course-intro li:last-child { margin-bottom: 0; }
+  .resume { align-self: stretch; }
+  .lesson-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .lesson-row {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 4px 14px;
+    align-items: start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: var(--ink);
+    text-decoration: none;
+    box-shadow: 0 1px 2px var(--shadow);
+  }
+  .lesson-row:hover { border-color: var(--accent); }
+  .lesson-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .lesson-row.is-done .lesson-num { background: var(--good-soft); color: var(--good); }
+  .lesson-main { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .lesson-row .lesson-title { font-size: 15.5px; font-weight: 600; line-height: 1.5; margin-top: 4px; }
+  .lesson-summary { font-size: 13.5px; color: var(--ink-muted); line-height: 1.6; }
+  .lesson-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+  .part-block { display: flex; flex-direction: column; gap: 10px; }
+  .part-head { padding: 6px 2px 0; }
+  .part-no { margin: 0; font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.12em; color: var(--accent); }
+  .part-head h2 { margin: 2px 0 4px; font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; line-height: 1.4; }
+  .part-desc { margin: 0; font-size: 13.5px; line-height: 1.65; color: var(--ink-muted); }
+  .top-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .summary-card .summary-part { font-family: var(--font-display); font-size: 16px; font-weight: 600; margin: 24px 0 0; padding-top: 14px; border-top: 1px solid var(--border); }
+  .summary-card .summary-part:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+  .summary-card h3 { font-size: 15px; font-weight: 600; margin: 18px 0 6px; }
+  .summary-card .summary-part + h3 { margin-top: 10px; }
+  .summary-card ul { margin: 0; padding-left: 1.2em; }
+  .summary-card li { font-size: 14px; line-height: 1.7; }
+
+  /* ---------- レッスン画面 ---------- */
+  .course-layout {
+    display: grid;
+    grid-template-columns: 232px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .toc {
+    position: sticky;
+    top: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 10px;
+    min-width: 0;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+  }
+  .toc > summary { display: none; }
+  .toc-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    padding: 2px 8px 8px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .toc-head .progress-text { font-size: 12px; }
+  .toc-part {
+    margin: 10px 0 2px;
+    padding: 0 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--ink-faint);
+    line-height: 1.5;
+  }
+  .toc-part:first-child { margin-top: 0; }
+  .toc-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 6px 8px;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 13.5px;
+    line-height: 1.4;
+  }
+  .toc-item:hover { background: var(--surface-2); }
+  .toc-item.is-current { background: var(--accent-soft); border-left-color: var(--accent); font-weight: 600; }
+  .toc-no {
+    flex: none;
+    width: 22px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-faint);
+  }
+  .toc-item.is-done .toc-no { color: var(--good); }
+  .toc-top {
+    display: block;
+    margin: 8px 8px 0;
+    padding: 6px 0 2px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .toc-top:hover { text-decoration: underline; }
+
+  .lesson { padding: 26px 30px; }
+  .lesson-head { margin-bottom: 8px; }
+  .lesson-no {
+    margin: 0 0 8px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+  }
+  .lesson-head h2.lesson-title {
+    margin: 0 0 10px;
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-wrap: balance;
+    display: block;
+  }
+  .lesson-lead { margin: 0; font-size: 16px; line-height: 1.7; color: var(--ink-muted); }
+
+  /* 本文の 𝄞 𝄢 は Noto Music(記号だけ読み込み)で出す */
+  .lesson-body { font-size: 15.5px; line-height: 1.85; font-family: var(--font-body), "Noto Music"; }
+  .lesson-body > * { margin: 0 0 0.9em; }
+  .lesson-body > h3 { font-size: 17px; font-weight: 600; margin: 28px 0 8px; line-height: 1.5; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .lesson-body b { font-weight: 700; }
+  .lesson-body a, .feedback a { color: var(--accent); font-weight: 600; }
+  .tip-box {
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+  .note-box {
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--ink-muted);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+  .box-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .note-box .box-label { color: var(--ink-faint); }
+  .lesson-body ul, .lesson-body ol { padding-left: 1.4em; }
+  .lesson-body li { margin-bottom: 0.35em; }
+
+  /* ---------- 図 ---------- */
+  .figure { margin: 18px 0; }
+  .figure > * { margin: 0; }
+  .fig-scroll { border-radius: 12px; }
+  .fig-scroll svg { display: block; width: 100%; height: auto; }
+  .fig-caption { margin-top: 8px; font-size: 13px; line-height: 1.65; color: var(--ink-muted); }
+  .fig-svg text { font-family: var(--font-body); }
+  .staff-wrap { background: var(--score-paper); border: 1px solid var(--border); padding: 8px; }
+  .staff-wrap svg { max-width: 460px; margin: 0 auto; }
+  .map-col { cursor: pointer; }
+  .map-col:focus { outline: none; }
+  .map-col .map-hit { fill: transparent; }
+  .map-col:hover .map-hit, .map-col.is-hit .map-hit { fill: var(--note-play-soft); }
+  .map-col:focus-visible .map-hit { stroke: var(--accent); stroke-width: 2; }
+  .fig-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .fig-pair .staff-wrap { padding: 6px; }
+  .fig-pair .staff-wrap svg { max-width: 250px; }
+  .fig-pair h4 { margin: 0 0 4px; font-size: 13.5px; font-weight: 700; text-align: center; }
+
+  .ref-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .ref-table th, .ref-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; line-height: 1.5; }
+  .ref-table th { font-size: 12px; color: var(--ink-muted); font-weight: 600; }
+  .ref-table td.icon { width: 44px; }
+  .ref-table td.icon svg { display: block; width: 36px; height: 40px; }
+  .ref-table .dur-beats { font-family: var(--font-mono); font-weight: 700; white-space: nowrap; }
+  .ref-table .sym { font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 20px; white-space: nowrap; width: 44px; }
+  .ref-table .sym-music { font-family: "Noto Music", var(--font-body); font-size: 22px; font-style: normal; font-weight: 400; }
+  .ref-table .td-btn { width: 1%; text-align: right; }
+  .ref-table small { display: block; font-size: 12px; color: var(--ink-muted); }
+  .dur-bar { display: flex; gap: 2px; min-width: 96px; }
+  .dur-bar span { flex: 1; height: 12px; border-radius: 3px; background: var(--accent); }
+  .dur-bar span.rest { background: var(--surface-2); border: 1px dashed var(--ink-faint); }
+  .dur-bar span.gap { visibility: hidden; }
+
+  .name-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  .name-btn {
+    font-family: var(--font-body);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: 10px;
+    padding: 6px 0;
+    min-height: 64px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    line-height: 1.25;
+  }
+  .name-btn b { font-size: 15px; }
+  .name-btn .n-en { font-family: var(--font-mono); font-size: 15px; font-weight: 700; color: var(--accent); }
+  .name-btn .n-jp { font-size: 11px; color: var(--ink-faint); }
+  .name-btn.is-hit { background: var(--note-play-soft); }
+  .name-legend { display: flex; justify-content: center; gap: 14px; margin-top: 6px; font-size: 12px; color: var(--ink-muted); }
+  .name-legend .n-en { font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
+
+  .menu-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .menu-item {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+    gap: 4px 12px;
+    align-items: center;
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .menu-no {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--accent); color: var(--accent-ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-weight: 700; font-size: 13px;
+  }
+  .menu-item b { display: block; font-size: 15px; }
+  .menu-item a { font-size: 13px; }
+  .menu-min { font-family: var(--font-mono); font-weight: 700; color: var(--accent); white-space: nowrap; }
+  .menu-total { text-align: right; font-size: 13.5px; font-weight: 700; color: var(--ink-muted); margin-top: 4px; }
+
+  /* ---------- 楽譜ブロック ---------- */
+  .score-block, .keys-block {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 12px 10px;
+    background: var(--surface);
+    margin: 18px 0;
+    min-width: 0;
+  }
+  .score-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; margin-bottom: 8px; }
+  .score-title { font-size: 13.5px; font-weight: 700; line-height: 1.5; min-width: 0; }
+  .score-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+  .score-ctl .chips { padding: 0; }
+  .score-btns { display: flex; gap: 6px; }
+  .score-btns .btn-small { min-width: 92px; }
+  .score-sub { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 12px; margin: -2px 0 4px; }
+  .score-sub .check-label { font-size: 13px; min-height: 32px; }
+  .score-sub .check-label input { width: 18px; height: 18px; }
+  .score-sub-r { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .midi-btn { font-size: 12px; min-height: 30px; padding: 4px 10px; }
+  .midi-btn:disabled { cursor: default; opacity: 0.8; }
+  .midi-btn.is-on { background: var(--good-soft); color: var(--good); border-color: var(--good); opacity: 1; }
+  .pc-hint { margin: 4px 2px 0; font-size: 12px; color: var(--ink-faint); }
+  .pc-hint b { font-family: var(--font-mono); color: var(--ink-muted); }
+  @media (hover: none) { .pc-hint { display: none; } }
+  .score-systems { display: flex; flex-direction: column; gap: 4px; min-width: 0; background: var(--score-paper); border-radius: 10px; padding: 4px 0; }
+  .score-systems svg { scroll-margin-top: 16px; scroll-margin-bottom: 16px; }
+  .score-status {
+    margin: 8px 2px 6px;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--ink);
+    min-height: 20px;
+  }
+  .score-status.is-done { color: var(--good); }
+  .kb-wrap { min-width: 0; }
+  .score-legend { margin: 6px 2px 0; font-size: 12px; color: var(--ink-faint); line-height: 1.6; }
+  .keys-block .score-top { margin-bottom: 6px; }
+  .keys-now { margin: 6px 2px 0; font-size: 13.5px; font-weight: 600; min-height: 20px; color: var(--ink); }
+
+  /* ---------- 練習道具 ---------- */
+  section.mini {
+    border: 1.5px solid var(--accent-soft);
+    border-radius: 14px;
+    padding: 16px;
+    background: var(--surface);
+    font-size: 14.5px;
+    line-height: 1.6;
+    margin: 22px 0;
+  }
+  .mini-tag { margin: 0 0 2px; font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--accent); }
+  .lesson-body section.mini h3.mini-title { margin: 0 0 10px; font-size: 16px; font-weight: 600; line-height: 1.5; }
+  .mini > * + * { margin-top: 10px; }
+  .ctl-label { font-size: 12.5px; font-weight: 600; color: var(--ink-muted); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn-row > * { flex: 1 1 120px; }
+  input[type="range"] { width: 100%; accent-color: var(--accent); margin: 6px 0 0; }
+  .check-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; min-height: 36px; }
+  input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); flex: none; margin: 0; cursor: pointer; }
+  .mini-status { font-size: 14px; font-weight: 600; min-height: 1.5em; }
+  .mini-status.is-good { color: var(--good); }
+  .mini-status.is-bad { color: var(--bad); }
+  .count-big { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 22px; font-weight: 700; color: var(--accent); }
+
+  .hands-svg { display: block; width: 100%; max-width: 420px; height: auto; margin: 0 auto; }
+  .hand-finger { cursor: pointer; }
+  .hand-finger:focus { outline: none; }
+  .hand-finger:focus-visible circle { stroke: var(--accent); stroke-width: 3; }
+  .hand-finger.is-hit circle { stroke: var(--key-play); stroke-width: 4; }
+
+  .metro-head { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .bpm-big { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 40px; font-weight: 700; line-height: 1; min-width: 3ch; text-align: center; }
+  .bpm-unit { font-size: 12px; font-weight: 700; color: var(--ink-faint); }
+  .bpm-btns { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+  .bpm-btns button { min-width: 48px; font-family: var(--font-mono); }
+  .metro-meter { display: flex; justify-content: center; }
+  .beats { display: flex; justify-content: center; gap: 12px; padding: 6px 0; }
+  .beat {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--beat-off);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--ink-muted);
+    transition: background 0.05s linear, transform 0.05s linear;
+  }
+  .beat.is-on { background: var(--beat-on); color: var(--accent-ink); transform: scale(1.15); }
+  .beat.is-accent.is-on { background: var(--beat-accent); }
+  .play-btn { width: 100%; }
+
+  /* ---------- ここだけ覚える ---------- */
+  aside.keypoints {
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin: 26px 0 0;
+  }
+  aside.keypoints h3 { margin: 0 0 8px; font-size: 15px; font-weight: 700; color: var(--accent); }
+  aside.keypoints ul { margin: 0; padding-left: 1.2em; }
+  aside.keypoints li { font-size: 15px; font-weight: 500; color: var(--ink); line-height: 1.7; margin-bottom: 4px; }
+  aside.keypoints li:last-child { margin-bottom: 0; }
+
+  /* ---------- 練習する ---------- */
+  section.practice { margin-top: 26px; }
+  section.practice > h3 { margin: 0 0 10px; font-size: 17px; font-weight: 600; }
+  .practice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+  .practice-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1.5px solid var(--accent);
+    background: var(--accent-soft);
+    color: var(--ink);
+    text-decoration: none;
+    min-width: 0;
+  }
+  .practice-card:hover { box-shadow: 0 2px 8px var(--shadow); }
+  .practice-tag { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent); }
+  .practice-title { font-size: 15.5px; font-weight: 700; }
+  .practice-title::after { content: " →"; color: var(--accent); }
+  .practice-desc { font-size: 13px; line-height: 1.6; color: var(--ink-muted); }
+
+  /* ---------- 確認問題 ---------- */
+  section.quiz { margin-top: 28px; }
+  section.quiz > h3 { margin: 0 0 12px; font-size: 17px; font-weight: 600; }
+  .quiz-item { padding: 14px 0; border-top: 1px solid var(--border); }
+  .quiz-q { margin: 0 0 10px; font-size: 15.5px; font-weight: 600; line-height: 1.65; }
+  .choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .choice-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 48px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent); }
+  .choice-btn:disabled { cursor: default; }
+  .choice-btn.correct { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+  .choice-btn.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+  .choice-key { flex: none; font-family: var(--font-mono); font-weight: 700; font-size: 13px; width: 16px; }
+  .feedback { margin: 10px 0 0; padding: 12px 14px; border-radius: 12px; font-size: 14px; line-height: 1.7; }
+  .feedback.good { background: var(--good-soft); color: var(--good); }
+  .feedback.bad { background: var(--bad-soft); color: var(--bad); }
+  .quiz-again { margin-top: 10px; }
+
+  /* ---------- ページ送り ---------- */
+  .lesson-foot { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 12px; }
+  .done-toggle {
+    align-self: stretch;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 700;
+    min-height: 48px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1.5px dashed var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    cursor: pointer;
+  }
+  .done-toggle[aria-pressed="true"] { border: 1.5px solid var(--good); background: var(--good-soft); color: var(--good); }
+  .pager { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+
+  /* ---------- フッター ---------- */
+  .page-foot {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    line-height: 1.8;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .page-foot a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .page-foot a:hover { text-decoration: underline; }
+
+  /* ---------- スマホ ---------- */
+  @media (max-width: 819px) {
+    .course-layout { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    .toc { position: static; padding: 0; max-height: none; overflow: visible; }
+    .toc > summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 44px;
+      padding: 10px 14px;
+      cursor: pointer;
+      list-style: none;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .toc > summary::-webkit-details-marker { display: none; }
+    .toc > summary .arrow { color: var(--ink-faint); transition: transform 0.15s ease; }
+    .toc[open] > summary .arrow { transform: rotate(180deg); }
+    .toc .toc-head { display: none; }
+    .toc[open] .toc-body { padding: 8px 8px 0; border-top: 1px solid var(--border); }
+    .toc-top { margin: 6px 16px 0; padding-bottom: 12px; }
+    .lesson { padding: 18px 16px; }
+    .lesson-head h2.lesson-title { font-size: 22px; }
+  }
+  @media (max-width: 560px) {
+    .choices { grid-template-columns: minmax(0, 1fr); }
+    .score-ctl { width: 100%; }
+    .score-btns { flex: 1 1 100%; }
+    .score-btns .btn-small { flex: 1 1 50%; min-width: 0; min-height: 40px; }
+    .fig-pair { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 480px) {
+    body { padding: 24px 12px 56px; }
+    .card { padding: 18px 16px; }
+    .lesson { padding: 16px 14px; }
+    section.mini { padding: 14px 12px; }
+    .score-block, .keys-block { padding: 10px 8px 8px; }
+    .lbl-long { display: none; }
+    .lbl-short { display: inline; }
+    .lesson-row { padding: 12px 14px; gap: 4px 12px; }
+    .top-links { grid-template-columns: minmax(0, 1fr); }
+    .bpm-big { font-size: 34px; }
+    .menu-item { grid-template-columns: 30px minmax(0, 1fr); }
+    .menu-min { grid-column: 2; }
+    .name-btn { min-height: 58px; }
+    .name-btn b { font-size: 13px; }
+    .name-btn .n-en { font-size: 14px; }
+    .ref-table { font-size: 13.5px; }
+    .ref-table th, .ref-table td { padding: 7px 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <nav class="page-links" aria-label="ページの移動">
+    <a class="back-link" href="../../../index.html">← ページ一覧</a>
+    <a class="back-link" href="../../../study/review/habit-planner/index.html">習慣プランナー →</a>
+  </nav>
+  <header class="hero" id="hero">
+    <p class="eyebrow">PIANO · 入門コース</p>
+    <h1>ピアノ入門コース</h1>
+    <p class="tagline">ピアノ・キーボードをはじめて触る人のための16のレッスン。鍵盤のしくみと指番号から、2段の楽譜(大譜表)を見て両手で弾くまで、上から順に進めます。</p>
+    <nav class="site-nav" aria-label="ピアノのページ">
+      <span aria-current="page">コース</span>
+      <a href="songs.html">曲集</a>
+      <a href="../staff-notation-quiz/index.html">五線譜ノート道場</a>
+      <a href="../staff-notation-quiz/reference.html">音符の読み方帳</a>
+    </nav>
+  </header>
+
+  <main id="view"></main>
+
+  <footer class="page-foot">
+    音はブラウザの中でつくっています。音が出ないときは、端末のマナーモードと音量を確かめてください。<br>
+    <a href="songs.html">曲集 →</a> ・ <a href="../staff-notation-quiz/reference.html">音符の読み方帳 →</a>
+  </footer>
+</div>
+
+<script src="../../../shared/store.js"></script>
+<script src="piano.js"></script>
+<script src="lessons.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var KEY = "pianoBeginnerCourse";
+  var L = PIANO_LESSONS;
+  var N = L.length;
+  var PARTS = L.parts;
+  var KEYS = ["A", "B", "C", "D"];
+  var P = Piano;
+  var svgEl = P.svgEl;
+  var MUSIC_FONT = "'Noto Music', 'Apple Symbols', 'Segoe UI Symbol', serif";
+  var HANDS = [{ v: "both", label: "両手" }, { v: "rh", label: "右手" }, { v: "lh", label: "左手" }];
+  var IDLE = "▶ 再生で聴く。弾いてみるで光った音を押す";
+
+  // ---------- 保存 ----------
+  // { done: [id…], lastId: 最後に開いたレッスンの id(""= まだ) }
+  var LESSON_IDS = L.map(function (l) { return l.id; });
+  function sanitize(raw) {
+    raw = raw && typeof raw === "object" ? raw : {};
+    var done = [];
+    if (Array.isArray(raw.done)) raw.done.forEach(function (v) { if (LESSON_IDS.indexOf(v) >= 0 && done.indexOf(v) < 0) done.push(v); });
+    var lastId = typeof raw.lastId === "string" && LESSON_IDS.indexOf(raw.lastId) >= 0 ? raw.lastId : "";
+    return { done: done, lastId: lastId };
+  }
+  var state = sanitize(Store.load(KEY, null));
+  function save() { Store.save(KEY, state); }
+  function isDone(id) { return state.done.indexOf(id) >= 0; }
+  function setDone(id, on) {
+    var i = state.done.indexOf(id);
+    if (on && i < 0) state.done.push(id);
+    if (!on && i >= 0) state.done.splice(i, 1);
+    save();
+  }
+  function doneCount() { return state.done.length; }
+  // 続き: 最後に開いたレッスンから先の最初の未完了。なければ最初の未完了
+  function resumeLesson() {
+    var from = Math.max(0, LESSON_IDS.indexOf(state.lastId)), k;
+    for (k = from; k < N; k++) if (!isDone(L[k].id)) return L[k];
+    for (k = 0; k < N; k++) if (!isDone(L[k].id)) return L[k];
+    return null;
+  }
+
+  // ---------- 小さな道具 ----------
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function html(tag, cls, h) { var e = el(tag, cls); e.innerHTML = h; return e; }
+  function link(href, cls, text) { var a = el("a", cls, text); a.href = href; return a; }
+  function button(cls, text, onClick) {
+    var b = el("button", cls, text);
+    b.type = "button";
+    if (onClick) b.addEventListener("click", onClick);
+    return b;
+  }
+  // チップの選択。opts: [{ v, label }]。戻り値の .set(v) で外から選び直せる
+  function chipGroup(label, opts, cur, onChange) {
+    var wrap = el("div", "ctl");
+    if (label) wrap.appendChild(el("div", "ctl-label", label));
+    var box = el("div", "chips");
+    box.setAttribute("role", "group");
+    if (label) box.setAttribute("aria-label", label);
+    var btns = opts.map(function (o) {
+      var b = button("chip-btn", o.label, function () { set(o.v); onChange(o.v); });
+      b.setAttribute("aria-pressed", String(o.v === cur));
+      box.appendChild(b);
+      return b;
+    });
+    function set(v) { btns.forEach(function (b, i) { b.setAttribute("aria-pressed", String(opts[i].v === v)); }); }
+    wrap.appendChild(box);
+    wrap.set = set;
+    wrap.box = box;
+    return wrap;
+  }
+  function checkField(text, on, onChange) {
+    var lab = el("label", "check-label");
+    var cb = el("input");
+    cb.type = "checkbox";
+    cb.checked = on;
+    cb.addEventListener("change", function () { onChange(cb.checked); });
+    lab.appendChild(cb);
+    lab.appendChild(document.createTextNode(text));
+    lab.input = cb;
+    return lab;
+  }
+  function beatDots(n) {
+    var box = el("div", "beats");
+    box.setAttribute("aria-hidden", "true");
+    var dots = [];
+    for (var i = 0; i < n; i++) {
+      var d = el("span", "beat" + (i === 0 ? " is-accent" : ""), String(i + 1));
+      box.appendChild(d);
+      dots.push(d);
+    }
+    box.show = function (k) { dots.forEach(function (d, i) { d.classList.toggle("is-on", i === k); }); };
+    return box;
+  }
+  function flash(node) {
+    node.classList.remove("is-hit");
+    void node.getBoundingClientRect();
+    node.classList.add("is-hit");
+    setTimeout(function () { node.classList.remove("is-hit"); }, 350);
+  }
+  // SVG の中の要素をボタンとして使う
+  function svgButton(g, label, onPress) {
+    g.setAttribute("role", "button");
+    g.setAttribute("tabindex", "0");
+    g.setAttribute("aria-label", label);
+    g.addEventListener("click", onPress);
+    g.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onPress(); }
+    });
+  }
+  function svgText(x, y, str, attrs) {
+    var t = svgEl("text", attrs || {});
+    t.setAttribute("x", x);
+    t.setAttribute("y", y);
+    t.textContent = str;
+    return t;
+  }
+  // 押した鍵盤の名前。黒鍵は ♯ と ♭ の2つ
+  function keyNameJa(m) {
+    if (!P.isBlack(m)) return P.noteJa(m);
+    return P.noteJa(m) + " / " + P.noteJa(m, true);
+  }
+  // 音を鳴らす(和音は少しずらさず同時に)
+  function sound(midis, vel) {
+    if (!P.audio()) return;
+    var t = P.now() + 0.02;
+    midis.forEach(function (m) { P.play(m, t, 1.2, vel || 0.7); });
+  }
+
+  // ---------- 五線の図(タップで鳴る) ----------
+  var LETTERS = "CDEFGAB";
+  var BOTTOM = { treble: 30, bass: 18 }; // 第1線の音の段: ト音 E4、ヘ音 G2
+  var CLEF = { treble: { glyph: "𝄞", base: 30, x: 2 }, bass: { glyph: "𝄢", base: 36, x: 3 } };
+  function stepOf(p) { return parseInt(p.slice(-1), 10) * 7 + LETTERS.indexOf(p.charAt(0)); }
+  function midiOf(p) {
+    var pcs = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+    var alt = p.indexOf("#") > 0 ? 1 : p.indexOf("b") > 0 ? -1 : 0;
+    return (parseInt(p.slice(-1), 10) + 1) * 12 + pcs[p.charAt(0)] + alt;
+  }
+  // ♯ ♭ を線で描く(piano.js の楽譜と同じ形)
+  function accMark(svg, kind, x, y, color) {
+    if (kind === 1) {
+      svg.appendChild(svgEl("path", { d: "M" + (x - 2.2) + " " + (y - 8) + " V" + (y + 10) + " M" + (x + 2.2) + " " + (y - 10) + " V" + (y + 8), stroke: color, "stroke-width": 1.1, fill: "none" }));
+      svg.appendChild(svgEl("path", {
+        d: "M" + (x - 5) + " " + (y - 1.6) + " L" + (x + 5) + " " + (y - 4.6) + " L" + (x + 5) + " " + (y - 2.2) + " L" + (x - 5) + " " + (y + 0.8) + " Z" +
+          " M" + (x - 5) + " " + (y + 4.4) + " L" + (x + 5) + " " + (y + 1.4) + " L" + (x + 5) + " " + (y + 3.8) + " L" + (x - 5) + " " + (y + 6.8) + " Z",
+        fill: color
+      }));
+    } else {
+      svg.appendChild(svgEl("path", {
+        d: "M" + (x - 3) + " " + (y - 13) + " V" + (y + 5) + " C" + (x + 1) + " " + (y + 2.5) + " " + (x + 5.5) + " " + (y - 0.5) + " " + (x + 4.2) + " " + (y - 3.4) +
+          " C" + (x + 3) + " " + (y - 6) + " " + (x - 0.6) + " " + (y - 4.6) + " " + (x - 3) + " " + (y - 1.6),
+        stroke: color, "stroke-width": 1.5, fill: "none", "stroke-linejoin": "round"
+      }));
+    }
+  }
+  // o: { clefs: ["treble"] | ["treble","bass"], cols: [{ staff, p, label, sub, hl }], keySig: 0|1|-1, colW, label }
+  function noteMap(o) {
+    var grand = o.clefs.length === 2;
+    var top = 26, gap = 70;
+    var tops = [top];
+    if (grand) tops.push(top + 40 + gap);
+    var left = grand ? 14 : 6;
+    var ks = o.keySig ? 14 : 0;
+    var colW = o.colW || 38;
+    var headX = left + 42 + ks;
+    var W = headX + o.cols.length * colW + 8;
+    var H = tops[tops.length - 1] + 40 + 46;
+    var INK = "var(--score-ink)";
+    var svg = svgEl("svg", { viewBox: "0 0 " + W + " " + H, class: "fig-svg", role: "group" });
+    svg.setAttribute("aria-label", o.label || "五線の図");
+    function yOf(step, si) { return tops[si] + 40 - (step - BOTTOM[o.clefs[si]]) * 5; }
+    tops.forEach(function (ty, si) {
+      for (var k = 0; k < 5; k++) svg.appendChild(svgEl("line", { x1: left, y1: ty + k * 10, x2: W - 6, y2: ty + k * 10, stroke: "var(--staff-line)", "stroke-width": 1.1 }));
+      var cf = CLEF[o.clefs[si]];
+      svg.appendChild(svgText(left + cf.x, ty + cf.base, cf.glyph, { "font-size": 40, style: "font-family:" + MUSIC_FONT, fill: INK }));
+      if (o.keySig) {
+        var p = o.keySig > 0 ? (o.clefs[si] === "treble" ? "F5" : "F3") : (o.clefs[si] === "treble" ? "B4" : "B2");
+        accMark(svg, o.keySig, left + 46, yOf(stepOf(p), si), INK);
+      }
+    });
+    svg.appendChild(svgEl("line", { x1: left, y1: tops[0], x2: left, y2: tops[tops.length - 1] + 40, stroke: "var(--staff-line)", "stroke-width": 1.2 }));
+    svg.appendChild(svgEl("line", { x1: W - 6, y1: tops[0], x2: W - 6, y2: tops[tops.length - 1] + 40, stroke: "var(--staff-line)", "stroke-width": 1.2 }));
+    if (grand) {
+      var y0 = tops[0], y1 = tops[1] + 40, ym = (y0 + y1) / 2;
+      svg.appendChild(svgEl("path", {
+        d: "M10 " + y0 + " C 2 " + (y0 + 20) + ", 9 " + (ym - 20) + ", 3 " + ym + " C 9 " + (ym + 20) + ", 2 " + (y1 - 20) + ", 10 " + y1 +
+          " C 5 " + (y1 - 22) + ", 12 " + (ym + 18) + ", 5 " + ym + " C 12 " + (ym - 18) + ", 5 " + (y0 + 22) + ", 10 " + y0 + " Z",
+        fill: INK
+      }));
+    }
+    o.cols.forEach(function (c, i) {
+      var si = c.staff || 0;
+      var x = headX + i * colW + colW / 2;
+      var st = stepOf(c.p), y = yOf(st, si), bot = BOTTOM[o.clefs[si]];
+      var g = svgEl("g", { class: "map-col" });
+      g.appendChild(svgEl("rect", { class: "map-hit", x: x - colW / 2 + 2, y: tops[si] - 22, width: colW - 4, height: 84 + (grand && si === 0 ? 12 : 0), rx: 6 }));
+      var s;
+      for (s = bot - 2; s >= st; s -= 2) g.appendChild(svgEl("line", { x1: x - 10, y1: yOf(s, si), x2: x + 10, y2: yOf(s, si), stroke: "var(--staff-line)", "stroke-width": 1.1 }));
+      for (s = bot + 10; s <= st; s += 2) g.appendChild(svgEl("line", { x1: x - 10, y1: yOf(s, si), x2: x + 10, y2: yOf(s, si), stroke: "var(--staff-line)", "stroke-width": 1.1 }));
+      var col = c.hl ? "var(--accent)" : INK;
+      g.appendChild(svgEl("ellipse", { cx: x, cy: y, rx: 6.6, ry: 4.4, transform: "rotate(-20 " + x + " " + y + ")", fill: "none", stroke: col, "stroke-width": 1.9 }));
+      var ly = tops[si] + 40 + (grand && si === 0 ? 30 : 24);
+      if (c.label) g.appendChild(svgText(x, ly, c.label, { "text-anchor": "middle", "font-size": 12, "font-weight": 700, fill: c.hl ? "var(--accent)" : "var(--ink)" }));
+      if (c.sub) g.appendChild(svgText(x, ly + 13, c.sub, { "text-anchor": "middle", "font-size": 10, "font-weight": 600, "font-family": "var(--font-mono)", fill: "var(--ink-muted)" }));
+      var m = midiOf(c.p);
+      svgButton(g, (c.label || "") + " " + c.p + " を鳴らす", function () { sound([m]); flash(g); });
+      svg.appendChild(g);
+    });
+    var wrap = el("div", "fig-scroll staff-wrap");
+    wrap.appendChild(svg);
+    return wrap;
+  }
+  function figWith(node, caption) {
+    var fig = el("figure", "figure");
+    fig.appendChild(node);
+    if (caption) fig.appendChild(el("figcaption", "fig-caption", caption));
+    return fig;
+  }
+
+  // ---------- 音符・休符のアイコン ----------
+  var QUARTER_REST = "M13 4 L20 12 L15 19 L21 27 C 16 24, 12 27, 16 34 C 9 30, 10 22, 17 24 L 11 17 L 16 11 Z";
+  function icon(kind) {
+    var s = svgEl("svg", { viewBox: "0 0 36 40", "aria-hidden": "true" });
+    var INK = "var(--ink)";
+    function head(cx, cy, hollow, whole) {
+      s.appendChild(svgEl("ellipse", {
+        cx: cx, cy: cy, rx: whole ? 7.5 : 6.4, ry: 4.6, transform: "rotate(-20 " + cx + " " + cy + ")",
+        fill: hollow ? "none" : INK, stroke: INK, "stroke-width": hollow ? 2 : 0
+      }));
+    }
+    function stem(cx, cy) { s.appendChild(svgEl("line", { x1: cx + 5.8, y1: cy - 1.5, x2: cx + 5.8, y2: 4, stroke: INK, "stroke-width": 1.4 })); }
+    function dot(x, y) { s.appendChild(svgEl("circle", { cx: x, cy: y, r: 1.8, fill: INK })); }
+    function line(y) { s.appendChild(svgEl("line", { x1: 4, y1: y, x2: 32, y2: y, stroke: "var(--ink-faint)", "stroke-width": 1 })); }
+    if (kind === "whole") head(15, 24, true, true);
+    else if (kind === "half" || kind === "dhalf") { head(12, 30, true); stem(12, 30); if (kind === "dhalf") dot(25, 30); }
+    else if (kind === "quarter" || kind === "dquarter") { head(12, 30, false); stem(12, 30); if (kind === "dquarter") dot(25, 30); }
+    else if (kind === "eighth") {
+      head(12, 30, false); stem(12, 30);
+      s.appendChild(svgEl("path", { d: "M17.8 4 C 20 12, 28 14, 25 24", fill: "none", stroke: INK, "stroke-width": 1.8 }));
+    } else if (kind === "eighths") {
+      head(7, 32, false); head(23, 30, false);
+      s.appendChild(svgEl("line", { x1: 12.8, y1: 30.5, x2: 12.8, y2: 7, stroke: INK, "stroke-width": 1.3 }));
+      s.appendChild(svgEl("line", { x1: 28.8, y1: 28.5, x2: 28.8, y2: 5, stroke: INK, "stroke-width": 1.3 }));
+      s.appendChild(svgEl("path", { d: "M12.2 5 L29.4 3 L29.4 7.5 L12.2 9.5 Z", fill: INK }));
+    } else if (kind === "rwhole") { line(14); line(24); s.appendChild(svgEl("rect", { x: 11, y: 14, width: 14, height: 5, fill: INK })); }
+    else if (kind === "rhalf") { line(14); line(24); s.appendChild(svgEl("rect", { x: 11, y: 19, width: 14, height: 5, fill: INK })); }
+    else if (kind === "rquarter") s.appendChild(svgEl("path", { d: QUARTER_REST, fill: INK, stroke: INK, "stroke-width": 1, "stroke-linejoin": "round" }));
+    else if (kind === "reighth") {
+      s.appendChild(svgEl("circle", { cx: 13, cy: 14, r: 3.2, fill: INK }));
+      s.appendChild(svgEl("path", { d: "M13 16.5 C 17 17.5, 21 16, 23 12 L 16 32", fill: "none", stroke: INK, "stroke-width": 1.8, "stroke-linejoin": "round" }));
+    }
+    return s;
+  }
+  // rows: [kind, 名前, 長さ, [4拍のうちの区切り], rest?]
+  function durTable(rows, caption) {
+    var t = el("table", "ref-table");
+    t.innerHTML = "<thead><tr><th></th><th>名前</th><th>長さ</th><th>4拍のうち</th></tr></thead>";
+    var tb = el("tbody");
+    rows.forEach(function (r) {
+      var tr = el("tr");
+      var td = el("td", "icon");
+      td.appendChild(icon(r[0]));
+      tr.appendChild(td);
+      tr.appendChild(el("td", "", r[1]));
+      tr.appendChild(el("td", "dur-beats", r[2]));
+      var bar = el("div", "dur-bar");
+      var sum = 0;
+      r[3].forEach(function (v) {
+        var sp = el("span", r[4] ? "rest" : "");
+        sp.style.flex = String(v);
+        bar.appendChild(sp);
+        sum += v;
+      });
+      if (sum < 4) { var g = el("span", "gap"); g.style.flex = String(4 - sum); bar.appendChild(g); }
+      bar.setAttribute("aria-label", r[2]);
+      var td4 = el("td");
+      td4.appendChild(bar);
+      tr.appendChild(td4);
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+    return figWith(t, caption);
+  }
+  function playBtn(label, fn) {
+    var b = button("btn-small", "▶ " + label, fn);
+    return b;
+  }
+
+  // ---------- 図 ----------
+  var FIGURES = {
+    names: function () {
+      var box = el("div");
+      var grid = el("div", "name-grid");
+      var JP = ["ハ", "ニ", "ホ", "ヘ", "ト", "イ", "ロ"];
+      [60, 62, 64, 65, 67, 69, 71].forEach(function (m, i) {
+        var b = button("name-btn");
+        b.appendChild(el("b", "", P.doremi(m)));
+        b.appendChild(el("span", "n-en", P.pcName(m)));
+        b.appendChild(el("span", "n-jp", JP[i]));
+        b.setAttribute("aria-label", P.doremi(m) + " " + P.pcName(m) + " " + JP[i] + " を鳴らす");
+        b.addEventListener("click", function () { sound([m]); flash(b); });
+        grid.appendChild(b);
+      });
+      box.appendChild(grid);
+      var lg = el("p", "name-legend");
+      lg.innerHTML = "<span>上: ドレミ(イタリア語)</span><span class=\"n-en\">CDE(英語)</span><span>下: 日本語</span>";
+      box.appendChild(lg);
+      return figWith(box, "ボタンを押すと、その音が鳴ります(C4〜B4)。");
+    },
+    staffLines: function () {
+      var W = 300, H = 92, top = 22, x0 = 70, x1 = 226;
+      var svg = svgEl("svg", { viewBox: "0 0 " + W + " " + H, class: "fig-svg", role: "img", "aria-label": "五線の線と間の数え方" });
+      for (var k = 0; k < 5; k++) {
+        var y = top + (4 - k) * 10;
+        svg.appendChild(svgEl("line", { x1: x0, y1: y, x2: x1, y2: y, stroke: "var(--score-ink)", "stroke-width": 1.3 }));
+        svg.appendChild(svgText(x1 + 8, y + 4, "第" + (k + 1) + "線", { "font-size": 11, "font-weight": 700, fill: "var(--ink)" }));
+        if (k < 4) {
+          var ys = y - 5;
+          svg.appendChild(svgEl("rect", { x: x0 + 2, y: ys - 3.5, width: x1 - x0 - 4, height: 7, rx: 3, fill: "var(--accent-soft)" }));
+          svg.appendChild(svgText(x0 - 8, ys + 4, "第" + (k + 1) + "間", { "font-size": 11, "font-weight": 700, fill: "var(--accent)", "text-anchor": "end" }));
+        }
+      }
+      // 線を上から描き直す(帯の上に)
+      for (k = 0; k < 5; k++) svg.appendChild(svgEl("line", { x1: x0, y1: top + k * 10, x2: x1, y2: top + k * 10, stroke: "var(--score-ink)", "stroke-width": 1.3 }));
+      svg.appendChild(svgText(x0 + (x1 - x0) / 2, top + 62, "↑ 上にあるほど高い音", { "font-size": 11, fill: "var(--ink-muted)", "text-anchor": "middle" }));
+      var wrap = el("div", "fig-scroll staff-wrap");
+      wrap.appendChild(svg);
+      return figWith(wrap, "線は下から第1線〜第5線、間(線と線のあいだ)は下から第1間〜第4間。");
+    },
+    trebleNotes: function () {
+      return figWith(noteMap({
+        clefs: ["treble"], label: "ト音記号の ド〜ソ",
+        cols: [
+          { p: "C4", label: "ド", sub: "C4" }, { p: "D4", label: "レ", sub: "D4" }, { p: "E4", label: "ミ", sub: "E4" },
+          { p: "F4", label: "ファ", sub: "F4" }, { p: "G4", label: "ソ", sub: "G4", hl: true }
+        ]
+      }), "ト音記号の ド(C4)〜ソ(G4)。紺色のソが第2線。音符をタップすると鳴ります。");
+    },
+    trebleNotes2: function () {
+      return figWith(noteMap({
+        clefs: ["treble"], label: "ト音記号の ド〜高いド", colW: 32,
+        cols: [
+          { p: "C4", label: "ド", sub: "C4" }, { p: "D4", label: "レ" }, { p: "E4", label: "ミ" }, { p: "F4", label: "ファ" }, { p: "G4", label: "ソ", sub: "G4" },
+          { p: "A4", label: "ラ", sub: "A4", hl: true }, { p: "B4", label: "シ", sub: "B4", hl: true }, { p: "C5", label: "ド", sub: "C5", hl: true }
+        ]
+      }), "紺色が、このレッスンで新しく出てくる音。C4 から C5 まで、ちょうど1オクターブです。");
+    },
+    bassNotes: function () {
+      return figWith(noteMap({
+        clefs: ["bass"], label: "ヘ音記号の ド〜ソと真ん中のド", colW: 36,
+        cols: [
+          { p: "C3", label: "ド", sub: "C3" }, { p: "D3", label: "レ", sub: "D3" }, { p: "E3", label: "ミ", sub: "E3" },
+          { p: "F3", label: "ファ", sub: "F3", hl: true }, { p: "G3", label: "ソ", sub: "G3" }, { p: "C4", label: "ド", sub: "C4" }
+        ]
+      }), "紺色のファが第4線(ヘ音記号の2つの点のあいだ)。右はしは真ん中のド(C4)で、五線の上に加線1本です。");
+    },
+    grandMap: function () {
+      return figWith(noteMap({
+        clefs: ["treble", "bass"], label: "大譜表と真ん中のド", colW: 36,
+        cols: [
+          { staff: 1, p: "C3", label: "ド", sub: "C3" }, { staff: 1, p: "E3", label: "ミ", sub: "E3" }, { staff: 1, p: "G3", label: "ソ", sub: "G3" },
+          { staff: 1, p: "C4", label: "ド", sub: "C4", hl: true }, { staff: 0, p: "C4", label: "ド", sub: "C4", hl: true },
+          { staff: 0, p: "E4", label: "ミ", sub: "E4" }, { staff: 0, p: "G4", label: "ソ", sub: "G4" }
+        ]
+      }), "左から右へ、だんだん高い音。紺色の2つは同じ真ん中のド(C4)で、下の段では上の加線、上の段では下の加線に書きます。");
+    },
+    keySigs: function () {
+      var box = el("div", "fig-pair");
+      [[1, "ト長調(♯1つ)", "ファに♯"], [-1, "ヘ長調(♭1つ)", "シに♭"]].forEach(function (k) {
+        var d = el("div");
+        d.appendChild(el("h4", "", k[1]));
+        var map = noteMap({
+          clefs: ["treble", "bass"], keySig: k[0], label: k[1] + "の調号", colW: 44,
+          cols: k[0] > 0
+            ? [{ staff: 0, p: "F5", label: "ファ♯", sub: "F♯5", hl: true }, { staff: 0, p: "F4", label: "ファ♯", sub: "F♯4" }, { staff: 1, p: "F3", label: "ファ♯", sub: "F♯3", hl: true }]
+            : [{ staff: 0, p: "B4", label: "シ♭", sub: "B♭4", hl: true }, { staff: 1, p: "B3", label: "シ♭", sub: "B♭3" }, { staff: 1, p: "B2", label: "シ♭", sub: "B♭2", hl: true }]
+        });
+        // 鳴らす音を調号に合わせる
+        map.querySelectorAll(".map-col").forEach(function (g, i) {
+          var p = k[0] > 0 ? ["F5", "F4", "F3"][i] : ["B4", "B3", "B2"][i];
+          var m = midiOf(p) + k[0];
+          var g2 = g.cloneNode(true);
+          g.parentNode.replaceChild(g2, g);
+          svgButton(g2, (k[0] > 0 ? "ファ♯ " : "シ♭ ") + P.noteName(m, k[0] < 0) + " を鳴らす", function () { sound([m]); flash(g2); });
+        });
+        d.appendChild(map);
+        box.appendChild(d);
+      });
+      return figWith(box, "紺色は調号を書く位置。調号は、その名前の音すべて(ほかのオクターブも)に効きます。");
+    },
+    durations: function () {
+      return durTable([
+        ["whole", "全音符", "4拍", [4]],
+        ["half", "二分音符", "2拍", [2, 2]],
+        ["quarter", "四分音符", "1拍", [1, 1, 1, 1]]
+      ], "全音符1つ = 二分音符2つ = 四分音符4つ。白い玉は長い音、黒い玉に棒(符尾)は1拍です。");
+    },
+    durations2: function () {
+      return durTable([
+        ["dhalf", "付点二分音符", "3拍", [3]],
+        ["dquarter", "付点四分音符", "1.5拍", [1.5, 1.5]],
+        ["eighth", "八分音符", "半拍", [0.5]],
+        ["eighths", "八分音符2つ(連桁)", "1拍", [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]]
+      ], "付点は、もとの長さの半分を足します。2 + 1 = 3拍、1 + 0.5 = 1.5拍。");
+    },
+    rests: function () {
+      return durTable([
+        ["rwhole", "全休符", "4拍(1小節)休む", [4], true],
+        ["rhalf", "二分休符", "2拍休む", [2], true],
+        ["rquarter", "四分休符", "1拍休む", [1], true],
+        ["reighth", "八分休符", "半拍休む", [0.5], true]
+      ], "アイコンの細い線は五線の線。全休符は線からぶら下がり、二分休符は線の上に乗ります。");
+    },
+    accidentals: function () {
+      var t = el("table", "ref-table");
+      t.innerHTML = "<thead><tr><th></th><th>名前と意味</th><th>例</th><th></th></tr></thead>";
+      var tb = el("tbody");
+      [["♯", "シャープ", "半音上げる", "ファ → ファ♯", [65, 66]],
+        ["♭", "フラット", "半音下げる", "シ → シ♭", [71, 70]],
+        ["♮", "ナチュラル", "♯や♭をとって、もとにもどす", "ファ♯ → ファ", [66, 65]]].forEach(function (r) {
+        var tr = el("tr");
+        tr.appendChild(el("td", "sym sym-music", r[0]));
+        var td = el("td");
+        td.appendChild(el("b", "", r[1]));
+        td.appendChild(el("small", "", r[2]));
+        tr.appendChild(td);
+        tr.appendChild(el("td", "", r[3]));
+        var tdb = el("td", "td-btn");
+        tdb.appendChild(playBtn("聴く", function () {
+          if (!P.audio()) return;
+          var t0 = P.now() + 0.03;
+          P.play(r[4][0], t0, 0.6); P.play(r[4][1], t0 + 0.7, 0.9);
+        }));
+        tr.appendChild(tdb);
+        tb.appendChild(tr);
+      });
+      t.appendChild(tb);
+      return figWith(t, "「聴く」で、記号のつく前とあとの音を順に鳴らします。");
+    },
+    chordTable: function () {
+      var t = el("table", "ref-table");
+      t.innerHTML = "<thead><tr><th>和音</th><th>音(1つおきに重ねる)</th><th>左手の形</th><th></th></tr></thead>";
+      var tb = el("tbody");
+      [["C", "ド・ミ・ソ", "ド・ミ・ソ(5・3・1)", [48, 52, 55]],
+        ["F", "ファ・ラ・ド", "ド・ファ・ラ(5・2・1)", [48, 53, 57]],
+        ["G7", "ソ・シ・レ・ファ", "シ・ファ・ソ(5・2・1)", [47, 53, 55]]].forEach(function (r) {
+        var tr = el("tr");
+        tr.appendChild(el("td", "sym", r[0]));
+        tr.appendChild(el("td", "", r[1]));
+        tr.appendChild(el("td", "", r[2]));
+        var tdb = el("td", "td-btn");
+        tdb.appendChild(playBtn("聴く", function () { sound(r[3], 0.6); }));
+        tr.appendChild(tdb);
+        tb.appendChild(tr);
+      });
+      t.appendChild(tb);
+      return figWith(t, "G7 の「7」は、ソ・シ・レ にもう1つファを重ねた4つの音の和音という意味です。");
+    },
+    dynamics: function () {
+      var t = el("table", "ref-table");
+      t.innerHTML = "<thead><tr><th>記号</th><th>読み方</th><th>意味</th><th></th></tr></thead>";
+      var tb = el("tbody");
+      [["pp", "ピアニッシモ", "とても弱く", 0.32], ["p", "ピアノ", "弱く", 0.42], ["mp", "メゾピアノ", "少し弱く", 0.55],
+        ["mf", "メゾフォルテ", "少し強く", 0.68], ["f", "フォルテ", "強く", 0.82], ["ff", "フォルティッシモ", "とても強く", 0.95]].forEach(function (r) {
+        var tr = el("tr");
+        tr.appendChild(el("td", "sym", r[0]));
+        tr.appendChild(el("td", "", r[1]));
+        tr.appendChild(el("td", "", r[2]));
+        var tdb = el("td", "td-btn");
+        tdb.appendChild(playBtn("聴く", function () {
+          if (!P.audio()) return;
+          var t0 = P.now() + 0.03;
+          [60, 64, 67].forEach(function (m, i) { P.play(m, t0 + i * 0.32, 0.5, r[3]); });
+        }));
+        tr.appendChild(tdb);
+        tb.appendChild(tr);
+      });
+      t.appendChild(tb);
+      return figWith(t, "p は piano(イタリア語で「弱く」)、f は forte(「強く」)。m は mezzo(「少し」)。");
+    },
+    symbols: function () {
+      var t = el("table", "ref-table");
+      t.innerHTML = "<thead><tr><th></th><th>名前</th><th>弾き方</th></tr></thead>";
+      var tb = el("tbody");
+      function ic(draw) {
+        var s = svgEl("svg", { viewBox: "0 0 36 40", "aria-hidden": "true" });
+        draw(s);
+        return s;
+      }
+      var INK = "var(--ink)";
+      var rows = [
+        ["スラー", "弧でつないだ音を、切れ目なくなめらかに(レガート)", function (s) {
+          s.appendChild(svgEl("ellipse", { cx: 8, cy: 30, rx: 5.4, ry: 3.8, transform: "rotate(-20 8 30)", fill: INK }));
+          s.appendChild(svgEl("ellipse", { cx: 26, cy: 26, rx: 5.4, ry: 3.8, transform: "rotate(-20 26 26)", fill: INK }));
+          s.appendChild(svgEl("path", { d: "M5 22 Q 17 8, 30 17", fill: "none", stroke: INK, "stroke-width": 1.8, "stroke-linecap": "round" }));
+        }],
+        ["スタッカート", "符頭のそばの点。音を短く切る", function (s) {
+          s.appendChild(svgEl("ellipse", { cx: 14, cy: 28, rx: 6.2, ry: 4.4, transform: "rotate(-20 14 28)", fill: INK }));
+          s.appendChild(svgEl("line", { x1: 19.6, y1: 27, x2: 19.6, y2: 4, stroke: INK, "stroke-width": 1.4 }));
+          s.appendChild(svgEl("circle", { cx: 14, cy: 37, r: 2, fill: INK }));
+        }],
+        ["反復記号", "|: と :| のあいだを、もう一度くり返す(|: がなければ最初から)", function (s) {
+          s.appendChild(svgEl("rect", { x: 2, y: 6, width: 3.5, height: 28, fill: INK }));
+          s.appendChild(svgEl("line", { x1: 8.5, y1: 6, x2: 8.5, y2: 34, stroke: INK, "stroke-width": 1.2 }));
+          s.appendChild(svgEl("circle", { cx: 13, cy: 16, r: 1.9, fill: INK }));
+          s.appendChild(svgEl("circle", { cx: 13, cy: 24, r: 1.9, fill: INK }));
+          s.appendChild(svgEl("circle", { cx: 23, cy: 16, r: 1.9, fill: INK }));
+          s.appendChild(svgEl("circle", { cx: 23, cy: 24, r: 1.9, fill: INK }));
+          s.appendChild(svgEl("line", { x1: 27.5, y1: 6, x2: 27.5, y2: 34, stroke: INK, "stroke-width": 1.2 }));
+          s.appendChild(svgEl("rect", { x: 30.5, y: 6, width: 3.5, height: 28, fill: INK }));
+        }],
+        ["終止線", "細い線と太い線。曲の終わり", function (s) {
+          s.appendChild(svgEl("line", { x1: 16, y1: 6, x2: 16, y2: 34, stroke: INK, "stroke-width": 1.2 }));
+          s.appendChild(svgEl("rect", { x: 20, y: 6, width: 4, height: 28, fill: INK }));
+        }]
+      ];
+      rows.forEach(function (r) {
+        var tr = el("tr");
+        var td = el("td", "icon");
+        td.appendChild(ic(r[2]));
+        tr.appendChild(td);
+        tr.appendChild(el("td", "", r[0]));
+        tr.appendChild(el("td", "", r[1]));
+        tb.appendChild(tr);
+      });
+      t.appendChild(tb);
+      return figWith(t, "スタッカートの点は符頭の上か下。符頭の右の点(付点)とは意味がちがいます。");
+    },
+    // 練習メニュー
+    menu: function () {
+      var fig = el("figure", "figure");
+      var ol = el("ol", "menu-list");
+      var total = 0;
+      [
+        ["指ならし", "ドの位置で、右手・左手それぞれ ド〜ソ を上がって下がる。", 2, 6],
+        ["音階", "右手でドレミファソラシド。指くぐり・指またぎを確かめる。", 3, 8],
+        ["楽譜を読む", "五線譜ノート道場で、ト音・ヘ音の音名を数問。", 3, 9],
+        ["いまの曲を片手ずつ", "つかえるところだけを、ゆっくりくり返す。", 5, 12],
+        ["両手で通す", "まちがえても止まらずに最後まで。できたら少し速く。", 5, 16]
+      ].forEach(function (m, i) {
+        total += m[2];
+        var li = el("li", "menu-item");
+        li.appendChild(el("span", "menu-no", String(i + 1)));
+        var mid = el("span");
+        mid.appendChild(el("b", "", m[0]));
+        mid.appendChild(document.createTextNode(m[1] + " "));
+        mid.appendChild(link("#lesson-" + m[3], "", "レッスン" + m[3] + " →"));
+        li.appendChild(mid);
+        li.appendChild(el("span", "menu-min", m[2] + "分"));
+        ol.appendChild(li);
+      });
+      fig.appendChild(ol);
+      fig.appendChild(el("p", "menu-total", "合計 約" + total + "分"));
+      fig.appendChild(el("figcaption", "fig-caption", "毎日少しずつ続けるのがいちばんの近道です。時間が短い日は、1と4だけでもかまいません。"));
+      return fig;
+    }
+  };
+
+  // ---------- 練習道具 ----------
+  var MINI = {
+    findC: {
+      title: "ドを全部見つけよう",
+      render: function (box, mounts) {
+        box.appendChild(el("p", "", "下の鍵盤には、ドが3つあります。黒鍵2つのかたまりを目印に、ドを全部押してみましょう。"));
+        var head = el("div", "metro-head");
+        var cnt = el("span", "count-big", "0 / 3");
+        cnt.setAttribute("aria-live", "polite");
+        head.appendChild(cnt);
+        box.appendChild(head);
+        var kbWrap = el("div", "kb-wrap");
+        box.appendChild(kbWrap);
+        var msg = el("p", "mini-status", "");
+        msg.setAttribute("aria-live", "polite");
+        box.appendChild(msg);
+        var row = el("div", "btn-row");
+        var labelsOn = false;
+        var found = {}, kb = null;
+        function count() { return Object.keys(found).length; }
+        row.appendChild(button("btn-secondary", "もう一度", function () {
+          found = {};
+          if (kb) kb.clear();
+          cnt.textContent = "0 / 3";
+          msg.textContent = "";
+          msg.className = "mini-status";
+        }));
+        box.appendChild(row);
+        box.appendChild(checkField("鍵盤に音名を表示する", false, function (on) { labelsOn = on; if (kb) kb.setLabels(on ? "doremi" : "none"); }));
+        mounts.push(function () {
+          kb = P.keyboard({
+            from: 48, to: 72, need: [48, 72], labels: labelsOn ? "doremi" : "none",
+            onPress: function (m) {
+              if (m % 12 === 0) {
+                if (found[m]) { msg.textContent = "そのドはもう見つけました(" + P.noteName(m) + ")。"; msg.className = "mini-status"; return; }
+                found[m] = true;
+                kb.light(m, "good");
+                cnt.textContent = count() + " / 3";
+                if (count() >= 3) { msg.textContent = "全部見つけました! 左から C3・C4(真ん中のド)・C5 です。"; msg.className = "mini-status is-good"; }
+                else { msg.textContent = "正解! " + P.noteName(m) + " のドです。"; msg.className = "mini-status is-good"; }
+              } else {
+                kb.flash(m, "wrong", 300);
+                msg.textContent = "それは" + P.doremi(m) + "。ドは黒鍵2つのかたまりのすぐ左です。";
+                msg.className = "mini-status is-bad";
+              }
+            }
+          });
+          kbWrap.appendChild(kb);
+        });
+      }
+    },
+    fingerMap: {
+      title: "指番号の図",
+      render: function (box, mounts) {
+        box.appendChild(el("p", "", "手の甲を上にして、鍵盤の上に置いたところです。丸の数字をタップすると、ドの位置でその指が弾く音が鳴ります。"));
+        var W = 400, H = 176;
+        var svg = svgEl("svg", { viewBox: "0 0 " + W + " " + H, class: "hands-svg", role: "group", "aria-label": "左手と右手の指番号" });
+        // 右手(手の甲側から見る): 左から 親指1、人差し指2 … 小指5
+        var RIGHT = [
+          { f: 1, x1: 252, y1: 128, x2: 226, y2: 92 },
+          { f: 2, x1: 266, y1: 100, x2: 262, y2: 40 },
+          { f: 3, x1: 292, y1: 98, x2: 292, y2: 30 },
+          { f: 4, x1: 318, y1: 100, x2: 322, y2: 40 },
+          { f: 5, x1: 342, y1: 106, x2: 350, y2: 60 }
+        ];
+        var hands = [
+          { hand: "lh", fingers: RIGHT.map(function (d) { return { f: d.f, x1: W - d.x1, y1: d.y1, x2: W - d.x2, y2: d.y2 }; }), palm: { x: W - 356, w: 106 }, label: "左手", lx: W - 296 },
+          { hand: "rh", fingers: RIGHT, palm: { x: 250, w: 106 }, label: "右手", lx: 296 }
+        ];
+        var NOTE = { lh: { 5: 48, 4: 50, 3: 52, 2: 53, 1: 55 }, rh: { 1: 60, 2: 62, 3: 64, 4: 65, 5: 67 } };
+        var kb = null;
+        function shape(fill, extra) {
+          hands.forEach(function (h) {
+            h.fingers.forEach(function (d) {
+              svg.appendChild(svgEl("line", { x1: d.x1, y1: d.y1, x2: d.x2, y2: d.y2, stroke: fill, "stroke-width": 24 + extra, "stroke-linecap": "round" }));
+            });
+            svg.appendChild(svgEl("rect", { x: h.palm.x - extra / 2, y: 92 - extra / 2, width: h.palm.w + extra, height: 62 + extra, rx: 26 + extra / 2, fill: fill }));
+          });
+        }
+        shape("var(--border)", 3);
+        shape("var(--surface-2)", 0);
+        hands.forEach(function (h) {
+          svg.appendChild(svgText(h.lx, 132, h.label, { "text-anchor": "middle", "font-size": 15, "font-weight": 700, fill: "var(--ink-muted)" }));
+          h.fingers.forEach(function (d) {
+            var g = svgEl("g", { class: "hand-finger" });
+            g.appendChild(svgEl("circle", { cx: d.x2, cy: d.y2, r: 11.5, fill: h.hand === "lh" ? "var(--hand-l)" : "var(--hand-r)" }));
+            g.appendChild(svgText(d.x2, d.y2 + 4.5, String(d.f), { "text-anchor": "middle", "font-size": 13, "font-weight": 700, "font-family": "var(--font-mono)", fill: "var(--hand-ink)" }));
+            var m = NOTE[h.hand][d.f];
+            svgButton(g, h.label + "の" + d.f + "の指(" + P.doremi(m) + ")を鳴らす", function () {
+              sound([m]);
+              flash(g);
+              if (kb) kb.flash(m, "play", 450);
+            });
+            svg.appendChild(g);
+          });
+        });
+        svg.appendChild(svgText(W / 2, 170, "親指が1、小指が5(右手も左手も)", { "text-anchor": "middle", "font-size": 12.5, fill: "var(--ink-muted)" }));
+        box.appendChild(svg);
+        var kbWrap = el("div", "kb-wrap");
+        box.appendChild(kbWrap);
+        box.appendChild(el("p", "hint", "鍵盤の丸は、両手をドの位置に置いたときの指番号です(左手は小指が C3、右手は親指が C4)。"));
+        mounts.push(function () {
+          var fl = [];
+          [5, 4, 3, 2, 1].forEach(function (f) { fl.push({ midi: NOTE.lh[f], f: f, hand: "lh" }); });
+          [1, 2, 3, 4, 5].forEach(function (f) { fl.push({ midi: NOTE.rh[f], f: f, hand: "rh" }); });
+          kb = P.keyboard({ from: 48, to: 72, need: [48, 67], labels: "doremi", fingers: fl });
+          kbWrap.appendChild(kb);
+        });
+      }
+    },
+    metronome: {
+      title: "メトロノーム",
+      render: function (box) {
+        var bpm = 60, meter = 4;
+        var head = el("div", "metro-head");
+        var big = el("span", "bpm-big", String(bpm));
+        big.setAttribute("aria-live", "polite");
+        head.appendChild(big);
+        head.appendChild(el("span", "bpm-unit", "BPM"));
+        box.appendChild(head);
+        var slider = el("input");
+        slider.type = "range"; slider.min = 40; slider.max = 200; slider.step = 1; slider.value = bpm;
+        slider.setAttribute("aria-label", "テンポ(BPM)");
+        function setBpm(v) {
+          bpm = Math.max(40, Math.min(200, v));
+          big.textContent = String(bpm);
+          slider.value = bpm;
+        }
+        slider.addEventListener("input", function () { setBpm(parseInt(slider.value, 10)); });
+        box.appendChild(slider);
+        var bb = el("div", "bpm-btns");
+        [-5, -1, 1, 5].forEach(function (d) {
+          var b = button("btn-small", (d > 0 ? "+" : "−") + Math.abs(d), function () { setBpm(bpm + d); });
+          b.setAttribute("aria-label", "テンポを" + Math.abs(d) + (d > 0 ? "上げる" : "下げる"));
+          bb.appendChild(b);
+        });
+        box.appendChild(bb);
+        var mt = chipGroup("", [{ v: 4, label: "4拍子" }, { v: 3, label: "3拍子" }, { v: 2, label: "2拍子" }], meter, function (v) {
+          meter = v;
+          var nd = beatDots(meter);
+          dots.replaceWith(nd);
+          dots = nd;
+        });
+        mt.classList.add("metro-meter");
+        mt.box.setAttribute("aria-label", "拍子");
+        box.appendChild(mt);
+        var dots = beatDots(meter);
+        box.appendChild(dots);
+        var play = button("btn-primary play-btn", "▶ 開始");
+        var ticker = P.Ticker({
+          interval: function () { return 60 / bpm; },
+          onSchedule: function (i, t) { P.click(t, i % meter === 0); },
+          onBeat: function (i) { dots.show(i % meter); },
+          onStop: function () { play.textContent = "▶ 開始"; dots.show(-1); }
+        });
+        play.addEventListener("click", function () {
+          if (ticker.playing) ticker.stop();
+          else if (ticker.start()) play.textContent = "■ 停止";
+        });
+        box.appendChild(play);
+        box.appendChild(el("p", "hint", "1拍目だけ高い音で鳴ります。拍子を変えるときは、一度止めてから。「1・2・3・4」と声に出して数えましょう。"));
+      }
+    }
+  };
+
+  // ---------- 楽譜ブロック ----------
+  // 楽譜 + 再生 + 弾いてみる + 鍵盤。DOM に入れてから mounts で楽譜と鍵盤を作る(幅を測るため)
+  function scoreBlock(b, mounts) {
+    var data = b.data;
+    var grand = !!(data.rh && data.lh);
+    var base = data.bpm || 80;
+    var box = el("section", "score-block");
+    box.setAttribute("aria-label", "楽譜: " + (b.title || ""));
+    var top = el("div", "score-top");
+    top.appendChild(el("span", "score-title", b.title || "楽譜"));
+    var ctl = el("div", "score-ctl");
+    var hand = grand ? "both" : (data.rh ? "rh" : "lh");
+    var pl = null, sc = null, kb = null;
+    function need(h) { var r = P.scoreRange(data, h); return [r.lo, r.hi]; }
+    function range(h) { var r = P.scoreRange(data, h); return P.kbRange(r.lo, r.hi); }
+    if (grand) {
+      var hg = chipGroup("", HANDS, hand, function (v) {
+        hand = v;
+        if (!pl) return;
+        pl.setHand(v);
+        var r = range(v);
+        kb.setRange(r.from, r.to, need(v));
+      });
+      hg.box.setAttribute("aria-label", "弾く手");
+      ctl.appendChild(hg);
+    }
+    var speeds = [{ v: Math.round(base * 0.7), label: "ゆっくり" }, { v: base, label: "ふつう" }];
+    var bpm = base;
+    var spg = chipGroup("", speeds, bpm, function (v) { bpm = v; if (pl) pl.setBpm(v); });
+    spg.box.setAttribute("aria-label", "テンポ");
+    ctl.appendChild(spg);
+    var btns = el("div", "score-btns");
+    var playB = button("btn-small is-main", "▶ 再生", function () { if (pl) pl.togglePlay(); });
+    var waitB = button("btn-small", "弾いてみる", function () {
+      if (!pl) return;
+      if (pl.mode === "wait") pl.stopWait(); else pl.startWait();
+    });
+    btns.appendChild(playB);
+    btns.appendChild(waitB);
+    ctl.appendChild(btns);
+    top.appendChild(ctl);
+    box.appendChild(top);
+    var sub = el("div", "score-sub");
+    var metro = false;
+    sub.appendChild(checkField("メトロノームを鳴らす", false, function (on) { metro = on; if (pl) pl.setMetronome(on); }));
+    var subR = el("span", "score-sub-r");
+    var midiBtn = midiButton(mounts);
+    if (midiBtn) subR.appendChild(midiBtn);
+    subR.appendChild(el("span", "chip", P.keyName(data.key | 0) + "・" + P.timeName(data.time) + "・BPM " + base));
+    sub.appendChild(subR);
+    box.appendChild(sub);
+    var systems = el("div", "score-systems");
+    box.appendChild(systems);
+    var status = el("p", "score-status", IDLE);
+    status.setAttribute("aria-live", "polite");
+    box.appendChild(status);
+    var kbWrap = el("div", "kb-wrap");
+    box.appendChild(kbWrap);
+    var pcHint = el("p", "pc-hint");
+    box.appendChild(pcHint);
+    box.appendChild(el("p", "score-legend", (b.legend ? b.legend + " " : "") + "黄色 = いま鳴っている音、紺 = 次に弾く音。音符をタップしても鳴ります。"));
+
+    mounts.push(function () {
+      var r0 = range(hand);
+      sc = P.score(systems, data, {});
+      kb = P.keyboard({ from: r0.from, to: r0.to, need: need(hand), labels: "doremi", maxHeight: 150 });
+      kbWrap.appendChild(kb);
+      function hint() {
+        pcHint.replaceChildren(document.createTextNode("PCキー: "), el("b", "", "A = " + P.noteName(kb.pcBase)), document.createTextNode("(次の音に合わせて自動。Z/X でも変更)"));
+      }
+      kb.onPcBase(hint);
+      hint();
+      pl = P.player(sc, kb, {
+        bpm: bpm, hand: hand, metronome: metro, status: status, idleText: IDLE,
+        onState: function (mode) {
+          playB.textContent = mode === "play" ? "■ 停止" : "▶ 再生";
+          waitB.textContent = mode === "wait" ? "■ やめる" : mode === "done" ? "もう一度" : "弾いてみる";
+          status.classList.toggle("is-done", mode === "done");
+        }
+      });
+      return function () {
+        pl.destroy();
+        sc.destroy();
+        if (kb.destroy) kb.destroy();
+      };
+    });
+    return box;
+  }
+
+  // 電子ピアノ(Web MIDI)をつなぐボタン。押したときだけ許可を求める。使えない環境では出さない
+  var MIDI_TEXT = { off: "電子ピアノをつなぐ(MIDI)", requesting: "MIDI: つないでいます…", waiting: "MIDI: 機器が見つかりません", connected: "MIDI: 接続中", denied: "MIDI: 使えません", none: "MIDI: 使えません" };
+  function midiButton(mounts) {
+    if (!navigator.requestMIDIAccess) return null;
+    var b = button("btn-small midi-btn", "", function () { P.midi.enable(); });
+    function sync(st) { b.textContent = MIDI_TEXT[st] || MIDI_TEXT.off; b.disabled = st !== "off"; b.classList.toggle("is-on", st === "connected"); }
+    sync(P.midi.status);
+    mounts.push(function () { return P.midi.onChange(sync); });
+    return b;
+  }
+
+  // ---------- 鍵盤ブロック ----------
+  function keysBlock(b, mounts) {
+    var box = el("section", "keys-block");
+    box.setAttribute("aria-label", b.title || "鍵盤");
+    var top = el("div", "score-top");
+    top.appendChild(el("span", "score-title", b.title || "鍵盤"));
+    var labels = b.labels || "doremi";
+    var kb = null, fingersOn = true;
+    var ctl = el("div", "score-ctl");
+    var lg = chipGroup("", [{ v: "doremi", label: "ドレミ" }, { v: "cde", label: "CDE" }, { v: "none", label: "なし" }], labels, function (v) {
+      labels = v;
+      if (kb) kb.setLabels(v);
+    });
+    lg.box.setAttribute("aria-label", "鍵盤の音名");
+    ctl.appendChild(lg);
+    top.appendChild(ctl);
+    box.appendChild(top);
+    if (b.fingers) {
+      box.appendChild(checkField("指番号を表示", true, function (on) {
+        fingersOn = on;
+        if (kb) kb.setFingers(on ? b.fingers : []);
+      }));
+    }
+    var kbWrap = el("div", "kb-wrap");
+    box.appendChild(kbWrap);
+    var now = el("p", "keys-now", "鍵盤を押すと、ここに音の名前が出ます。");
+    now.setAttribute("aria-live", "polite");
+    box.appendChild(now);
+    if (b.caption) box.appendChild(el("p", "score-legend", b.caption));
+    mounts.push(function () {
+      kb = P.keyboard({
+        from: b.from, to: b.to, labels: labels, fingers: fingersOn ? b.fingers : null,
+        onPress: function (m) { now.textContent = "押した音: " + keyNameJa(m); }
+      });
+      (b.marks || []).forEach(function (m) { kb.light(m, "target"); });
+      kbWrap.appendChild(kb);
+      return function () { if (kb.destroy) kb.destroy(); };
+    });
+    return box;
+  }
+
+  // ---------- 画面 ----------
+  var app = document.getElementById("app");
+  var hero = document.getElementById("hero");
+  var view = document.getElementById("view");
+  var mqPC = window.matchMedia("(min-width: 820px)");
+  var cleanups = [];
+
+  function lessonHref(no) { return "#lesson-" + no; }
+  function progressEl() {
+    var p = el("div", "progress");
+    var track = el("div", "progress-track");
+    track.setAttribute("aria-hidden", "true");
+    var bar = el("div", "progress-bar");
+    bar.style.width = (doneCount() / N * 100) + "%";
+    track.appendChild(bar);
+    p.appendChild(track);
+    p.appendChild(el("span", "progress-text", doneCount() + " / " + N + " 終了"));
+    return p;
+  }
+  function partOf(no) {
+    for (var i = 0; i < PARTS.length; i++) if (PARTS[i].no === no) return PARTS[i];
+    return null;
+  }
+  function partLabel(pt) { return "第" + pt.no + "部 " + pt.title; }
+  function lessonsOf(pt) { return L.filter(function (ls) { return ls.part === pt.no; }); }
+
+  function lessonRow(ls) {
+    var li = el("li");
+    var done = isDone(ls.id);
+    var a = link(lessonHref(ls.no), "lesson-row" + (done ? " is-done" : ""));
+    var num = el("span", "lesson-num", done ? "✓" : String(ls.no));
+    num.setAttribute("aria-hidden", "true");
+    a.appendChild(num);
+    var main = el("span", "lesson-main");
+    var tt = el("span", "lesson-title", "レッスン" + ls.no + " " + ls.title);
+    if (done) tt.appendChild(el("span", "sr-only", "(終了)"));
+    main.appendChild(tt);
+    main.appendChild(el("span", "lesson-summary", ls.summary));
+    var meta = el("span", "lesson-meta");
+    meta.appendChild(el("span", "chip", "約" + ls.minutes + "分"));
+    if (ls.body.some(function (b) { return b.t === "mini" || b.t === "score" || b.t === "keys"; })) meta.appendChild(el("span", "chip", "音が出る"));
+    if (ls.practice.length) meta.appendChild(el("span", "chip", "練習ページあり"));
+    main.appendChild(meta);
+    a.appendChild(main);
+    li.appendChild(a);
+    return li;
+  }
+
+  function renderTop() {
+    var v = el("div", "view-top");
+    var minutes = L.reduce(function (sum, ls) { return sum + ls.minutes; }, 0);
+    var intro = el("section", "card course-intro");
+    intro.appendChild(el("h2", "", "このコースについて"));
+    var ul = el("ul");
+    ["本物の鍵盤がなくても、画面の鍵盤で練習できます。手元にピアノやキーボードがあれば、いっしょに弾きながら進めましょう",
+      "全" + N + "レッスン(約" + minutes + "分)、" + PARTS.length + "つの部。順番に進めると、最後は2段の楽譜(大譜表)を見ながら両手でかんたんな曲を弾けます",
+      "楽譜は「▶ 再生」で聴けて、「弾いてみる」で光った音を押して進めます。パソコンのキー(A = ド)や、USB でつないだ電子ピアノでも弾けます",
+      "終えたしるしは、このブラウザにだけ保存されます"].forEach(function (t) { ul.appendChild(el("li", "", t)); });
+    intro.appendChild(ul);
+    v.appendChild(intro);
+    v.appendChild(progressEl());
+    var next = resumeLesson();
+    var resume;
+    if (doneCount() === 0 && !state.lastId) resume = link(lessonHref(1), "btn-primary resume", "レッスン1からはじめる →");
+    else if (next) resume = link(lessonHref(next.no), "btn-primary resume", "続きから: レッスン" + next.no + " " + next.short + " →");
+    else resume = link(lessonHref(1), "btn-secondary resume", "もう一度レッスン1から");
+    v.appendChild(resume);
+    var tl = el("div", "top-links");
+    tl.appendChild(link("songs.html", "btn-secondary", "曲集(楽譜を見て弾く)→"));
+    tl.appendChild(link(lessonHref(5), "btn-secondary", "メトロノーム(レッスン5)→"));
+    v.appendChild(tl);
+
+    PARTS.forEach(function (pt) {
+      var block = el("section", "part-block");
+      var hid = "part-" + pt.no;
+      block.setAttribute("aria-labelledby", hid);
+      var head = el("div", "part-head");
+      head.appendChild(el("p", "part-no", "PART " + pt.no));
+      var h = el("h2", "", partLabel(pt));
+      h.id = hid;
+      head.appendChild(h);
+      head.appendChild(el("p", "part-desc", pt.desc));
+      block.appendChild(head);
+      var ol = el("ol", "lesson-list");
+      ol.setAttribute("aria-labelledby", hid);
+      lessonsOf(pt).forEach(function (ls) { ol.appendChild(lessonRow(ls)); });
+      block.appendChild(ol);
+      v.appendChild(block);
+    });
+
+    if (doneCount() === N) {
+      var sum = el("section", "card summary-card");
+      sum.appendChild(el("h2", "", "総まとめ: ここだけ覚える"));
+      PARTS.forEach(function (pt) {
+        sum.appendChild(el("p", "summary-part", partLabel(pt)));
+        lessonsOf(pt).forEach(function (ls) {
+          sum.appendChild(el("h3", "", "レッスン" + ls.no + " " + ls.title));
+          var u = el("ul");
+          ls.points.forEach(function (p) { u.appendChild(el("li", "", p)); });
+          sum.appendChild(u);
+        });
+      });
+      v.appendChild(sum);
+    }
+    view.replaceChildren(v);
+  }
+
+  function fillToc(toc, cur) {
+    toc.replaceChildren();
+    var sm = el("summary");
+    sm.appendChild(el("span", "", "目次 ・ " + doneCount() + "/" + N + " 終了"));
+    var arrow = el("span", "arrow", "▾");
+    arrow.setAttribute("aria-hidden", "true");
+    sm.appendChild(arrow);
+    toc.appendChild(sm);
+    var head = el("div", "toc-head");
+    head.appendChild(el("span", "", "目次"));
+    head.appendChild(el("span", "progress-text", doneCount() + "/" + N + " 終了"));
+    toc.appendChild(head);
+    var bodyBox = el("div", "toc-body");
+    PARTS.forEach(function (pt) {
+      var pid = "toc-part-" + pt.no;
+      var ph = el("p", "toc-part", partLabel(pt));
+      ph.id = pid;
+      bodyBox.appendChild(ph);
+      var ol = el("ol", "toc-list");
+      ol.setAttribute("aria-labelledby", pid);
+      lessonsOf(pt).forEach(function (ls) {
+        var li = el("li");
+        var done = isDone(ls.id);
+        var a = link(lessonHref(ls.no), "toc-item" + (ls.no === cur ? " is-current" : "") + (done ? " is-done" : ""));
+        if (ls.no === cur) a.setAttribute("aria-current", "page");
+        a.appendChild(el("span", "toc-no", done ? "✓" : String(ls.no)));
+        a.appendChild(el("span", "", ls.short));
+        if (done) a.setAttribute("aria-label", "レッスン" + ls.no + " " + ls.short + "(終了)");
+        a.addEventListener("click", function () { if (!mqPC.matches) toc.open = false; });
+        li.appendChild(a);
+        ol.appendChild(li);
+      });
+      bodyBox.appendChild(ol);
+    });
+    toc.appendChild(bodyBox);
+    toc.appendChild(link("#top", "toc-top", "← コースのトップ"));
+  }
+
+  function renderBody(ls, body, mounts) {
+    ls.body.forEach(function (b) {
+      if (b.t === "p") body.appendChild(html("p", "", b.html));
+      else if (b.t === "h") body.appendChild(el("h3", "", b.text));
+      else if (b.t === "tip" || b.t === "note") {
+        var d = el("div", b.t === "tip" ? "tip-box" : "note-box");
+        d.appendChild(el("span", "box-label", b.t === "tip" ? "コツ" : "ひとこと"));
+        d.appendChild(html("span", "", b.html));
+        body.appendChild(d);
+      } else if (b.t === "list") {
+        var ul = el(b.ordered ? "ol" : "ul");
+        b.items.forEach(function (it) { ul.appendChild(html("li", "", it)); });
+        body.appendChild(ul);
+      } else if (b.t === "figure" && FIGURES[b.id]) {
+        body.appendChild(FIGURES[b.id]());
+      } else if (b.t === "score") {
+        body.appendChild(scoreBlock(b, mounts));
+      } else if (b.t === "keys") {
+        body.appendChild(keysBlock(b, mounts));
+      } else if (b.t === "mini" && MINI[b.id]) {
+        var sec = el("section", "mini");
+        sec.setAttribute("aria-label", "やってみよう: " + MINI[b.id].title);
+        sec.appendChild(el("p", "mini-tag", "やってみよう"));
+        sec.appendChild(el("h3", "mini-title", MINI[b.id].title));
+        MINI[b.id].render(sec, mounts);
+        body.appendChild(sec);
+      }
+    });
+  }
+
+  function renderQuiz(ls) {
+    var sec = el("section", "quiz");
+    sec.appendChild(el("h3", "", "確認問題"));
+    ls.quiz.forEach(function (q, qi) {
+      var item = el("div", "quiz-item");
+      item.appendChild(el("p", "quiz-q", "Q" + (qi + 1) + ". " + q.q));
+      var ch = el("div", "choices");
+      var fb = el("p", "feedback");
+      fb.hidden = true;
+      fb.setAttribute("aria-live", "polite");
+      var again = button("btn-small quiz-again", "もう一度");
+      again.hidden = true;
+      var btns = q.choices.map(function (c, i) {
+        var b = button("choice-btn");
+        b.appendChild(el("span", "choice-key", KEYS[i]));
+        b.appendChild(el("span", "", c));
+        b.addEventListener("click", function () {
+          var ok = i === q.answer;
+          btns.forEach(function (x, j) {
+            x.disabled = true;
+            if (j === i) x.classList.add(ok ? "correct" : "wrong");
+            if (!ok && j === q.answer) x.classList.add("correct");
+          });
+          fb.className = "feedback " + (ok ? "good" : "bad");
+          fb.textContent = ok ? "正解! " + q.explain : "ざんねん。正解は「" + q.choices[q.answer] + "」。" + q.explain;
+          fb.hidden = false;
+          again.hidden = false;
+        });
+        ch.appendChild(b);
+        return b;
+      });
+      again.addEventListener("click", function () {
+        btns.forEach(function (x) { x.disabled = false; x.classList.remove("correct", "wrong"); });
+        fb.hidden = true;
+        again.hidden = true;
+        btns[0].focus();
+      });
+      item.appendChild(ch);
+      item.appendChild(fb);
+      item.appendChild(again);
+      sec.appendChild(item);
+    });
+    return sec;
+  }
+
+  function renderPractice(ls) {
+    if (!ls.practice.length) return null;
+    var sec = el("section", "practice");
+    sec.appendChild(el("h3", "", "練習する"));
+    var grid = el("div", "practice-grid");
+    ls.practice.forEach(function (p) {
+      var a = link(p.href, "practice-card");
+      a.appendChild(el("span", "practice-tag", "PRACTICE"));
+      a.appendChild(el("span", "practice-title", p.title));
+      a.appendChild(el("span", "practice-desc", p.desc));
+      grid.appendChild(a);
+    });
+    sec.appendChild(grid);
+    return sec;
+  }
+
+  function renderLesson(no) {
+    var ls = L[no - 1];
+    var mounts = [];
+    var layout = el("div", "course-layout view-lesson");
+    var toc = el("details", "toc");
+    fillToc(toc, no);
+    toc.open = mqPC.matches;
+    layout.appendChild(toc);
+
+    var art = el("article", "card lesson");
+    art.setAttribute("aria-labelledby", "lesson-title");
+    var head = el("div", "lesson-head");
+    var pt = partOf(ls.part);
+    head.appendChild(el("p", "lesson-no", "LESSON " + no + " / " + N + (pt ? " ・ 第" + pt.no + "部" : "") + " ・ 約" + ls.minutes + "分"));
+    var h2 = el("h2", "lesson-title", ls.title);
+    h2.id = "lesson-title";
+    h2.tabIndex = -1;
+    head.appendChild(h2);
+    head.appendChild(el("p", "lesson-lead", ls.summary));
+    art.appendChild(head);
+
+    var body = el("div", "lesson-body");
+    renderBody(ls, body, mounts);
+    art.appendChild(body);
+
+    var kp = el("aside", "keypoints");
+    kp.appendChild(el("h3", "", "ここだけ覚える"));
+    var ul = el("ul");
+    ls.points.forEach(function (p) { ul.appendChild(el("li", "", p)); });
+    kp.appendChild(ul);
+    art.appendChild(kp);
+
+    var pr = renderPractice(ls);
+    if (pr) art.appendChild(pr);
+    art.appendChild(renderQuiz(ls));
+
+    var foot = el("div", "lesson-foot");
+    var tg = button("done-toggle");
+    function syncToggle() {
+      var d = isDone(ls.id);
+      tg.setAttribute("aria-pressed", String(d));
+      tg.textContent = d ? "✓ このレッスンを終えました" : "このレッスンを終えた";
+    }
+    tg.addEventListener("click", function () {
+      setDone(ls.id, !isDone(ls.id));
+      syncToggle();
+      var open = toc.open;
+      fillToc(toc, no);
+      toc.open = open;
+    });
+    syncToggle();
+    foot.appendChild(tg);
+
+    var pager = el("nav", "pager");
+    pager.setAttribute("aria-label", "レッスンの移動");
+    var prev;
+    if (no === 1) prev = link("#top", "btn-secondary", "← コースのトップ");
+    else {
+      var pl = L[no - 2];
+      prev = link(lessonHref(no - 1), "btn-secondary");
+      prev.appendChild(el("span", "lbl-long", "← " + pl.no + ". " + pl.short));
+      prev.appendChild(el("span", "lbl-short", "← 前へ"));
+    }
+    var nx;
+    if (no === N) nx = link("#top", "btn-primary", "コースを終える →");
+    else {
+      var nl = L[no];
+      nx = link(lessonHref(no + 1), "btn-primary");
+      nx.appendChild(el("span", "lbl-long", "次: " + nl.no + ". " + nl.short + " →"));
+      nx.appendChild(el("span", "lbl-short", "次へ →"));
+    }
+    // 次へ進むときは、今のレッスンを終えたことにする
+    nx.addEventListener("click", function () { setDone(ls.id, true); });
+    pager.appendChild(prev);
+    pager.appendChild(nx);
+    foot.appendChild(pager);
+    art.appendChild(foot);
+
+    layout.appendChild(art);
+    view.replaceChildren(layout);
+    // DOM に入れてから、楽譜と鍵盤を作る
+    mounts.forEach(function (f) {
+      try {
+        var c = f();
+        if (typeof c === "function") cleanups.push(c);
+      } catch (e) {
+        if (typeof console !== "undefined") console.error(e);
+      }
+    });
+    return h2;
+  }
+
+  function currentLesson() {
+    var m = /^#lesson-(\d+)$/.exec(location.hash);
+    if (!m) return 0;
+    var n = parseInt(m[1], 10);
+    return n >= 1 && n <= N ? n : 0;
+  }
+
+  function render(changed) {
+    // 画面を替えるときは、鳴っている音・再生・弾いてみるを止める
+    P.stopAll();
+    cleanups.forEach(function (f) { try { f(); } catch (e) { /* 片づけだけ */ } });
+    cleanups = [];
+    var no = currentLesson();
+    app.classList.toggle("is-lesson", no > 0);
+    hero.classList.toggle("is-compact", no > 0);
+    var h2 = null;
+    if (no) {
+      state.lastId = L[no - 1].id;
+      save();
+      h2 = renderLesson(no);
+      document.title = "レッスン" + no + " " + L[no - 1].title + " | ピアノ入門コース";
+    } else {
+      renderTop();
+      document.title = "ピアノ入門コース";
+    }
+    if (changed) {
+      window.scrollTo(0, 0);
+      if (h2) h2.focus({ preventScroll: true });
+    }
+  }
+
+  function onMq() {
+    var toc = view.querySelector("details.toc");
+    if (toc) toc.open = mqPC.matches;
+  }
+  if (mqPC.addEventListener) mqPC.addEventListener("change", onMq);
+  else if (mqPC.addListener) mqPC.addListener(onMq);
+
+  window.addEventListener("hashchange", function () { render(true); });
+  render(false);
+})();
+</script>
+</body>
+</html>

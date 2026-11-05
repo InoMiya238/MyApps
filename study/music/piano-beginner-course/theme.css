@@ -1,0 +1,152 @@
+/* ピアノ入門コース の色。変数名は学習シリーズ共通(shared/base.css を参照)。
+   ギター入門コースと同じ基本の変数に、鍵盤・楽譜用の変数を足している。
+   --key-*: 画面の鍵盤(ダークでも白鍵は明るいまま)。--hand-*: 右手/左手の印。
+   --score-* --staff-line --note-*: 五線譜。--beat-*: メトロノームの拍の表示。
+   ダークのブロックに書いていない --key-* --hand-* は、ライトの値をそのまま使う。 */
+:root {
+  color-scheme: light;
+  --bg: #F6F2E9;
+  --surface: #FFFDF8;
+  --surface-2: #ECE6DA;
+  --border: #D9D1C1;
+  --ink: #1D1B20;
+  --ink-muted: #57525C;
+  --ink-faint: #6A646E;
+  --accent: #2D3F7C;
+  --accent-ink: #FBF8F1;
+  --accent-soft: #E3E8F3;
+  --good: #2E6B4A;
+  --good-soft: #DFEEE4;
+  --bad: #B0372B;
+  --bad-soft: #F6E0DC;
+  --shadow: rgba(29, 27, 32, 0.12);
+  /* 鍵盤 */
+  --key-bed: #1D1B20;
+  --key-felt: #7A2232;
+  --key-white: #FFFDF6;
+  --key-white-shade: #EAE3D4;
+  --key-white-edge: #BDB4A3;
+  --key-black: #1A191D;
+  --key-black-top: #45434B;
+  --key-label: #57525C;
+  --key-label-c: #2D3F7C;
+  --key-label-on-black: #EDE8DE;
+  --key-play: #F0B23C;
+  --key-play-black: #C88A1C;
+  --key-target: #BFCDF0;
+  --key-target-black: #5A72BE;
+  --key-target-ring: #2D3F7C;
+  --key-good: #9FD3B2;
+  --key-wrong: #E5675A;
+  --key-wrong-black: #B8382C;
+  --hand-r: #3149A0;
+  --hand-l: #8A3F7E;
+  --hand-ink: #FFFFFF;
+  /* 楽譜 */
+  --score-paper: #FFFDF8;
+  --staff-line: #6E6873;
+  --score-ink: #1D1B20;
+  --score-finger: #57525C;
+  --note-play: #B0730A;
+  --note-play-soft: #F7E6BF;
+  --note-target: #2D3F7C;
+  --note-target-soft: #DCE3F4;
+  --note-wrong: #B0372B;
+  --note-done: #A39DA6;
+  /* メトロノーム */
+  --beat-off: #E2DCCF;
+  --beat-on: #2D3F7C;
+  --beat-accent: #B0730A;
+}
+
+/* ダーク表示: 端末の設定に合わせる。data-theme="light" なら明るいまま */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121317;
+    --surface: #1B1C22;
+    --surface-2: #25262E;
+    --border: #353640;
+    --ink: #F1EDE4;
+    --ink-muted: #BBB5AB;
+    --ink-faint: #9A948B;
+    --accent: #A3B4F0;
+    --accent-ink: #121A38;
+    --accent-soft: #232B45;
+    --good: #7CC79C;
+    --good-soft: #1B2E24;
+    --bad: #F28B7F;
+    --bad-soft: #3B2220;
+    --shadow: rgba(0, 0, 0, 0.45);
+    --key-bed: #050507;
+    --key-felt: #6A1E2B;
+    --key-white: #E8E3D8;
+    --key-white-shade: #CFC8BA;
+    --key-white-edge: #8F887B;
+    --key-black: #0C0C0F;
+    --key-black-top: #3A3940;
+    --key-label: #4A4550;
+    --key-label-on-black: #D8D2C6;
+    --key-target: #A9BCEB;
+    --key-good: #8CCBA4;
+    --key-wrong-black: #C4473A;
+    --score-paper: #1B1C22;
+    --staff-line: #8C8790;
+    --score-ink: #F1EDE4;
+    --score-finger: #BBB5AB;
+    --note-play: #F0B23C;
+    --note-play-soft: #3A2F17;
+    --note-target: #A3B4F0;
+    --note-target-soft: #263052;
+    --note-wrong: #F28B7F;
+    --note-done: #6A6570;
+    --beat-off: #353640;
+    --beat-on: #A3B4F0;
+    --beat-accent: #F0B23C;
+  }
+}
+
+/* ダーク表示: data-theme="dark" で固定(上と同じ値) */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121317;
+  --surface: #1B1C22;
+  --surface-2: #25262E;
+  --border: #353640;
+  --ink: #F1EDE4;
+  --ink-muted: #BBB5AB;
+  --ink-faint: #9A948B;
+  --accent: #A3B4F0;
+  --accent-ink: #121A38;
+  --accent-soft: #232B45;
+  --good: #7CC79C;
+  --good-soft: #1B2E24;
+  --bad: #F28B7F;
+  --bad-soft: #3B2220;
+  --shadow: rgba(0, 0, 0, 0.45);
+  --key-bed: #050507;
+  --key-felt: #6A1E2B;
+  --key-white: #E8E3D8;
+  --key-white-shade: #CFC8BA;
+  --key-white-edge: #8F887B;
+  --key-black: #0C0C0F;
+  --key-black-top: #3A3940;
+  --key-label: #4A4550;
+  --key-label-on-black: #D8D2C6;
+  --key-target: #A9BCEB;
+  --key-good: #8CCBA4;
+  --key-wrong-black: #C4473A;
+  --score-paper: #1B1C22;
+  --staff-line: #8C8790;
+  --score-ink: #F1EDE4;
+  --score-finger: #BBB5AB;
+  --note-play: #F0B23C;
+  --note-play-soft: #3A2F17;
+  --note-target: #A3B4F0;
+  --note-target-soft: #263052;
+  --note-wrong: #F28B7F;
+  --note-done: #6A6570;
+  --beat-off: #353640;
+  --beat-on: #A3B4F0;
+  --beat-accent: #F0B23C;
+}
