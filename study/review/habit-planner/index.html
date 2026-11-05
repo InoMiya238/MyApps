@@ -199,9 +199,13 @@
     overflow: hidden;
   }
   .bar-fill { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
-  .habit.is-done .bar-fill { background: var(--good); }
+  .habit.is-done .bar-fill, .progress.is-met .bar-fill { background: var(--good); }
+  .prog-label { flex: none; min-width: 2.4em; font-size: 0.8rem; font-weight: 700; color: var(--ink-muted); }
   .prog-text { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-muted); white-space: nowrap; }
   .prog-text b { color: var(--ink); }
+  .prog-none { flex: 1; min-width: 0; font-size: 0.8rem; color: var(--ink-muted); }
+  .frame { display: flex; flex-direction: column; gap: 8px; }
+  .frames { display: flex; flex-direction: column; gap: 14px; }
 
   .pick-head {
     display: flex;
@@ -445,6 +449,7 @@
   /* ---------- しくみ ---------- */
   .rules { margin: 0; padding-left: 1.2em; font-size: 0.88rem; line-height: 1.75; color: var(--ink-muted); }
   .rules strong { color: var(--ink); }
+  .rules .mono { font-family: var(--font-mono); font-size: 0.84rem; color: var(--ink); }
   .clear-row { margin-top: 14px; }
 
   .solve-btn:focus-visible,
@@ -477,7 +482,7 @@
   <header class="hero">
     <p class="eyebrow">HABIT</p>
     <h1>習慣プランナー</h1>
-    <p class="tagline">続けたい道場や練習を登録しておくと、毎日の「今日やること」を分野をまたいで並べます。道場で解いた問題数は自動で数えます。</p>
+    <p class="tagline">続けたい道場や練習を登録しておくと、毎日の「今日やること」を分野をまたいで並べます。道場は「学習」と「復習」を分けて、解いた問題数を自動で数えます。</p>
   </header>
 
   <section class="card" aria-labelledby="menuHeading">
@@ -563,10 +568,13 @@
   <section class="card" aria-labelledby="rulesHeading">
     <h2 id="rulesHeading">しくみ</h2>
     <ul class="rules">
-      <li><strong>道場</strong>は、その日に解いた問題数を自動で数え、1日の問題数に届いたら達成です。</li>
-      <li>おすすめ単元は、<strong>復習日が来た単元 → まだ解いていない単元 → 正答率の低い単元 → しばらく解いていない単元</strong>の順に選びます。その日のうちは同じ並びのままです。</li>
-      <li>習慣ごとの<strong>解説</strong>は要点帳・コマンド帳などの解説ページ、<strong>クイズ</strong>は問題を解くページへのリンクです。道場のクイズは今日の残りの問題数(達成ずみなら1日の問題数)で始まります。</li>
-      <li>おすすめ単元の<strong>解く</strong>は、1日の問題数をおすすめ単元の数で割った数(切り上げ)で始まります。1手詰めは問題数を指定できません。解説ページにその単元の見出しがあれば、<strong>解説</strong>からそこへ飛べます。</li>
+      <li><strong>道場</strong>は、1日の目標を<strong>学習</strong>と<strong>復習</strong>の2つに分けます。1日の問題数が5問なら、学習5問・復習5問の計10問です。解いた問題数は自動で数え、両方とも届いたら達成です。</li>
+      <li><strong>復習</strong>は、その日はじめてこのページを開いたときに復習日が来ている単元から、遅れの大きい順に選びます。復習日の来た単元がない日は「今日の復習はなし」で、学習の問題数だけで達成です。反対に、すべての単元に復習日が来ている日は「今日の学習はなし」で、復習の問題数だけで達成です。</li>
+      <li><strong>学習</strong>は、復習日の来ていない単元から、<strong>まだ解いていない単元(順番どおり) → 正答率の低い単元 → しばらく解いていない単元</strong>の順に選びます。おすすめは枠ごとに選び直せ、その日のうちは同じ並びのままです。</li>
+      <li>今日の時点で復習日が来ていた単元で解いた問題は<strong>復習</strong>、それ以外(新しく解いた単元など)は<strong>学習</strong>に数えます。おすすめ以外の単元を解いても数えます。</li>
+      <li>復習の間隔は、エビングハウスの<strong>忘却曲線</strong>(覚えたことは時間がたつほど忘れていく)に合わせて、忘れかけた頃に復習できるよう<span class="mono" id="intervalText">1日 → 3日 → 7日 → 14日 → 30日 → 60日</span>と段階的に延ばします。判定は単元ごとに、その日<span id="minAnswers">3</span>問以上解いたときだけ行います。<strong>復習日に解いて正答率80%以上</strong>なら次の間隔へ延び、復習日より前に80%以上とっても間隔は延びません(先取り)。<strong>60〜80%</strong>なら同じ間隔でもう一度、<strong>60%未満</strong>なら翌日に戻ります。</li>
+      <li>習慣ごとの<strong>解説</strong>は要点帳・コマンド帳などの解説ページ、<strong>クイズ</strong>は問題を解くページへのリンクです。道場のクイズは、学習の残りがあれば学習のおすすめの先頭の単元を、学習が終わっていれば復習のおすすめの先頭の単元を、残りの問題数で開きます(両方達成ずみなら1日の問題数)。</li>
+      <li>おすすめ単元の<strong>解く</strong>は、その枠の目標をおすすめ単元の数で割った数(切り上げ)で始まります。1手詰めは問題数を指定できません。解説ページにその単元の見出しがあれば、<strong>解説</strong>からそこへ飛べます。</li>
       <li><strong>練習ページ</strong>と<strong>自由な習慣</strong>は、終わったら自分で「やった」を押します。自由な習慣には、解説とクイズのURLを登録できます。</li>
       <li>その日の対象の習慣をすべて終えると<strong>全部達成</strong>です。対象の習慣がない曜日は、連続日数を数えるときに飛ばします。</li>
       <li>このページを開かなかった日は「記録なし」になり、連続が途切れます。</li>
@@ -840,11 +848,32 @@
     } catch (e) { /* 読めなくても止めない */ }
     return out;
   }
-  // 今日解いた数 = max(回答ログ, 復習の記録の今日の回答数の合計)
-  function solvedToday(app, t, items) {
-    var a = answersOn(t)[app] || 0, b = 0;
-    items.forEach(function (it) { if (it.app === app && it.dayDate === t) b += cleanNum(it.dayTotal); });
-    return Math.max(a, b);
+  // 今日解いた数を学習と復習に分ける: { total, learn, review }
+  //   total = max(回答ログ, 復習の記録の今日の回答数の合計)
+  //   review = その日最初に開いた時点で復習日が来ていた単元の今日の回答数。learn = total − review
+  //   dueList: その日最初に開いたときに保存した、復習日の来ていた単元IDの一覧。
+  //   保存していない日(古い形)は、dayStartDue <= 今日 の単元を復習とする
+  function solvedSplit(app, t, items, dueList) {
+    var sum = 0, rev = 0, useList = Array.isArray(dueList);
+    items.forEach(function (it) {
+      if (it.app !== app || it.dayDate !== t) return;
+      var n = cleanNum(it.dayTotal);
+      sum += n;
+      if (useList ? dueList.indexOf(it.unit) >= 0 : (it.dayStartDue && it.dayStartDue <= t)) rev += n;
+    });
+    var total = Math.max(answersOn(t)[app] || 0, sum);
+    return { total: total, review: rev, learn: total - rev };
+  }
+  // 単元のその日の最初の時点の復習日と stage(今日解いた単元は、解く前の値)
+  function startDueOf(it, t) { return it.dayDate === t ? it.dayStartDue : it.due; }
+  function startStageOf(it, t) { return it.dayDate === t ? it.dayStartStage : it.stage; }
+  function dueAtStart(it, t) { var d = it ? startDueOf(it, t) : null; return !!d && d <= t; }
+  // その日最初に開いた時点で復習日が来ていた単元IDの一覧(道場全体)。保存ずみならそれ、なければ今の記録から作る
+  function savedDueList(h, day) { return day && day.dueAt && Array.isArray(day.dueAt[h.id]) ? day.dueAt[h.id] : null; }
+  function dueListOf(h, t, items, day) {
+    var saved = savedDueList(h, day);
+    if (saved) return saved;
+    return items.filter(function (it) { return it.app === h.app && dueAtStart(it, t); }).map(function (it) { return it.unit; });
   }
 
   // ---------- 設定 ----------
@@ -917,8 +946,20 @@
   }
 
   // ---------- 日々の記録 ----------
-  // { days: { "YYYY-MM-DD": { planned: [id], done: [id], picks: { id: [単元ID] }, checks: { id: true } } } }
-  function emptyDay() { return { planned: [], done: [], picks: {}, checks: {} }; }
+  // { days: { "YYYY-MM-DD": { planned: [id], done: [id], picks: { id: [単元ID] }, rpicks: { id: [単元ID] },
+  //     goals: { id: { learn: 問題数, review: 問題数 か 0 } }, checks: { id: true } } } }
+  //   picks: 学習のおすすめ / rpicks: 復習のおすすめ / goals: その日最初に開いたときに決めた各枠の目標
+  //   古い形の日(goals がない日)は、1日の問題数だけで判定する
+  //   dueAt: { id: [単元ID] } その日最初に開いたときに復習日が来ていた単元(復習と学習の数え分けに使う)
+  function emptyDay() { return { planned: [], done: [], picks: {}, rpicks: {}, goals: {}, dueAt: {}, checks: {} }; }
+  function cleanPicks(src) {
+    var out = {};
+    if (isObj(src)) Object.keys(src).forEach(function (id) {
+      if (!isId(id) || !Array.isArray(src[id])) return;
+      out[id] = src[id].filter(function (u) { return typeof u === "string" && u.length > 0 && u.length < 80; }).slice(0, 3);
+    });
+    return out;
+  }
   function idList(v) {
     var out = [];
     if (Array.isArray(v)) v.forEach(function (x) { if (isId(x) && out.indexOf(x) < 0) out.push(x); });
@@ -929,9 +970,16 @@
     var d = emptyDay();
     d.planned = idList(r.planned);
     d.done = idList(r.done).filter(function (id) { return d.planned.indexOf(id) >= 0; });
-    if (isObj(r.picks)) Object.keys(r.picks).forEach(function (id) {
-      if (!isId(id) || !Array.isArray(r.picks[id])) return;
-      d.picks[id] = r.picks[id].filter(function (u) { return typeof u === "string" && u.length > 0 && u.length < 80; }).slice(0, 3);
+    d.picks = cleanPicks(r.picks);
+    d.rpicks = cleanPicks(r.rpicks);
+    if (isObj(r.dueAt)) Object.keys(r.dueAt).forEach(function (id) {
+      if (!isId(id) || !Array.isArray(r.dueAt[id])) return;
+      d.dueAt[id] = r.dueAt[id].filter(function (u) { return typeof u === "string" && u.length > 0 && u.length < 80; }).slice(0, 1000);
+    });
+    if (isObj(r.goals)) Object.keys(r.goals).forEach(function (id) {
+      var g = r.goals[id];
+      if (!isId(id) || !isObj(g) || typeof g.learn !== "number" || typeof g.review !== "number") return;
+      d.goals[id] = { learn: cleanNum(g.learn), review: cleanNum(g.review) };
     });
     if (isObj(r.checks)) Object.keys(r.checks).forEach(function (id) { if (isId(id) && r.checks[id] === true) d.checks[id] = true; });
     return d;
@@ -954,8 +1002,11 @@
 
   // ---------- おすすめ単元 ----------
   function pickCount(h) { return Math.min(3, Math.max(1, Math.ceil(h.count / 5))); }
-  // おすすめ順に並べた単元ID。avoid にある単元は最後に回す(選び直し用)
+  // おすすめ順に並べた単元ID: { learn: [...], review: [...] }。avoid にある単元は最後に回す(選び直し用)
+  //   review: その日の最初の時点で復習日が来ている単元。遅れの大きい順 → stage の低い順
+  //   learn: それ以外。まだ解いていない単元(UNITS の順)→ 正答率80%未満(低い順)→ 最後に解いたのが古い順
   function rankUnits(h, t, items, avoid) {
+    var dueList = dueListOf(h, t, items, history.days[t]);
     var s = subjectOf[h.app];
     var units = unitsOf(s, h.grade);
     var order = {};
@@ -967,22 +1018,38 @@
     var due = [], fresh = [], weak = [], rest = [];
     units.forEach(function (u) {
       var r = rev[u.id], st = stats[u.id] || { total: 0, correct: 0 };
-      if (r && r.due <= t) due.push({ id: u.id, late: Review.daysBetween(r.due, t) });
+      if (dueList.indexOf(u.id) >= 0) {
+        var sd = r ? startDueOf(r, t) : null;
+        due.push({ id: u.id, late: sd && sd <= t ? Review.daysBetween(sd, t) : 0, stage: r ? startStageOf(r, t) : 0 });
+      }
       else if (st.total === 0) fresh.push({ id: u.id });
       else if (st.correct / st.total < 0.8) weak.push({ id: u.id, rate: st.correct / st.total });
       else rest.push({ id: u.id, last: r && r.last ? r.last : "" });
     });
-    due.sort(function (a, b) { return b.late - a.late || order[a.id] - order[b.id]; });
+    due.sort(function (a, b) { return b.late - a.late || a.stage - b.stage || order[a.id] - order[b.id]; });
     weak.sort(function (a, b) { return a.rate - b.rate || order[a.id] - order[b.id]; });
     rest.sort(function (a, b) { return (a.last < b.last ? -1 : a.last > b.last ? 1 : 0) || order[a.id] - order[b.id]; });
-    var ids = [].concat(due, fresh, weak, rest).map(function (x) { return x.id; });
-    if (avoid && avoid.length) {
-      ids = ids.filter(function (id) { return avoid.indexOf(id) < 0; })
-        .concat(ids.filter(function (id) { return avoid.indexOf(id) >= 0; }));
+    function ids(list) {
+      var out = list.map(function (x) { return x.id; });
+      if (avoid && avoid.length) {
+        out = out.filter(function (id) { return avoid.indexOf(id) < 0; })
+          .concat(out.filter(function (id) { return avoid.indexOf(id) >= 0; }));
+      }
+      return out;
     }
-    return ids;
+    return { learn: ids([].concat(fresh, weak, rest)), review: ids(due), fresh: fresh.map(function (x) { return x.id; }) };
   }
-  function choosePicks(h, t, items, avoid) { return rankUnits(h, t, items, avoid).slice(0, pickCount(h)); }
+  function choosePicks(h, t, items, avoid, kind) { return rankUnits(h, t, items, avoid)[kind].slice(0, pickCount(h)); }
+  // 各枠の目標: 保存ずみならそれを使う。なければ今の状態から決める
+  //   復習日の来た単元がなければ復習は 0。単元がすべて復習日を迎えていれば学習は 0
+  //   (単元を読み込めなかったときは判定できないので、学習は1日の問題数のまま)。両方 0 の日は解かなくても達成
+  function goalsOf(h, t, items, day) {
+    if (day && day.goals[h.id]) return day.goals[h.id];
+    var rank = rankUnits(h, t, items, null);
+    var noLearn = rank.learn.length === 0 && rank.review.length > 0;
+    return { learn: noLearn ? 0 : h.count, review: rank.review.length > 0 ? h.count : 0 };
+  }
+  function isMet(g, sp) { return sp.learn >= g.learn && sp.review >= g.review; }
 
   // ---------- 今日の分を書き直す ----------
   function plannedOn(ymd) {
@@ -996,17 +1063,31 @@
     var planned = plannedOn(t);
     day.planned = planned.map(function (h) { return h.id; });
     Object.keys(day.checks).forEach(function (id) { if (!habitById(id)) delete day.checks[id]; });
-    var picks = {};
+    var picks = {}, rpicks = {}, goals = {}, dueAt = {};
+    history.days[t] = day;   // rankUnits が今日の dueAt を読めるように
     planned.forEach(function (h) {
       if (h.type !== "dojo") return;
       var known = unitsOf(subjectOf[h.app], h.grade).map(function (u) { return u.id; });
-      var old = day.picks[h.id];
-      var ok = Array.isArray(old) && old.length > 0 && old.every(function (u) { return known.indexOf(u) >= 0; });
-      picks[h.id] = ok ? old : choosePicks(h, t, items, null);
+      function ok(list) { return Array.isArray(list) && list.length > 0 && list.every(function (u) { return known.indexOf(u) >= 0; }); }
+      // 目標がまだない(今日はじめて開いた・古い形の記録)ときは、目標を決めて、おすすめも選び直す
+      var first = !day.goals[h.id];
+      // 復習日の来ていた単元の一覧は、その日最初に作ったものを使い続ける(道場を変えたときだけ作り直す)
+      if (!savedDueList(h, day)) day.dueAt[h.id] = dueListOf(h, t, items, null);
+      dueAt[h.id] = day.dueAt[h.id];
+      var g = goalsOf(h, t, items, day);
+      goals[h.id] = { learn: g.learn, review: g.review };
+      var rank = null;
+      function ranked() { return rank || (rank = rankUnits(h, t, items, null)); }
+      picks[h.id] = !first && ok(day.picks[h.id]) ? day.picks[h.id] : ranked().learn.slice(0, pickCount(h));
+      rpicks[h.id] = g.review === 0 ? [] :
+        !first && ok(day.rpicks[h.id]) ? day.rpicks[h.id] : ranked().review.slice(0, pickCount(h));
     });
     day.picks = picks;
+    day.rpicks = rpicks;
+    day.goals = goals;
+    day.dueAt = dueAt;
     day.done = planned.filter(function (h) {
-      if (h.type === "dojo") return solvedToday(h.app, t, items) >= h.count;
+      if (h.type === "dojo") return isMet(goals[h.id], solvedSplit(h.app, t, items, dueAt[h.id]));
       return day.checks[h.id] === true;
     }).map(function (h) { return h.id; });
     history.days[t] = day;
@@ -1020,10 +1101,21 @@
     var rec = history.days[ymd];
     if (!rec) return { kind: "none", done: 0, total: 0 };
     if (rec.planned.length === 0) return { kind: "off", done: 0, total: 0 };
-    var answers = null, done = 0;
+    var answers = null, reviews = null, done = 0;
     rec.planned.forEach(function (id) {
       if (rec.done.indexOf(id) >= 0) { done++; return; }
       var h = habitById(id);
+      // 枠の目標を保存した日: 今日は syncToday が数え分けた done だけで判定する。
+      // 過去の日は、そのあと道場で解いた分も拾えるよう、回答ログの学習・復習の内訳で判定し直す
+      if (rec.goals[id]) {
+        if (ymd === Review.today() || !h || h.type !== "dojo" || typeof Review.reviewAnswersOn !== "function") return;
+        if (!answers) answers = answersOn(ymd);
+        if (!reviews) reviews = Review.reviewAnswersOn(ymd);
+        var tot = answers[h.app] || 0, rev = Math.min(reviews[h.app] || 0, tot), g = rec.goals[id];
+        if (tot - rev >= g.learn && rev >= g.review) done++;
+        return;
+      }
+      // 目標のない古い形の日は、その日の回答数の合計を1日の問題数と比べる
       if (h && h.type === "dojo") {
         if (!answers) answers = answersOn(ymd);
         if ((answers[h.app] || 0) >= h.count) done++;
@@ -1056,10 +1148,25 @@
   }
 
   // ---------- 解説・クイズのリンク ----------
-  // 道場のクイズは、今日の残りの問題数(最低1。達成ずみなら1日の問題数)で開く
-  function remainingOf(h, t, items) {
-    var left = h.count - solvedToday(h.app, t, items);
-    return left > 0 ? left : h.count;
+  // 道場のクイズ: 学習の残りがあれば学習のおすすめの先頭単元を、学習が終わって復習の残りがあれば
+  // 復習のおすすめの先頭単元を、残りの問題数で開く。両方終わっていれば単元を指定せず1日の問題数で開く
+  //   { text, href, label }
+  function quizLinkOf(h, t, items) {
+    var s = subjectOf[h.app], title = habitTitle(h);
+    var day = history.days[t];
+    var plain = { text: "クイズ(" + h.count + "問)", href: withCount(s.href, h.count), label: title + "で" + h.count + "問解く" };
+    if (!day || day.planned.indexOf(h.id) < 0 || !day.goals[h.id]) return plain;   // 今日はお休みの習慣
+    var g = day.goals[h.id], sp = solvedSplit(h.app, t, items, savedDueList(h, day));
+    var learnLeft = Math.max(0, g.learn - sp.learn), reviewLeft = Math.max(0, g.review - sp.review);
+    var kind = learnLeft > 0 ? "学習" : reviewLeft > 0 ? "復習" : "";
+    if (!kind) return plain;
+    var left = kind === "学習" ? learnLeft : reviewLeft;
+    var first = ((kind === "学習" ? day.picks[h.id] : day.rpicks[h.id]) || [])[0];
+    var u = null;
+    unitsOf(s, h.grade).forEach(function (x) { if (x.id === first) u = x; });
+    var href = !u ? withCount(s.href, left) : u.fixed ? u.href : withCount(u.href, left);
+    return { text: "クイズ(" + kind + "あと" + left + "問)", href: href,
+      label: title + "で" + kind + "の残り" + left + "問を解く" + (u ? "(" + u.name + ")" : "") };
   }
   // [{ kind: "guide"|"quiz", text, href, label }]
   function habitLinks(h, t, items) {
@@ -1067,8 +1174,8 @@
     if (h.type === "dojo") {
       var s = subjectOf[h.app];
       if (s.guide) out.push({ kind: "guide", text: "解説", href: s.guide, label: title + "の解説(" + s.guideName + ")を開く" });
-      var n = remainingOf(h, t, items);
-      out.push({ kind: "quiz", text: "クイズ(" + n + "問)", href: withCount(s.href, n), label: title + "で" + n + "問解く" });
+      var q = quizLinkOf(h, t, items);
+      out.push({ kind: "quiz", text: q.text, href: q.href, label: q.label });
     } else if (h.type === "page") {
       var pg = pageOf[h.page];
       if (pg.guide) out.push({ kind: "guide", text: "解説", href: pg.guide, label: title + "の解説(" + pg.guideName + ")を開く" });
@@ -1200,86 +1307,108 @@
     li.appendChild(top);
     if (links) li.appendChild(links);
     var s = subjectOf[h.app];
-    var n = solvedToday(h.app, t, items);
-    var prog = el("div", "progress");
-    var bar = el("div", "bar");
-    bar.setAttribute("role", "progressbar");
-    bar.setAttribute("aria-valuemin", "0");
-    bar.setAttribute("aria-valuemax", String(h.count));
-    bar.setAttribute("aria-valuenow", String(Math.min(n, h.count)));
-    bar.setAttribute("aria-label", s.dojo + "の今日の問題数");
-    var fill = el("span", "bar-fill");
-    fill.style.width = Math.min(100, n / h.count * 100) + "%";
-    bar.appendChild(fill);
-    prog.appendChild(bar);
-    var pt = el("span", "prog-text");
-    pt.appendChild(document.createTextNode("今日 "));
-    pt.appendChild(el("b", "", String(n)));
-    pt.appendChild(document.createTextNode(" / " + h.count + " 問"));
-    prog.appendChild(pt);
-    li.appendChild(prog);
-
-    var head = el("div", "pick-head");
-    head.appendChild(el("span", "", "今日のおすすめ単元"));
-    var re = el("button", "btn-ghost btn-small", "選び直す");
-    re.type = "button";
-    re.setAttribute("aria-label", s.dojo + "のおすすめ単元を選び直す");
-    re.setAttribute("data-repick", h.id);
-    re.addEventListener("click", function () {
-      if (today() !== shownDate) { refresh(); return; }
-      var tt = today();
-      var d = history.days[tt];
-      if (!d) return;
-      d.picks[h.id] = choosePicks(h, tt, reviewItems(), d.picks[h.id] || []);
-      refresh();
-      var again = document.querySelector('[data-repick="' + h.id + '"]');
-      if (again) again.focus();
-    });
-    head.appendChild(re);
-    li.appendChild(head);
-
-    var picks = day.picks[h.id] || [];
+    var g = goalsOf(h, t, items, day);
+    var sp = solvedSplit(h.app, t, items, savedDueList(h, day));
     var units = unitsOf(s, h.grade);
     var byId = {};
     units.forEach(function (u) { byId[u.id] = u; });
     var rev = {};
     items.forEach(function (it) { if (it.app === h.app) rev[it.unit] = it; });
-    if (picks.length === 0) {
-      li.appendChild(el("p", "pick-none", "単元を読み込めませんでした。道場で好きな単元を解いてください。"));
-      return li;
-    }
-    var pl = el("ul", "pick-list");
-    var shown = picks.filter(function (id) { return !!byId[id]; }).length || 1;
-    var per = Math.ceil(h.count / shown);   // 単元ごとの問題数(合わせて1日の問題数以上になる)
-    picks.forEach(function (id) {
-      var u = byId[id];
-      if (!u) return;
-      var r = rev[id];
-      var row = el("li", "pick");
-      var pm = el("div", "pick-main");
-      pm.appendChild(el("span", "pick-name", u.name));
-      var sub = el("div", "pick-sub");
-      if (r && r.due <= t && r.dayDate !== t) sub.appendChild(el("span", "subj review", "復習"));
-      if (u.meta) sub.appendChild(el("span", "", u.meta));
-      if (r && r.dayDate === t && r.dayTotal > 0) sub.appendChild(el("span", "", "今日 " + r.dayTotal + "問"));
-      if (sub.childNodes.length) pm.appendChild(sub);
-      row.appendChild(pm);
-      var btns = el("div", "pick-btns");
-      if (u.guide) {
-        var g = el("a", "mini-link guide", "解説");
-        g.href = u.guide;
-        g.setAttribute("aria-label", s.label + "「" + u.name + "」の解説を開く");
-        btns.appendChild(g);
-      }
-      var a = el("a", "solve-btn", u.fixed ? "解く" : "解く(" + per + "問)");
-      a.href = u.fixed ? u.href : withCount(u.href, per);
-      a.setAttribute("aria-label", s.label + "「" + u.name + "」を" + (u.fixed ? "解く" : per + "問解く"));
-      btns.appendChild(a);
-      row.appendChild(btns);
-      pl.appendChild(row);
-    });
-    li.appendChild(pl);
+    var fresh = rankUnits(h, t, items, null).fresh;
+
+    var frames = el("div", "frames");
+    frames.appendChild(frameBlock("learn", "学習", sp.learn, g.learn, day.picks[h.id] || []));
+    frames.appendChild(frameBlock("review", "復習", sp.review, g.review, day.rpicks[h.id] || []));
+    li.appendChild(frames);
     return li;
+
+    // 1つの枠(進みバーとおすすめ単元)
+    function frameBlock(kind, label, n, goal, picks) {
+      var box = el("div", "frame");
+      var prog = el("div", "progress" + (n >= goal ? " is-met" : ""));
+      prog.appendChild(el("span", "prog-label", label));
+      if (goal === 0) {
+        prog.appendChild(el("span", "prog-none", (kind === "review" ? "今日の復習はなし" : "今日の学習はなし(すべて復習日が来ています)") +
+          (n > 0 ? "(" + n + "問解きました)" : "")));
+        box.appendChild(prog);
+        return box;
+      }
+      var bar = el("div", "bar");
+      bar.setAttribute("role", "progressbar");
+      bar.setAttribute("aria-valuemin", "0");
+      bar.setAttribute("aria-valuemax", String(goal));
+      bar.setAttribute("aria-valuenow", String(Math.min(n, goal)));
+      bar.setAttribute("aria-label", s.dojo + "の今日の" + label + "の問題数");
+      var fill = el("span", "bar-fill");
+      fill.style.width = Math.min(100, n / goal * 100) + "%";
+      bar.appendChild(fill);
+      prog.appendChild(bar);
+      var pt = el("span", "prog-text");
+      pt.appendChild(el("b", "", String(n)));
+      pt.appendChild(document.createTextNode(" / " + goal + " 問"));
+      prog.appendChild(pt);
+      box.appendChild(prog);
+
+      var head = el("div", "pick-head");
+      head.appendChild(el("span", "", label + "のおすすめ単元"));
+      var re = el("button", "btn-ghost btn-small", "選び直す");
+      re.type = "button";
+      re.setAttribute("aria-label", s.dojo + "の" + label + "のおすすめ単元を選び直す");
+      re.setAttribute("data-repick", h.id + ":" + kind);
+      re.addEventListener("click", function () {
+        if (today() !== shownDate) { refresh(); return; }
+        var tt = today();
+        var d = history.days[tt];
+        if (!d) return;
+        var store = kind === "review" ? d.rpicks : d.picks;
+        store[h.id] = choosePicks(h, tt, reviewItems(), store[h.id] || [], kind);
+        refresh();
+        var again = document.querySelector('[data-repick="' + h.id + ":" + kind + '"]');
+        if (again) again.focus();
+      });
+      head.appendChild(re);
+
+      var shownIds = picks.filter(function (id) { return !!byId[id]; });
+      if (shownIds.length === 0) {
+        box.appendChild(el("p", "pick-none", units.length === 0
+          ? "単元を読み込めませんでした。道場で好きな単元を解いてください。"
+          : kind === "learn" ? "復習日の来ていない単元がありません。道場で好きな単元を解いてください。"
+          : "復習する単元が見つかりませんでした。道場で好きな単元を解いてください。"));
+        return box;
+      }
+      box.appendChild(head);
+      var pl = el("ul", "pick-list");
+      var per = Math.ceil(goal / shownIds.length);   // 単元ごとの問題数(合わせて枠の目標以上になる)
+      shownIds.forEach(function (id) {
+        var u = byId[id];
+        var r = rev[id];
+        var row = el("li", "pick");
+        var pm = el("div", "pick-main");
+        pm.appendChild(el("span", "pick-name", u.name));
+        var sub = el("div", "pick-sub");
+        if (kind === "review") sub.appendChild(el("span", "subj review", "復習"));
+        else if (fresh.indexOf(id) >= 0) sub.appendChild(el("span", "subj", "はじめて"));
+        if (u.meta) sub.appendChild(el("span", "", u.meta));
+        if (r && r.dayDate === t && r.dayTotal > 0) sub.appendChild(el("span", "", "今日 " + r.dayTotal + "問"));
+        if (sub.childNodes.length) pm.appendChild(sub);
+        row.appendChild(pm);
+        var btns = el("div", "pick-btns");
+        if (u.guide) {
+          var ga = el("a", "mini-link guide", "解説");
+          ga.href = u.guide;
+          ga.setAttribute("aria-label", s.label + "「" + u.name + "」の解説を開く");
+          btns.appendChild(ga);
+        }
+        var a = el("a", "solve-btn", u.fixed ? "解く" : "解く(" + per + "問)");
+        a.href = u.fixed ? u.href : withCount(u.href, per);
+        a.setAttribute("aria-label", s.label + "「" + u.name + "」を" + (u.fixed ? "解く" : per + "問解く"));
+        btns.appendChild(a);
+        row.appendChild(btns);
+        pl.appendChild(row);
+      });
+      box.appendChild(pl);
+      return box;
+    }
   }
 
   // ---------- 描画: 記録 ----------
@@ -1544,11 +1673,12 @@
     if (editingId) {
       var idx = -1;
       settings.habits.forEach(function (x, i) { if (x.id === editingId) idx = i; });
+      var appChanged = idx < 0 || settings.habits[idx].app !== h.app;
       if (idx < 0) settings.habits.push(h);
       else settings.habits[idx] = h;
-      // 道場・学年・問題数が変わったら、今日のおすすめを選び直す
+      // 道場・学年・問題数が変わったら、今日の目標とおすすめを決め直す
       var d = history.days[today()];
-      if (d && d.picks[h.id]) delete d.picks[h.id];
+      if (d) { delete d.picks[h.id]; delete d.rpicks[h.id]; delete d.goals[h.id]; if (appChanged) delete d.dueAt[h.id]; }
     } else {
       settings.habits.push(h);
     }
@@ -1584,6 +1714,15 @@
   window.addEventListener("focus", function () { refresh(); });
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") refresh(); });
   setInterval(function () { if (document.visibilityState === "visible" && today() !== shownDate) refresh(); }, 60000);
+
+  // しくみ: 復習の間隔は shared/review.js の値から書く
+  try {
+    if (Array.isArray(Review.INTERVALS) && Review.INTERVALS.length) {
+      document.getElementById("intervalText").textContent =
+        Review.INTERVALS.map(function (n) { return n + "日"; }).join(" → ");
+    }
+    if (typeof Review.MIN_ANSWERS === "number") document.getElementById("minAnswers").textContent = String(Review.MIN_ANSWERS);
+  } catch (e) { /* 書けなくても止めない */ }
 
   resetForm();
   refresh();
