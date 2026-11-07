@@ -604,7 +604,7 @@
   <header class="hero">
     <p class="eyebrow" id="eyebrow">AI THEORY LAB · 道場</p>
     <h1>AI理論道場</h1>
-    <p class="tagline" id="tagline">数学の準備から機械学習の基礎、LLMのしくみと活用までの11単元を、4択クイズで確かめます。用語だけでなく計算問題もあります。単元ごとの正答率が残るので、苦手がわかります。</p>
+    <p class="tagline" id="tagline">AI(Artificial Intelligence、人工知能)の理論を、数学の準備から機械学習の基礎、LLM(Large Language Model、大規模言語モデル)のしくみと活用までの11単元に分けて、4択クイズで確かめます。用語だけでなく計算問題もあります。単元ごとの正答率が残るので、苦手がわかります。</p>
     <nav class="site-nav" aria-label="AI理論ラボのページ">
       <span aria-current="page">道場</span>
       <a href="lab.html">実験室</a>
@@ -624,6 +624,7 @@
       </div>
       <div class="unit-list" id="unitList" role="group" aria-labelledby="unitHeading"></div>
       <p class="hint">右の数字はこれまでの正答率です。5問以上答えて70%未満の単元に「苦手」がつきます。</p>
+      <p class="hint">単元名の略語: CNN(Convolutional Neural Network、畳み込みニューラルネットワーク)、RNN(Recurrent Neural Network、再帰型ニューラルネットワーク)。</p>
     </div>
 
     <div class="card">
@@ -762,7 +763,7 @@
   // 単元数は、データから作る
   (function initHero() {
     var n = AITL.UNITS.length;
-    document.getElementById("tagline").textContent = "数学の準備から機械学習の基礎、LLMのしくみと活用までの" + n + "単元を、4択クイズで確かめます。用語だけでなく計算問題もあります。単元ごとの正答率が残るので、苦手がわかります。";
+    document.getElementById("tagline").textContent = "AI(Artificial Intelligence、人工知能)の理論を、数学の準備から機械学習の基礎、LLM(Large Language Model、大規模言語モデル)のしくみと活用までの" + n + "単元に分けて、4択クイズで確かめます。用語だけでなく計算問題もあります。単元ごとの正答率が残るので、苦手がわかります。";
   })();
 
   // 保存済みの設定 → なければ、全単元を選ぶ

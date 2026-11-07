@@ -527,7 +527,7 @@
   <header class="hero">
     <p class="eyebrow">AI THEORY LAB · 実験室</p>
     <h1>AI実験室</h1>
-    <p class="tagline">スライダーを動かして、機械学習と LLM のしくみを目で確かめます。数値はすべてこのページの中で計算しています。</p>
+    <p class="tagline">スライダーを動かして、AI(Artificial Intelligence、人工知能)を支える機械学習と、LLM(Large Language Model、大規模言語モデル)のしくみを目で確かめます。数値はすべてこのページの中で計算しています。</p>
     <nav class="site-nav" aria-label="AI理論ラボのページ">
       <a href="index.html">道場</a>
       <span aria-current="page">実験室</span>
@@ -613,7 +613,7 @@
 
   <!-- ==================== 2 線形回帰 ==================== -->
   <section class="panel" id="panel-regression" role="tabpanel" aria-labelledby="tab-regression" hidden>
-    <p class="lead">点の並びに直線 <span class="var">y</span> = <span class="var">a</span><span class="var">x</span> + <span class="var">b</span> を合わせます。傾きと切片を動かして、平均二乗誤差(MSE)がいちばん小さくなる直線を探しましょう。</p>
+    <p class="lead">点の並びに直線 <span class="var">y</span> = <span class="var">a</span><span class="var">x</span> + <span class="var">b</span> を合わせます。傾きと切片を動かして、MSE(Mean Squared Error、平均二乗誤差)がいちばん小さくなる直線を探しましょう。</p>
 
     <div class="card chart-card">
       <h2>データと直線</h2>
@@ -731,6 +731,7 @@
         <button type="button" class="chip-btn" data-act="relu" aria-pressed="false">ReLU</button>
       </div>
       <p class="formula" id="neu-formula"></p>
+      <p class="hint">tanh(hyperbolic tangent、双曲線正接関数)、ReLU(Rectified Linear Unit、正規化線形関数)。</p>
     </div>
 
     <div class="main">
@@ -754,7 +755,7 @@
 
   <!-- ==================== 4 過学習 ==================== -->
   <section class="panel" id="panel-overfit" role="tabpanel" aria-labelledby="tab-overfit" hidden>
-    <p class="lead">雑音の入った訓練データに、多項式を最小二乗で当てはめます。次数を上げると訓練誤差は下がり続けますが、訓練に使っていないテストデータの誤差はどうなるでしょう。</p>
+    <p class="lead">雑音の入った訓練データに、多項式を最小二乗で当てはめます。次数を上げると訓練誤差は下がり続けますが、訓練に使っていないテストデータの誤差はどうなるでしょう。誤差は MSE(Mean Squared Error、平均二乗誤差)で測ります。</p>
 
     <div class="card chart-card">
       <h2>多項式の当てはめ</h2>
@@ -836,6 +837,7 @@
           </tbody>
         </table>
       </div>
+      <p class="hint">TP(True Positive、真陽性)、FN(False Negative、偽陰性)、FP(False Positive、偽陽性)、TN(True Negative、真陰性)。</p>
     </div>
 
     <div class="card settings">
@@ -864,7 +866,7 @@
         <p class="auto-point" id="th-auto-point" hidden></p>
         <ul>
           <li>しきい値を下げると、見逃し(FN)が減って再現率が上がる代わりに、誤検出(FP)が増えて適合率が下がります。しきい値を上げると、再現率は下がるか変わらず、適合率は上がることが多くなります(必ず上がるとは限りません)。</li>
-          <li>正解率 = (TP + TN) ÷ 全体、適合率 = TP ÷ (TP + FP)、再現率 = TP ÷ (TP + FN)、F1 = 2 × 適合率 × 再現率 ÷ (適合率 + 再現率)。</li>
+          <li>正解率 = (TP + TN) ÷ 全体、適合率 = TP ÷ (TP + FP)、再現率 = TP ÷ (TP + FN)。F1(F 値。適合率と再現率を同じ重さで合わせた調和平均)= 2 × 適合率 × 再現率 ÷ (適合率 + 再現率)。</li>
           <li>どのしきい値がよいかは目的しだいです。病気の検査なら見逃しを減らしたい(再現率重視)、迷惑メールの判定なら大事なメールを捨てたくない(適合率重視)。</li>
         </ul>
         <a class="unit-link" href="index.html?unit=classification">道場でこの単元を解く →</a>
@@ -875,7 +877,7 @@
 
   <!-- ==================== 6 ソフトマックス ==================== -->
   <section class="panel" id="panel-softmax" role="tabpanel" aria-labelledby="tab-softmax" hidden>
-    <p class="lead">生成AIは、次に来る語の確率をソフトマックスで作り、そこから1つ選びます。温度 <span class="var">T</span> を変えると、選ばれ方がどう変わるかを見ましょう。</p>
+    <p class="lead">生成AI(AI は Artificial Intelligence、人工知能)は、次に来る語の確率をソフトマックスで作り、そこから1つ選びます。温度 <span class="var">T</span> を変えると、選ばれ方がどう変わるかを見ましょう。</p>
 
     <div class="card chart-card">
       <h2>「今日の天気は」の次の語の確率</h2>
@@ -928,7 +930,7 @@
 
   <!-- ==================== 7 埋め込み ==================== -->
   <section class="panel" id="panel-embedding" role="tabpanel" aria-labelledby="tab-embedding" hidden>
-    <p class="lead">LLM は、語(トークン)を数の並び=ベクトルに置きかえて扱います。これを埋め込みといいます。意味の近い語ほどベクトルの向きが近くなるように学習されます。2語を選んで、向きの近さ(コサイン類似度)を確かめましょう。</p>
+    <p class="lead">LLM(Large Language Model、大規模言語モデル)は、語(トークン)を数の並び=ベクトルに置きかえて扱います。これを埋め込みといいます。意味の近い語ほどベクトルの向きが近くなるように学習されます。2語を選んで、向きの近さ(コサイン類似度)を確かめましょう。</p>
 
     <div class="card chart-card">
       <h2 id="emb-title">語のベクトル</h2>
@@ -1018,7 +1020,7 @@
         <li><span class="sw dot c-point"></span><span>値 <b>v</b>(大きいほど重みが大きい)</span></li>
         <li><span class="sw ring c-model"></span><span>出力(<b>v</b> の重みつき平均)</span></li>
       </ul>
-      <p class="model-note">この図は説明用の模型です。<b>q</b>・<b>k</b>・<b>v</b> は2次元(<span class="var">d</span> = 2)で、値はこのページで決めた例です。実際の LLM では、各トークンの埋め込みに学習した行列をかけて <b>q</b>・<b>k</b>・<b>v</b> を作り、次元は数十〜数百あります。</p>
+      <p class="model-note">この図は説明用の模型です。<b>q</b>・<b>k</b>・<b>v</b> は2次元(<span class="var">d</span> = 2)で、値はこのページで決めた例です。実際の LLM(Large Language Model、大規模言語モデル)では、各トークンの埋め込みに学習した行列をかけて <b>q</b>・<b>k</b>・<b>v</b> を作り、次元は数十〜数百あります。</p>
     </div>
 
     <div class="card settings">
