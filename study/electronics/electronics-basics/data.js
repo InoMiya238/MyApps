@@ -63,7 +63,7 @@ var ELEC = (function () {
   var UNITS = [
     { id: "basics", no: "01", name: "電気の基本", short: "電気の基本", level: "basic", keys: "電圧 · 電流 · 抵抗 · 直流/交流 · m/k/M/μ" },
     { id: "ohm", no: "02", name: "オームの法則と電力", short: "オームの法則", level: "basic", keys: "V=IR · P=VI · P=I²R · 定格電力" },
-    { id: "circuit", no: "03", name: "回路図と直列・並列", short: "直列・並列", level: "std", keys: "回路図記号 · GND · 合成抵抗 · 分圧" },
+    { id: "circuit", no: "03", name: "回路図と直列・並列", short: "直列・並列", level: "std", keys: "回路図記号 · GND(Ground、0Vの基準) · 合成抵抗 · 分圧" },
     { id: "resistor", no: "04", name: "抵抗器", short: "抵抗器", level: "basic", keys: "カラーコード · 許容差 · E系列 · CdS" },
     { id: "led", no: "05", name: "LEDとダイオード", short: "LED", level: "basic", keys: "極性 · Vf · 電流制限抵抗 · 逆電圧" },
     { id: "wiring", no: "06", name: "ブレッドボードと配線・はんだ付け", short: "配線・はんだ", level: "basic", keys: "ブレッドボード · 電源レール · はんだ付け" },
@@ -71,8 +71,8 @@ var ELEC = (function () {
     { id: "power", no: "08", name: "電源と電池", short: "電源と電池", level: "std", keys: "直列/並列 · mAh · 3.3V/5V · レギュレータ" },
     { id: "capacitor", no: "09", name: "コンデンサー", short: "コンデンサー", level: "std", keys: "μF/pF · τ=RC · 極性 · パスコン" },
     { id: "switch", no: "10", name: "スイッチと入力", short: "スイッチ", level: "std", keys: "プルアップ · 浮いた入力 · チャタリング" },
-    { id: "transistor", no: "11", name: "トランジスタとMOSFET", short: "トランジスタ", level: "pro", keys: "NPN · hFE · MOSFET · 還流ダイオード" },
-    { id: "arduino", no: "12", name: "マイコン入門", short: "マイコン", level: "std", keys: "pinMode · analogRead · PWM · シリアル" }
+    { id: "transistor", no: "11", name: "トランジスタとMOSFET", short: "トランジスタ", level: "pro", keys: "NPN(Negative-Positive-Negative、N型・P型・N型の構造) · hFE(h パラメータの Forward・common Emitter、直流電流増幅率) · MOSFET(Metal-Oxide-Semiconductor Field-Effect Transistor、電圧で動くトランジスタ) · 還流ダイオード" },
+    { id: "arduino", no: "12", name: "マイコン入門", short: "マイコン", level: "std", keys: "pinMode · analogRead · PWM(Pulse Width Modulation、パルス幅変調) · シリアル" }
   ];
 
   var byId = {};
@@ -810,17 +810,17 @@ ELEC.register("basics", {
       desc: "電気を流そうとする力の大きさです。正しくは2点のあいだの電位の差で、水のたとえでは水位の差にあたります。単位は V(ボルト)です。",
       options: [
         ["1.5V", "乾電池(単3・単4など)1本"],
-        ["5V", "USBの電源、Arduino Uno の動作電圧"],
+        ["5V", "USB(Universal Serial Bus、パソコンと機器をつなぐ規格)の電源、Arduino Uno の動作電圧"],
         ["3.3V", "ESP32 や Raspberry Pi の信号の電圧"],
         ["100V", "日本の家庭のコンセント(交流)"]
       ],
-      notes: ["電圧は「どこから見た差か」で決まります。電子工作では、ふつう GND(電池の−側など)を 0V の基準にします。"]
+      notes: ["電圧は「どこから見た差か」で決まります。電子工作では、ふつう GND(Ground、グラウンド。電池の−側など)を 0V の基準にします。"]
     },
     {
       id: "current", name: "電流", en: "Current [A: アンペア]",
       desc: "電気の流れの量で、1秒あたりにどれだけ電気が流れるかを表します。単位は A(アンペア)。電子工作では mA(ミリアンペア、1/1000 A)をよく使います。",
       options: [
-        ["5〜20mA", "LED 1個を光らせる電流の目安"],
+        ["5〜20mA", "LED(Light Emitting Diode、発光ダイオード) 1個を光らせる電流の目安"],
         ["数十〜数百mA", "小さなモーター"],
         ["500mA", "パソコンのUSB 2.0ポートから取れる電流の目安"]
       ],
@@ -856,7 +856,7 @@ ELEC.register("basics", {
     },
     {
       id: "si-prefix", name: "単位の接頭辞", en: "SI prefixes: M k m μ n p",
-      desc: "大きな数や小さな数を短く書くために、単位の前に記号をつけます。1kΩ = 1000Ω、20mA = 0.02A のように使います。",
+      desc: "大きな数や小さな数を短く書くために、単位の前に記号をつけます。この記号を SI(International System of Units、国際単位系)接頭辞といいます。1kΩ = 1000Ω、20mA = 0.02A のように使います。",
       options: [
         ["M(メガ)", "× 1,000,000(10⁶)"],
         ["k(キロ)", "× 1,000(10³)"],
@@ -933,7 +933,7 @@ ELEC.register("basics", {
     {
       id: "b09", level: "basic", q: "電池やUSBの電気のように、向きが変わらない電気を何という?", kind: "text",
       choices: ["直流(DC)", "交流(AC)", "高周波", "三相交流"],
-      explain: "向きと大きさが変わらないのが直流(DC)です。家庭のコンセントは交流(AC)で、向きが周期的に入れかわります。",
+      explain: "向きと大きさが変わらないのが直流(DC、Direct Current)です。家庭のコンセントは交流(AC、Alternating Current)で、向きが周期的に入れかわります。電池や USB(Universal Serial Bus、パソコンと機器をつなぐ規格)の電源も直流です。",
       ref: "dc-ac"
     },
     {
@@ -944,7 +944,7 @@ ELEC.register("basics", {
         "交流5Vで、USBと同じ電圧",
         "直流200Vで、周波数は全国60Hz"
       ],
-      explain: "家庭のコンセントは交流100Vです。周波数はおおむね東日本50Hz・西日本60Hz。感電の危険があるので、自作の回路にはつなぎません。",
+      explain: "家庭のコンセントは交流100Vです。周波数はおおむね東日本50Hz・西日本60Hz。感電の危険があるので、自作の回路にはつなぎません。USB(Universal Serial Bus、パソコンと機器をつなぐ規格)の電源は直流5Vです。",
       ref: "dc-ac"
     },
     {
@@ -994,7 +994,7 @@ ELEC.register("basics", {
         "電線の中を1秒あたりに流れる電気の量",
         "部品の流れにくさを表す量"
       ],
-      explain: "電圧は2点のあいだの電位の差です。「この点は5V」というときは、GNDを0Vとしたときの差を言っています。流れる量は電流、流れにくさは抵抗です。",
+      explain: "電圧は2点のあいだの電位の差です。「この点は5V」というときは、GND(Ground、電圧の基準になる点)を0Vとしたときの差を言っています。流れる量は電流、流れにくさは抵抗です。",
       ref: "voltage"
     }
   ]
@@ -1187,7 +1187,7 @@ ELEC.register("circuit", {
   cards: [
     {
       id: "schematic", name: "回路図記号", en: "Schematic symbols",
-      desc: "回路図は、部品を記号で、電線を線で表した図です。線が交わる所に黒丸(●)があればつながっていて、なければつながっていません(立体交差)。日本の規格(JIS)では、抵抗器は長方形で描きます。",
+      desc: "回路図は、部品を記号で、電線を線で表した図です。線が交わる所に黒丸(●)があればつながっていて、なければつながっていません(立体交差)。日本の規格 JIS(Japanese Industrial Standards、日本産業規格)では、抵抗器は長方形で描きます。",
       fig: "symbols",
       notes: [
         "古い本や海外の回路図では、抵抗器をギザギザ線で描くことがあります。意味は同じです。",
@@ -1285,7 +1285,7 @@ ELEC.register("circuit", {
         "つながっていない(見やすくするための飾り)",
         "その場所で電流が止まる"
       ],
-      explain: "GNDの記号は、線を引くかわりに「ここはGNDにつながる」と示すものです。すべて同じ点としてつながっています。",
+      explain: "GND(Ground、電圧の基準になる0Vの点)の記号は、線を引くかわりに「ここはGNDにつながる」と示すものです。すべて同じ点としてつながっています。",
       ref: "gnd"
     },
     {
@@ -1329,7 +1329,7 @@ ELEC.register("circuit", {
         "その点がGNDになる",
         "その点にスイッチがある"
       ],
-      explain: "つながっている交点には黒丸を描きます。黒丸がなければ、上を通りすぎているだけでつながっていません。",
+      explain: "つながっている交点には黒丸を描きます。黒丸がなければ、上を通りすぎているだけでつながっていません。略語: GND(Ground、電圧の基準になる0Vの点)。",
       ref: "schematic"
     },
     {
@@ -1341,7 +1341,7 @@ ELEC.register("circuit", {
     {
       id: "c13", level: "basic", q: "この回路図記号の部品は?", kind: "text", fig: "sym-led",
       choices: ["LED(発光ダイオード)", "ダイオード", "コンデンサー", "トランジスタ"],
-      explain: "ダイオードの記号(三角と縦線)に、光が出ることを表す2本の矢印がついているのがLEDです。矢印がなければふつうのダイオードです。",
+      explain: "ダイオードの記号(三角と縦線)に、光が出ることを表す2本の矢印がついているのがLED(Light Emitting Diode、発光ダイオード)です。矢印がなければふつうのダイオードです。",
       ref: "schematic"
     },
     {
@@ -1358,7 +1358,7 @@ ELEC.register("circuit", {
         "R1 = 1kΩ、R2 = 1kΩ",
         "R1 = 3.3kΩ、R2 = 5kΩ"
       ],
-      explain: "Vout = 5 × R2 ÷ (R1 + R2)。R1 = 1kΩ、R2 = 2kΩ なら 5 × 2 ÷ 3 ≒ 3.33V。逆にすると約1.67V、同じ値だと2.5V、3.3kΩ と 5kΩ だと 5 × 5 ÷ 8.3 ≒ 3.0V です。",
+      explain: "Vout = 5 × R2 ÷ (R1 + R2)。R1 = 1kΩ、R2 = 2kΩ なら 5 × 2 ÷ 3 ≒ 3.33V。逆にすると約1.67V、同じ値だと2.5V、3.3kΩ と 5kΩ だと 5 × 5 ÷ 8.3 ≒ 3.0V です。略語: GND(Ground、電圧の基準になる0Vの点)。",
       ref: "divider"
     }
   ]
@@ -1444,7 +1444,7 @@ ELEC.register("resistor", {
       id: "cds", name: "CdS(光センサー)", en: "Photoresistor (CdS cell)",
       desc: "明るいほど抵抗が小さくなる部品です。固定抵抗と組み合わせて分圧回路にすると、明るさを電圧に変えて analogRead で読めます。",
       notes: [
-        "CdS はカドミウムを含むため、RoHS指令の規制の対象です。新しく作るときは、フォトトランジスタや照度センサーを使うことも考えます。",
+        "CdS はカドミウムを含むため、RoHS(Restriction of Hazardous Substances、有害物質の使用制限)指令の規制の対象です。新しく作るときは、フォトトランジスタや照度センサーを使うことも考えます。",
         "CdS を 5V 側、固定抵抗を GND 側にすると、明るいほど出力の電圧が上がります。"
       ]
     }
@@ -1501,7 +1501,7 @@ ELEC.register("resistor", {
     {
       id: "r09", level: "std", q: "LEDの電流制限抵抗を計算したら 140Ω だった。E12 から、電流が計算より増えないように選ぶなら?", kind: "value",
       choices: ["150Ω", "120Ω", "140Ω", "100Ω"],
-      explain: "E12 の 100Ω台は 100・120・150・180…。140Ω はないので、一つ上の 150Ω を選ぶと電流は少し減り、安全側になります。120Ω だと電流が計算より増えます。",
+      explain: "E12 の 100Ω台は 100・120・150・180…。140Ω はないので、一つ上の 150Ω を選ぶと電流は少し減り、安全側になります。120Ω だと電流が計算より増えます。略語: LED(Light Emitting Diode、発光ダイオード)。",
       ref: "e-series"
     },
     {
@@ -1512,7 +1512,7 @@ ELEC.register("resistor", {
         "長い足を+につなぐ",
         "金色の帯の側をGNDにつなぐ"
       ],
-      explain: "抵抗器には極性がありません。帯の向きは値を読むためのもので、つなぐ向きとは関係ありません。",
+      explain: "抵抗器には極性がありません。帯の向きは値を読むためのもので、つなぐ向きとは関係ありません。略語: GND(Ground、電圧の基準になる0Vの点)。",
       ref: "resistor-part"
     },
     {
@@ -1523,7 +1523,7 @@ ELEC.register("resistor", {
         "いつも 2.5V",
         "つまみを回すと −5V〜+5V のあいだで変わる"
       ],
-      explain: "可変抵抗は、つまみで分け方が変わる分圧回路です。真ん中の足は、つまみの位置に応じて GND(0V)から 5V までの電圧になります。マイナスの電圧は出ません。",
+      explain: "可変抵抗は、つまみで分け方が変わる分圧回路です。真ん中の足は、つまみの位置に応じて GND(Ground、電圧の基準。0V)から 5V までの電圧になります。マイナスの電圧は出ません。",
       ref: "variable-resistor"
     },
     {
@@ -1535,7 +1535,7 @@ ELEC.register("resistor", {
     {
       id: "r13", level: "pro", q: "CdS を 5V 側、10kΩ を GND 側にした分圧回路で、あいだの電圧を読む。部屋が明るくなると、読む電圧は?", kind: "text",
       choices: ["上がる", "下がる", "変わらない", "0V になる"],
-      explain: "出力 = 5 × 10kΩ ÷ (CdS + 10kΩ)。明るくなると CdS の抵抗が小さくなり、分母が小さくなるので出力は上がります。CdS と 10kΩ を入れかえると逆になります。",
+      explain: "出力 = 5 × 10kΩ ÷ (CdS + 10kΩ)。明るくなると CdS の抵抗が小さくなり、分母が小さくなるので出力は上がります。CdS と 10kΩ を入れかえると逆になります。略語: GND(Ground、電圧の基準になる0Vの点)。",
       ref: "cds"
     },
     {
@@ -1625,31 +1625,31 @@ ELEC.register("led", {
     {
       id: "l01", level: "basic", q: "LEDの2本の足のうち、長いほうは?", kind: "text", fig: "led-polarity",
       choices: ["アノード(+側)", "カソード(−側)", "GND専用の足", "どちらでもよい(極性はない)"],
-      explain: "長い足がアノードで、電源の+側に向けてつなぎます。短い足がカソードです。",
+      explain: "長い足がアノードで、電源の+側に向けてつなぎます。短い足がカソードです。略語: LED(Light Emitting Diode、発光ダイオード)、GND(Ground、電圧の基準になる0Vの点)。",
       ref: "led"
     },
     {
       id: "l02", level: "basic", q: "図の回路で、LEDに 20mA 流すための抵抗 R は?", kind: "value", fig: "led-basic",
       choices: ["150Ω", "250Ω", "100Ω", "350Ω"],
-      explain: "R = (5 − 2.0) ÷ 0.02 = 3 ÷ 0.02 = 150Ω。250Ω は Vf を引き忘れたとき(5 ÷ 0.02)、100Ω は Vf だけで計算したとき(2 ÷ 0.02)の値です。",
+      explain: "R = (5 − 2.0) ÷ 0.02 = 3 ÷ 0.02 = 150Ω。250Ω は Vf を引き忘れたとき(5 ÷ 0.02)、100Ω は Vf だけで計算したとき(2 ÷ 0.02)の値です。略語: LED(Light Emitting Diode、発光ダイオード)。",
       ref: "led-resistor"
     },
     {
       id: "l03", level: "std", q: "図の回路で、LEDに 20mA 流すための抵抗 R は?", kind: "value", fig: "led-q9v",
       choices: ["350Ω", "450Ω", "100Ω", "550Ω"],
-      explain: "R = (9 − 2.0) ÷ 0.02 = 7 ÷ 0.02 = 350Ω。450Ω は Vf を引き忘れたとき、550Ω は Vf を足してしまったときの値です。",
+      explain: "R = (9 − 2.0) ÷ 0.02 = 7 ÷ 0.02 = 350Ω。450Ω は Vf を引き忘れたとき、550Ω は Vf を足してしまったときの値です。略語: LED(Light Emitting Diode、発光ダイオード)。",
       ref: "led-resistor"
     },
     {
       id: "l04", level: "std", q: "図の回路で、青色LEDに 10mA 流すための抵抗 R は?", kind: "value", fig: "led-q-blue",
       choices: ["200Ω", "500Ω", "300Ω", "20Ω"],
-      explain: "R = (5 − 3.0) ÷ 0.01 = 2 ÷ 0.01 = 200Ω。20Ω は 10mA を 0.1A とまちがえたときの値です。",
+      explain: "R = (5 − 3.0) ÷ 0.01 = 2 ÷ 0.01 = 200Ω。20Ω は 10mA を 0.1A とまちがえたときの値です。略語: LED(Light Emitting Diode、発光ダイオード)。",
       ref: "led-resistor"
     },
     {
       id: "l05", level: "pro", q: "3.3V の電源で、白色LED(Vf 3.0V)に 10mA 流す。抵抗は?", kind: "value",
       choices: ["30Ω", "330Ω", "300Ω", "3Ω"],
-      explain: "R = (3.3 − 3.0) ÷ 0.01 = 0.3 ÷ 0.01 = 30Ω。電圧の余裕が 0.3V しかないので、Vf のばらつきで明るさが大きく変わりやすい点にも注意します。",
+      explain: "R = (3.3 − 3.0) ÷ 0.01 = 0.3 ÷ 0.01 = 30Ω。電圧の余裕が 0.3V しかないので、Vf のばらつきで明るさが大きく変わりやすい点にも注意します。略語: LED(Light Emitting Diode、発光ダイオード)。",
       ref: "led-resistor"
     },
     {
@@ -1660,7 +1660,7 @@ ELEC.register("led", {
         "少し暗く光る",
         "抵抗が焼ける"
       ],
-      explain: "LEDの三角の向き(アノード→カソード)が電流の流れと逆になっています。逆向きではほとんど電流が流れないので光りません。電流が流れないので抵抗も熱くなりません。",
+      explain: "LED(Light Emitting Diode、発光ダイオード)の三角の向き(アノード→カソード)が電流の流れと逆になっています。逆向きではほとんど電流が流れないので光りません。電流が流れないので抵抗も熱くなりません。",
       ref: "reverse-voltage"
     },
     {
@@ -1671,19 +1671,19 @@ ELEC.register("led", {
         "ちょうどよい明るさで光る",
         "電流が逆向きに流れる"
       ],
-      explain: "LEDは Vf を超えると急に電流が増える部品です。抵抗で電流をおさえないと、流れすぎて壊れます。",
+      explain: "LED(Light Emitting Diode、発光ダイオード)は Vf を超えると急に電流が増える部品です。抵抗で電流をおさえないと、流れすぎて壊れます。",
       ref: "led-resistor"
     },
     {
       id: "l08", level: "std", q: "赤色LEDの順方向電圧 Vf の目安は?", kind: "value",
       choices: ["約2.0V", "約0.7V", "約3.2V", "約5.0V"],
-      explain: "赤・黄は約 2.0V、青・白は約 3.0〜3.2V です。約 0.7V はシリコンダイオードの Vf です。",
+      explain: "赤・黄は約 2.0V、青・白は約 3.0〜3.2V です。約 0.7V はシリコンダイオードの Vf です。略語: LED(Light Emitting Diode、発光ダイオード)。",
       ref: "vf"
     },
     {
       id: "l09", level: "std", q: "よくある砲弾型LED(5mm)の、定格電流(ふだん流してよい電流)の目安は?", kind: "value",
       choices: ["20mA程度", "2A程度", "0.2mA程度", "200mA程度"],
-      explain: "多くの砲弾型LEDは定格 20mA 程度です(絶対最大定格はそれより少し上で、超えると壊れます)。実際は 5〜10mA でも十分明るく光ります。",
+      explain: "多くの砲弾型LED(Light Emitting Diode、発光ダイオード)は定格 20mA 程度です(絶対最大定格はそれより少し上で、超えると壊れます)。実際は 5〜10mA でも十分明るく光ります。",
       ref: "if"
     },
     {
@@ -1694,13 +1694,13 @@ ELEC.register("led", {
         "電流が3つに分かれるので抵抗なしでよい",
         "LEDの向きを1個ずつ互いちがいにする"
       ],
-      explain: "LEDは1個ずつ Vf が少しちがうので、抵抗を共通にすると Vf の低いLEDに電流がかたよります。1個ずつ抵抗をつけます。",
+      explain: "LED(Light Emitting Diode、発光ダイオード)は1個ずつ Vf が少しちがうので、抵抗を共通にすると Vf の低いLEDに電流がかたよります。1個ずつ抵抗をつけます。",
       ref: "led-parallel"
     },
     {
       id: "l11", level: "pro", q: "9V の電源で、赤色LED(Vf 2.0V)を3個直列にして 10mA 流す。抵抗は?", kind: "value",
       choices: ["300Ω", "700Ω", "900Ω", "100Ω"],
-      explain: "直列なので Vf を足して 2.0 × 3 = 6V。R = (9 − 6) ÷ 0.01 = 300Ω。700Ω は LED 1個分しか引かなかったとき、100Ω は電流を3倍(30mA)にして計算したときの値です。",
+      explain: "直列なので Vf を足して 2.0 × 3 = 6V。R = (9 − 6) ÷ 0.01 = 300Ω。700Ω は LED(Light Emitting Diode、発光ダイオード) 1個分しか引かなかったとき、100Ω は電流を3倍(30mA)にして計算したときの値です。",
       ref: "led-parallel"
     },
     {
@@ -1712,7 +1712,7 @@ ELEC.register("led", {
     {
       id: "l13", level: "std", q: "シリコンダイオードの順方向電圧の目安は?", kind: "value",
       choices: ["約0.6〜0.7V", "約2.0V", "約5V", "約0.01V"],
-      explain: "シリコンダイオードは約 0.6〜0.7V です。約 2.0V は赤色LEDの Vf の目安です。",
+      explain: "シリコンダイオードは約 0.6〜0.7V です。約 2.0V は赤色LED(Light Emitting Diode、発光ダイオード)の Vf の目安です。",
       ref: "diode"
     },
     {
@@ -1724,7 +1724,7 @@ ELEC.register("led", {
     {
       id: "l15", level: "std", q: "5V の電源、330Ω の抵抗、赤色LED(Vf 2.0V)を直列につないだ。LEDに流れる電流は?", kind: "value",
       choices: ["約9mA", "約15mA", "約6mA", "約21mA"],
-      explain: "I = (5 − 2.0) ÷ 330 = 3 ÷ 330 ≒ 0.0091A ≒ 9mA。約15mA は Vf を引き忘れたとき(5 ÷ 330)、約21mA は Vf を足してしまったときの値です。",
+      explain: "I = (5 − 2.0) ÷ 330 = 3 ÷ 330 ≒ 0.0091A ≒ 9mA。約15mA は Vf を引き忘れたとき(5 ÷ 330)、約21mA は Vf を足してしまったときの値です。略語: LED(Light Emitting Diode、発光ダイオード)。",
       ref: "led-resistor"
     }
   ]
@@ -1759,7 +1759,7 @@ ELEC.register("wiring", {
     },
     {
       id: "dip-ic", name: "ICの差し方", en: "DIP IC on a breadboard",
-      desc: "足が2列に並んだIC(DIP)は、中央の溝をまたぐように差します。溝の片側に差すと、向かい合う足どうしが同じ列でつながってショートします。",
+      desc: "IC(Integrated Circuit、集積回路)のうち、足が2列に並んだ DIP(Dual Inline Package、足が2列に並んだ形)のものは、中央の溝をまたぐように差します。溝の片側に差すと、向かい合う足どうしが同じ列でつながってショートします。",
       notes: ["ICには向きがあります。くぼみや丸印のある側が1番ピンです。"]
     },
     {
@@ -1818,7 +1818,7 @@ ELEC.register("wiring", {
     {
       id: "w02", level: "basic", q: "ブレッドボードの中央の溝をはさんだ、穴 e5 と f5 の関係は?", kind: "text", fig: "breadboard",
       choices: ["つながっていない", "つながっている", "電源レールとつながっている", "GNDにつながっている"],
-      explain: "a〜e と f〜j は、溝で分かれています。溝をまたいでつなぎたいときは、ジャンパー線を使います。",
+      explain: "a〜e と f〜j は、溝で分かれています。溝をまたいでつなぎたいときは、ジャンパー線を使います。略語: GND(Ground、電圧の基準になる0Vの点)。",
       ref: "breadboard"
     },
     {
@@ -1840,7 +1840,7 @@ ELEC.register("wiring", {
         "電源レールに差す",
         "斜めに差して足どうしを離す"
       ],
-      explain: "溝をまたぐと、左右の足がそれぞれ別の列になります。片側に差すと、向かい合う足どうしが同じ列でショートします。",
+      explain: "溝をまたぐと、左右の足がそれぞれ別の列になります。片側に差すと、向かい合う足どうしが同じ列でショートします。略語: IC(Integrated Circuit、集積回路)、DIP(Dual Inline Package、足が2列に並んだ形)。",
       ref: "dip-ic"
     },
     {
@@ -1923,7 +1923,7 @@ ELEC.register("wiring", {
         "色が決まっていて、ちがう色では電気が流れない",
         "青は必ずアナログ信号に使う"
       ],
-      explain: "赤を+、黒をGNDにするのが一般的な習慣です。電気的な決まりではありませんが、まちがいを見つけやすくなります。",
+      explain: "赤を+、黒をGND(Ground、電圧の基準になる0Vの点)にするのが一般的な習慣です。電気的な決まりではありませんが、まちがいを見つけやすくなります。",
       ref: "jumper"
     },
     {
@@ -1934,7 +1934,7 @@ ELEC.register("wiring", {
         "中央の溝が広すぎる",
         "GNDのジャンパー線が多すぎる"
       ],
-      explain: "長いブレッドボードには、電源レールが真ん中で切れているものがあります。導通チェックで確かめ、切れていればジャンパー線でつなぎます。",
+      explain: "長いブレッドボードには、電源レールが真ん中で切れているものがあります。導通チェックで確かめ、切れていればジャンパー線でつなぎます。略語: GND(Ground、電圧の基準になる0Vの点)。",
       ref: "power-rail"
     },
     {
@@ -1956,14 +1956,14 @@ ELEC.register("tester", {
       id: "multimeter", name: "テスター(マルチメーター)", en: "Multimeter",
       desc: "電圧・電流・抵抗などを1台で測る道具です。ダイヤルで測るものとレンジを選び、2本のリード(テスト棒)を当てて測ります。",
       options: [
-        ["COM", "黒いリードを差す(共通・マイナス側)"],
+        ["COM", "COM(Common、共通端子)。黒いリードを差す(マイナス側)"],
         ["V/Ω", "赤いリードを差す(電圧・抵抗・導通)"],
         ["mA / 10A", "電流を測るときだけ、赤いリードを差しかえる"]
       ]
     },
     {
       id: "measure-v", name: "電圧の測り方", en: "Measuring voltage",
-      desc: "回路の電源を入れたまま、測りたい部品の両端にリードを当てます(部品と並列)。電池や電子回路は直流なので、DCV(V⎓)のレンジを使います。",
+      desc: "回路の電源を入れたまま、測りたい部品の両端にリードを当てます(部品と並列)。電池や電子回路は直流なので、DCV(Direct Current Voltage、直流電圧。V⎓)のレンジを使います。",
       fig: "tester",
       notes: ["赤を+側、黒を−側(GND側)に当てます。逆に当てると、デジタルテスターではマイナスの値が表示されます。"]
     },
@@ -1986,7 +1986,7 @@ ELEC.register("tester", {
     {
       id: "range", name: "レンジ", en: "Range",
       desc: "測る大きさの範囲です。自動で選ぶオートレンジのテスターと、自分で選ぶ手動レンジのテスターがあります。手動のときは、大きいレンジから始めて、順に下げていきます。",
-      notes: ["表示が「OL」や「1」だけのときは、レンジを超えています(抵抗なら、つながっていないこともあります)。"]
+      notes: ["表示が「OL」(Over Load、範囲オーバー)や「1」だけのときは、レンジを超えています(抵抗なら、つながっていないこともあります)。"]
     },
     {
       id: "amp-danger", name: "電流レンジのまま電圧を測る危険", en: "Current range on a voltage source",
@@ -1998,7 +1998,7 @@ ELEC.register("tester", {
     },
     {
       id: "dc-ac-range", name: "DCV と ACV", en: "DC volts / AC volts",
-      desc: "直流の電圧は DCV(V⎓ や V の上に直線の印)、交流の電圧は ACV(V〜)のレンジで測ります。電池・USB・Arduino の回路はすべて DCV です。",
+      desc: "直流の電圧は DCV(V⎓ や V の上に直線の印)、交流の電圧は ACV(Alternating Current Voltage、交流電圧。V〜)のレンジで測ります。電池・USB・Arduino の回路はすべて DCV です。",
       notes: ["交流のコンセントの測定は感電の危険があるので、電子工作の練習では行いません。"]
     }
   ],
@@ -2039,7 +2039,7 @@ ELEC.register("tester", {
     {
       id: "t04", level: "basic", q: "配線が切れていないかを、音で手早く確かめられるテスターの機能は?", kind: "text",
       choices: ["導通チェック", "電流レンジ(A)", "交流電圧レンジ(ACV)", "データホールド"],
-      explain: "導通チェックは、2点がつながっているとブザーが鳴ります。断線やブリッジを探すのに便利です。",
+      explain: "導通チェックは、2点がつながっているとブザーが鳴ります。断線やブリッジを探すのに便利です。略語: ACV(Alternating Current Voltage、交流電圧)。",
       ref: "continuity"
     },
     {
@@ -2067,13 +2067,13 @@ ELEC.register("tester", {
     {
       id: "t07", level: "basic", q: "乾電池の電圧を測るときのレンジは?", kind: "text",
       choices: ["DCV(直流電圧)", "ACV(交流電圧)", "Ω(抵抗)", "A(電流)"],
-      explain: "電池は直流なので DCV で測ります。ACV はコンセントなどの交流用です。",
+      explain: "電池は直流なので DCV(Direct Current Voltage、直流電圧)で測ります。ACV(Alternating Current Voltage、交流電圧)はコンセントなどの交流用です。",
       ref: "dc-ac-range"
     },
     {
       id: "t08", level: "std", q: "テスターの黒いリードを差す端子は?", kind: "value",
       choices: ["COM", "mA", "10A", "V/Ω"],
-      explain: "黒いリードは COM(共通)に差します。赤いリードは、電圧・抵抗なら V/Ω、電流なら mA か 10A に差します。",
+      explain: "黒いリードは COM(Common、共通端子)に差します。赤いリードは、電圧・抵抗なら V/Ω、電流なら mA か 10A に差します。",
       ref: "multimeter"
     },
     {
@@ -2173,7 +2173,7 @@ ELEC.register("power", {
       fig: "regulator",
       options: [
         ["7805", "出力 5V。入力は出力より約2V以上高くする"],
-        ["LDO", "入力と出力の差が小さくても動くタイプ"],
+        ["LDO", "Low Dropout(低ドロップアウト)の略。入力と出力の差が小さくても動くタイプ"],
         ["熱", "(入力 − 出力)× 電流。大きいと放熱板が必要"]
       ],
       notes: ["入力と出力にはコンデンサーをつけます。値はデータシートの例に合わせます(7805 なら 0.33μF と 0.1μF など)。"]
@@ -2228,7 +2228,7 @@ ELEC.register("power", {
     {
       id: "p05", level: "basic", q: "USBの電源の電圧は?", kind: "value",
       choices: ["5V", "3.3V", "12V", "100V"],
-      explain: "USBの電源は 5V です。Arduino Uno はこの 5V で動きます。",
+      explain: "USB(Universal Serial Bus、パソコンと機器をつなぐ規格)の電源は 5V です。Arduino Uno はこの 5V で動きます。",
       ref: "usb-power"
     },
     {
@@ -2296,7 +2296,7 @@ ELEC.register("power", {
     {
       id: "p13", level: "pro", q: "Arduino Uno の電源ジャック(DCジャック)に入れる電圧として、推奨されている範囲は?", kind: "value",
       choices: ["7〜12V", "3.3V", "5V(ちょうど)", "24V以上"],
-      explain: "Uno はボード上のレギュレータで 5V を作るので、入力は 5V より余裕をもって高くします(推奨 7〜12V)。低いと 5V を保てず、高すぎるとレギュレータが熱くなります。",
+      explain: "Uno はボード上のレギュレータで 5V を作るので、入力は 5V より余裕をもって高くします(推奨 7〜12V)。低いと 5V を保てず、高すぎるとレギュレータが熱くなります。略語: DC(Direct Current、直流)。",
       ref: "regulator"
     },
     {
@@ -2308,7 +2308,7 @@ ELEC.register("power", {
     {
       id: "p15", level: "std", q: "パソコンのUSB 2.0 ポートから取れる電流の目安は?", kind: "value",
       choices: ["500mA", "5A", "50mA", "20A"],
-      explain: "USB 2.0 は 500mA、USB 3.0 は 900mA が目安です。モーターなどを動かすには足りないことがあります。",
+      explain: "USB(Universal Serial Bus、パソコンと機器をつなぐ規格) 2.0 は 500mA、USB 3.0 は 900mA が目安です。モーターなどを動かすには足りないことがあります。",
       ref: "usb-power"
     }
   ]
@@ -2438,7 +2438,7 @@ ELEC.register("capacitor", {
         "極性はないので、どちら向きでもよい",
         "本体の帯がある側が+"
       ],
-      explain: "電解コンデンサーは、長い足が+、帯(−の印)の側が−です。LEDと同じく、長い足が+と覚えます。",
+      explain: "電解コンデンサーは、長い足が+、帯(−の印)の側が−です。LED(Light Emitting Diode、発光ダイオード)と同じく、長い足が+と覚えます。",
       ref: "electrolytic"
     },
     {
@@ -2455,7 +2455,7 @@ ELEC.register("capacitor", {
     {
       id: "k11", level: "basic", q: "ICの電源ピンのすぐ近くに置くパスコンとして、もっともよく使われる値は?", kind: "value",
       choices: ["0.1μF", "1F", "1pF", "4700μF"],
-      explain: "0.1μF(表記 104)のセラミックコンデンサーが定番です。",
+      explain: "0.1μF(表記 104)のセラミックコンデンサーが定番です。略語: IC(Integrated Circuit、集積回路)。",
       ref: "bypass"
     },
     {
@@ -2466,7 +2466,7 @@ ELEC.register("capacitor", {
         "LEDと直列",
         "ICからできるだけ離れた所"
       ],
-      explain: "パスコンはICのすぐ近くに置くほど効果があります。ICごとに1個ずつ置くのが基本です。",
+      explain: "パスコンはIC(Integrated Circuit、集積回路)のすぐ近くに置くほど効果があります。ICごとに1個ずつ置くのが基本です。略語: GND(Ground、電圧の基準になる0Vの点)、LED(Light Emitting Diode、発光ダイオード)。",
       ref: "bypass"
     },
     {
@@ -2570,13 +2570,13 @@ ELEC.register("switch", {
     {
       id: "s02", level: "basic", q: "図の回路で、スイッチを押したとき、D2 が読む値は?", kind: "text", fig: "pullup",
       choices: ["LOW(0V)", "HIGH(5V)", "不定(ふらふらする)", "ちょうど 2.5V"],
-      explain: "押すと D2 が GND に直接つながるので LOW になります。10kΩ があるので、5V と GND はショートしません。",
+      explain: "押すと D2 が GND(Ground、電圧の基準になる0Vの点) に直接つながるので LOW になります。10kΩ があるので、5V と GND はショートしません。",
       ref: "pull-up"
     },
     {
       id: "s03", level: "basic", q: "図の回路で、スイッチを押したとき、D2 が読む値は?", kind: "text", fig: "pulldown",
       choices: ["HIGH(5V)", "LOW(0V)", "不定(ふらふらする)", "ちょうど 2.5V"],
-      explain: "プルダウンでは、押すと D2 が 5V につながって HIGH になります。押していないときは 10kΩ を通して GND につながり LOW です。",
+      explain: "プルダウンでは、押すと D2 が 5V につながって HIGH になります。押していないときは 10kΩ を通して GND(Ground、電圧の基準になる0Vの点) につながり LOW です。",
       ref: "pull-down"
     },
     {
@@ -2594,7 +2594,7 @@ ELEC.register("switch", {
       id: "s05", level: "std", q: "スイッチをピン2と GND のあいだにつなぎ、下のように設定した。スイッチを押したとき、`digitalRead(2)` の値は?", kind: "value",
       code: [{ cap: "スケッチ", text: "void setup() {\n  pinMode(2, INPUT_PULLUP);\n}" }],
       choices: ["LOW", "HIGH", "1023", "不定"],
-      explain: "INPUT_PULLUP は内蔵のプルアップです。押すとピンが GND につながるので LOW。押していないときは HIGH です。",
+      explain: "INPUT_PULLUP は内蔵のプルアップです。押すとピンが GND(Ground、電圧の基準になる0Vの点) につながるので LOW。押していないときは HIGH です。",
       ref: "input-pullup"
     },
     {
@@ -2622,7 +2622,7 @@ ELEC.register("switch", {
         "チャタリングがなくなる",
         "何も変わらない"
       ],
-      explain: "抵抗がないと、押したときに 5V からスイッチを通って GND へ、抵抗ほぼ0の道ができます。ショートです。",
+      explain: "抵抗がないと、押したときに 5V からスイッチを通って GND(Ground、電圧の基準になる0Vの点) へ、抵抗ほぼ0の道ができます。ショートです。",
       ref: "pull-up"
     },
     {
@@ -2678,7 +2678,7 @@ ELEC.register("switch", {
         "4本のうち1本は GND 専用の足になっている",
         "4本すべてをつながないと動かない"
       ],
-      explain: "最初からつながっている2本を選ぶと、押さなくても ON のままになります。導通チェックで確かめてから使います。",
+      explain: "最初からつながっている2本を選ぶと、押さなくても ON のままになります。導通チェックで確かめてから使います。略語: GND(Ground、電圧の基準になる0Vの点)。",
       ref: "tact-switch"
     },
     {
@@ -2703,13 +2703,13 @@ ELEC.register("transistor", {
   cards: [
     {
       id: "npn", name: "NPNトランジスタ", en: "NPN bipolar transistor",
-      desc: "足は B(ベース)・C(コレクタ)・E(エミッタ)の3本。ベースからエミッタへ小さな電流を流すと、コレクタからエミッタへ大きな電流が流れます。小さな電流で大きな電流をON/OFFするスイッチとして使えます。",
+      desc: "NPN(Negative-Positive-Negative、N型・P型・N型の半導体を重ねた構造)のトランジスタです。足は B(ベース)・C(コレクタ)・E(エミッタ)の3本。ベースからエミッタへ小さな電流を流すと、コレクタからエミッタへ大きな電流が流れます。小さな電流で大きな電流をON/OFFするスイッチとして使えます。",
       options: [
         ["B ベース", "制御用の小さな電流を入れる"],
         ["C コレクタ", "負荷(LED・モーターなど)の側"],
         ["E エミッタ", "GND の側(NPN のとき)"]
       ],
-      notes: ["足の並び(EBC、ECB など)は品種でちがいます。データシートで確かめます。"]
+      notes: ["足の並び(EBC = Emitter・Base・Collector の順、ECB など)は品種でちがいます。データシートで確かめます。"]
     },
     {
       id: "tr-switch", name: "スイッチとしての使い方", en: "Transistor as a switch",
@@ -2729,7 +2729,7 @@ ELEC.register("transistor", {
     },
     {
       id: "hfe", name: "hFE(直流電流増幅率)", en: "DC current gain",
-      desc: "ベース電流の何倍のコレクタ電流を流せるかを表します。増幅しているときは Ic = hFE × Ib です。スイッチとして使うときは、必要な Ic ÷ hFE より多め(数倍)のベース電流を流して、しっかり ON(飽和)させます。",
+      desc: "ベース電流の何倍のコレクタ電流を流せるかを表します。増幅しているときは Ic = hFE × Ib です。スイッチとして使うときは、必要な Ic ÷ hFE より多め(数倍)のベース電流を流して、しっかり ON(飽和)させます。hFE の h は hybrid parameter(hパラメータ)、F は Forward(順方向)、E は common Emitter(エミッタ接地)を表します。",
       options: [
         ["Ic = hFE × Ib", "hFE 100、Ib 1mA なら最大 100mA"],
         ["スイッチのとき", "計算した Ib の数倍を流す"]
@@ -2738,7 +2738,7 @@ ELEC.register("transistor", {
     },
     {
       id: "mosfet", name: "MOSFET", en: "N-channel MOSFET",
-      desc: "足は G(ゲート)・D(ドレイン)・S(ソース)の3本。ゲートとソースのあいだの電圧で、ドレインからソースへの電流を ON/OFF します。ゲートには(切りかえの瞬間を除いて)ほとんど電流が流れず、大きな電流を扱うのに向いています。",
+      desc: "MOSFET(Metal-Oxide-Semiconductor Field-Effect Transistor、金属酸化膜半導体電界効果トランジスタ)は、電圧で電流を切りかえるトランジスタです。足は G(ゲート)・D(ドレイン)・S(ソース)の3本。ゲートとソースのあいだの電圧で、ドレインからソースへの電流を ON/OFF します。ゲートには(切りかえの瞬間を除いて)ほとんど電流が流れず、大きな電流を扱うのに向いています。",
       options: [
         ["G ゲート", "電圧で ON / OFF を決める"],
         ["D ドレイン", "負荷の側"],
@@ -2747,7 +2747,7 @@ ELEC.register("transistor", {
     },
     {
       id: "logic-level-fet", name: "ロジックレベルMOSFET", en: "Logic-level MOSFET",
-      desc: "5V や 3.3V のゲート電圧で、十分に ON になる品種です。データシートの Vth(ゲートしきい値電圧)は「流れ始める」目安で、完全に ON になる電圧ではありません。ON 抵抗 RDS(on) が、使いたいゲート電圧(4.5V、2.5V など)で決められているものを選びます。",
+      desc: "5V や 3.3V のゲート電圧で、十分に ON になる品種です。データシートの Vth(ゲートしきい値電圧)は「流れ始める」目安で、完全に ON になる電圧ではありません。ON 抵抗 RDS(on)(ON のときのドレイン Drain とソース Source のあいだの抵抗)が、使いたいゲート電圧(4.5V、2.5V など)で決められているものを選びます。",
       notes: ["ゲート電圧が足りないと、中途半端に ON になって MOSFET が熱くなります。"]
     },
     {
@@ -2775,13 +2775,13 @@ ELEC.register("transistor", {
     {
       id: "x01", level: "basic", q: "NPNトランジスタの3本の足の名前は?", kind: "text",
       choices: ["ベース・コレクタ・エミッタ", "ゲート・ドレイン・ソース", "アノード・カソード・ゲート", "入力・GND・出力"],
-      explain: "バイポーラトランジスタは B・C・E です。G・D・S は MOSFET、入力・GND・出力 は三端子レギュレータです。",
+      explain: "バイポーラトランジスタは B・C・E です。G・D・S は MOSFET(Metal-Oxide-Semiconductor Field-Effect Transistor、金属酸化膜半導体電界効果トランジスタ)、入力・GND(Ground、0Vの基準)・出力 は三端子レギュレータです。略語: NPN(Negative-Positive-Negative、N型・P型・N型の半導体を重ねた構造)。",
       ref: "npn"
     },
     {
       id: "x02", level: "basic", q: "MOSFET の3本の足の名前は?", kind: "text",
       choices: ["ゲート・ドレイン・ソース", "ベース・コレクタ・エミッタ", "アノード・カソード・ゲート", "入力・GND・出力"],
-      explain: "MOSFET は G(ゲート)・D(ドレイン)・S(ソース)です。",
+      explain: "MOSFET(Metal-Oxide-Semiconductor Field-Effect Transistor、金属酸化膜半導体電界効果トランジスタ) は G(ゲート)・D(ドレイン)・S(ソース)です。略語: GND(Ground、電圧の基準になる0Vの点)。",
       ref: "mosfet"
     },
     {
@@ -2793,7 +2793,7 @@ ELEC.register("transistor", {
     {
       id: "x04", level: "std", q: "hFE が 200 のトランジスタに、ベース電流 0.5mA を流した。流せるコレクタ電流の最大はおよそ?", kind: "value",
       choices: ["100mA", "400mA", "200.5mA", "0.0025mA"],
-      explain: "Ic = hFE × Ib = 200 × 0.5mA = 100mA。400mA は 200 ÷ 0.5、0.0025mA は 0.5 ÷ 200 としたときの値です。",
+      explain: "hFE(h パラメータの Forward・common Emitter)は直流電流増幅率で、コレクタ電流がベース電流の何倍かを表します。Ic = hFE × Ib = 200 × 0.5mA = 100mA。400mA は 200 ÷ 0.5、0.0025mA は 0.5 ÷ 200 としたときの値です。",
       ref: "hfe"
     },
     {
@@ -2804,13 +2804,13 @@ ELEC.register("transistor", {
         "hFE が 100 なので、0.1mA で十分",
         "コレクタと同じ 100mA をベースにも流す"
       ],
-      explain: "100mA ÷ 100 = 1mA が計算上の最小です。hFE はばらつくので、数倍のベース電流を流してしっかり ON にします。",
+      explain: "hFE(直流電流増幅率。h パラメータの Forward・common Emitter)が 100 なので、100mA ÷ 100 = 1mA が計算上の最小です。hFE はばらつくので、数倍のベース電流を流してしっかり ON にします。",
       ref: "hfe"
     },
     {
       id: "x06", level: "basic", q: "図の回路で、LEDが光るのはどんなとき?", kind: "text", fig: "tr-led",
       choices: ["D9 を HIGH にしたとき", "D9 を LOW にしたとき", "D9 を入力(INPUT)にしたとき", "いつも光らない"],
-      explain: "D9 が HIGH になるとベース抵抗を通ってベースに電流が流れ、トランジスタが ON になって LED に電流が流れます。",
+      explain: "D9 が HIGH になるとベース抵抗を通ってベースに電流が流れ、トランジスタが ON になって LED(Light Emitting Diode、発光ダイオード) に電流が流れます。",
       ref: "tr-switch"
     },
     {
@@ -2821,7 +2821,7 @@ ELEC.register("transistor", {
         "ゲートに大きな電流を流すほど、よく流れる",
         "ゲートを GND にすると、完全に ON になる"
       ],
-      explain: "MOSFET は電圧で動く部品です。ゲートとソースのあいだに十分な電圧をかけると ON、0V にすると OFF になります。",
+      explain: "MOSFET(Metal-Oxide-Semiconductor Field-Effect Transistor、金属酸化膜半導体電界効果トランジスタ) は電圧で動く部品です。ゲートとソースのあいだに十分な電圧をかけると ON、0V にすると OFF になります。略語: GND(Ground、電圧の基準になる0Vの点)。",
       ref: "mosfet"
     },
     {
@@ -2832,7 +2832,7 @@ ELEC.register("transistor", {
         "ゲートに 2V をかけると壊れる",
         "ドレインに流せる最大の電流が 2A という意味"
       ],
-      explain: "Vth はわずかに電流が流れ始める電圧です。大きな電流を流すには、RDS(on) が決められたゲート電圧(4.5V など)をかけられるかを確かめます。",
+      explain: "Vth はわずかに電流が流れ始める電圧です。大きな電流を流すには、RDS(on)(ON のときのドレイン Drain・ソース Source 間の抵抗)が決められたゲート電圧(4.5V など)をかけられるかを確かめます。略語: MOSFET(Metal-Oxide-Semiconductor Field-Effect Transistor、金属酸化膜半導体電界効果トランジスタ)。",
       ref: "logic-level-fet"
     },
     {
@@ -2843,7 +2843,7 @@ ELEC.register("transistor", {
         "モーターの回転の向きを逆にするため",
         "電源の電圧を上げるため"
       ],
-      explain: "コイルは電流を切った瞬間に高い電圧を出します。ダイオードがその電流の通り道になり、MOSFET に高い電圧がかかるのを防ぎます。",
+      explain: "コイルは電流を切った瞬間に高い電圧を出します。ダイオードがその電流の通り道になり、MOSFET(Metal-Oxide-Semiconductor Field-Effect Transistor、金属酸化膜半導体電界効果トランジスタ) に高い電圧がかかるのを防ぎます。",
       ref: "flyback"
     },
     {
@@ -2854,7 +2854,7 @@ ELEC.register("transistor", {
         "向きはどちらでもよい",
         "モーターと直列に入れる"
       ],
-      explain: "ふだんは逆向きで電流が流れず、切った瞬間だけモーターの電流がダイオードを回って流れる向きにします。逆にすると、MOSFET が ON のときに電源をショートします。",
+      explain: "ふだんは逆向きで電流が流れず、切った瞬間だけモーターの電流がダイオードを回って流れる向きにします。逆にすると、MOSFET(Metal-Oxide-Semiconductor Field-Effect Transistor、金属酸化膜半導体電界効果トランジスタ) が ON のときに電源をショートします。略語: GND(Ground、電圧の基準になる0Vの点)。",
       ref: "flyback"
     },
     {
@@ -2865,7 +2865,7 @@ ELEC.register("transistor", {
         "ピンの電圧が高すぎるから",
         "モーターには極性がないから"
       ],
-      explain: "小さなモーターでも数百mA 流れることがあり、ピンの上限(20mA 程度が目安)を大きく超えます。トランジスタや MOSFET を使います。",
+      explain: "小さなモーターでも数百mA 流れることがあり、ピンの上限(20mA 程度が目安)を大きく超えます。トランジスタや MOSFET(Metal-Oxide-Semiconductor Field-Effect Transistor、金属酸化膜半導体電界効果トランジスタ) を使います。",
       ref: "motor-drive"
     },
     {
@@ -2887,7 +2887,7 @@ ELEC.register("transistor", {
         "どこもつながない",
         "Arduino の GND だけを外しておく"
       ],
-      explain: "電圧は2点の差なので、基準(GND)がそろっていないと、Arduino の信号で MOSFET やトランジスタを正しく動かせません。",
+      explain: "電圧は2点の差なので、基準の GND(Ground、電圧の基準になる0Vの点)がそろっていないと、Arduino の信号で MOSFET(Metal-Oxide-Semiconductor Field-Effect Transistor、金属酸化膜半導体電界効果トランジスタ) やトランジスタを正しく動かせません。",
       ref: "motor-drive"
     },
     {
@@ -2898,7 +2898,7 @@ ELEC.register("transistor", {
         "MOSFET の耐圧を上げるため",
         "PWM の周波数を上げるため"
       ],
-      explain: "マイコンのピンは、起動直後は入力(浮いた状態)です。ゲートが浮くと勝手に ON になることがあるので、抵抗で 0V に引き下げておきます。",
+      explain: "マイコンのピンは、起動直後は入力(浮いた状態)です。ゲートが浮くと勝手に ON になることがあるので、抵抗で 0V に引き下げておきます。略語: MOSFET(Metal-Oxide-Semiconductor Field-Effect Transistor、金属酸化膜半導体電界効果トランジスタ)、GND(Ground、電圧の基準になる0Vの点)、PWM(Pulse Width Modulation、パルス幅変調)。",
       ref: "gate-resistors"
     },
     {
@@ -2918,10 +2918,10 @@ ELEC.register("arduino", {
   cards: [
     {
       id: "arduino", name: "Arduino Uno", en: "Arduino Uno (ATmega328P)",
-      desc: "電子工作で定番のマイコンボードです。5V で動き、パソコンと USB でつないで、Arduino IDE でプログラム(スケッチ)を書きこみます。",
+      desc: "電子工作で定番のマイコンボードです。5V で動き、パソコンと USB でつないで、Arduino IDE(Integrated Development Environment、統合開発環境)でプログラム(スケッチ)を書きこみます。",
       options: [
         ["D0〜D13", "デジタル入出力(D0・D1 はシリアル通信と共用)"],
-        ["~3 ~5 ~6 ~9 ~10 ~11", "PWM が使えるピン(~ の印)"],
+        ["~3 ~5 ~6 ~9 ~10 ~11", "PWM(Pulse Width Modulation、パルス幅変調)が使えるピン(~ の印)"],
         ["A0〜A5", "アナログ入力(analogRead)"],
         ["5V・3.3V・GND", "電源のピン"]
       ]
@@ -2995,7 +2995,7 @@ ELEC.register("arduino", {
     {
       id: "a02", level: "basic", q: "13番ピンにつないだ LED を点けるために、ピンを出力にする命令は?", kind: "value",
       choices: ["pinMode(13, OUTPUT);", "pinMode(13, INPUT);", "digitalRead(13);", "analogRead(13);"],
-      explain: "出力にするのは pinMode(13, OUTPUT)。INPUT は入力、digitalRead は入力の状態を読む命令です。",
+      explain: "出力にするのは pinMode(13, OUTPUT)。INPUT は入力、digitalRead は入力の状態を読む命令です。略語: LED(Light Emitting Diode、発光ダイオード)。",
       ref: "pinmode"
     },
     {
@@ -3042,19 +3042,19 @@ ELEC.register("arduino", {
         "ずっと 5V が出る",
         "127V が出る"
       ],
-      explain: "PWM なので出力は 5V と 0V の切りかえです。127 ÷ 255 ≒ 50% が ON なので、平均は約 2.5V になります。",
+      explain: "PWM(Pulse Width Modulation、パルス幅変調) なので出力は 5V と 0V の切りかえです。127 ÷ 255 ≒ 50% が ON なので、平均は約 2.5V になります。",
       ref: "pwm"
     },
     {
       id: "a10", level: "pro", q: "Arduino Uno で、デューティ比 約25%(平均 約1.25V)の PWM を出したい。`analogWrite` に入れる値は?", kind: "value", fig: "pwm",
       choices: ["64", "25", "256", "191"],
-      explain: "255 × 0.25 ≒ 63.75 なので 64。25 は % の数字をそのまま入れたとき、191 は 75% のときの値です。256 は範囲(0〜255)の外です。",
+      explain: "255 × 0.25 ≒ 63.75 なので 64。25 は % の数字をそのまま入れたとき、191 は 75% のときの値です。256 は範囲(0〜255)の外です。略語: PWM(Pulse Width Modulation、パルス幅変調)。",
       ref: "pwm"
     },
     {
       id: "a11", level: "std", q: "Arduino Uno で PWM(analogWrite)が使えるピンは?", kind: "value",
       choices: ["3、5、6、9、10、11", "0〜13 のすべて", "A0〜A5", "13 だけ"],
-      explain: "ボードに ~ の印がある 3・5・6・9・10・11 番ピンです。",
+      explain: "ボードに ~ の印がある 3・5・6・9・10・11 番ピンです。略語: PWM(Pulse Width Modulation、パルス幅変調)。",
       ref: "pwm"
     },
     {
@@ -3071,7 +3071,7 @@ ELEC.register("arduino", {
     {
       id: "a13", level: "std", q: "図の回路で D13 を HIGH にしたとき、LED に流れる電流はおよそ?(Arduino Uno、5V)", kind: "value", fig: "uno-led",
       choices: ["約14mA", "約23mA", "約9mA", "約32mA"],
-      explain: "I = (5 − 2.0) ÷ 220 = 3 ÷ 220 ≒ 0.0136A ≒ 14mA。20mA 以下なのでピンから直接流せます。約23mA は Vf を引き忘れたとき(5 ÷ 220)の値です。",
+      explain: "I = (5 − 2.0) ÷ 220 = 3 ÷ 220 ≒ 0.0136A ≒ 14mA。20mA 以下なのでピンから直接流せます。約23mA は Vf を引き忘れたとき(5 ÷ 220)の値です。略語: LED(Light Emitting Diode、発光ダイオード)。",
       ref: "digital-write"
     },
     {
@@ -3089,7 +3089,7 @@ ELEC.register("arduino", {
         "analogWrite の値が 255 以下か",
         "USB ケーブルの色"
       ],
-      explain: "Serial.begin(9600) なら、シリアルモニターも 9600bps にします。速度がちがうと文字化けします。",
+      explain: "Serial.begin(9600) なら、シリアルモニターも 9600bps にします。速度がちがうと文字化けします。略語: LED(Light Emitting Diode、発光ダイオード)、USB(Universal Serial Bus、パソコンと機器をつなぐ規格)。",
       ref: "serial"
     }
   ]
