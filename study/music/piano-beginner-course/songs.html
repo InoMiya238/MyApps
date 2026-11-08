@@ -386,7 +386,7 @@
     wrap.appendChild(bar);
     var legend = el("p", "legend");
     legend.innerHTML = "<b>使い方</b>: 曲を選ぶと楽譜と鍵盤が出ます。<b>▶ 再生</b>で聴き、<b>弾いてみる</b>で光った音を押して進みます。" +
-      "画面の鍵盤のほか、パソコンのキー(A = ド)や、USB でつないだ電子ピアノでも弾けます。";
+      "画面の鍵盤のほか、パソコンのキー(A = ド)や、USB(Universal Serial Bus、パソコンと機器をつなぐ規格)でつないだ電子ピアノでも弾けます。";
     wrap.appendChild(legend);
     wrap.appendChild(grid);
     function fill() {
@@ -428,6 +428,7 @@
     head.appendChild(h2);
     head.appendChild(metaChips(s, true));
     head.appendChild(el("p", "", s.desc + "(" + s.origin + ")"));
+    head.appendChild(el("p", "", "BPM(Beats Per Minute、1分間の拍の数)は曲の速さです。下の「テンポ」で変えられます。"));
     wrap.appendChild(head);
 
     var twoHands = !!(s.score.rh && s.score.lh);
@@ -485,7 +486,9 @@
     card.setAttribute("aria-label", "楽譜");
     var systems = el("div", "score-systems");
     card.appendChild(systems);
-    card.appendChild(el("p", "score-legend", "黄色 = いま鳴っている音、紺 = 次に弾く音。音符をタップすると鳴ります。数字は指番号(1 親指〜5 小指)。"));
+    card.appendChild(el("p", "score-legend", "黄色 = いま鳴っている音、紺 = 次に弾く音。音符をタップすると鳴ります。数字は指番号(1 親指〜5 小指)。" +
+      "PCキーの PC は Personal Computer(パソコン)" +
+      (midiBtn ? "、MIDI(Musical Instrument Digital Interface、電子楽器どうしをつなぐ規格)は電子ピアノとつなぐしくみ" : "") + "です。"));
     wrap.appendChild(card);
 
     // 鍵盤のドック

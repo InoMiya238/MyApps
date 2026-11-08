@@ -1408,7 +1408,8 @@
 
   // ---------- 楽譜ブロック ----------
   // 楽譜 + 再生 + 弾いてみる + 鍵盤。DOM に入れてから mounts で楽譜と鍵盤を作る(幅を測るため)
-  function scoreBlock(b, mounts) {
+  // withAbbr: レッスンの最初の楽譜にだけ、楽譜まわりの略語(BPM・PC・MIDI)の説明を出す
+  function scoreBlock(b, mounts, withAbbr) {
     var data = b.data;
     var grand = !!(data.rh && data.lh);
     var base = data.bpm || 80;
@@ -1466,7 +1467,9 @@
     box.appendChild(kbWrap);
     var pcHint = el("p", "pc-hint");
     box.appendChild(pcHint);
-    box.appendChild(el("p", "score-legend", (b.legend ? b.legend + " " : "") + "黄色 = いま鳴っている音、紺 = 次に弾く音。音符をタップしても鳴ります。"));
+    var abbr = withAbbr ? " BPM(Beats Per Minute、1分間の拍の数)は速さ、PCキーの PC は Personal Computer(パソコン)" +
+      (midiBtn ? "、MIDI(Musical Instrument Digital Interface、電子楽器どうしをつなぐ規格)は電子ピアノとつなぐしくみ" : "") + "です。" : "";
+    box.appendChild(el("p", "score-legend", (b.legend ? b.legend + " " : "") + "黄色 = いま鳴っている音、紺 = 次に弾く音。音符をタップしても鳴ります。" + abbr));
 
     mounts.push(function () {
       var r0 = range(hand);
@@ -1603,7 +1606,7 @@
     var ul = el("ul");
     ["本物の鍵盤がなくても、画面の鍵盤で練習できます。手元にピアノやキーボードがあれば、いっしょに弾きながら進めましょう",
       "全" + N + "レッスン(約" + minutes + "分)、" + PARTS.length + "つの部。順番に進めると、最後は2段の楽譜(大譜表)を見ながら両手でかんたんな曲を弾けます",
-      "楽譜は「▶ 再生」で聴けて、「弾いてみる」で光った音を押して進めます。パソコンのキー(A = ド)や、USB でつないだ電子ピアノでも弾けます",
+      "楽譜は「▶ 再生」で聴けて、「弾いてみる」で光った音を押して進めます。パソコンのキー(A = ド)や、USB(Universal Serial Bus、パソコンと機器をつなぐ規格)でつないだ電子ピアノでも弾けます",
       "終えたしるしは、このブラウザにだけ保存されます"].forEach(function (t) { ul.appendChild(el("li", "", t)); });
     intro.appendChild(ul);
     v.appendChild(intro);
@@ -1693,6 +1696,7 @@
   }
 
   function renderBody(ls, body, mounts) {
+    var firstScore = true;
     ls.body.forEach(function (b) {
       if (b.t === "p") body.appendChild(html("p", "", b.html));
       else if (b.t === "h") body.appendChild(el("h3", "", b.text));
@@ -1708,7 +1712,8 @@
       } else if (b.t === "figure" && FIGURES[b.id]) {
         body.appendChild(FIGURES[b.id]());
       } else if (b.t === "score") {
-        body.appendChild(scoreBlock(b, mounts));
+        body.appendChild(scoreBlock(b, mounts, firstScore));
+        firstScore = false;
       } else if (b.t === "keys") {
         body.appendChild(keysBlock(b, mounts));
       } else if (b.t === "mini" && MINI[b.id]) {
