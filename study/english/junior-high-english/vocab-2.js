@@ -384,7 +384,7 @@
     { en: "eight", ja: "8", pos: "数", cat: "time", grade: "g1", ex: ["I get up at eight on Sundays.", "わたしは日曜日は8時に起きます。"] },
     { en: "eighteen", ja: "18", pos: "数", cat: "time", grade: "g1", ex: ["We have eighteen chairs in this room.", "この部屋にはいすが18脚あります。"] },
     { en: "eleven", ja: "11", pos: "数", cat: "time", grade: "g1", ex: ["A soccer team has eleven players.", "サッカーのチームは11人です。"] },
-    { en: "evening", ja: "夕方、晩", pos: "名", cat: "time", grade: "g1", ex: ["I watch TV in the evening.", "わたしは晩にテレビを見ます。"] },
+    { en: "evening", ja: "夕方、晩", pos: "名", cat: "time", grade: "g1", ex: ["I watch TV in the evening.", "わたしは晩にテレビを見ます。(TV は television の略)"] },
     { en: "fall", ja: "秋", pos: "名", cat: "time", grade: "g1", ex: ["We have a school festival in the fall.", "秋には学園祭があります。"] },
     { en: "February", ja: "2月", pos: "名", cat: "time", grade: "g1", ex: ["It snows a lot in February.", "2月は雪がたくさん降ります。"] },
     { en: "fifteen", ja: "15", pos: "数", cat: "time", grade: "g1", ex: ["I walk to school for fifteen minutes.", "わたしは学校まで15分歩きます。"] },

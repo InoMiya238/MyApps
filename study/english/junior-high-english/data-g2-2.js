@@ -315,7 +315,7 @@
     example: {
       title: "下線部の意味を考えて、文全体を日本語にしなさい。" + eibun("I don't have time " + u("to watch TV") + " today."),
       steps: [
-        en("to watch TV") + " のすぐ前は、名詞の " + en("time") + "(時間)です。",
+        en("to watch TV") + " のすぐ前は、名詞の " + en("time") + "(時間)です。" + en("TV") + " は " + en("television") + "(テレビ)を短くした語です。",
         "名詞のあとの " + en("to 〜") + " は、その名詞を説明する形容詞的用法で、「テレビを見るための時間」となります。",
         en("I don't have 〜") + " は「〜がありません」です。"
       ],

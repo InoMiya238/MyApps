@@ -1312,7 +1312,8 @@
         explain: [
           "「〜を聞く」は " + en("listen to 〜") + " で表します。" + en("to") + " が必要です。",
           seigo("She listens music every day.", "She listens " + key("to") + " music every day."),
-          "ほかの3つは、" + en("after") + "(〜のあとに)、" + en("from") + "(〜の出身)、" + en("on") + " + 曜日を正しく使っています。"
+          "ほかの3つは、" + en("after") + "(〜のあとに)、" + en("from") + "(〜の出身)、" + en("on") + " + 曜日を正しく使っています。",
+          en("TV") + " は " + en("television") + "(テレビ)を短くした語です。"
         ]
       },
       {

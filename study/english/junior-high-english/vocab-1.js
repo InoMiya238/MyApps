@@ -115,7 +115,7 @@
     { en: "walk", ja: "歩く", pos: "動", cat: "verbs", grade: "g1", ex: ["I walk to school.", "わたしは歩いて学校へ行きます。"] },
     { en: "want", ja: "ほしい、〜したい", pos: "動", cat: "verbs", grade: "g1", ex: ["I want a new bike.", "わたしは新しい自転車がほしいです。"] },
     { en: "wash", ja: "洗う", pos: "動", cat: "verbs", grade: "g1", ex: ["Wash your hands before lunch.", "昼食の前に手を洗いなさい。"] },
-    { en: "watch", ja: "見る、見守る", pos: "動", cat: "verbs", grade: "g1", ex: ["I watch TV after dinner.", "わたしは夕食のあとにテレビを見ます。"] },
+    { en: "watch", ja: "見る、見守る", pos: "動", cat: "verbs", grade: "g1", ex: ["I watch TV after dinner.", "わたしは夕食のあとにテレビを見ます。(TV は television の略)"] },
     { en: "wear", ja: "身につけている、着ている", pos: "動", cat: "verbs", grade: "g1", forms: "wore - worn", ex: ["She is wearing a red hat.", "彼女は赤い帽子をかぶっています。"] },
     { en: "win", ja: "勝つ", pos: "動", cat: "verbs", grade: "g1", forms: "won - won", ex: ["Our team won the game.", "わたしたちのチームが試合に勝ちました。"] },
     { en: "work", ja: "働く", pos: "動", cat: "verbs", grade: "g1", ex: ["My father works at a hospital.", "父は病院で働いています。"] },

@@ -480,7 +480,8 @@
           "「2時間ずっと見ている」なので、現在完了進行形 " + en("has been watching") + " に、期間の長さを表す " + en("for two hours") + " を続けます。",
           en("Ken " + key("has been watching") + " TV " + key("for") + " two hours."),
           en("two hours") + " は期間の長さなので、" + en("since") + " ではなく " + en("for") + " です。",
-          en("was been") + " という形はありません。" + en("has") + " と " + en("watching") + " のあいだには " + en("been") + " が必要です。"
+          en("was been") + " という形はありません。" + en("has") + " と " + en("watching") + " のあいだには " + en("been") + " が必要です。",
+          en("TV") + " は " + en("television") + "(テレビ)を短くした語です。"
         ]
       },
       {

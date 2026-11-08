@@ -1079,7 +1079,8 @@
         explain: [
           "進行形には、be動詞が必要です。" + en("ing") + " 形だけでは文の動詞になりません。",
           seigo("My sister playing the piano now.", "My sister " + key("is") + " playing the piano now."),
-          "ほかの3つは、be動詞と " + en("ing") + " 形がそろっていて、正しい文です。"
+          "ほかの3つは、be動詞と " + en("ing") + " 形がそろっていて、正しい文です。",
+          en("TV") + " は " + en("television") + "(テレビ)を短くした語です。"
         ]
       },
       {
@@ -1294,7 +1295,8 @@
         explain: [
           en("last night") + "(昨夜)があるので、過去の文です。一般動詞の過去の否定文には " + en(key("didn't")) + " を使います。",
           en("don't") + " と " + en("doesn't") + " は現在の文に使います。",
-          en("weren't") + " は be動詞の否定なので、一般動詞 " + en("watch") + " の原形の前には置けません。"
+          en("weren't") + " は be動詞の否定なので、一般動詞 " + en("watch") + " の原形の前には置けません。",
+          en("TV") + " は " + en("television") + "(テレビ)を短くした語です。"
         ]
       },
       {
@@ -1538,7 +1540,8 @@
         explain: [
           "「見ていました」は過去進行形で、" + en("was / were") + " + " + en("ing") + " 形で表します。主語が " + en("I") + " なので " + en(key("was")) + " です。",
           en("were") + " は " + en("I") + " に合いません。" + en("am") + " は現在形なので、" + en("last night") + " と合いません。",
-          en("did") + " のあとに " + en("ing") + " 形を続けることはできません。"
+          en("did") + " のあとに " + en("ing") + " 形を続けることはできません。",
+          en("TV") + " は " + en("television") + "(テレビ)を短くした語です。"
         ]
       },
       {

@@ -397,7 +397,7 @@
     { en: "Japanese", ja: "日本語、日本人", pos: "名", cat: "society", grade: "g1", ex: ["Do you speak Japanese?", "あなたは日本語を話しますか。"] },
     { en: "job", ja: "仕事", pos: "名", cat: "society", grade: "g1", ex: ["My father likes his job.", "父は自分の仕事が好きです。"] },
     { en: "Korea", ja: "韓国", pos: "名", cat: "society", grade: "g1", ex: ["I visited Korea last year.", "わたしは去年韓国を訪れました。"] },
-    { en: "London", ja: "ロンドン", pos: "名", cat: "society", grade: "g1", ex: ["London is a big city in the UK.", "ロンドンはイギリスの大都市です。"] },
+    { en: "London", ja: "ロンドン", pos: "名", cat: "society", grade: "g1", ex: ["London is a big city in the UK.", "ロンドンはイギリスの大都市です。(UK は United Kingdom の略で、イギリスのこと)"] },
     { en: "money", ja: "お金", pos: "名", cat: "society", grade: "g1", ex: ["I don't have much money.", "わたしはお金をあまり持っていません。"] },
     { en: "news", ja: "ニュース、知らせ", pos: "名", cat: "society", grade: "g1", ex: ["Did you watch the news last night?", "昨夜ニュースを見ましたか。"] },
     { en: "Spain", ja: "スペイン", pos: "名", cat: "society", grade: "g1", ex: ["We visited Spain last summer.", "わたしたちは去年の夏スペインを訪れました。"] },
