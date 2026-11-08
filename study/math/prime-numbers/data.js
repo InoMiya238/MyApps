@@ -62,7 +62,7 @@ var PRIM = (function () {
     { id: "sieve", no: "04", name: "エラトステネスのふるい", short: "ふるい", level: "basic", keys: "手順 · p² から · √N まで" },
     { id: "factorize", no: "05", name: "素因数分解", short: "素因数分解", level: "basic", keys: "すだれ算 · 指数表記 · 一意性" },
     { id: "divisors", no: "06", name: "約数の個数と総和", short: "約数", level: "std", keys: "(a+1)(b+1) · 総和の公式 · 平方数" },
-    { id: "gcd-lcm", no: "07", name: "最大公約数・最小公倍数", short: "GCD・LCM", level: "std", keys: "互除法 · a×b = GCD×LCM · 互いに素" },
+    { id: "gcd-lcm", no: "07", name: "最大公約数・最小公倍数", short: "GCD・LCM", level: "std", keys: "GCD(Greatest Common Divisor、最大公約数) · LCM(Least Common Multiple、最小公倍数) · 互除法 · a×b = GCD×LCM · 互いに素" },
     { id: "powers", no: "08", name: "平方数・立方数", short: "平方・立方", level: "std", keys: "指数が偶数 · 最小のかける数 · √の簡単化" },
     { id: "factorial", no: "09", name: "階乗と素因数", short: "階乗", level: "pro", keys: "ルジャンドル · 末尾の0 · 2の個数" },
     { id: "theory", no: "10", name: "素数の性質", short: "素数の性質", level: "pro", keys: "無限 · 双子 · メルセンヌ · フェルマー · ゴールドバッハ" }
@@ -1578,7 +1578,7 @@ PRIM.register("gcd-lcm", {
   cards: [
     {
       id: "gcd-lcm-def", name: "最大公約数・最小公倍数", en: "GCD / LCM",
-      desc: "最大公約数(GCD)は2つの数に共通する約数のうち最大のもの、最小公倍数(LCM)は共通する倍数のうち最小のもの(0 を除く)です。",
+      desc: "GCD(Greatest Common Divisor、最大公約数)は2つの数に共通する約数のうち最大のもの、LCM(Least Common Multiple、最小公倍数)は共通する倍数のうち最小のもの(0 を除く)です。",
       options: [["12 と 18", "GCD 6、LCM 36"], ["4 と 6", "GCD 2、LCM 12"]]
     },
     {
@@ -1641,7 +1641,7 @@ PRIM.register("gcd-lcm", {
         "GCD(a, b) = a − b",
         "a と b がどちらも素数なら、GCD は 1"
       ],
-      explain: "a と b の公約数は r = a − b × q も割り切り、b と r の公約数は a も割り切ります。だから公約数の集まりが同じで、GCD も同じです。",
+      explain: "a と b の公約数は r = a − b × q も割り切り、b と r の公約数は a も割り切ります。だから公約数の集まりが同じで、GCD も同じです。略語: GCD(Greatest Common Divisor、最大公約数)、LCM(Least Common Multiple、最小公倍数)。",
       ref: "euclid"
     },
     {
@@ -1659,7 +1659,7 @@ PRIM.register("gcd-lcm", {
     {
       id: "g09", level: "std", q: "2つの数の最大公約数が 4、最小公倍数が 48。一方が 12 のとき、もう一方は?", kind: "value",
       choices: ["16", "4", "36", "576"],
-      explain: "a × b = GCD × LCM なので、b = 4 × 48 ÷ 12 = 16。確かめ: GCD(12, 16) = 4、LCM = 48。",
+      explain: "a × b = GCD × LCM なので、b = 4 × 48 ÷ 12 = 16。確かめ: GCD(12, 16) = 4、LCM = 48。略語: GCD(Greatest Common Divisor、最大公約数)、LCM(Least Common Multiple、最小公倍数)。",
       ref: "ab-gcd-lcm"
     },
     {
@@ -1677,7 +1677,7 @@ PRIM.register("gcd-lcm", {
     {
       id: "g12", level: "std", q: "縦 84cm、横 126cm の長方形を、同じ大きさの正方形ですき間なく敷きつめる。いちばん大きい正方形の1辺は?", kind: "value",
       choices: ["42cm", "21cm", "14cm", "252cm"],
-      explain: "1辺は 84 と 126 の公約数で、最大のものは GCD(84, 126) = 42 です(126 = 84 × 1 + 42、84 = 42 × 2)。",
+      explain: "1辺は 84 と 126 の公約数で、最大のものは GCD(84, 126) = 42 です(126 = 84 × 1 + 42、84 = 42 × 2)。略語: GCD(Greatest Common Divisor、最大公約数)。",
       ref: "gcd-lcm-def"
     },
     {
@@ -1689,7 +1689,7 @@ PRIM.register("gcd-lcm", {
     {
       id: "g14", level: "pro", q: "2つの自然数の積が 864、最大公約数が 12 のとき、最小公倍数は?", kind: "value",
       choices: ["72", "36", "10368", "144"],
-      explain: "a × b = GCD × LCM なので、LCM = 864 ÷ 12 = 72(例: 12 と 72、24 と 36)。",
+      explain: "a × b = GCD × LCM なので、LCM = 864 ÷ 12 = 72(例: 12 と 72、24 と 36)。略語: GCD(Greatest Common Divisor、最大公約数)、LCM(Least Common Multiple、最小公倍数)。",
       ref: "ab-gcd-lcm"
     }
   ]

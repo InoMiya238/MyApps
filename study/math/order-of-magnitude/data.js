@@ -21,7 +21,7 @@ const OOM_DATA = {
     items: [
       { value: 1.7e-15, prefer: "m", name: "陽子", emoji: "⚛️", note: "原子核をつくる粒子の一つ" },
       { value: 1e-10, prefer: "nm", name: "原子", emoji: "🔬", note: "すべての物質の最小単位" },
-      { value: 2e-9, name: "DNAの直径", emoji: "🧬", note: "遺伝情報を記録する二重らせん" },
+      { value: 2e-9, name: "DNAの直径", emoji: "🧬", note: "DNA(Deoxyribonucleic Acid、デオキシリボ核酸)は遺伝情報を記録する二重らせん" },
       { value: 1e-7, name: "インフルエンザウイルス", emoji: "🦠", note: "光学顕微鏡でも見えないほど小さい" },
       { value: 7e-6, name: "赤血球", emoji: "🩸", note: "血液中を流れる細胞" },
       { value: 7e-5, name: "髪の毛の太さ", emoji: "💇", note: "人の髪の毛1本の直径" },
@@ -38,7 +38,7 @@ const OOM_DATA = {
       { value: 4e7, name: "地球一周の距離", emoji: "🛰️", note: "赤道に沿って地球を1周する距離" },
       { value: 3.8e8, name: "地球から月までの距離", emoji: "🌕", note: "地球の唯一の衛星までの距離" },
       { value: 1.4e9, name: "太陽の直径", emoji: "☀️", note: "地球の約109倍の大きさ" },
-      { value: 1.5e11, name: "地球から太陽までの距離", emoji: "🌞", note: "この距離を1天文単位(AU)と呼ぶ" },
+      { value: 1.5e11, name: "地球から太陽までの距離", emoji: "🌞", note: "この距離を1天文単位(AU、Astronomical Unit)と呼ぶ" },
       { value: 4.5e12, name: "太陽系の広がり(海王星軌道)", emoji: "🪐", note: "太陽から海王星まで約30天文単位" },
       { value: 9.5e15, name: "1光年", emoji: "✨", note: "光が1年かけて進む距離" },
       { value: 1e21, prefer: "ly", name: "天の川銀河の直径", emoji: "🌌", note: "太陽系が属する銀河の大きさ(約10万光年)" },
@@ -93,7 +93,7 @@ const OOM_DATA = {
       { id: "year", label: "年", name: "年", factor: 3.156e7, auto: true },
     ],
     items: [
-      { value: 1e-9, name: "CPUが1回処理する時間", emoji: "💻", note: "1GHzのコンピュータの1クロック" },
+      { value: 1e-9, name: "CPUが1回処理する時間", emoji: "💻", note: "CPU(Central Processing Unit、中央処理装置)が1GHzで動くときの1クロック" },
       { value: 1e-3, name: "カメラのフラッシュの発光", emoji: "📸", note: "一瞬光るフラッシュの発光時間" },
       { value: 3e-1, name: "まばたき1回", emoji: "😉", note: "目を閉じて開けるまでの時間" },
       { value: 4, name: "深呼吸1回", emoji: "🫁", note: "ゆっくり息を吸って吐く時間" },
