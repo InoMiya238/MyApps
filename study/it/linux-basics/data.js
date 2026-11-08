@@ -275,13 +275,13 @@ LNX.register("paths", {
         ["ls /var/log", "ログファイルを見る"]
       ],
       options: [
-        ["/etc", "システムやソフトの設定ファイル"],
+        ["/etc", "システムやソフトの設定ファイル(et cetera、その他 の略)"],
         ["/home", "一般ユーザーのホームディレクトリ(/home/taro など)"],
         ["/root", "管理者(root)のホームディレクトリ"],
-        ["/var", "ログ(/var/log)など、中身が変わっていくデータ"],
-        ["/tmp", "一時ファイル。再起動で消えることがある"],
-        ["/usr", "インストールされたプログラムやライブラリ(/usr/bin など)"],
-        ["/bin", "ls や cp などの基本コマンド。最近の Ubuntu では /usr/bin へのリンク"]
+        ["/var", "ログ(/var/log)など、中身が変わっていくデータ(variable、変わるもの の略)"],
+        ["/tmp", "一時ファイル(temporary、一時的 の略)。再起動で消えることがある"],
+        ["/usr", "インストールされたプログラムやライブラリ(/usr/bin など。user に由来する名前)"],
+        ["/bin", "ls や cp などの基本コマンド(binary、実行できるプログラム の略)。最近の Ubuntu では /usr/bin へのリンク"]
       ]
     }
   ],
@@ -289,69 +289,69 @@ LNX.register("paths", {
     {
       id: "p01", q: "今いるディレクトリ(カレントディレクトリ)の絶対パスを表示するコマンドは?",
       choices: ["pwd", "cd", "ls", "whoami"],
-      explain: "`pwd` は print working directory の略で、今いる場所を `/home/taro` のような絶対パスで表示します。`cd` は移動、`ls` は一覧、`whoami` はユーザー名の表示です。",
+      explain: "`pwd` は print working directory の略で、今いる場所を `/home/taro` のような絶対パスで表示します。`cd` は移動、`ls` は一覧、`whoami` はユーザー名の表示です。`cd` は change directory(ディレクトリを移る)、`ls` は list(一覧)の略です。",
       ref: "pwd"
     },
     {
       id: "p02", q: "どこにいても、自分のホームディレクトリへ移動するコマンドは?",
       choices: ["cd ~", "cd /", "cd .", "cd /home"],
       accepts: ["cd", "cd ~/", "cd $HOME", "cd \"$HOME\"", "cd ${HOME}"],
-      explain: "`~` はログイン中のユーザーのホームディレクトリ(例: `/home/taro`)を表します。`cd` だけでもホームへ戻れます。`/home` はホームディレクトリがまとめて置かれる場所で、自分のホームそのものではありません。",
+      explain: "`~` はログイン中のユーザーのホームディレクトリ(例: `/home/taro`)を表します。`cd` だけでもホームへ戻れます。`/home` はホームディレクトリがまとめて置かれる場所で、自分のホームそのものではありません。`cd` は change directory(ディレクトリを移る)の略です。",
       ref: "cd"
     },
     {
       id: "p03", q: "1つ上(親)のディレクトリへ移動するコマンドは?",
       choices: ["cd ..", "cd .", "cd ~", "cd /"],
       accepts: ["cd ../"],
-      explain: "`..` は1つ上のディレクトリを表します。`.` は今いるディレクトリなので、`cd .` では移動しません。",
+      explain: "`..` は1つ上のディレクトリを表します。`.` は今いるディレクトリなので、`cd .` では移動しません。`cd` は change directory(ディレクトリを移る)の略です。",
       ref: "cd"
     },
     {
       id: "p04", q: "直前にいたディレクトリへ戻るコマンドは?",
       choices: ["cd -", "cd ..", "cd ~", "cd back"],
       accepts: ["cd ~-", "cd $OLDPWD", "cd \"$OLDPWD\""],
-      explain: "`cd -` は、1つ前にいたディレクトリ(環境変数 `$OLDPWD`)へ戻ります。2つの場所を行き来するときに便利です。`cd ..` は1つ「上」へ移るだけです。",
+      explain: "`cd -` は、1つ前にいたディレクトリ(環境変数 `$OLDPWD`)へ戻ります。2つの場所を行き来するときに便利です。`cd ..` は1つ「上」へ移るだけです。`cd` は change directory(ディレクトリを移る)の略です。",
       ref: "cd"
     },
     {
       id: "p05", q: "ルートディレクトリ(いちばん上のディレクトリ)へ移動するコマンドは?",
       choices: ["cd /", "cd ~", "cd ..", "cd root"],
-      explain: "Linux のディレクトリはすべて `/`(ルート)から始まります。`cd root` は、今いる場所の下の root というディレクトリへ移ろうとします。",
+      explain: "Linux のディレクトリはすべて `/`(ルート)から始まります。`cd root` は、今いる場所の下の root というディレクトリへ移ろうとします。`cd` は change directory(ディレクトリを移る)の略です。",
       ref: "cd"
     },
     {
       id: "p06", q: "どこにいても /var/log へ移動できる(絶対パスを使った)コマンドは?",
       choices: ["cd /var/log", "cd var/log", "cd ~/var/log", "cd ./var/log"],
       accepts: ["cd /var/log/"],
-      explain: "`/` から始まるパスが絶対パスです。`var/log` や `./var/log` は今いる場所から見た相対パス、`~/var/log` はホームの下を指すので、ほかの場所では別のディレクトリになります。",
+      explain: "`/` から始まるパスが絶対パスです。`var/log` や `./var/log` は今いる場所から見た相対パス、`~/var/log` はホームの下を指すので、ほかの場所では別のディレクトリになります。`cd` は change directory(ディレクトリを移る)の略です。",
       ref: "path"
     },
     {
       id: "p07", q: "taro としてログインしていて、/home/taro にいるとき、その下の docs ディレクトリへ移動するコマンドは?",
       choices: ["cd docs", "cd /docs", "cd ~docs", "cd ../docs"],
       accepts: ["cd docs/", "cd ./docs", "cd ./docs/", "cd ~/docs", "cd ~/docs/", "cd /home/taro/docs", "cd /home/taro/docs/"],
-      explain: "相対パスの `docs` は「今いる場所の下の docs」です。`/docs` はルート直下、`~docs` は「docs というユーザーのホーム」という意味になり、`../docs` は1つ上の /home の下を指します。",
+      explain: "相対パスの `docs` は「今いる場所の下の docs」です。`/docs` はルート直下、`~docs` は「docs というユーザーのホーム」という意味になり、`../docs` は1つ上の /home の下を指します。`cd` は change directory(ディレクトリを移る)の略です。",
       ref: "path"
     },
     {
       id: "p08", q: "2つ上のディレクトリへ移動するコマンドは?",
       choices: ["cd ../..", "cd ...", "cd .. ..", "cd ~/.."],
       accepts: ["cd ../../"],
-      explain: "`..` を `/` でつなげると、さらに上へ進みます。`cd ...` は「...」という名前のディレクトリを探すだけで、2つ上にはなりません。",
+      explain: "`..` を `/` でつなげると、さらに上へ進みます。`cd ...` は「...」という名前のディレクトリを探すだけで、2つ上にはなりません。`cd` は change directory(ディレクトリを移る)の略です。",
       ref: "path"
     },
     {
       id: "p09", q: "どこにいても、ホームディレクトリの下の Downloads へ移動するコマンドは?",
       choices: ["cd ~/Downloads", "cd /Downloads", "cd ~Downloads", "cd ./Downloads"],
       accepts: ["cd ~/Downloads/", "cd $HOME/Downloads", "cd \"$HOME/Downloads\"", "cd $HOME/Downloads/"],
-      explain: "`~/Downloads` はホームの下の Downloads です。`~Downloads`(/ なし)は「Downloads というユーザーのホーム」になります。`./Downloads` はホームにいるときしか通じません。",
+      explain: "`~/Downloads` はホームの下の Downloads です。`~Downloads`(/ なし)は「Downloads というユーザーのホーム」になります。`./Downloads` はホームにいるときしか通じません。`cd` は change directory(ディレクトリを移る)の略です。",
       ref: "path"
     },
     {
       id: "p10", q: "ルートディレクトリの中身を一覧表示するコマンドは?",
       choices: ["ls /", "ls ~", "ls .", "ls .."],
       accepts: ["ls /."],
-      explain: "`ls` の後ろにディレクトリを書くと、その中身を表示します。ルートは `/` です。`/` の下には `etc` `home` `usr` `var` などが並びます。",
+      explain: "`ls` の後ろにディレクトリを書くと、その中身を表示します。ルートは `/` です。`/` の下には `etc` `home` `usr` `var` などが並びます。`ls` は list(一覧)の略です。",
       ref: "path"
     },
     {
@@ -370,13 +370,13 @@ LNX.register("paths", {
     {
       id: "p13", q: "パスの中の ~ が表すものは?", kind: "text",
       choices: ["ログイン中のユーザーのホームディレクトリ", "ルートディレクトリ", "今いるディレクトリ", "1つ前にいたディレクトリ"],
-      explain: "`~` はホームディレクトリ(taro なら `/home/taro`)です。ルートは `/`、今いる場所は `.`、1つ前にいた場所は `cd -` で戻れます。",
+      explain: "`~` はホームディレクトリ(taro なら `/home/taro`)です。ルートは `/`、今いる場所は `.`、1つ前にいた場所は `cd -` で戻れます。`cd` は change directory(ディレクトリを移る)の略です。",
       ref: "path"
     },
     {
       id: "p14", q: "システムやソフトの設定ファイルがまとめて置かれるディレクトリは?", kind: "code",
       choices: ["/etc", "/var", "/tmp", "/bin"],
-      explain: "設定ファイルは `/etc` に置かれます(例: `/etc/hosts`、`/etc/ssh/sshd_config`)。",
+      explain: "設定ファイルは `/etc` に置かれます(例: `/etc/hosts`、`/etc/ssh/sshd_config`)。`etc` は et cetera(その他)の略です。",
       ref: "fhs"
     },
     {
@@ -489,20 +489,20 @@ LNX.register("file-ops", {
       id: "f01", q: "隠しファイル(名前が . で始まるファイル)も含めて、詳しい形式で一覧表示するコマンドは?",
       choices: ["ls -la", "ls -l", "ls -a", "ls -lh"],
       accepts: ["ls -al", "ls -l -a", "ls -a -l", "ls -lA", "ls -Al", "ls -l -A", "ls -A -l"],
-      explain: "`-l` は詳しい形式、`-a` は隠しファイルも表示です。まとめて `-la`(`-al` でも同じ)と書けます。`-A` を使うと `.` と `..` を除いて表示します。",
+      explain: "`-l` は詳しい形式、`-a` は隠しファイルも表示です。まとめて `-la`(`-al` でも同じ)と書けます。`-A` を使うと `.` と `..` を除いて表示します。`ls` は list(一覧)の略です。",
       ref: "ls"
     },
     {
       id: "f02", q: "更新日時が新しい順に並べて、詳しい形式で一覧表示するコマンドは?",
       choices: ["ls -lt", "ls -lr", "ls -lS", "ls -la"],
       accepts: ["ls -tl", "ls -l -t", "ls -t -l"],
-      explain: "`-t` は更新日時(time)の新しい順です。`-r` は並びを逆に、`-S` はサイズの大きい順にします。",
+      explain: "`-t` は更新日時(time)の新しい順です。`-r` は並びを逆に、`-S` はサイズの大きい順にします。`ls` は list(一覧)の略です。",
       ref: "ls"
     },
     {
       id: "f03", q: "中身が空のファイル memo.txt を新しく作るコマンドは?",
       choices: ["touch memo.txt", "mkdir memo.txt", "cat memo.txt", "new memo.txt"],
-      explain: "`touch` は、ファイルがなければ空のファイルを作ります(あれば更新日時だけが変わります)。`mkdir` で作るとディレクトリになってしまいます。",
+      explain: "`touch` は、ファイルがなければ空のファイルを作ります(あれば更新日時だけが変わります)。`mkdir` で作るとディレクトリになってしまいます。`mkdir` は make directory(ディレクトリを作る)の略です。",
       ref: "touch"
     },
     {
@@ -516,85 +516,85 @@ LNX.register("file-ops", {
       id: "f05", q: "a も a/b もまだないところに、a/b/c ディレクトリを一度に作るコマンドは?",
       choices: ["mkdir -p a/b/c", "mkdir a/b/c", "mkdir -r a/b/c", "touch -p a/b/c"],
       accepts: ["mkdir -p a/b/c/", "mkdir --parents a/b/c"],
-      explain: "`-p`(parents)をつけると、途中のディレクトリもまとめて作ります。つけないと「そのようなファイルやディレクトリはありません」のエラーになります。",
+      explain: "`-p`(parents)をつけると、途中のディレクトリもまとめて作ります。つけないと「そのようなファイルやディレクトリはありません」のエラーになります。`mkdir` は make directory(ディレクトリを作る)の略です。",
       ref: "mkdir"
     },
     {
       id: "f06", q: "a.txt を、b.txt という名前でコピーするコマンドは?",
       choices: ["cp a.txt b.txt", "mv a.txt b.txt", "cp b.txt a.txt", "copy a.txt b.txt"],
-      explain: "`cp コピー元 コピー先` の順です。`mv` だと a.txt が残らず、名前が変わるだけになります。",
+      explain: "`cp コピー元 コピー先` の順です。`mv` だと a.txt が残らず、名前が変わるだけになります。`cp` は copy(写す)の略です。`mv` は move(動かす)の略です。",
       ref: "cp"
     },
     {
       id: "f07", q: "ディレクトリ src を中身ごと backup としてコピーするコマンドは?",
       choices: ["cp -r src backup", "cp src backup", "mv -r src backup", "cp -p src backup"],
       accepts: ["cp -R src backup", "cp -a src backup", "cp --recursive src backup", "cp -r src/ backup", "cp -r src backup/", "cp -r src/ backup/", "cp -R src/ backup", "cp -R src backup/", "cp -R src/ backup/"],
-      explain: "ディレクトリをコピーするには `-r`(recursive、中までたどる)が必要です。つけないと「-r が指定されていないため、ディレクトリを飛ばします」と言われます。",
+      explain: "ディレクトリをコピーするには `-r`(recursive、中までたどる)が必要です。つけないと「-r が指定されていないため、ディレクトリを飛ばします」と言われます。`cp` は copy(写す)の略です。",
       ref: "cp"
     },
     {
       id: "f08", q: "old.txt の名前を new.txt に変えるコマンドは?",
       choices: ["mv old.txt new.txt", "cp old.txt new.txt", "mv new.txt old.txt", "ren old.txt new.txt"],
-      explain: "名前の変更も `mv` で行います。`cp` だと old.txt が残ります。`ren` は Windows のコマンドです。",
+      explain: "名前の変更も `mv` で行います。`cp` だと old.txt が残ります。`ren` は Windows のコマンドです。`mv` は move(動かす)の略です。`cp` は copy(写す)の略です。",
       ref: "mv"
     },
     {
       id: "f09", q: "report.txt を、今いる場所の下の docs ディレクトリの中へ移動するコマンドは?",
       choices: ["mv report.txt docs/", "cp report.txt docs/", "mv docs/ report.txt", "cd report.txt docs/"],
       accepts: ["mv report.txt docs", "mv report.txt ./docs", "mv report.txt ./docs/"],
-      explain: "`mv 移動するもの 移動先` の順です。移動先がディレクトリなら、その中へ同じ名前で入ります。`cp` は元のファイルが残ります。",
+      explain: "`mv 移動するもの 移動先` の順です。移動先がディレクトリなら、その中へ同じ名前で入ります。`cp` は元のファイルが残ります。`mv` は move(動かす)の略です。`cp` は copy(写す)の略です。",
       ref: "mv"
     },
     {
       id: "f10", q: "ファイル old.log を削除するコマンドは?",
       choices: ["rm old.log", "rmdir old.log", "del old.log", "delete old.log"],
       accepts: ["rm ./old.log"],
-      explain: "ファイルの削除は `rm` です。`rmdir` は空のディレクトリ用、`del` は Windows のコマンドです。",
+      explain: "ファイルの削除は `rm` です。`rmdir` は空のディレクトリ用、`del` は Windows のコマンドです。`rm` は remove(取り除く)の略です。`rmdir` は remove directory(ディレクトリを消す)の略です。",
       ref: "rm"
     },
     {
       id: "f11", q: "a.txt を、本当に消してよいか確認してから削除するコマンドは?",
       choices: ["rm -i a.txt", "rm -f a.txt", "rm -r a.txt", "rm -v a.txt"],
       accepts: ["rm --interactive a.txt"],
-      explain: "`-i`(interactive)をつけると「削除しますか?」と聞かれ、`y` で削除します。`-f` は逆に、確認せずに消します。",
+      explain: "`-i`(interactive)をつけると「削除しますか?」と聞かれ、`y` で削除します。`-f` は逆に、確認せずに消します。`rm` は remove(取り除く)の略です。",
       ref: "rm"
     },
     {
       id: "f12", q: "ディレクトリ tmp を、中のファイルごと削除するコマンドは?",
       choices: ["rm -r tmp", "rmdir tmp", "rm tmp", "rm -i tmp"],
       accepts: ["rm -R tmp", "rm -rf tmp", "rm -fr tmp", "rm -r -f tmp", "rm --recursive tmp", "rm -r tmp/", "rm -R tmp/", "rm -rf tmp/", "rm -fr tmp/", "rm -r -f tmp/"],
-      explain: "中身ごと消すには `-r` が必要です。`rmdir` は空のディレクトリしか消せず、`rm tmp` だけでは「ディレクトリです」とエラーになります。",
+      explain: "中身ごと消すには `-r` が必要です。`rmdir` は空のディレクトリしか消せず、`rm tmp` だけでは「ディレクトリです」とエラーになります。`rm` は remove(取り除く)の略です。`rmdir` は remove directory(ディレクトリを消す)の略です。",
       ref: "rm"
     },
     {
       id: "f13", q: "空のディレクトリだけを削除するためのコマンドで、ディレクトリ empty を削除するには?",
       choices: ["rmdir empty", "rm empty", "rm -i empty", "deldir empty"],
       accepts: ["rmdir empty/", "rm -d empty", "rm -d empty/"],
-      explain: "`rmdir` は空のディレクトリ専用です。中身が残っているときはエラーで止まるので、うっかり消す心配がありません。",
+      explain: "`rmdir` は空のディレクトリ専用です。中身が残っているときはエラーで止まるので、うっかり消す心配がありません。`rmdir` は remove directory(ディレクトリを消す)の略です。",
       ref: "rmdir"
     },
     {
       id: "f14", q: "rm で削除したファイルはどうなる?", kind: "text",
       choices: ["ゴミ箱には入らず、すぐに消える", "ホームのゴミ箱に移り、あとで戻せる", "30日たってから消える", "再起動するまでは残る"],
-      explain: "`rm` で消したファイルはゴミ箱を通らずに消えます。元に戻すのは難しいので、不安なときは `rm -i` を使います。",
+      explain: "`rm` で消したファイルはゴミ箱を通らずに消えます。元に戻すのは難しいので、不安なときは `rm -i` を使います。`rm` は remove(取り除く)の略です。",
       ref: "rm"
     },
     {
       id: "f15", q: "cp a.txt b.txt を実行したとき、b.txt がすでにあるとどうなる?", kind: "text",
       choices: ["確認なしで b.txt が上書きされる", "エラーになって何もコピーされない", "b(1).txt という別のファイルができる", "a.txt の中身が b.txt の末尾に追加される"],
-      explain: "`cp` は、コピー先があると何も聞かずに上書きします。上書きの前に確認したいときは `cp -i` を使います。",
+      explain: "`cp` は、コピー先があると何も聞かずに上書きします。上書きの前に確認したいときは `cp -i` を使います。`cp` は copy(写す)の略です。",
       ref: "cp"
     },
     {
       id: "f16", q: "ls -a をつけると、ふだんより多く表示されるのは?", kind: "text",
       choices: ["名前が . で始まる隠しファイル", "実行権限のあるファイル", "サイズが0のファイル", "最近変更したファイル"],
-      explain: "`.bashrc` のように名前が `.` で始まるファイルは、ふだんの `ls` では表示されません。`-a`(all)をつけると表示されます。",
+      explain: "`.bashrc` のように名前が `.` で始まるファイルは、ふだんの `ls` では表示されません。`-a`(all)をつけると表示されます。`ls` は list(一覧)の略です。",
       ref: "ls"
     },
     {
       id: "f17", q: "ls -lh の -h の働きは?", kind: "text",
       choices: ["サイズを K・M・G などの読みやすい単位で表示する", "隠しファイルも表示する", "使い方の説明(ヘルプ)を表示する", "更新日時の新しい順に並べる"],
-      explain: "`-h` は human-readable(人が読みやすい)の意味で、`-l` と一緒に使うと `4096` ではなく `4.0K` のように表示します。ヘルプは `ls --help` です。",
+      explain: "`-h` は human-readable(人が読みやすい)の意味で、`-l` と一緒に使うと `4096` ではなく `4.0K` のように表示します。ヘルプは `ls --help` です。`ls` は list(一覧)の略です。",
       ref: "ls"
     }
   ]
@@ -664,7 +664,7 @@ LNX.register("viewing", {
     {
       id: "v01", q: "memo.txt の中身を、画面にそのまま全部表示するコマンドは?",
       choices: ["cat memo.txt", "head memo.txt", "type memo.txt", "show memo.txt"],
-      explain: "`cat` はファイルの中身をそのまま出力します。`head` は先頭の一部だけです。`type` は bash では「コマンドの種類を調べる」命令です。",
+      explain: "`cat` はファイルの中身をそのまま出力します。`head` は先頭の一部だけです。`type` は bash(Bourne Again SHell、Ubuntu で標準のシェル) では「コマンドの種類を調べる」命令です。`cat` は concatenate(つなげる)の略です。",
       ref: "cat"
     },
     {
@@ -691,14 +691,14 @@ LNX.register("viewing", {
       id: "v05", q: "memo.txt の最後の1行だけを表示するコマンドは?",
       choices: ["tail -n 1 memo.txt", "head -n 1 memo.txt", "tail -c 1 memo.txt", "wc -l memo.txt"],
       accepts: ["tail -1 memo.txt", "tail -n1 memo.txt", "tail --lines=1 memo.txt"],
-      explain: "末尾から数えるのは `tail` です。`head -n 1` は最初の1行、`wc -l` は行数を数えるだけです。",
+      explain: "末尾から数えるのは `tail` です。`head -n 1` は最初の1行、`wc -l` は行数を数えるだけです。`wc` は word count(語を数える)の略です。",
       ref: "tail"
     },
     {
       id: "v06", q: "書き込まれ続けている app.log を、新しく追加された行が出るたびに表示し続けるコマンドは?",
       choices: ["tail -f app.log", "head -f app.log", "cat -f app.log", "tail -r app.log"],
       accepts: ["tail -F app.log", "tail --follow app.log"],
-      explain: "`tail -f`(follow)はファイルを見張り、追記された行を表示し続けます。ログの確認でよく使います。`head` や `cat` に `-f` はありません。",
+      explain: "`tail -f`(follow)はファイルを見張り、追記された行を表示し続けます。ログの確認でよく使います。`head` や `cat` に `-f` はありません。`cat` は concatenate(つなげる)の略です。",
       ref: "tail"
     },
     {
@@ -710,13 +710,13 @@ LNX.register("viewing", {
     {
       id: "v08", q: "長い big.log を、前後にスクロールしながら1画面ずつ読むコマンドは?",
       choices: ["less big.log", "cat big.log", "head big.log", "wc big.log"],
-      explain: "`less` は1画面ずつ表示し、`Space` で先へ、`b` で前へ戻れます。`cat` は一気に全部流れてしまいます。",
+      explain: "`less` は1画面ずつ表示し、`Space` で先へ、`b` で前へ戻れます。`cat` は一気に全部流れてしまいます。`cat` は concatenate(つなげる)の略です。",
       ref: "less"
     },
     {
       id: "v09", q: "less でファイルを読んでいるとき、終了するキーは?", kind: "code",
       choices: ["q", "Ctrl+C", "Esc", ":wq"],
-      explain: "`less` は `q`(quit)で終わります。`:wq` は vim で保存して終わる操作です。",
+      explain: "`less` は `q`(quit)で終わります。`:wq` は vim(Vi IMproved、テキストエディタの一つ)で保存して終わる操作です。",
       ref: "less"
     },
     {
@@ -735,28 +735,28 @@ LNX.register("viewing", {
       id: "v12", q: "data.csv の行数を数えるコマンドは?",
       choices: ["wc -l data.csv", "wc -w data.csv", "wc -c data.csv", "cat -n data.csv"],
       accepts: ["wc --lines data.csv"],
-      explain: "`wc -l` は行(line)の数を数えます。`-w` は単語数、`-c` はバイト数です。`cat -n` は行番号をつけて全部を表示します。",
+      explain: "`wc -l` は行(line)の数を数えます。`-w` は単語数、`-c` はバイト数です。`cat -n` は行番号をつけて全部を表示します。`wc` は word count(語を数える)の略です。`cat` は concatenate(つなげる)の略です。",
       ref: "wc"
     },
     {
       id: "v13", q: "memo.txt のバイト数(ファイルの大きさ)を wc で数えるコマンドは?",
       choices: ["wc -c memo.txt", "wc -l memo.txt", "wc -w memo.txt", "ls memo.txt"],
       accepts: ["wc --bytes memo.txt"],
-      explain: "`wc -c` はバイト数です。日本語は1文字が3バイト(UTF-8)のことが多いので、文字数とは違う数になります。",
+      explain: "`wc -c` はバイト数です。日本語は1文字が3バイト(UTF-8 = Unicode Transformation Format 8-bit、文字をバイトに置きかえる決まり)のことが多いので、文字数とは違う数になります。`wc` は word count(語を数える)の略です。",
       ref: "wc"
     },
     {
       id: "v14", q: "次の出力で、58 は何を表している?", kind: "text",
       term: "$ wc notes.txt\n 12  58 340 notes.txt",
       choices: ["単語数", "行数", "バイト数", "文字数"],
-      explain: "`wc` をオプションなしで使うと「行数 単語数 バイト数」の順に出ます。12 行、58 単語、340 バイトです。",
+      explain: "`wc` をオプションなしで使うと「行数 単語数 バイト数」の順に出ます。12 行、58 単語、340 バイトです。`wc` は word count(語を数える)の略です。",
       ref: "wc"
     },
     {
       id: "v15", q: "memo.txt を、すべての行に行番号をつけて表示するコマンドは?",
       choices: ["cat -n memo.txt", "cat -l memo.txt", "wc -l memo.txt", "head -n memo.txt"],
       accepts: ["cat --number memo.txt"],
-      explain: "`cat -n` は、空の行も含めてすべての行に番号をつけます。`cat` に `-l` はありません。",
+      explain: "`cat -n` は、空の行も含めてすべての行に番号をつけます。`cat` に `-l` はありません。`cat` は concatenate(つなげる)の略です。",
       ref: "cat"
     },
     {
@@ -814,42 +814,42 @@ LNX.register("search", {
       id: "s01", q: "app.log の中から、error を含む行を表示するコマンドは?",
       choices: ["grep error app.log", "find error app.log", "grep app.log error", "cat error app.log"],
       accepts: ["grep -e error app.log", "cat app.log | grep error"],
-      explain: "`grep 探す文字 ファイル` の順です。逆に書くと、app.log という文字を error というファイルから探すことになります。`find` はファイルの名前などで探すコマンドです。",
+      explain: "`grep 探す文字 ファイル` の順です。逆に書くと、app.log という文字を error というファイルから探すことになります。`find` はファイルの名前などで探すコマンドです。`grep` は global regular expression print(正規表現に合う行を表示する)の略です。",
       ref: "grep"
     },
     {
       id: "s02", q: "app.log から、Error も ERROR も error も含めて(大文字小文字を区別せずに)探すコマンドは?",
       choices: ["grep -i error app.log", "grep -v error app.log", "grep -n error app.log", "grep -c error app.log"],
       accepts: ["grep --ignore-case error app.log"],
-      explain: "`-i`(ignore case)で大文字小文字を区別しなくなります。",
+      explain: "`-i`(ignore case)で大文字小文字を区別しなくなります。`grep` は global regular expression print(正規表現に合う行を表示する)の略です。",
       ref: "grep"
     },
     {
       id: "s03", q: "main.c の中で TODO を含む行を、行番号つきで表示するコマンドは?",
       choices: ["grep -n TODO main.c", "grep -c TODO main.c", "grep -i TODO main.c", "cat -n TODO main.c"],
       accepts: ["grep --line-number TODO main.c"],
-      explain: "`-n`(number)で、行の先頭に `12:` のような行番号がつきます。",
+      explain: "`-n`(number)で、行の先頭に `12:` のような行番号がつきます。`grep` は global regular expression print(正規表現に合う行を表示する)の略です。",
       ref: "grep"
     },
     {
       id: "s04", q: "app.log から、debug を含まない行だけを表示するコマンドは?",
       choices: ["grep -v debug app.log", "grep -i debug app.log", "grep -n debug app.log", "grep -c debug app.log"],
       accepts: ["grep --invert-match debug app.log"],
-      explain: "`-v`(invert)は、一致しない行を表示します。じゃまな行を取り除くときに使います。",
+      explain: "`-v`(invert)は、一致しない行を表示します。じゃまな行を取り除くときに使います。`grep` は global regular expression print(正規表現に合う行を表示する)の略です。",
       ref: "grep"
     },
     {
       id: "s05", q: "app.log の中で、error を含む行が何行あるかを表示するコマンドは?",
       choices: ["grep -c error app.log", "grep -n error app.log", "grep -v error app.log", "wc -l error app.log"],
       accepts: ["grep --count error app.log", "grep error app.log | wc -l"],
-      explain: "`-c`(count)は、一致した行の数だけを表示します。`grep error app.log | wc -l` でも同じ数になります。",
+      explain: "`-c`(count)は、一致した行の数だけを表示します。`grep error app.log | wc -l` でも同じ数になります。`grep` は global regular expression print(正規表現に合う行を表示する)の略です。",
       ref: "grep"
     },
     {
       id: "s06", q: "src ディレクトリの下のすべてのファイル(サブディレクトリも含む)から、main を含む行を探すコマンドは?",
       choices: ["grep -r main src", "grep main src", "find main src", "grep -c main src"],
       accepts: ["grep -r main src/", "grep -R main src", "grep -R main src/", "grep --recursive main src"],
-      explain: "`-r`(recursive)で、ディレクトリの中までたどって探します。つけないと「src: ディレクトリです」と言われます。",
+      explain: "`-r`(recursive)で、ディレクトリの中までたどって探します。つけないと「src: ディレクトリです」と言われます。`grep` は global regular expression print(正規表現に合う行を表示する)の略です。",
       ref: "grep"
     },
     {
@@ -863,14 +863,14 @@ LNX.register("search", {
       id: "s08", q: "app.log の中で、大文字小文字を区別せずに warning を含む行の数を表示するコマンドは?",
       choices: ["grep -ic warning app.log", "grep -iv warning app.log", "grep -in warning app.log", "grep -c warning app.log"],
       accepts: ["grep -ci warning app.log", "grep -i -c warning app.log", "grep -c -i warning app.log"],
-      explain: "オプションはまとめて書けます。`-i`(区別しない)と `-c`(数える)を合わせて `-ic` です。`-c` だけでは Warning や WARNING を数えません。",
+      explain: "オプションはまとめて書けます。`-i`(区別しない)と `-c`(数える)を合わせて `-ic` です。`-c` だけでは Warning や WARNING を数えません。`grep` は global regular expression print(正規表現に合う行を表示する)の略です。",
       ref: "grep"
     },
     {
       id: "s09", q: "今いるディレクトリ以下から、名前が .txt で終わるファイルを探すコマンドは?",
       choices: ["find . -name \"*.txt\"", "find . -type \"*.txt\"", "grep -r \".txt\" .", "find \"*.txt\" -name ."],
       accepts: ["find -name \"*.txt\"", "find ./ -name \"*.txt\"", "find . -type f -name \"*.txt\"", "find . -name \"*.txt\" -type f", "find -type f -name \"*.txt\"", "find -name \"*.txt\" -type f", "find . -name \\*.txt"],
-      explain: "`find 場所 -name \"パターン\"` の形です。`*` はシェルが先に展開しないように `\"\"` か `''` で囲みます。`grep -r` はファイルの「中身」を探します。",
+      explain: "`find 場所 -name \"パターン\"` の形です。`*` はシェルが先に展開しないように `\"\"` か `''` で囲みます。`grep -r` はファイルの「中身」を探します。`grep` は global regular expression print(正規表現に合う行を表示する)の略です。",
       ref: "find"
     },
     {
@@ -924,7 +924,7 @@ LNX.register("permissions", {
   commands: [
     {
       id: "perm", name: "ls -l の読み方", read: "パーミッション",
-      desc: "`ls -l` の先頭10文字は、種類(`-` = ファイル、`d` = ディレクトリ)と、所有者・グループ・その他の3組の権限です。r = 読み取り(4)、w = 書き込み(2)、x = 実行(1)、- = なし。",
+      desc: "`ls -l` の先頭10文字は、種類(`-` = ファイル、`d` = ディレクトリ)と、所有者・グループ・その他の3組の権限です。r = 読み取り(read、4)、w = 書き込み(write、2)、x = 実行(execute、1)、- = なし。",
       examples: [
         ["ls -l script.sh", "-rwxr-xr-- 1 taro staff 120 …"],
         ["ls -ld docs", "ディレクトリ自身の権限を見る"]
@@ -939,7 +939,7 @@ LNX.register("permissions", {
     },
     {
       id: "chmod", name: "chmod", read: "change mode",
-      desc: "ファイルの権限を変えます。数字(755 など)か、記号(u+x など)で書きます。u = 所有者、g = グループ、o = その他、a = 全員。",
+      desc: "ファイルの権限を変えます。数字(755 など)か、記号(u+x など)で書きます。u = 所有者(user)、g = グループ(group)、o = その他(others)、a = 全員(all)。",
       examples: [
         ["chmod u+x script.sh", "所有者に実行権限を追加"],
         ["chmod 755 deploy.sh", "rwxr-xr-x にする"],
@@ -1001,74 +1001,74 @@ LNX.register("permissions", {
     {
       id: "r06", q: "権限が -rw-r--r-- の script.sh を ./script.sh で実行しようとすると、どうなる?", kind: "text",
       choices: ["Permission denied(許可がありません)のエラーになる", "ふつうに実行される", "実行権限が自動でつき、実行される", "スクリプトの中身が表示される"],
-      explain: "だれにも `x` がないので実行できません。`chmod u+x script.sh` で実行権限をつけてから実行します。",
+      explain: "だれにも `x` がないので実行できません。`chmod u+x script.sh` で実行権限をつけてから実行します。`chmod` は change mode(権限を変える)の略です。",
       ref: "chmod"
     },
     {
       id: "r07", q: "script.sh の所有者に、実行権限を追加するコマンドは?",
       choices: ["chmod u+x script.sh", "chmod u-x script.sh", "chmod g+x script.sh", "chown u+x script.sh"],
       accepts: ["chmod u+x ./script.sh"],
-      explain: "`u` は所有者(user)、`+x` は実行権限の追加です。`-x` だと外します。権限を変えるのは `chmod`、所有者を変えるのが `chown` です。",
+      explain: "`u` は所有者(user)、`+x` は実行権限の追加です。`-x` だと外します。権限を変えるのは `chmod`、所有者を変えるのが `chown` です。`chmod` は change mode(権限を変える)の略です。`chown` は change owner(持ち主を変える)の略です。",
       ref: "chmod"
     },
     {
       id: "r08", q: "deploy.sh の権限を、数字で 755(rwxr-xr-x)にするコマンドは?",
       choices: ["chmod 755 deploy.sh", "chmod 644 deploy.sh", "chown 755 deploy.sh", "chmod 557 deploy.sh"],
       accepts: ["chmod 0755 deploy.sh", "chmod u=rwx,go=rx deploy.sh", "chmod u=rwx,g=rx,o=rx deploy.sh"],
-      explain: "数字は「所有者・グループ・その他」の順です。755 は所有者が全部、ほかの人は読み取りと実行です。",
+      explain: "数字は「所有者・グループ・その他」の順です。755 は所有者が全部、ほかの人は読み取りと実行です。`chmod` は change mode(権限を変える)の略です。",
       ref: "chmod"
     },
     {
       id: "r09", q: "secret.txt を、所有者だけが読み書きでき、ほかの人は何もできない状態にするコマンドは?",
       choices: ["chmod 600 secret.txt", "chmod 700 secret.txt", "chmod 644 secret.txt", "chmod 006 secret.txt"],
       accepts: ["chmod 0600 secret.txt", "chmod u=rw,go= secret.txt", "chmod u=rw,g=,o= secret.txt"],
-      explain: "所有者は `rw-` = 6、グループとその他は 0 なので 600 です。700 だと実行権限もついてしまいます。",
+      explain: "所有者は `rw-` = 6、グループとその他は 0 なので 600 です。700 だと実行権限もついてしまいます。`chmod` は change mode(権限を変える)の略です。",
       ref: "chmod"
     },
     {
       id: "r10", q: "全員(所有者・グループ・その他)に、notes.txt の読み取り権限を追加するコマンドは?",
       choices: ["chmod a+r notes.txt", "chmod a-r notes.txt", "chmod u+r notes.txt", "chmod a+w notes.txt"],
       accepts: ["chmod +r notes.txt", "chmod ugo+r notes.txt"],
-      explain: "`a` は all(全員)です。`ugo` と書いても同じです。",
+      explain: "`a` は all(全員)です。`ugo` と書いても同じです。`chmod` は change mode(権限を変える)の略です。",
       ref: "chmod"
     },
     {
       id: "r11", q: "グループとその他の人から、shared.txt の書き込み権限を外すコマンドは?",
       choices: ["chmod go-w shared.txt", "chmod go+w shared.txt", "chmod u-w shared.txt", "chmod go-x shared.txt"],
       accepts: ["chmod og-w shared.txt", "chmod g-w,o-w shared.txt", "chmod o-w,g-w shared.txt"],
-      explain: "`g` がグループ、`o` がその他(others)、`-w` が書き込みを外す指定です。",
+      explain: "`g` がグループ、`o` がその他(others)、`-w` が書き込みを外す指定です。`chmod` は change mode(権限を変える)の略です。",
       ref: "chmod"
     },
     {
       id: "r12", q: "notes.txt の権限・所有者・サイズを確認するコマンドは?",
       choices: ["ls -l notes.txt", "ls notes.txt", "chmod notes.txt", "cat -l notes.txt"],
       accepts: ["ls -la notes.txt", "ls -al notes.txt", "ls -lh notes.txt", "ls -hl notes.txt", "stat notes.txt"],
-      explain: "`ls -l` の詳しい形式で、権限・所有者・グループ・サイズ・更新日時がわかります。",
+      explain: "`ls -l` の詳しい形式で、権限・所有者・グループ・サイズ・更新日時がわかります。`ls` は list(一覧)の略です。",
       ref: "perm"
     },
     {
       id: "r13", q: "管理者権限で、file.txt の所有者を taro に変えるコマンドは?",
       choices: ["sudo chown taro file.txt", "sudo chmod taro file.txt", "sudo chgrp taro file.txt", "sudo chown file.txt taro"],
-      explain: "`chown 新しい所有者 ファイル` の順です。`chgrp` はグループを変えるコマンドです。所有者の変更にはふつう管理者権限がいるので `sudo` をつけます。",
+      explain: "`chown 新しい所有者 ファイル` の順です。`chgrp`(change group)はグループを変えるコマンドです。所有者の変更にはふつう管理者権限がいるので `sudo` をつけます。`sudo` は superuser do(管理者として実行する)、`chown` は change owner(持ち主を変える)の略です。",
       ref: "chown"
     },
     {
       id: "r14", q: "管理者権限で、file.txt の所有者を taro、グループを staff に一度に変えるコマンドは?",
       choices: ["sudo chown taro:staff file.txt", "sudo chown staff:taro file.txt", "sudo chmod taro:staff file.txt", "sudo chown taro staff file.txt"],
-      explain: "`所有者:グループ` の順に `:` でつなぎます。`taro staff file.txt` と空白で区切ると、staff と file.txt の2つのファイルの所有者を taro にする意味になります。",
+      explain: "`所有者:グループ` の順に `:` でつなぎます。`taro staff file.txt` と空白で区切ると、staff と file.txt の2つのファイルの所有者を taro にする意味になります。`sudo` は superuser do(管理者として実行する)、`chown` は change owner(持ち主を変える)の略です。",
       ref: "chown"
     },
     {
       id: "r15", q: "管理者権限で、/srv/app とその下にあるすべてのファイルの所有者を taro に変えるコマンドは?",
       choices: ["sudo chown -R taro /srv/app", "sudo chown taro /srv/app", "sudo chown -r taro /srv/app", "sudo chmod -R taro /srv/app"],
       accepts: ["sudo chown -R taro /srv/app/", "sudo chown --recursive taro /srv/app"],
-      explain: "下の階層までまとめて変えるのは `-R`(大文字)です。`chown` の `-r`(小文字)はエラーになります。",
+      explain: "下の階層までまとめて変えるのは `-R`(大文字)です。`chown` の `-r`(小文字)はエラーになります。`sudo` は superuser do(管理者として実行する)、`chown` は change owner(持ち主を変える)の略です。",
       ref: "chown"
     },
     {
       id: "r16", q: "/etc/hosts を保存しようとしたら Permission denied になりました。管理者権限で nano を使って /etc/hosts を編集するコマンドは?",
       choices: ["sudo nano /etc/hosts", "nano -r /etc/hosts", "chmod 777 /etc/hosts", "su nano /etc/hosts"],
-      explain: "`sudo` をつけると、そのコマンドだけを管理者(root)の権限で実行できます。`chmod 777` で権限を広げるのは危険で、そもそも一般ユーザーには変えられません。",
+      explain: "`sudo` をつけると、そのコマンドだけを管理者(root)の権限で実行できます。`chmod 777` で権限を広げるのは危険で、そもそも一般ユーザーには変えられません。`sudo` は superuser do(管理者として実行する)の略です。`chmod` は change mode(権限を変える)の略です。",
       ref: "sudo"
     }
   ]
@@ -1109,7 +1109,7 @@ LNX.register("pipes", {
       examples: [
         ["make 2> err.txt", "エラーだけを保存"],
         ["make > all.log 2>&1", "出力もエラーもまとめて保存"],
-        ["make &> all.log", "上と同じ(bash の書き方)"]
+        ["make &> all.log", "上と同じ(bash(Bourne Again SHell、Ubuntu で標準のシェル) の書き方)"]
       ],
       options: [
         ["2>", "標準エラー出力をファイルへ"],
@@ -1119,7 +1119,7 @@ LNX.register("pipes", {
     },
     {
       id: "devnull", name: "/dev/null", read: "ヌルデバイス",
-      desc: "書き込んだものがすべて捨てられる特別なファイルです。いらない出力を消すときに使います。",
+      desc: "書き込んだものがすべて捨てられる特別なファイルです。いらない出力を消すときに使います。`/dev` は device(装置)の略で、装置を表す特別なファイルが置かれる場所です。",
       examples: [
         ["find / -name hosts 2> /dev/null", "エラー表示だけ捨てる"],
         ["cmd > /dev/null 2>&1", "すべての出力を捨てる"]
@@ -1149,14 +1149,14 @@ LNX.register("pipes", {
     {
       id: "i01", q: "ls -l の長い結果を、less で1画面ずつ読むコマンドは?",
       choices: ["ls -l | less", "ls -l > less", "ls -l & less", "less | ls -l"],
-      explain: "`|`(パイプ)は左の出力を右の入力に渡します。`> less` と書くと、less という名前のファイルに保存してしまいます。",
+      explain: "`|`(パイプ)は左の出力を右の入力に渡します。`> less` と書くと、less という名前のファイルに保存してしまいます。`ls` は list(一覧)の略です。",
       ref: "pipe"
     },
     {
       id: "i02", q: "ls の結果を files.txt に保存する(すでにあれば上書きする)コマンドは?",
       choices: ["ls > files.txt", "ls >> files.txt", "ls | files.txt", "ls < files.txt"],
       accepts: ["ls 1> files.txt"],
-      explain: "`>` は上書き、`>>` は追記です。`| files.txt` は files.txt を「コマンド」として実行しようとします。",
+      explain: "`>` は上書き、`>>` は追記です。`| files.txt` は files.txt を「コマンド」として実行しようとします。`ls` は list(一覧)の略です。",
       ref: "redirect"
     },
     {
@@ -1168,7 +1168,7 @@ LNX.register("pipes", {
     {
       id: "i04", q: "data.txt を、wc -l の標準入力として渡す(< を使う)コマンドは?",
       choices: ["wc -l < data.txt", "wc -l > data.txt", "wc -l << data.txt", "wc -l | data.txt"],
-      explain: "`<` はファイルを標準入力にします。`> data.txt` と書くと、data.txt が空で上書きされてしまいます。",
+      explain: "`<` はファイルを標準入力にします。`> data.txt` と書くと、data.txt が空で上書きされてしまいます。`wc` は word count(語を数える)の略です。",
       ref: "redirect"
     },
     {
@@ -1199,7 +1199,7 @@ LNX.register("pipes", {
     {
       id: "i09", q: "find / -name hosts で大量に出るエラー表示を捨てて、見つかった結果だけを画面に出すコマンドは?",
       choices: ["find / -name hosts 2> /dev/null", "find / -name hosts > /dev/null", "find / -name hosts 2> null", "find / -name hosts | /dev/null"],
-      explain: "`/dev/null` に送ったものは捨てられます。エラーだけを捨てたいので `2>` を使います。`> /dev/null` だと、肝心の結果のほうが消えます。",
+      explain: "`/dev/null`(dev は device、装置の略)に送ったものは捨てられます。エラーだけを捨てたいので `2>` を使います。`> /dev/null` だと、肝心の結果のほうが消えます。",
       ref: "devnull"
     },
     {
@@ -1212,34 +1212,34 @@ LNX.register("pipes", {
       id: "i11", q: "names.txt の行を並べ替えて、重複した行を除いて表示するコマンドは?",
       choices: ["sort names.txt | uniq", "uniq names.txt | sort", "sort names.txt > uniq", "sort | uniq names.txt"],
       accepts: ["sort -u names.txt", "cat names.txt | sort | uniq", "sort < names.txt | uniq"],
-      explain: "`uniq` は隣り合った同じ行しかまとめないので、先に `sort` で同じ行を隣に集めます。`sort -u` でも同じ結果です。`> uniq` は uniq というファイルに保存してしまいます。",
+      explain: "`uniq` は隣り合った同じ行しかまとめないので、先に `sort` で同じ行を隣に集めます。`sort -u` でも同じ結果です。`> uniq` は uniq というファイルに保存してしまいます。`uniq` は unique(重複のない)の略です。",
       ref: "uniq"
     },
     {
       id: "i12", q: "uniq names.txt だけでは重複が残ることがあるのは、なぜ?", kind: "text",
       choices: ["uniq は隣り合った同じ行だけをまとめるから", "uniq は大文字小文字を区別しないから", "uniq は最初の100行しか見ないから", "uniq は空白を含む行を無視するから"],
-      explain: "離れた場所にある同じ行はまとめられません。そのため `sort | uniq` の形で使います。",
+      explain: "離れた場所にある同じ行はまとめられません。そのため `sort | uniq` の形で使います。`uniq` は unique(重複のない)の略です。",
       ref: "uniq"
     },
     {
       id: "i13", q: "access.txt の各行が何回出てくるかを数え、多い順に並べるコマンドは?",
       choices: ["sort access.txt | uniq -c | sort -rn", "sort access.txt | uniq -c | sort", "uniq -c access.txt | sort -rn", "sort access.txt | uniq -d | sort -rn"],
       accepts: ["sort access.txt | uniq -c | sort -nr", "sort access.txt | uniq -c | sort -n -r", "sort access.txt | uniq -c | sort -r -n", "cat access.txt | sort | uniq -c | sort -rn", "cat access.txt | sort | uniq -c | sort -nr"],
-      explain: "`sort` で同じ行を集め、`uniq -c` で回数をつけ、`sort -rn` で数の大きい順にします。ログの集計でよく使う形です。",
+      explain: "`sort` で同じ行を集め、`uniq -c` で回数をつけ、`sort -rn` で数の大きい順にします。ログの集計でよく使う形です。`uniq` は unique(重複のない)の略です。",
       ref: "uniq"
     },
     {
       id: "i14", q: "実行中のプロセスの一覧から、nginx を含む行だけを表示するコマンドは?",
       choices: ["ps aux | grep nginx", "ps aux > grep nginx", "grep nginx | ps aux", "ps aux & grep nginx"],
       accepts: ["ps -ef | grep nginx"],
-      explain: "`ps aux` の出力をパイプで `grep` に渡し、nginx を含む行だけにします。",
+      explain: "`ps aux` の出力をパイプで `grep` に渡し、nginx を含む行だけにします。`ps` は process status(プロセスの状態)、`grep` は global regular expression print(正規表現に合う行を表示する)の略です。",
       ref: "pipe"
     },
     {
       id: "i15", q: "ls -lt の結果の、先頭5行だけを表示するコマンドは?",
       choices: ["ls -lt | head -n 5", "ls -lt | tail -n 5", "ls -lt > head -n 5", "head -n 5 | ls -lt"],
       accepts: ["ls -lt | head -5", "ls -lt | head -n5", "ls -tl | head -n 5", "ls -tl | head -5"],
-      explain: "パイプで `head` に渡すと、先頭だけが残ります。`ls -lt` は新しい順なので、最近変更した5件がわかります。",
+      explain: "パイプで `head` に渡すと、先頭だけが残ります。`ls -lt` は新しい順なので、最近変更した5件がわかります。`ls` は list(一覧)の略です。",
       ref: "pipe"
     }
   ]
@@ -1258,17 +1258,17 @@ LNX.register("processes", {
         ["ps aux", "すべてのプロセスを詳しく"],
         ["ps aux | grep nginx", "名前で絞り込む"]
       ],
-      options: [["aux", "全ユーザーのすべてのプロセスを、CPU やメモリの使用率つきで"], ["-ef", "すべてのプロセスを別の形式で"]]
+      options: [["aux", "全ユーザーのすべてのプロセスを、CPU(Central Processing Unit、計算をする中心の部品) やメモリの使用率つきで"], ["-ef", "すべてのプロセスを別の形式で"]]
     },
     {
       id: "top", name: "top", read: "上位",
-      desc: "CPU やメモリをたくさん使っているプロセスを、リアルタイムに表示し続けます。",
+      desc: "CPU(Central Processing Unit、計算をする中心の部品) やメモリをたくさん使っているプロセスを、リアルタイムに表示し続けます。",
       examples: [["top", "q で終了"]],
       options: [["q", "終了"], ["M", "メモリ使用率の順"], ["P", "CPU 使用率の順"]]
     },
     {
       id: "kill", name: "kill", read: "シグナルを送る",
-      desc: "プロセスにシグナルを送ります。何も指定しなければ、終了を頼む SIGTERM(15)です。応じないときだけ SIGKILL(9)で強制終了します。",
+      desc: "プロセスにシグナル(合図)を送ります。何も指定しなければ、終了を頼む SIGTERM(signal terminate、終了の合図。番号は15)です。応じないときだけ SIGKILL(signal kill、強制終了の合図。番号は9)で強制終了します。プロセスは番号の PID(Process ID、プロセスにつけられた番号)で指定します。",
       examples: [
         ["kill 1234", "PID 1234 に終了を頼む(SIGTERM)"],
         ["kill -9 1234", "強制終了(SIGKILL)"],
@@ -1278,7 +1278,7 @@ LNX.register("processes", {
     },
     {
       id: "pkill", name: "pkill / pgrep", read: "名前で kill / 名前で探す",
-      desc: "PID のかわりに、プロセスの名前で指定します。`pgrep` は PID を表示し、`pkill` はシグナルを送ります。",
+      desc: "PID(Process ID、プロセスにつけられた番号。ID は identifier の略で、見分けるための番号) のかわりに、プロセスの名前で指定します。`pgrep`(process grep)は PID を表示し、`pkill`(process kill)はシグナルを送ります。",
       examples: [
         ["pgrep nginx", "nginx の PID を表示"],
         ["pkill firefox", "firefox をまとめて終了"]
@@ -1286,7 +1286,7 @@ LNX.register("processes", {
     },
     {
       id: "jobs", name: "& jobs fg bg", read: "ジョブ管理",
-      desc: "コマンドの最後に `&` をつけると、バックグラウンドで実行して端末をすぐ使えます。`jobs` で一覧、`fg` で手前に戻し、`bg` で止まったジョブを裏で再開します。",
+      desc: "コマンドの最後に `&` をつけると、バックグラウンドで実行して端末をすぐ使えます。`jobs` で一覧、`fg`(foreground、前面)で手前に戻し、`bg`(background、裏側)で止まったジョブを裏で再開します。番号の PID は Process ID(プロセスにつけられた番号)の略です。",
       examples: [
         ["sleep 300 &", "裏で実行。[1] 4321 のように出る"],
         ["jobs", "ジョブの一覧"],
@@ -1299,7 +1299,7 @@ LNX.register("processes", {
       id: "keys", name: "Ctrl+C / Ctrl+Z", read: "端末のキー操作",
       desc: "`Ctrl+C` は実行中のコマンドを中断して終わらせます。`Ctrl+Z` は一時停止し、ジョブとして残します(`fg` か `bg` で再開)。",
       examples: [["fg", "Ctrl+Z で止めたものを再開"]],
-      options: [["Ctrl+C", "中断(SIGINT)"], ["Ctrl+Z", "一時停止(SIGTSTP)"], ["Ctrl+L", "画面を消す(clear と同じ)"]]
+      options: [["Ctrl+C", "中断(SIGINT = signal interrupt、中断の合図)"], ["Ctrl+Z", "一時停止(SIGTSTP = signal terminal stop、端末からの一時停止の合図)"], ["Ctrl+L", "画面を消す(clear と同じ)"]]
     }
   ],
   questions: [
@@ -1307,14 +1307,14 @@ LNX.register("processes", {
       id: "o01", q: "すべてのユーザーの、実行中のすべてのプロセスを詳しく表示するコマンドは?",
       choices: ["ps aux", "ps", "jobs", "kill -l"],
       accepts: ["ps -ef"],
-      explain: "`ps aux` は全ユーザーのすべてのプロセスを CPU・メモリ使用率つきで表示します。`ps` だけでは今の端末のものしか出ません。`kill -l` はシグナルの一覧です。",
+      explain: "`ps aux` は全ユーザーのすべてのプロセスを CPU(Central Processing Unit、計算をする中心の部品)・メモリ使用率つきで表示します。`ps` だけでは今の端末のものしか出ません。`kill -l` はシグナルの一覧です。`ps` は process status(プロセスの状態)の略です。",
       ref: "ps"
     },
     {
       id: "o02", q: "CPU やメモリを多く使っているプロセスを、リアルタイムに表示し続けるコマンドは?",
       choices: ["top", "ps", "jobs", "uptime"],
       accepts: ["htop"],
-      explain: "`top` は数秒ごとに表示を更新します。`ps` はその瞬間の一覧を1回出すだけです。見やすい `htop` も使えますが、環境によっては別にインストールが必要です。",
+      explain: "CPU は Central Processing Unit(計算をする中心の部品)の略です。`top` は数秒ごとに表示を更新します。`ps` はその瞬間の一覧を1回出すだけです。見やすい `htop` も使えますが、環境によっては別にインストールが必要です。`ps` は process status(プロセスの状態)の略です。",
       ref: "top"
     },
     {
@@ -1327,41 +1327,41 @@ LNX.register("processes", {
       id: "o04", q: "次の表示で、2列目(1、2 の列)は何?", kind: "text",
       term: "$ ps aux | head -3\nUSER  PID %CPU %MEM ... COMMAND\nroot    1  0.0  0.1 ... /sbin/init\nroot    2  0.0  0.0 ... [kthreadd]",
       choices: ["プロセスID(PID)", "CPU 使用率", "メモリ使用率", "起動した回数"],
-      explain: "2列目の PID は、プロセスにつけられた番号です。`kill` で止めるときはこの番号を使います。",
+      explain: "2列目の PID(Process ID)は、プロセスにつけられた番号です。ID は identifier(見分けるための番号)、CPU は Central Processing Unit(計算をする中心の部品)の略です。`kill` で止めるときはこの番号を使います。",
       ref: "ps"
     },
     {
       id: "o05", q: "PID が 1234 のプロセスに、ふつうの終了シグナル(SIGTERM)を送るコマンドは?",
       choices: ["kill 1234", "kill -9 1234", "stop 1234", "exit 1234"],
       accepts: ["kill -15 1234", "kill -TERM 1234", "kill -SIGTERM 1234", "kill -s TERM 1234", "kill -s SIGTERM 1234", "kill -s 15 1234", "kill -n 15 1234"],
-      explain: "`kill PID` は、何も指定しなければ SIGTERM(15)を送ります。プログラムは後片付けをしてから終われます。`-9` は強制終了です。",
+      explain: "PID は Process ID(プロセスにつけられた番号)、SIGTERM は signal terminate(終了の合図)の略です。`kill PID` は、何も指定しなければ SIGTERM(15)を送ります。プログラムは後片付けをしてから終われます。`-9` は強制終了です。",
       ref: "kill"
     },
     {
       id: "o06", q: "kill 1234 で終わらないプロセスを、強制終了するコマンドは?",
       choices: ["kill -9 1234", "kill 1234", "kill -1 1234", "exit -9 1234"],
       accepts: ["kill -KILL 1234", "kill -SIGKILL 1234", "kill -s KILL 1234", "kill -s SIGKILL 1234", "kill -s 9 1234", "kill -n 9 1234"],
-      explain: "`-9` は SIGKILL で、プロセスはこれを無視できません。`-1` は SIGHUP で、設定の読み直しなどに使うシグナルです。",
+      explain: "`-9` は SIGKILL(signal kill、強制終了の合図)で、プロセスはこれを無視できません。`-1` は SIGHUP(signal hang up、回線が切れた合図)で、設定の読み直しなどに使うシグナルです。",
       ref: "kill"
     },
     {
       id: "o07", q: "最初から kill -9 を使わず、まずふつうの kill を試すのはなぜ?", kind: "text",
       choices: ["-9 だと後片付けをする機会がなく、データが壊れることがあるから", "-9 を使うと必ずパソコンが再起動するから", "-9 は1日に1回しか使えないから", "-9 は自分のプロセスには使えないから"],
-      explain: "SIGTERM なら、プログラムはファイルの保存などを終えてから止まれます。SIGKILL はその場で止めるので、書きかけのデータが壊れることがあります。",
+      explain: "SIGTERM(signal terminate、終了の合図)なら、プログラムはファイルの保存などを終えてから止まれます。SIGKILL(signal kill、強制終了の合図)はその場で止めるので、書きかけのデータが壊れることがあります。",
       ref: "kill"
     },
     {
       id: "o08", q: "名前が firefox のプロセスを、名前を指定してまとめて終了するコマンドは?",
       choices: ["pkill firefox", "kill firefox", "stop firefox", "jobs -k firefox"],
       accepts: ["killall firefox"],
-      explain: "`pkill` は名前でプロセスを選んでシグナルを送ります。`kill` は PID かジョブ番号しか受け付けないので、`kill firefox` はエラーです。",
+      explain: "`pkill` は名前でプロセスを選んでシグナルを送ります。`kill` は PID(Process ID、プロセスにつけられた番号)かジョブ番号しか受け付けないので、`kill firefox` はエラーです。`pkill` は process kill(プロセスを止める)の略です。",
       ref: "pkill"
     },
     {
       id: "o09", q: "nginx という名前のプロセスの PID だけを表示するコマンドは?",
       choices: ["pgrep nginx", "pkill nginx", "jobs nginx", "kill -l nginx"],
       accepts: ["pidof nginx"],
-      explain: "`pgrep` は名前に合うプロセスの PID を表示します。`pkill` だと止めてしまうので注意します。",
+      explain: "`pgrep` は名前に合うプロセスの PID(Process ID、プロセスにつけられた番号)を表示します。`pkill` だと止めてしまうので注意します。`pgrep` は process grep(プロセスを探す)の略です。`pkill` は process kill(プロセスを止める)の略です。",
       ref: "pkill"
     },
     {
@@ -1375,7 +1375,7 @@ LNX.register("processes", {
       id: "o11", q: "次の表示で、4321 は何?", kind: "text",
       term: "$ sleep 300 &\n[1] 4321",
       choices: ["プロセスID(PID)", "ジョブ番号", "残りの秒数", "終了コード"],
-      explain: "`[1]` がジョブ番号、`4321` が PID です。`kill %1` でも `kill 4321` でも、このプロセスを止められます。",
+      explain: "`[1]` がジョブ番号、`4321` が PID(Process ID。ID は identifier の略で、見分けるための番号)です。`kill %1` でも `kill 4321` でも、このプロセスを止められます。",
       ref: "jobs"
     },
     {
@@ -1389,26 +1389,26 @@ LNX.register("processes", {
       id: "o13", q: "ジョブ番号1のジョブを、フォアグラウンド(手前)に戻すコマンドは?",
       choices: ["fg %1", "bg %1", "jobs %1", "kill %1"],
       accepts: ["fg 1", "%1"],
-      explain: "`fg`(foreground)で手前に戻すと、また `Ctrl+C` などで操作できます。`bg` は裏で再開、`kill %1` は終了です。",
+      explain: "`fg`(foreground)で手前に戻すと、また `Ctrl+C` などで操作できます。`bg` は裏で再開、`kill %1` は終了です。`bg` は background(裏側)の略です。",
       ref: "jobs"
     },
     {
       id: "o14", q: "Ctrl+Z で止めたジョブ1を、バックグラウンドで動かし直すコマンドは?",
       choices: ["bg %1", "fg %1", "jobs %1", "start %1"],
       accepts: ["bg 1"],
-      explain: "`bg`(background)は、止まっているジョブを裏で再開します。`fg` だと手前で再開します。",
+      explain: "`bg`(background)は、止まっているジョブを裏で再開します。`fg` だと手前で再開します。`fg` は foreground(前面)の略です。",
       ref: "jobs"
     },
     {
       id: "o15", q: "コマンドの実行中に Ctrl+Z を押すと、どうなる?", kind: "text",
       choices: ["一時停止し、ジョブとして残る", "強制終了して消える", "直前の入力を取り消す", "端末の画面が消える"],
-      explain: "`Ctrl+Z` は一時停止です。`fg` で手前に、`bg` で裏で再開できます。止めたまま放っておくと残り続けます。",
+      explain: "`Ctrl+Z` は一時停止です。`fg` で手前に、`bg` で裏で再開できます。止めたまま放っておくと残り続けます。`fg` は foreground(前面)、`bg` は background(裏側)の略です。",
       ref: "keys"
     },
     {
       id: "o16", q: "コマンドの実行中に Ctrl+C を押すと、どうなる?", kind: "text",
       choices: ["実行中のコマンドが中断され、終了する", "画面の文字がコピーされる", "一時停止し、ジョブとして残る", "ログアウトする"],
-      explain: "`Ctrl+C` は中断のシグナル(SIGINT)を送ります。端末で文字をコピーするのは、ふつう `Ctrl+Shift+C` です。",
+      explain: "`Ctrl+C` は中断のシグナル(SIGINT = signal interrupt、中断の合図)を送ります。端末で文字をコピーするのは、ふつう `Ctrl+Shift+C` です。",
       ref: "keys"
     }
   ]
@@ -1473,7 +1473,7 @@ LNX.register("packages", {
         ["echo $PATH", "コマンドを探すディレクトリの一覧"],
         ["export EDITOR=vim", "EDITOR を設定して引き継ぐ"],
         ["export PATH=\"$HOME/bin:$PATH\"", "PATH の先頭に ~/bin を足す"],
-        ["printenv", "環境変数の一覧"]
+        ["printenv", "環境変数の一覧(print environment の略)"]
       ],
       options: [
         ["$HOME", "ホームディレクトリ"],
@@ -1503,59 +1503,59 @@ LNX.register("packages", {
       id: "k01", q: "インストールできるパッケージの一覧(どの版があるか)を最新にするコマンドは?",
       choices: ["sudo apt update", "sudo apt upgrade", "sudo apt install", "apt list"],
       accepts: ["sudo apt-get update"],
-      explain: "`apt update` は一覧を取り直すだけで、ソフトそのものは変わりません。入れる・更新する前に実行します。一覧の更新にも管理者権限(`sudo`)が必要です。",
+      explain: "`apt update` は一覧を取り直すだけで、ソフトそのものは変わりません。入れる・更新する前に実行します。一覧の更新にも管理者権限(`sudo`)が必要です。`sudo` は superuser do(管理者として実行する)、`apt` は Advanced Package Tool(パッケージを管理する道具)の略です。",
       ref: "apt"
     },
     {
       id: "k02", q: "パッケージの tree をインストールするコマンドは?",
       choices: ["sudo apt install tree", "apt install tree", "sudo apt get tree", "sudo apt update tree"],
       accepts: ["sudo apt-get install tree", "sudo apt install -y tree", "sudo apt-get install -y tree", "sudo apt -y install tree", "sudo apt install tree -y", "sudo apt-get install tree -y"],
-      explain: "インストールはシステムを変えるので `sudo` が必要です。つけないと「権限がありません」と言われます。",
+      explain: "インストールはシステムを変えるので `sudo` が必要です。つけないと「権限がありません」と言われます。`sudo` は superuser do(管理者として実行する)、`apt` は Advanced Package Tool(パッケージを管理する道具)の略です。",
       ref: "apt"
     },
     {
       id: "k03", q: "入っているパッケージを、新しい版に更新するコマンドは?",
       choices: ["sudo apt upgrade", "sudo apt update", "sudo apt install", "sudo apt renew"],
       accepts: ["sudo apt-get upgrade", "sudo apt upgrade -y", "sudo apt -y upgrade", "sudo apt-get upgrade -y", "sudo apt full-upgrade"],
-      explain: "`upgrade` が実際の更新です。ふつうは `sudo apt update` のあとに実行します。",
+      explain: "`upgrade` が実際の更新です。ふつうは `sudo apt update` のあとに実行します。`sudo` は superuser do(管理者として実行する)、`apt` は Advanced Package Tool(パッケージを管理する道具)の略です。",
       ref: "apt"
     },
     {
       id: "k04", q: "apt update と apt upgrade の違いは?", kind: "text",
       choices: ["update は一覧を最新にするだけで、upgrade が入っているソフトを新しくする", "update がソフトを新しくし、upgrade は一覧を最新にするだけ", "どちらも同じ働きをする", "update は apt 自身だけを、upgrade はすべてを新しくする"],
-      explain: "名前が似ていますが、`update` は情報の取り直し、`upgrade` は実際の更新です。",
+      explain: "名前が似ていますが、`update` は情報の取り直し、`upgrade` は実際の更新です。`apt` は Advanced Package Tool(パッケージを管理する道具)の略です。",
       ref: "apt"
     },
     {
       id: "k05", q: "インストールしてある tree パッケージを削除するコマンドは?",
       choices: ["sudo apt remove tree", "sudo apt delete tree", "sudo rm tree", "sudo apt uninstall tree"],
       accepts: ["sudo apt-get remove tree", "sudo apt purge tree", "sudo apt-get purge tree", "sudo apt remove -y tree", "sudo apt remove tree -y", "sudo apt-get remove tree -y"],
-      explain: "パッケージの削除は `apt remove` です。`purge` を使うと設定ファイルも消します。`rm` はファイルを消すコマンドで、パッケージは消せません。",
+      explain: "パッケージの削除は `apt remove` です。`purge` を使うと設定ファイルも消します。`rm` はファイルを消すコマンドで、パッケージは消せません。`sudo` は superuser do(管理者として実行する)、`apt` は Advanced Package Tool(パッケージを管理する道具)の略です。",
       ref: "apt"
     },
     {
       id: "k06", q: "sudo をつけてコマンドを実行すると、どうなる?", kind: "text",
       choices: ["そのコマンドだけが管理者(root)の権限で実行される", "コマンドが速く実行される", "コマンドがバックグラウンドで実行される", "一度ログアウトして root として入り直す"],
-      explain: "`sudo` は後ろのコマンドだけを管理者権限で動かします。Ubuntu では自分のパスワードを聞かれます。",
+      explain: "`sudo` は後ろのコマンドだけを管理者権限で動かします。Ubuntu では自分のパスワードを聞かれます。`sudo` は superuser do(管理者として実行する)の略です。",
       ref: "sudo"
     },
     {
       id: "k07", q: "ls コマンドのマニュアル(説明書)を表示するコマンドは?",
       choices: ["man ls", "help ls", "ls -m", "manual ls"],
-      explain: "`man` で開いたマニュアルは `less` と同じ操作で読み、`q` で閉じます。bash の `help` はシェルに組みこまれた命令の説明用で、`ls` には使えません。",
+      explain: "`man` で開いたマニュアルは `less` と同じ操作で読み、`q` で閉じます。bash(Bourne Again SHell)の `help` はシェルに組みこまれた命令の説明用で、`ls` には使えません。`man` は manual(説明書)の略です。`ls` は list(一覧)の略です。",
       ref: "man"
     },
     {
       id: "k08", q: "ls の使い方とオプションの一覧を、短く表示するコマンドは?",
       choices: ["ls --help", "ls -help", "ls help", "man --ls"],
-      explain: "`--help` はハイフン2つです。`ls -help` は `-h` `-e` …の短いオプションの組み合わせと読まれ、エラーになります。",
+      explain: "`--help` はハイフン2つです。`ls -help` は `-h` `-e` …の短いオプションの組み合わせと読まれ、エラーになります。`ls` は list(一覧)の略です。",
       ref: "help"
     },
     {
       id: "k09", q: "python3 と打ったときに実行されるプログラムが、どこにあるかを表示するコマンドは?",
       choices: ["which python3", "where python3", "pwd python3", "find python3"],
       accepts: ["command -v python3", "type python3", "type -p python3"],
-      explain: "`which` は PATH の中を探して、`/usr/bin/python3` のように場所を表示します。`where` は bash にはありません。",
+      explain: "`which` は PATH の中を探して、`/usr/bin/python3` のように場所を表示します。`where` は bash(Bourne Again SHell、Ubuntu で標準のシェル)にはありません。",
       ref: "which"
     },
     {
@@ -1568,14 +1568,14 @@ LNX.register("packages", {
     {
       id: "k11", q: "環境変数 PATH の役割は?", kind: "text",
       choices: ["コマンド名だけで実行するときに、プログラムを探すディレクトリの一覧", "ホームディレクトリの場所", "今いるディレクトリの場所", "前回実行したコマンドの記録"],
-      explain: "`ls` と打つと、シェルは PATH に `:` 区切りで並んだディレクトリを順に探して `/usr/bin/ls` を見つけます。",
+      explain: "`ls` と打つと、シェルは PATH に `:` 区切りで並んだディレクトリを順に探して `/usr/bin/ls` を見つけます。`ls` は list(一覧)の略です。",
       ref: "env"
     },
     {
       id: "k12", q: "環境変数 EDITOR に vim を設定し、このシェルから起動するプログラムにも引き継ぐコマンドは?",
       choices: ["export EDITOR=vim", "EDITOR = vim", "set EDITOR=vim", "export $EDITOR=vim"],
       accepts: ["EDITOR=vim; export EDITOR", "EDITOR=vim;export EDITOR"],
-      explain: "`export 名前=値` です。`=` の前後に空白を入れると、EDITOR というコマンドを実行しようとしてしまいます。名前には `$` をつけません。",
+      explain: "`export 名前=値` です。`=` の前後に空白を入れると、EDITOR というコマンドを実行しようとしてしまいます。名前には `$` をつけません。vim は Vi IMproved(テキストエディタの一つ)の略です。",
       ref: "env"
     },
     {

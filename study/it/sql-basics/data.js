@@ -398,7 +398,7 @@ SQLD.register("select", {
     },
     {
       id: "syntax", name: "文の書き方", read: "; ・大文字小文字・引用符",
-      desc: "SQL の文は `;` で終わります。`SELECT` などのキーワードは大文字でも小文字でも同じ意味です(読みやすいように大文字で書くことが多い)。改行や空白は自由に入れられます。文字列は `'…'`(シングルクォート)で囲みます。",
+      desc: "SQL(Structured Query Language、データベースの問い合わせ言語) の文は `;` で終わります。`SELECT` などのキーワードは大文字でも小文字でも同じ意味です(読みやすいように大文字で書くことが多い)。改行や空白は自由に入れられます。文字列は `'…'`(シングルクォート)で囲みます。",
       examples: [
         ["select title from books;", "SELECT title FROM books; と同じ"],
         ["SELECT title\nFROM books\nWHERE price > 1000;", "改行して書いてもよい"]
@@ -410,13 +410,13 @@ SQLD.register("select", {
       ],
       notes: [
         "標準SQLでは `\"…\"`(ダブルクォート)は列名や表名を囲む記号です。MySQL などでは文字列として通ることもありますが、文字列には `'…'` を使います。",
-        "表名・列名の大文字小文字を区別するかどうかは、DBや設定によって違います。"
+        "表名・列名の大文字小文字を区別するかどうかは、DB(Database、データベース)や設定によって違います。"
       ]
     }
   ],
   questions: [
     {
-      id: "s01", q: "このSQLの結果は?", tables: ["authors"], kind: "result",
+      id: "s01", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["authors"], kind: "result",
       sql: "SELECT DISTINCT country FROM authors;",
       choices: [
         "country\n日本\nイギリス\nアメリカ",
@@ -428,7 +428,7 @@ SQLD.register("select", {
       ref: "distinct"
     },
     {
-      id: "s02", q: "このSQLの結果は、何行・何列?", tables: ["books"], kind: "text",
+      id: "s02", q: "このクエリ(データベースへの問い合わせ文)の結果は、何行・何列?", tables: ["books"], kind: "text",
       sql: "SELECT title, year FROM books;",
       choices: ["8行・2列", "2行・8列", "8行・5列", "7行・2列"],
       explain: "列は `title` と `year` の2つ。WHERE がないので、books の8行がすべて出ます。",
@@ -471,7 +471,7 @@ SQLD.register("select", {
       ref: "select"
     },
     {
-      id: "s08", q: "このSQLの結果の、列の見出しは?", tables: ["books"], kind: "code",
+      id: "s08", q: "このクエリ(データベースへの問い合わせ文)の結果の、列の見出しは?", tables: ["books"], kind: "code",
       sql: "SELECT title AS book_title, price FROM books;",
       choices: ["book_title | price", "title | price", "book_title | title | price", "title AS book_title | price"],
       explain: "`AS` で別名をつけた列は、見出しが別名になります。別名をつけていない price はそのままです。",
@@ -481,11 +481,11 @@ SQLD.register("select", {
       id: "s09", q: "文の終わりを示す記号を入れます。空欄に入るのは?", tables: ["books"], kind: "code",
       sql: "SELECT * FROM books____",
       choices: [";", ".", ":", "!"],
-      explain: "SQL の文は `;` で終わります。いくつかの文を続けて書くときの区切りにもなります。",
+      explain: "SQL(Structured Query Language、データベースの問い合わせ言語) の文は `;` で終わります。いくつかの文を続けて書くときの区切りにもなります。",
       ref: "syntax"
     },
     {
-      id: "s10", q: "このSQLを実行するとエラーになります。原因は?", tables: ["books"], kind: "text",
+      id: "s10", q: "このクエリ(データベースへの問い合わせ文)を実行するとエラーになります。原因は?", tables: ["books"], kind: "text",
       sql: "SELECT title, price, FROM books;",
       choices: ["FROM の直前に余分な「,」がある", "列名は ' で囲まなければならない", "SELECT で指定できる列は1つだけ", "SELECT と FROM は小文字で書かなければならない"],
       explain: "最後の列のあとにカンマがあると、次の列が来るはずなのに `FROM` が来るので文法エラーになります。キーワードは大文字でも小文字でもかまいません。",
@@ -498,7 +498,7 @@ SQLD.register("select", {
       ref: "syntax"
     },
     {
-      id: "s12", q: "この結果を出すSQLは?", tables: ["orders"], kind: "sql",
+      id: "s12", q: "この結果を出すクエリ(データベースへの問い合わせ文)は?", tables: ["orders"], kind: "sql",
       result: "book_id\n1\n3\n5\n2\n8",
       choices: [
         "SELECT DISTINCT book_id FROM orders;",
@@ -587,12 +587,12 @@ SQLD.register("where", {
         ["%", "0文字以上の任意の文字列"],
         ["_", "任意の1文字"]
       ],
-      notes: ["英字の大文字小文字を区別するかは DB で違います(PostgreSQL は区別する、SQLite と MySQL はふつう区別しない)。"]
+      notes: ["英字の大文字小文字を区別するかは DB(Database、データベース) で違います(PostgreSQL は区別する、SQLite と MySQL はふつう区別しない)。"]
     }
   ],
   questions: [
     {
-      id: "w01", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "w01", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT title FROM books WHERE price >= 1200;",
       choices: [
         "title\n星の旅\n森の朝\n風と石\n青い鳥",
@@ -604,7 +604,7 @@ SQLD.register("where", {
       ref: "compare"
     },
     {
-      id: "w02", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "w02", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT title FROM books WHERE year BETWEEN 2015 AND 2018;",
       choices: [
         "title\n星の旅\n海の歌\n青い鳥",
@@ -616,7 +616,7 @@ SQLD.register("where", {
       ref: "between"
     },
     {
-      id: "w03", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "w03", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT title FROM books WHERE title LIKE '星%';",
       choices: [
         "title\n星の旅\n星の庭",
@@ -628,7 +628,7 @@ SQLD.register("where", {
       ref: "like"
     },
     {
-      id: "w04", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "w04", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT title FROM books WHERE title LIKE '_い_';",
       choices: [
         "title\n青い鳥",
@@ -640,7 +640,7 @@ SQLD.register("where", {
       ref: "like"
     },
     {
-      id: "w05", q: "このSQLの結果は?", tables: ["authors"], kind: "result",
+      id: "w05", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["authors"], kind: "result",
       sql: "SELECT name FROM authors WHERE country = '日本' AND id > 2;",
       choices: [
         "name\n佐藤\n中村",
@@ -652,7 +652,7 @@ SQLD.register("where", {
       ref: "logic"
     },
     {
-      id: "w06", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "w06", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT id FROM books WHERE price <> 1200;",
       choices: [
         "id\n2\n3\n4\n5\n7",
@@ -664,7 +664,7 @@ SQLD.register("where", {
       ref: "compare"
     },
     {
-      id: "w07", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "w07", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT title FROM books WHERE author_id IN (1, 3);",
       choices: [
         "title\n星の旅\n森の朝\n夜の街\n星の庭",
@@ -717,7 +717,7 @@ SQLD.register("where", {
       ref: "logic"
     },
     {
-      id: "w13", q: "このSQLはエラーになります。原因は?", tables: ["authors"], kind: "text",
+      id: "w13", q: "このクエリ(データベースへの問い合わせ文)はエラーになります。原因は?", tables: ["authors"], kind: "text",
       sql: "SELECT name FROM authors WHERE country = 日本;",
       choices: ["文字列の 日本 を ' で囲んでいない", "= ではなく == と書く", "WHERE は FROM より前に書く", "country は大文字で書く"],
       explain: "囲まない 日本 は列名として読まれ、「そんな列はない」というエラーになります。文字列は `'日本'` と書きます。",
@@ -754,7 +754,7 @@ SQLD.register("order", {
   cards: [
     {
       id: "order-by", name: "ORDER BY", read: "並べ替え",
-      desc: "`ORDER BY 列` で結果を並べ替えます。`ASC` は小さい順(昇順)、`DESC` は大きい順(降順)。どちらも書かなければ `ASC` です。",
+      desc: "`ORDER BY 列` で結果を並べ替えます。`ASC` は小さい順(昇順)、`DESC` は大きい順(降順)。どちらも書かなければ `ASC` です。※ASC = ascending、小さい順(昇順)。DESC = descending、大きい順(降順)",
       examples: [
         ["SELECT title, year FROM books ORDER BY year;", "古い年から"],
         ["SELECT title, year FROM books ORDER BY year DESC;", "新しい年から"]
@@ -765,13 +765,13 @@ SQLD.register("order", {
       ],
       notes: [
         "ORDER BY は WHERE のあとに書きます。",
-        "NULL を先に並べるか後に並べるかは DB で違います(昇順のとき、SQLite・MySQL は先頭、PostgreSQL は末尾)。",
+        "NULL を先に並べるか後に並べるかは DB(Database、データベース) で違います(昇順のとき、SQLite・MySQL は先頭、PostgreSQL は末尾)。",
         "日本語の文字列の並び順も、DB や設定によって違います。"
       ]
     },
     {
       id: "order-multi", name: "ORDER BY 列1, 列2", read: "複数の列で並べる",
-      desc: "まず列1で並べ、列1が同じ行どうしを列2で並べます。`ASC` / `DESC` は列ごとに書きます。",
+      desc: "まず列1で並べ、列1が同じ行どうしを列2で並べます。`ASC` / `DESC` は列ごとに書きます。※ASC = ascending、小さい順(昇順)。DESC = descending、大きい順(降順)",
       examples: [
         ["SELECT id, qty FROM orders ORDER BY qty DESC, id;", "qty の大きい順、同じなら id の小さい順"]
       ],
@@ -781,7 +781,7 @@ SQLD.register("order", {
       id: "row-order", name: "並び順の保証", read: "ORDER BY がないとき",
       desc: "ORDER BY を書かないとき、行の順番は決まっていません。表に入れた順や id の順に出ることが多いですが、保証はありません。順番が必要なら必ず ORDER BY を書きます。",
       examples: [
-        ["SELECT title FROM books;", "順番はDBまかせ"],
+        ["SELECT title FROM books;", "順番はDB(Database、データベース)まかせ"],
         ["SELECT title FROM books ORDER BY id;", "id の順に決まる"]
       ]
     },
@@ -798,13 +798,13 @@ SQLD.register("order", {
       ],
       notes: [
         "書く順番は `… ORDER BY … LIMIT … OFFSET …;` です。",
-        "SQLite・MySQL・PostgreSQL で使えます。SQL Server では `TOP` などを使い、LIMIT はありません。標準SQLには `FETCH FIRST n ROWS ONLY` という書き方もあります。"
+        "SQLite・MySQL・PostgreSQL で使えます。SQL Server では `TOP` などを使い、LIMIT はありません。標準SQL(Structured Query Language、データベースの問い合わせ言語)には `FETCH FIRST n ROWS ONLY` という書き方もあります。"
       ]
     }
   ],
   questions: [
     {
-      id: "o01", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "o01", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT title, year FROM books ORDER BY year DESC LIMIT 3;",
       choices: [
         "title | year\n風と石 | 2021\n森の朝 | 2020\n星の庭 | 2019",
@@ -812,11 +812,11 @@ SQLD.register("order", {
         "title | year\n森の朝 | 2020\n海の歌 | 2018\n星の旅 | 2015",
         "title | year\n風と石 | 2021\n森の朝 | 2020\n星の庭 | 2019\n海の歌 | 2018"
       ],
-      explain: "先に全体を year の大きい順に並べ、そのあと先頭の3行を取ります。最初の3行を取ってから並べるのではありません。",
+      explain: "先に全体を year の大きい順に並べ、そのあと先頭の3行を取ります。最初の3行を取ってから並べるのではありません。※DESC = descending、大きい順(降順)",
       ref: "limit"
     },
     {
-      id: "o02", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "o02", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT title FROM books ORDER BY year LIMIT 2 OFFSET 2;",
       choices: [
         "title\n星の旅\n青い鳥",
@@ -828,7 +828,7 @@ SQLD.register("order", {
       ref: "limit"
     },
     {
-      id: "o03", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "o03", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT title, price FROM books WHERE price >= 1000 ORDER BY price, id DESC;",
       choices: [
         "title | price\n青い鳥 | 1200\n星の旅 | 1200\n森の朝 | 1500\n風と石 | 2200",
@@ -836,7 +836,7 @@ SQLD.register("order", {
         "title | price\n風と石 | 2200\n森の朝 | 1500\n青い鳥 | 1200\n星の旅 | 1200",
         "title | price\n風と石 | 2200\n森の朝 | 1500\n星の旅 | 1200\n青い鳥 | 1200"
       ],
-      explain: "`DESC` は直前の id にだけかかります。price は小さい順(ASC)で、同じ1200円の2冊は id の大きい順(青い鳥 8 → 星の旅 1)です。",
+      explain: "`DESC` は直前の id にだけかかります。price は小さい順(ASC)で、同じ1200円の2冊は id の大きい順(青い鳥 8 → 星の旅 1)です。※DESC = descending、大きい順(降順)。ASC = ascending、小さい順(昇順)",
       ref: "order-multi"
     },
     {
@@ -844,7 +844,7 @@ SQLD.register("order", {
       sql: "SELECT title FROM books ORDER BY year ____;",
       choices: ["DESC", "ASC", "DOWN", "REVERSE"],
       expect: "title\n風と石\n森の朝\n星の庭\n海の歌\n青い鳥\n星の旅\n夜の街\n古い地図",
-      explain: "新しい年 = 数の大きい順なので `DESC`(descending)です。`ASC` は小さい順で、何も書かないときも ASC になります。",
+      explain: "新しい年 = 数の大きい順なので `DESC`(descending)です。`ASC` は小さい順で、何も書かないときも ASC になります。※ASC = ascending、小さい順(昇順)",
       ref: "order-by"
     },
     {
@@ -852,7 +852,7 @@ SQLD.register("order", {
       sql: "SELECT title FROM books ORDER BY year ____ 3;",
       choices: ["LIMIT", "TOP", "MAX", "FIRST"],
       expect: "title\n古い地図\n夜の街\n星の旅",
-      explain: "`LIMIT 3` で先頭の3行だけになります。`TOP` は SQL Server の書き方で、`SELECT TOP 3 …` のように SELECT の直後に書きます。",
+      explain: "`LIMIT 3` で先頭の3行だけになります。`TOP` は SQL Server の書き方で、`SELECT TOP 3 …` のように SELECT の直後に書きます。※MAX = maximum、最大",
       ref: "limit"
     },
     {
@@ -868,23 +868,23 @@ SQLD.register("order", {
       sql: "SELECT title FROM books ____ year;",
       choices: ["ORDER BY", "SORT BY", "ORDER", "ARRANGE BY"],
       expect: "title\n古い地図\n夜の街\n星の旅\n青い鳥\n海の歌\n星の庭\n森の朝\n風と石",
-      explain: "並べ替えは `ORDER BY` です。ASC も DESC も書かないので、小さい順(古い順)になります。",
+      explain: "並べ替えは `ORDER BY` です。ASC も DESC も書かないので、小さい順(古い順)になります。※ASC = ascending、小さい順(昇順)。DESC = descending、大きい順(降順)",
       ref: "order-by"
     },
     {
       id: "o08", q: "ORDER BY year のように ASC も DESC も書かないと、どう並ぶ?", tables: [], kind: "text",
       choices: ["小さい順(ASC)", "大きい順(DESC)", "表に入れた順のまま", "エラーになる"],
-      explain: "書かないときは `ASC`(昇順)です。大きい順にしたいときだけ `DESC` を書きます。",
+      explain: "書かないときは `ASC`(昇順)です。大きい順にしたいときだけ `DESC` を書きます。※ASC = ascending、小さい順(昇順)。DESC = descending、大きい順(降順)",
       ref: "order-by"
     },
     {
       id: "o09", q: "ORDER BY を書かない SELECT では、行はどの順番で出る?", tables: [], kind: "text",
       choices: ["決まっていない(順番が必要なら ORDER BY を書く)", "必ず id の小さい順", "必ず表に入れた順", "必ず1列目の小さい順"],
-      explain: "入れた順や id の順に出ることが多いですが、SQL では保証されていません。DB の内部の都合で変わることがあります。",
+      explain: "入れた順や id の順に出ることが多いですが、SQL(Structured Query Language、データベースの問い合わせ言語) では保証されていません。DB(Database、データベース) の内部の都合で変わることがあります。",
       ref: "row-order"
     },
     {
-      id: "o10", q: "この結果を出すSQLは?", tables: ["books"], kind: "sql",
+      id: "o10", q: "この結果を出すクエリ(データベースへの問い合わせ文)は?", tables: ["books"], kind: "sql",
       result: "title | year\n風と石 | 2021\n森の朝 | 2020",
       choices: [
         "SELECT title, year FROM books ORDER BY year DESC LIMIT 2;",
@@ -892,7 +892,7 @@ SQLD.register("order", {
         "SELECT title, year FROM books LIMIT 2 ORDER BY year DESC;",
         "SELECT title, year FROM books ORDER BY year DESC LIMIT 2 OFFSET 1;"
       ],
-      explain: "新しい順に並べて先頭の2行です。`LIMIT` は `ORDER BY` のあとに書きます。`OFFSET 1` をつけると先頭の1行を飛ばすので、森の朝 と 星の庭 になります。",
+      explain: "新しい順に並べて先頭の2行です。`LIMIT` は `ORDER BY` のあとに書きます。`OFFSET 1` をつけると先頭の1行を飛ばすので、森の朝 と 星の庭 になります。※DESC = descending、大きい順(降順)",
       ref: "limit"
     },
     {
@@ -902,14 +902,14 @@ SQLD.register("order", {
       ref: "limit"
     },
     {
-      id: "o12", q: "このSQLはエラーになります。原因は?", tables: ["books"], kind: "text",
+      id: "o12", q: "このクエリ(データベースへの問い合わせ文)はエラーになります。原因は?", tables: ["books"], kind: "text",
       sql: "SELECT title FROM books LIMIT 3 ORDER BY year;",
       choices: ["LIMIT は ORDER BY のあとに書く", "ORDER BY には DESC が必要", "LIMIT には 5 以上の数を書く", "LIMIT の数は ' で囲む"],
-      explain: "書く順番は `SELECT … FROM … WHERE … ORDER BY … LIMIT …` と決まっています。",
+      explain: "書く順番は `SELECT … FROM … WHERE … ORDER BY … LIMIT …` と決まっています。※DESC = descending、大きい順(降順)",
       ref: "limit"
     },
     {
-      id: "o13", q: "このSQLの結果は?", tables: ["orders"], kind: "result",
+      id: "o13", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["orders"], kind: "result",
       sql: "SELECT id, qty FROM orders ORDER BY qty DESC, id LIMIT 3;",
       choices: [
         "id | qty\n4 | 4\n7 | 4\n1 | 2",
@@ -917,7 +917,7 @@ SQLD.register("order", {
         "id | qty\n4 | 4\n7 | 4",
         "id | qty\n2 | 1\n3 | 1\n5 | 1"
       ],
-      explain: "qty の大きい順で、qty が同じ行は id の小さい順です。qty 4 の id 4・7、次に qty 2 の id 1 です。",
+      explain: "qty の大きい順で、qty が同じ行は id の小さい順です。qty 4 の id 4・7、次に qty 2 の id 1 です。※DESC = descending、大きい順(降順)",
       ref: "order-multi"
     },
     {
@@ -925,7 +925,7 @@ SQLD.register("order", {
       sql: "SELECT id, qty FROM orders ORDER BY qty ____, id;",
       choices: ["DESC", "ASC", "DOWN", "HIGH"],
       expect: "id | qty\n4 | 4\n7 | 4\n1 | 2\n6 | 2\n2 | 1\n3 | 1\n5 | 1",
-      explain: "`DESC` は直前の列(qty)だけにかかります。id には何も書かないので ASC(小さい順)です。",
+      explain: "`DESC` は直前の列(qty)だけにかかります。id には何も書かないので ASC(小さい順)です。※ASC = ascending、小さい順(昇順)。DESC = descending、大きい順(降順)",
       ref: "order-multi"
     },
     {
@@ -959,24 +959,24 @@ SQLD.register("aggregate", {
         ["COUNT(列)", "その列が NULL でない行の数"],
         ["COUNT(DISTINCT 列)", "NULL でない値の種類の数"]
       ],
-      notes: ["結果の見出しの表記は DB で違います(SQLite・MySQL は `COUNT(*)`、PostgreSQL は `count`)。この道場では SQLite の表記で出しています。`AS n` のように別名をつけると、どの DB でもそろいます。"]
+      notes: ["結果の見出しの表記は DB(Database、データベース) で違います(SQLite・MySQL は `COUNT(*)`、PostgreSQL は `count`)。この道場では SQLite の表記で出しています。`AS n` のように別名をつけると、どの DB でもそろいます。"]
     },
     {
       id: "sum-avg", name: "SUM / AVG", read: "合計・平均",
-      desc: "`SUM(列)` は合計、`AVG(列)` は平均です。どちらも NULL の行は無視して計算します。",
+      desc: "`SUM(列)` は合計、`AVG(列)` は平均です。どちらも NULL の行は無視して計算します。※AVG = average、平均",
       examples: [
         ["SELECT SUM(qty) FROM orders;", "15"],
         ["SELECT AVG(price) FROM books;", "1200(8400 ÷ 7。NULL の行は数に入れない)"]
       ],
       notes: [
-        "AVG の結果の表示は DB で違います(1200.0、1200.0000 など)。",
+        "AVG の結果の表示は DB(Database、データベース) で違います(1200.0、1200.0000 など)。",
         "見出しの表記も DB で違います(SQLite・MySQL は `SUM(qty)`、PostgreSQL は `sum`)。",
         "整数どうしの割り算(例: `5 / 2`)の結果も DB で違うので注意します。"
       ]
     },
     {
       id: "max-min", name: "MAX / MIN", read: "最大・最小",
-      desc: "`MAX(列)` はいちばん大きい値、`MIN(列)` はいちばん小さい値です。NULL は無視されます。",
+      desc: "`MAX(列)` はいちばん大きい値、`MIN(列)` はいちばん小さい値です。NULL は無視されます。※MAX = maximum、最大。MIN = minimum、最小",
       examples: [
         ["SELECT MAX(price), MIN(price) FROM books;", "2200 と 600"],
         ["SELECT MAX(year) FROM books;", "2021"]
@@ -994,42 +994,42 @@ SQLD.register("aggregate", {
   ],
   questions: [
     {
-      id: "a01", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "a01", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT COUNT(*) FROM books;",
       choices: ["COUNT(*)\n8", "COUNT(*)\n7", "COUNT(*)\n5", "COUNT(*)\n1"],
       explain: "`COUNT(*)` は、NULL があるかどうかに関係なく、行の数を数えます。books は8行です。",
       ref: "count"
     },
     {
-      id: "a02", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "a02", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT COUNT(price) FROM books;",
       choices: ["COUNT(price)\n7", "COUNT(price)\n8", "COUNT(price)\n6", "COUNT(price)\n8400"],
       explain: "`COUNT(列)` は、その列が NULL でない行だけを数えます。price が NULL の 星の庭 を除いた7行です。",
       ref: "count"
     },
     {
-      id: "a03", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "a03", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT COUNT(DISTINCT author_id) FROM books;",
       choices: ["COUNT(DISTINCT author_id)\n5", "COUNT(DISTINCT author_id)\n6", "COUNT(DISTINCT author_id)\n7", "COUNT(DISTINCT author_id)\n8"],
       explain: "author_id の値は 1・2・3・4・5 と NULL。`COUNT(DISTINCT 列)` は NULL を数えないので5です。",
       ref: "count"
     },
     {
-      id: "a04", q: "このSQLの結果は?", tables: ["orders"], kind: "result",
+      id: "a04", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["orders"], kind: "result",
       sql: "SELECT SUM(qty) FROM orders;",
       choices: ["SUM(qty)\n15", "SUM(qty)\n7", "SUM(qty)\n4", "SUM(qty)\n28"],
-      explain: "qty は 2+1+1+4+1+2+4 = 15。7 は行の数(COUNT)、4 は最大(MAX)です。",
+      explain: "qty は 2+1+1+4+1+2+4 = 15。7 は行の数(COUNT)、4 は最大(MAX)です。※MAX = maximum、最大",
       ref: "sum-avg"
     },
     {
-      id: "a05", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "a05", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT AVG(price) FROM books;",
       choices: ["AVG(price)\n1200", "AVG(price)\n1050", "AVG(price)\n8400", "AVG(price)\n1400"],
-      explain: "NULL の行は無視されるので、合計 8400 を 7 で割って 1200。8 で割った 1050 にはなりません。表示は DB によって 1200.0 などになります。",
+      explain: "NULL の行は無視されるので、合計 8400 を 7 で割って 1200。8 で割った 1050 にはなりません。表示は DB(Database、データベース) によって 1200.0 などになります。※AVG = average、平均",
       ref: "sum-avg"
     },
     {
-      id: "a06", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "a06", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT MAX(price), MIN(price) FROM books;",
       choices: [
         "MAX(price) | MIN(price)\n2200 | 600",
@@ -1037,11 +1037,11 @@ SQLD.register("aggregate", {
         "MAX(price) | MIN(price)\n600 | 2200",
         "MAX(price) | MIN(price)\n2200 | 0"
       ],
-      explain: "MAX も MIN も NULL を無視します。いちばん安いのは 古い地図 の 600 です。",
+      explain: "MAX も MIN も NULL を無視します。いちばん安いのは 古い地図 の 600 です。※MAX = maximum、最大。MIN = minimum、最小",
       ref: "max-min"
     },
     {
-      id: "a07", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "a07", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT SUM(price) FROM books WHERE author_id = 3;",
       choices: ["SUM(price)\n900", "SUM(price)\nNULL", "SUM(price)\n1800", "SUM(price)\n2"],
       explain: "著者3の本は 夜の街(900)と 星の庭(NULL)。SUM は NULL を無視するので 900 です。",
@@ -1068,7 +1068,7 @@ SQLD.register("aggregate", {
       sql: "SELECT ____(year) FROM books;",
       choices: ["MAX", "MIN", "TOP", "LAST"],
       expect: "MAX(year)\n2021",
-      explain: "いちばん大きい値は `MAX` です。",
+      explain: "いちばん大きい値は `MAX` です。※MAX = maximum、最大。MIN = minimum、最小",
       ref: "max-min"
     },
     {
@@ -1076,7 +1076,7 @@ SQLD.register("aggregate", {
       sql: "SELECT ____(price) FROM books;",
       choices: ["AVG", "MEAN", "AVERAGE", "MID"],
       expect: "AVG(price)\n1200",
-      explain: "平均は `AVG`(average の略)です。`AVERAGE` は表計算ソフトの関数名で、SQL では使えません。",
+      explain: "平均は `AVG`(average の略)です。`AVERAGE` は表計算ソフトの関数名で、SQL(Structured Query Language、データベースの問い合わせ言語) では使えません。",
       ref: "sum-avg"
     },
     {
@@ -1137,7 +1137,7 @@ SQLD.register("group", {
         ["SELECT author_id, COUNT(*) FROM books GROUP BY author_id;", "正しい"],
         ["SELECT title, COUNT(*) FROM books GROUP BY author_id;", "誤り: title は1つに決まらない"]
       ],
-      notes: ["SQLite(と設定によっては MySQL)はこの誤りをエラーにせず、グループの中のどれかの値を出します。PostgreSQL や標準SQLではエラーです。どの DB でも、このルールを守って書きます。"]
+      notes: ["SQLite(と設定によっては MySQL)はこの誤りをエラーにせず、グループの中のどれかの値を出します。PostgreSQL や標準SQL(Structured Query Language、データベースの問い合わせ言語)ではエラーです。どの DB(Database、データベース) でも、このルールを守って書きます。"]
     },
     {
       id: "group-order", name: "書く順番と実行の順番", read: "WHERE → GROUP BY → ORDER BY",
@@ -1153,7 +1153,7 @@ SQLD.register("group", {
   ],
   questions: [
     {
-      id: "g01", q: "このSQLの結果は?", tables: ["authors"], kind: "result",
+      id: "g01", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["authors"], kind: "result",
       sql: "SELECT country, COUNT(*) FROM authors GROUP BY country ORDER BY COUNT(*) DESC;",
       choices: [
         "country | COUNT(*)\n日本 | 3\nイギリス | 2\nアメリカ | 1",
@@ -1161,11 +1161,11 @@ SQLD.register("group", {
         "country | COUNT(*)\n日本 | 1\nイギリス | 1\nアメリカ | 1",
         "country | COUNT(*)\n日本 | 6"
       ],
-      explain: "国ごとにまとめて行を数え、数の多い順に並べます。日本(青木・佐藤・中村)3人、イギリス(Brown・Smith)2人、アメリカ(Miller)1人です。",
+      explain: "国ごとにまとめて行を数え、数の多い順に並べます。日本(青木・佐藤・中村)3人、イギリス(Brown・Smith)2人、アメリカ(Miller)1人です。※DESC = descending、大きい順(降順)",
       ref: "group-by"
     },
     {
-      id: "g02", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "g02", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT author_id, SUM(price) FROM books WHERE author_id IN (1, 3) GROUP BY author_id ORDER BY author_id;",
       choices: [
         "author_id | SUM(price)\n1 | 2700\n3 | 900",
@@ -1177,7 +1177,7 @@ SQLD.register("group", {
       ref: "group-by"
     },
     {
-      id: "g03", q: "このSQLの結果は?", tables: ["orders"], kind: "result",
+      id: "g03", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["orders"], kind: "result",
       sql: "SELECT book_id, SUM(qty) FROM orders GROUP BY book_id ORDER BY SUM(qty) DESC LIMIT 2;",
       choices: [
         "book_id | SUM(qty)\n3 | 5\n5 | 4",
@@ -1185,11 +1185,11 @@ SQLD.register("group", {
         "book_id | SUM(qty)\n1 | 3\n3 | 5",
         "book_id | SUM(qty)\n1 | 2\n3 | 2"
       ],
-      explain: "本ごとの合計は、本3: 1+4=5、本5: 4、本1: 2+1=3、本8: 2、本2: 1。多い順の先頭2行です。",
+      explain: "本ごとの合計は、本3: 1+4=5、本5: 4、本1: 2+1=3、本8: 2、本2: 1。多い順の先頭2行です。※DESC = descending、大きい順(降順)",
       ref: "group-order"
     },
     {
-      id: "g04", q: "このSQLの結果は、何行?", tables: ["orders"], kind: "text",
+      id: "g04", q: "このクエリ(データベースへの問い合わせ文)の結果は、何行?", tables: ["orders"], kind: "text",
       sql: "SELECT order_date, COUNT(*) FROM orders GROUP BY order_date;",
       choices: ["5行", "7行", "2行", "1行"],
       explain: "注文日は 04-01・04-02・04-03・04-05・04-06 の5種類。グループ1つにつき1行なので5行です。",
@@ -1217,7 +1217,7 @@ SQLD.register("group", {
       sql: "SELECT ____, AVG(price) FROM books GROUP BY author_id;",
       choices: ["author_id", "title", "price", "id"],
       expect: "author_id | AVG(price)\n1 | 1350\n2 | 800\n3 | 900\n4 | 2200\n5 | 1200\nNULL | 600",
-      explain: "GROUP BY のときに SELECT に書けるのは、GROUP BY の列と集計関数だけです。title・price・id は1つのグループに複数あるので、標準SQLではエラーになります。",
+      explain: "GROUP BY のときに SELECT に書けるのは、GROUP BY の列と集計関数だけです。title・price・id は1つのグループに複数あるので、標準SQL(Structured Query Language、データベースの問い合わせ言語)ではエラーになります。※AVG = average、平均",
       ref: "group-select"
     },
     {
@@ -1225,11 +1225,11 @@ SQLD.register("group", {
       sql: "SELECT book_id, ____(qty) FROM orders GROUP BY book_id;",
       choices: ["MAX", "COUNT", "SUM", "TOP"],
       expect: "book_id | MAX(qty)\n1 | 2\n2 | 1\n3 | 4\n5 | 4\n8 | 2",
-      explain: "グループの中の最大は `MAX`。`SUM` だと注文冊数の合計になります。",
+      explain: "グループの中の最大は `MAX`。`SUM` だと注文冊数の合計になります。※MAX = maximum、最大",
       ref: "group-by"
     },
     {
-      id: "g09", q: "このSQLは、標準SQL(PostgreSQL など)ではエラーになります。原因は?", tables: ["books"], kind: "text",
+      id: "g09", q: "このクエリ(データベースへの問い合わせ文)は、標準SQL(PostgreSQL など)ではエラーになります。原因は?", tables: ["books"], kind: "text",
       sql: "SELECT title, COUNT(*) FROM books GROUP BY author_id;",
       choices: [
         "title が GROUP BY にも集計関数にも入っていない",
@@ -1237,7 +1237,7 @@ SQLD.register("group", {
         "GROUP BY は FROM より前に書く",
         "author_id を SELECT に書いていない"
       ],
-      explain: "著者1のグループには 星の旅 と 森の朝 があり、title が1つに決まりません。GROUP BY した列を SELECT に書かないこと自体は問題ありません。SQLite はエラーにしませんが、どれかの title が出るだけなので頼れません。",
+      explain: "著者1のグループには 星の旅 と 森の朝 があり、title が1つに決まりません。GROUP BY した列を SELECT に書かないこと自体は問題ありません。SQLite はエラーにしませんが、どれかの title が出るだけなので頼れません。※略語: SQL(Structured Query Language、データベースの問い合わせ言語)",
       ref: "group-select"
     },
     {
@@ -1258,7 +1258,7 @@ SQLD.register("group", {
       ref: "group-order"
     },
     {
-      id: "g12", q: "この結果を出すSQLは?", tables: ["orders"], kind: "sql",
+      id: "g12", q: "この結果を出すクエリ(データベースへの問い合わせ文)は?", tables: ["orders"], kind: "sql",
       result: "book_id | total\n1 | 3\n3 | 5",
       choices: [
         "SELECT book_id, SUM(qty) AS total FROM orders WHERE book_id IN (1, 3) GROUP BY book_id ORDER BY book_id;",
@@ -1266,11 +1266,11 @@ SQLD.register("group", {
         "SELECT book_id, SUM(qty) AS total FROM orders WHERE book_id IN (1, 3) ORDER BY book_id;",
         "SELECT book_id, MAX(qty) AS total FROM orders WHERE book_id IN (1, 3) GROUP BY book_id ORDER BY book_id;"
       ],
-      explain: "本1は 2+1=3 冊、本3は 1+4=5 冊で、qty の合計です。COUNT(*) だと注文の回数(2 と 2)、GROUP BY がないと全体で1行になってしまいます。",
+      explain: "本1は 2+1=3 冊、本3は 1+4=5 冊で、qty の合計です。COUNT(*) だと注文の回数(2 と 2)、GROUP BY がないと全体で1行になってしまいます。※MAX = maximum、最大",
       ref: "group-by"
     },
     {
-      id: "g13", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "g13", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT author_id, COUNT(*), COUNT(price) FROM books WHERE author_id = 3 GROUP BY author_id;",
       choices: [
         "author_id | COUNT(*) | COUNT(price)\n3 | 2 | 1",
@@ -1295,7 +1295,7 @@ SQLD.register("group", {
       choices: ["SUM(qty)", "qty", "book_id", "COUNT(*)"],
       accepts: ["2"],
       expect: "book_id | SUM(qty)\n3 | 5\n5 | 4\n1 | 3\n8 | 2\n2 | 1",
-      explain: "グループごとの合計で並べるので `SUM(qty)` です。ORDER BY でも集計関数を使えます。SELECT で `AS total` と別名をつけていれば `ORDER BY total DESC` とも書けます。SELECT の2番目の列という意味で `ORDER BY 2 DESC` とも書けますが、列を足すとずれるので名前で書くほうが安全です。",
+      explain: "グループごとの合計で並べるので `SUM(qty)` です。ORDER BY でも集計関数を使えます。SELECT で `AS total` と別名をつけていれば `ORDER BY total DESC` とも書けます。SELECT の2番目の列という意味で `ORDER BY 2 DESC` とも書けますが、列を足すとずれるので名前で書くほうが安全です。※DESC = descending、大きい順(降順)",
       ref: "group-order"
     }
   ]
@@ -1351,7 +1351,7 @@ SQLD.register("join", {
   ],
   questions: [
     {
-      id: "j01", q: "このSQLの結果は?", tables: ["books", "authors"], kind: "result",
+      id: "j01", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books", "authors"], kind: "result",
       sql: "SELECT b.title, a.name\nFROM books AS b\nINNER JOIN authors AS a ON b.author_id = a.id\nWHERE a.country = 'イギリス';",
       choices: [
         "title | name\n海の歌 | Brown\n風と石 | Smith",
@@ -1363,21 +1363,21 @@ SQLD.register("join", {
       ref: "inner-join"
     },
     {
-      id: "j02", q: "このSQLの結果は、何行?", tables: ["books", "authors"], kind: "text",
+      id: "j02", q: "このクエリ(データベースへの問い合わせ文)の結果は、何行?", tables: ["books", "authors"], kind: "text",
       sql: "SELECT b.title, a.name\nFROM books AS b\nINNER JOIN authors AS a ON b.author_id = a.id;",
       choices: ["7行", "8行", "6行", "48行"],
       explain: "author_id が NULL の 古い地図 は、合う著者がいないので消えます。8 − 1 = 7行。48 は条件なしで全部の組み合わせ(8 × 6)をつくったときの数です。",
       ref: "inner-join"
     },
     {
-      id: "j03", q: "このSQLの結果は、何行?", tables: ["books", "authors"], kind: "text",
+      id: "j03", q: "このクエリ(データベースへの問い合わせ文)の結果は、何行?", tables: ["books", "authors"], kind: "text",
       sql: "SELECT b.title, a.name\nFROM books AS b\nLEFT JOIN authors AS a ON b.author_id = a.id;",
       choices: ["8行", "7行", "6行", "9行"],
       explain: "`LEFT JOIN` は左の books の行をすべて残します。どの本にも著者は1人までなので、ちょうど8行。古い地図 の name は NULL です。",
       ref: "left-join"
     },
     {
-      id: "j04", q: "このSQLの結果は?", tables: ["authors", "books"], kind: "result",
+      id: "j04", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["authors", "books"], kind: "result",
       sql: "SELECT a.name, b.title\nFROM authors AS a\nLEFT JOIN books AS b ON a.id = b.author_id\nWHERE a.id >= 5;",
       choices: [
         "name | title\nMiller | 青い鳥\n中村 | NULL",
@@ -1389,7 +1389,7 @@ SQLD.register("join", {
       ref: "left-join"
     },
     {
-      id: "j05", q: "このSQLの結果は?", tables: ["books", "orders"], kind: "result",
+      id: "j05", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books", "orders"], kind: "result",
       sql: "SELECT b.title, o.qty\nFROM books AS b\nLEFT JOIN orders AS o ON b.id = o.book_id\nWHERE b.id IN (3, 4);",
       choices: [
         "title | qty\n森の朝 | 1\n森の朝 | 4\n夜の街 | NULL",
@@ -1430,7 +1430,7 @@ SQLD.register("join", {
       id: "j09", q: "books に b という別名をつけています。空欄に入るのは?", tables: ["books", "authors"], kind: "code",
       sql: "SELECT ____.title, a.name\nFROM books AS b\nINNER JOIN authors AS a ON b.author_id = a.id;",
       choices: ["b", "books", "a", "authors"],
-      explain: "別名をつけたら、その文の中では別名で呼びます。`books.title` と書くとエラーになる DB がほとんどです。title は books の列なので `a` ではありません。",
+      explain: "別名をつけたら、その文の中では別名で呼びます。`books.title` と書くとエラーになる DB(Database、データベース) がほとんどです。title は books の列なので `a` ではありません。",
       ref: "table-alias"
     },
     {
@@ -1441,7 +1441,7 @@ SQLD.register("join", {
       ref: "table-alias"
     },
     {
-      id: "j11", q: "このSQLはエラーになります。原因は?", tables: ["books", "authors"], kind: "text",
+      id: "j11", q: "このクエリ(データベースへの問い合わせ文)はエラーになります。原因は?", tables: ["books", "authors"], kind: "text",
       sql: "SELECT id, title, name\nFROM books\nINNER JOIN authors ON books.author_id = authors.id;",
       choices: [
         "id が books と authors の両方にあり、どちらの id かわからない",
@@ -1459,7 +1459,7 @@ SQLD.register("join", {
       ref: "left-join"
     },
     {
-      id: "j13", q: "どの本も書いていない著者を探します。この結果を出すSQLは?", tables: ["authors", "books"], kind: "sql",
+      id: "j13", q: "どの本も書いていない著者を探します。この結果を出すクエリ(データベースへの問い合わせ文)は?", tables: ["authors", "books"], kind: "sql",
       result: "name | title\n中村 | NULL",
       choices: [
         "SELECT a.name, b.title FROM authors AS a LEFT JOIN books AS b ON a.id = b.author_id WHERE b.id IS NULL;",
@@ -1471,7 +1471,7 @@ SQLD.register("join", {
       ref: "left-join"
     },
     {
-      id: "j14", q: "このSQLの結果は?", tables: ["orders", "books", "authors"], kind: "result",
+      id: "j14", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["orders", "books", "authors"], kind: "result",
       sql: "SELECT a.name, o.qty\nFROM orders AS o\nINNER JOIN books AS b ON o.book_id = b.id\nINNER JOIN authors AS a ON b.author_id = a.id\nWHERE o.order_date = '2024-04-03';",
       choices: [
         "name | qty\nSmith | 4\nBrown | 1",
@@ -1527,7 +1527,7 @@ SQLD.register("modify", {
     },
     {
       id: "where-danger", name: "WHERE を忘れると", read: "全行が対象",
-      desc: "UPDATE と DELETE で WHERE を書き忘れると、表のすべての行が書き換わったり消えたりします。SQL の文としてはエラーになりません。",
+      desc: "UPDATE と DELETE で WHERE を書き忘れると、表のすべての行が書き換わったり消えたりします。SQL(Structured Query Language、データベースの問い合わせ言語) の文としてはエラーになりません。",
       examples: [
         ["UPDATE books SET price = 1000;", "8冊すべての値段が1000になる"],
         ["DELETE FROM orders;", "注文がすべて消える(表は残る)"],
@@ -1620,7 +1620,7 @@ SQLD.register("modify", {
       ref: "insert"
     },
     {
-      id: "m11", q: "id が 2 の本だけ値段を変えたくて、このSQLを実行しました。どうなる?", tables: ["books"], kind: "text",
+      id: "m11", q: "id が 2 の本だけ値段を変えたくて、このクエリ(データベースへの命令文)を実行しました。どうなる?", tables: ["books"], kind: "text",
       sql: "UPDATE books SET price = 1000;",
       choices: [
         "WHERE がないので、すべての本の値段が1000になる",
@@ -1644,7 +1644,7 @@ SQLD.register("modify", {
       ref: "insert"
     },
     {
-      id: "m13", q: "このSQLはエラーになります。原因は?", tables: ["authors"], kind: "text",
+      id: "m13", q: "このクエリ(データベースへの命令文)はエラーになります。原因は?", tables: ["authors"], kind: "text",
       sql: "INSERT INTO authors (id, name) VALUES (7, '森', '日本');",
       choices: [
         "列は2つなのに、値が3つある",
@@ -1693,7 +1693,7 @@ SQLD.register("null-table", {
     },
     {
       id: "null-logic", name: "NULL と比較・計算・集計", read: "NULL のふるまい",
-      desc: "NULL と比べると、結果は真でも偽でもない「不明」になり、WHERE では選ばれません。NULL を含む計算(`NULL + 100` など)の結果も NULL です。集計関数は NULL を無視します(COUNT(*) だけは行を数える)。",
+      desc: "NULL と比べると、結果は真でも偽でもない「不明」になり、WHERE では選ばれません。NULL を含む計算(`NULL + 100` など)の結果も NULL です。集計関数は NULL を無視します(COUNT(*) だけは行を数える)。※AVG = average、平均。MAX = maximum、最大。MIN = minimum、最小",
       examples: [
         ["SELECT COUNT(*) FROM books WHERE price > 1000 OR price <= 1000;", "7(NULL の行はどちらにも入らない)"],
         ["SELECT COUNT(*), COUNT(price), AVG(price) FROM books;", "8 | 7 | 1200"]
@@ -1715,7 +1715,7 @@ SQLD.register("null-table", {
     },
     {
       id: "types", name: "型", read: "INTEGER · TEXT など",
-      desc: "列ごとに、入れる値の種類(型)を決めます。",
+      desc: "列ごとに、入れる値の種類(型)を決めます。※VARCHAR = variable character、長さが変わる文字列",
       examples: [
         ["CREATE TABLE notes (\n  id INTEGER,\n  body TEXT,\n  rate REAL\n);", "整数・文字列・小数"]
       ],
@@ -1740,7 +1740,7 @@ SQLD.register("null-table", {
   ],
   questions: [
     {
-      id: "n01", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "n01", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT title FROM books WHERE price IS NULL;",
       choices: [
         "title\n星の庭",
@@ -1752,7 +1752,7 @@ SQLD.register("null-table", {
       ref: "is-null"
     },
     {
-      id: "n02", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "n02", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT title FROM books WHERE author_id = NULL;",
       choices: [
         "title",
@@ -1791,7 +1791,7 @@ SQLD.register("null-table", {
       ref: "null-logic"
     },
     {
-      id: "n06", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "n06", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT COUNT(*), COUNT(price), AVG(price) FROM books;",
       choices: [
         "COUNT(*) | COUNT(price) | AVG(price)\n8 | 7 | 1200",
@@ -1799,7 +1799,7 @@ SQLD.register("null-table", {
         "COUNT(*) | COUNT(price) | AVG(price)\n7 | 7 | 1200",
         "COUNT(*) | COUNT(price) | AVG(price)\n8 | 7 | 1050"
       ],
-      explain: "`COUNT(*)` は全8行。`COUNT(price)` と `AVG(price)` は NULL を無視するので、7件で 8400 ÷ 7 = 1200 です。",
+      explain: "`COUNT(*)` は全8行。`COUNT(price)` と `AVG(price)` は NULL を無視するので、7件で 8400 ÷ 7 = 1200 です。※AVG = average、平均",
       ref: "null-logic"
     },
     {
@@ -1813,7 +1813,7 @@ SQLD.register("null-table", {
       id: "n08", q: "id を、行を1つに決める主キーにします。空欄に入るのは?", tables: [], kind: "code",
       sql: "CREATE TABLE magazines (\n  id INTEGER ____,\n  name TEXT NOT NULL\n);",
       choices: ["PRIMARY KEY", "MAIN KEY", "UNIQUE ID", "FIRST KEY"],
-      explain: "主キーは `PRIMARY KEY` です。主キーの列は、値が重ならず、NULL にもできません。SQLite は型名や制約をゆるく読むので、この誤答を入れてもエラーにならないことがありますが、主キーの意味にはなりません。",
+      explain: "主キーは `PRIMARY KEY` です。主キーの列は、値が重ならず、NULL にもできません。SQLite は型名や制約をゆるく読むので、この誤答を入れてもエラーにならないことがありますが、主キーの意味にはなりません。※略語: ID(identifier、識別子)",
       ref: "constraints"
     },
     {
@@ -1828,7 +1828,7 @@ SQLD.register("null-table", {
       sql: "CREATE TABLE magazines (\n  id INTEGER PRIMARY KEY,\n  name ____ NOT NULL\n);",
       choices: ["TEXT", "INTEGER", "STRING", "CHARS"],
       acceptPatterns: ["^varchar(\\([1-9][0-9]*\\))?$"],
-      explain: "文字列は `TEXT`(長さを決めるなら `VARCHAR(100)` など。MySQL では VARCHAR に長さが必要)です。`INTEGER` は整数の型です。`STRING` という型は標準SQLにはありません。SQLite は型名や制約をゆるく読むので、この誤答を入れてもエラーにならないことがありますが、文字列の型を正しく指定したことにはなりません。",
+      explain: "文字列は `TEXT`(長さを決めるなら `VARCHAR(100)` など。MySQL では VARCHAR に長さが必要)です。`INTEGER` は整数の型です。`STRING` という型は標準SQL(Structured Query Language、データベースの問い合わせ言語)にはありません。SQLite は型名や制約をゆるく読むので、この誤答を入れてもエラーにならないことがありますが、文字列の型を正しく指定したことにはなりません。※VARCHAR = variable character、長さが変わる文字列",
       ref: "types"
     },
     {
@@ -1855,7 +1855,7 @@ SQLD.register("null-table", {
       ref: "constraints"
     },
     {
-      id: "n13", q: "このSQLの結果は?", tables: ["books"], kind: "result",
+      id: "n13", q: "このクエリ(データベースへの問い合わせ文)の結果は?", tables: ["books"], kind: "result",
       sql: "SELECT COUNT(*) FROM books WHERE price > 1000 OR price <= 1000;",
       choices: ["COUNT(*)\n7", "COUNT(*)\n8", "COUNT(*)\n0", "COUNT(*)\n1"],
       explain: "どんな数でも「1000より大きい」か「1000以下」のどちらかですが、NULL はどちらも「不明」です。星の庭 を除いた7行になります。",

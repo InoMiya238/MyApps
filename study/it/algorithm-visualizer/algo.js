@@ -56,8 +56,8 @@ var AlgoViz = (function () {
     quick:     { best: "O(n log n)", avg: "O(n log n)", worst: "O(n²)", mem: "O(log n)", stable: "安定でない", note: "末尾をピボットにすると、整列済み・逆順のデータで最悪になる。メモリは再帰の深さ(平均)。" },
     linear:    { best: "O(1)", avg: "O(n)", worst: "O(n)", mem: "O(1)", stable: "—", note: "整列していなくても使える。" },
     binary:    { best: "O(1)", avg: "O(log n)", worst: "O(log n)", mem: "O(1)", stable: "—", note: "整列済みの配列でだけ使える。" },
-    bfs:       { best: "O(V+E)", avg: "O(V+E)", worst: "O(V+E)", mem: "O(V)", stable: "—", note: "V = ノードの数、E = 辺の数。キューを使う。" },
-    dfs:       { best: "O(V+E)", avg: "O(V+E)", worst: "O(V+E)", mem: "O(V)", stable: "—", note: "V = ノードの数、E = 辺の数。再帰(スタック)を使う。" }
+    bfs:       { best: "O(V+E)", avg: "O(V+E)", worst: "O(V+E)", mem: "O(V)", stable: "—", note: "BFS は Breadth-First Search(幅優先探索)の略。V = ノードの数、E = 辺の数。キューを使う。" },
+    dfs:       { best: "O(V+E)", avg: "O(V+E)", worst: "O(V+E)", mem: "O(V)", stable: "—", note: "DFS は Depth-First Search(深さ優先探索)の略。V = ノードの数、E = 辺の数。再帰(スタック)を使う。" }
   };
 
   // ---------- 擬似コード ----------
@@ -524,7 +524,7 @@ var AlgoViz = (function () {
       steps.push({ cur: o.cur === undefined ? null : o.cur, order: order.slice(), ds: queue.slice(), queued: copy(queued),
         visited: copy(visited), tryEdge: o.tryEdge || null, onEdges: on.slice(), line: o.line, note: o.note, ev: o.ev || null, info: o.info || null });
     }
-    snap({ line: -1, note: "幅優先探索(BFS): 開始点 " + s + " から近い順に広げていきます。次に調べるノードを「キュー」(先に入れたものから取り出す列)で管理します。" });
+    snap({ line: -1, note: "幅優先探索(BFS = Breadth-First Search): 開始点 " + s + " から近い順に広げていきます。次に調べるノードを「キュー」(先に入れたものから取り出す列)で管理します。" });
     visited[s] = true; queued[s] = true; queue.push(s); dist[s] = 0;
     snap({ line: 0, note: s + " を訪問済みの印をつけてキューに入れます。" });
     while (queue.length) {
@@ -557,7 +557,7 @@ var AlgoViz = (function () {
       steps.push({ cur: o.cur === undefined ? null : o.cur, order: order.slice(), ds: stack.slice(), queued: inStack,
         visited: copy(visited), tryEdge: o.tryEdge || null, onEdges: on.slice(), line: o.line, note: o.note, ev: o.ev || null, info: o.info || null });
     }
-    snap({ line: -1, note: "深さ優先探索(DFS): 開始点 " + s + " から、行けるところまで深く進み、行き止まりになったら戻って別の道を進みます。呼び出しの重なり(呼び出しスタック)で、戻る先を覚えます。" });
+    snap({ line: -1, note: "深さ優先探索(DFS = Depth-First Search): 開始点 " + s + " から、行けるところまで深く進み、行き止まりになったら戻って別の道を進みます。呼び出しの重なり(呼び出しスタック)で、戻る先を覚えます。" });
     function dfs(v, d) {
       stack.push(v);
       visited[v] = true;

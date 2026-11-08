@@ -299,7 +299,7 @@ GITD.register("setup", {
   commands: [
     {
       id: "git-init", name: "git init", read: "リポジトリを作る",
-      desc: "今いるフォルダーを Git のリポジトリにします。フォルダーの中に `.git` ができ、履歴や設定はすべてそこに入ります。`.git` を消すと履歴も消えます。",
+      desc: "今いるフォルダーを Git のリポジトリにします(init は initialize、初期化する の略)。フォルダーの中に `.git` ができ、履歴や設定はすべてそこに入ります。`.git` を消すと履歴も消えます。",
       examples: [
         ["git init", "今いるフォルダーをリポジトリにする"],
         ["git init -b main", "最初のブランチ名を main にして作る"],
@@ -317,7 +317,7 @@ GITD.register("setup", {
     },
     {
       id: "git-config", name: "git config", read: "設定する",
-      desc: "名前やメールなどの設定を読み書きします。`--global` はそのパソコンの全リポジトリに効く設定(~/.gitconfig)、つけなければ今のリポジトリだけの設定です。コミットには user.name と user.email が記録されます。",
+      desc: "名前やメールなどの設定を読み書きします(config は configuration、設定 の略)。`--global` はそのパソコンの全リポジトリに効く設定(~/.gitconfig)、つけなければ今のリポジトリだけの設定です。コミットには user.name と user.email が記録されます。",
       examples: [
         ["git config --global user.name \"Taro Yamada\"", "コミットに記録する名前"],
         ["git config --global user.email \"taro@example.com\"", "コミットに記録するメール"],
@@ -356,21 +356,21 @@ GITD.register("setup", {
     {
       id: "s01", q: "今いるフォルダーを、新しい Git リポジトリにするコマンドは?",
       choices: ["git init", "git clone .", "git add .", "git commit --init"],
-      explain: "`git init` はフォルダーの中に `.git` を作り、そこから履歴を記録できるようにします。`git clone` はリモートにあるリポジトリを複製するコマンドです。",
+      explain: "`git init` はフォルダーの中に `.git` を作り、そこから履歴を記録できるようにします。`git clone` はリモートにあるリポジトリを複製するコマンドです。`init` は initialize(初期化する)の略です。",
       ref: "git-init"
     },
     {
       id: "s02", q: "コミットに記録する名前を「Taro」にします。このパソコンの全リポジトリに効かせるコマンドは?",
       choices: ["git config --global user.name \"Taro\"", "git config --global user.email \"Taro\"", "git config --local user.name \"Taro\"", "git set --global user.name \"Taro\""],
       acceptPatterns: ["^git config --global user\\.name (\"[^\"]+\"|\\S+)$"],
-      explain: "名前は `user.name`、メールは `user.email` です。`--global` をつけるとユーザー全体の設定になり、`--local`(または何もつけない)だと今のリポジトリだけの設定になります。入力モードでは名前の中身は何でも正解です。",
+      explain: "名前は `user.name`、メールは `user.email` です。`--global` をつけるとユーザー全体の設定になり、`--local`(または何もつけない)だと今のリポジトリだけの設定になります。入力モードでは名前の中身は何でも正解です。`config` は configuration(設定)の略です。",
       ref: "git-config"
     },
     {
       id: "s03", q: "コミットに記録するメールアドレスを、全リポジトリ共通で設定するコマンドは?",
       choices: ["git config --global user.email \"taro@example.com\"", "git config --global user.name \"taro@example.com\"", "git config --global email \"taro@example.com\"", "git remote add email \"taro@example.com\""],
       acceptPatterns: ["^git config --global user\\.email (\"[^\"]+\"|\\S+)$"],
-      explain: "キーは `user.email` です(`email` だけでは Git が使う設定になりません)。入力モードではアドレスの中身は何でも正解です。",
+      explain: "キーは `user.email` です(`email` だけでは Git が使う設定になりません)。入力モードではアドレスの中身は何でも正解です。`config` は configuration(設定)の略です。",
       ref: "git-config"
     },
     {
@@ -384,7 +384,7 @@ GITD.register("setup", {
       term: "$ git config --global ____ main",
       kind: "code",
       choices: ["init.defaultBranch", "core.defaultBranch", "init.branch", "branch.default"],
-      explain: "`init.defaultBranch` は `git init` のときに作る最初のブランチの名前です。GitHub で作るリポジトリも、今は `main` が既定です。",
+      explain: "`init.defaultBranch` は `git init` のときに作る最初のブランチの名前です。GitHub で作るリポジトリも、今は `main` が既定です。`init` は initialize(初期化する)、`config` は configuration(設定)の略です。",
       ref: "git-config"
     },
     {
@@ -429,7 +429,7 @@ GITD.register("setup", {
       id: "s11", q: "今効いている Git の設定を一覧で表示するコマンドは?",
       choices: ["git config --list", "git config --show", "git status --config", "git log --config"],
       accepts: ["git config -l"],
-      explain: "`git config --list`(`-l`)で、全体とリポジトリの設定がまとめて出ます。",
+      explain: "`git config --list`(`-l`)で、全体とリポジトリの設定がまとめて出ます。`config` は configuration(設定)の略です。",
       ref: "git-config"
     },
     {
@@ -445,7 +445,7 @@ GITD.register("setup", {
       kind: "code",
       choices: ["-b", "-m", "--name", "-n"],
       accepts: ["--initial-branch"],
-      explain: "`git init -b main`(`--initial-branch=main`)で最初のブランチ名を指定できます。毎回指定しないなら `init.defaultBranch` を設定しておきます。",
+      explain: "`git init -b main`(`--initial-branch=main`)で最初のブランチ名を指定できます。毎回指定しないなら `init.defaultBranch` を設定しておきます。`init` は initialize(初期化する)の略です。",
       ref: "git-init"
     }
   ]
@@ -507,7 +507,7 @@ GITD.register("setup", {
       },
       {
         id: "git-diff", name: "git diff", read: "差分を見る",
-        desc: "変更の差分を表示します。何もつけないと「作業ツリーとステージ」の差(まだ add していない変更)、`--staged` だと「ステージと最新コミット」の差(次のコミットに入る変更)です。",
+        desc: "変更の差分を表示します(diff は difference、差 の略)。何もつけないと「作業ツリーとステージ」の差(まだ add していない変更)、`--staged` だと「ステージと最新コミット」の差(次のコミットに入る変更)です。",
         examples: [
           ["git diff", "まだステージしていない変更"],
           ["git diff --staged", "ステージ済みの変更(--cached と同じ)"],
@@ -521,7 +521,7 @@ GITD.register("setup", {
       },
       {
         id: "git-rm", name: "git rm", read: "削除して記録",
-        desc: "ファイルを削除し、その削除をステージします。`--cached` をつけると、ファイルは残したまま Git の追跡だけをやめます。",
+        desc: "ファイルを削除し、その削除をステージします(rm は remove、取り除く の略)。`--cached` をつけると、ファイルは残したまま Git の追跡だけをやめます。",
         examples: [
           ["git rm old.txt", "ファイルを消して、削除をステージ"],
           ["git rm --cached secret.txt", "ファイルは残し、追跡だけやめる"]
@@ -529,7 +529,7 @@ GITD.register("setup", {
       },
       {
         id: "git-mv", name: "git mv", read: "名前を変えて記録",
-        desc: "ファイルの名前変更(移動)を行い、その変更をステージします。ふつうの `mv` のあとに `git add` するのと同じ結果になります。",
+        desc: "ファイルの名前変更(移動)を行い、その変更をステージします(mv は move、動かす の略)。ふつうの `mv` のあとに `git add` するのと同じ結果になります。",
         examples: [["git mv a.txt b.txt", "a.txt を b.txt に変える"]]
       }
     ],
@@ -557,14 +557,14 @@ GITD.register("setup", {
       {
         id: "c04", q: "編集したが、まだステージしていない変更の中身(差分)を見るコマンドは?",
         choices: ["git diff", "git diff --staged", "git status", "git log -p"],
-        explain: "何もつけない `git diff` は「作業ツリーとステージ」の差なので、まだ add していない変更が出ます。`git status` はファイル名だけで、中身は出ません。",
+        explain: "何もつけない `git diff` は「作業ツリーとステージ」の差なので、まだ add していない変更が出ます。`git status` はファイル名だけで、中身は出ません。`diff` は difference(差)の略です。",
         ref: "git-diff"
       },
       {
         id: "c05", q: "ステージ済みで、次のコミットに入る変更の中身を見るコマンドは?",
         choices: ["git diff --staged", "git diff", "git log --staged", "git show"],
         accepts: ["git diff --cached"],
-        explain: "`git diff --staged`(`--cached`)は「ステージと最新コミット」の差です。add したあとに `git diff` だけを実行しても、ステージ済みの変更は出てきません。",
+        explain: "`git diff --staged`(`--cached`)は「ステージと最新コミット」の差です。add したあとに `git diff` だけを実行しても、ステージ済みの変更は出てきません。`diff` は difference(差)の略です。",
         ref: "git-diff"
       },
       {
@@ -573,7 +573,7 @@ GITD.register("setup", {
         diff: true,
         kind: "code",
         choices: ["またね", "さようなら", "こんにちは", "hello.txt"],
-        explain: "`+` で始まる行が増えた行、`-` で始まる行が消えた行です。「さようなら」が「またね」に変わりました。先頭が空白の「こんにちは」は変わっていない行です。",
+        explain: "`+` で始まる行が増えた行、`-` で始まる行が消えた行です。「さようなら」が「またね」に変わりました。先頭が空白の「こんにちは」は変わっていない行です。`diff` は difference(差)の略です。",
         ref: "git-diff"
       },
       {
@@ -608,13 +608,13 @@ GITD.register("setup", {
       {
         id: "c11", q: "`old.txt` を削除し、その削除もステージするコマンドは?",
         choices: ["git rm old.txt", "rm old.txt", "git delete old.txt", "git restore old.txt"],
-        explain: "`git rm` はファイルを消して、削除をステージまで済ませます。ふつうの `rm` だけだと、削除は作業ツリーにとどまり、別に `git add` が要ります。",
+        explain: "`git rm` はファイルを消して、削除をステージまで済ませます。ふつうの `rm` だけだと、削除は作業ツリーにとどまり、別に `git add` が要ります。`rm` は remove(取り除く)の略です。",
         ref: "git-rm"
       },
       {
         id: "c12", q: "`a.txt` の名前を `b.txt` に変え、その変更をステージまで済ませるコマンドは?",
         choices: ["git mv a.txt b.txt", "git rename a.txt b.txt", "git cp a.txt b.txt", "git switch a.txt b.txt"],
-        explain: "`git mv` は名前を変えて、その変更をステージします。Git は「a.txt の削除と b.txt の追加」から名前の変更を見分けて表示します。",
+        explain: "`git mv` は名前を変えて、その変更をステージします。Git は「a.txt の削除と b.txt の追加」から名前の変更を見分けて表示します。`mv` は move(動かす)の略です。",
         ref: "git-mv"
       },
       {
@@ -622,7 +622,7 @@ GITD.register("setup", {
         term: "$ git rm ____ secret.txt",
         kind: "code",
         choices: ["--cached", "-f", "-r", "--dry-run"],
-        explain: "`--cached` をつけると、ステージ(と次のコミット)からは消えますが、ファイル自体は残ります。続けて `.gitignore` に書いておくと、もう追跡されません。",
+        explain: "`--cached` をつけると、ステージ(と次のコミット)からは消えますが、ファイル自体は残ります。続けて `.gitignore` に書いておくと、もう追跡されません。`rm` は remove(取り除く)の略です。",
         ref: "git-rm"
       },
       {
@@ -804,7 +804,7 @@ GITD.register("setup", {
         kind: "code",
         choices: ["HEAD~1", "HEAD-1", "HEAD+1", "~HEAD"],
         accepts: ["HEAD~", "HEAD^", "HEAD^1", "@~", "@~1", "@^"],
-        explain: "1つ前は `HEAD~1`(`HEAD~`、`HEAD^`)と書きます。`-1` や `+1` の書き方はありません。",
+        explain: "1つ前は `HEAD~1`(`HEAD~`、`HEAD^`)と書きます。`-1` や `+1` の書き方はありません。`diff` は difference(差)の略です。",
         ref: "rev-rel"
       },
       {
@@ -841,7 +841,7 @@ GITD.register("setup", {
         id: "h15", q: "コミットのハッシュ(`9f3c2a1…` のような ID)について正しいのは?",
         kind: "text",
         choices: ["中身と親などから計算した値。ほかと区別できれば先頭の数文字で指定できる", "1, 2, 3 … と順に振られる連番", "コミットした日時を英数字にしたもの", "push するたびに新しく振り直される"],
-        explain: "ハッシュは内容・親・作者・日時などから計算されます。同じ変更でも親が変わればハッシュも変わる、というのが rebase や amend で「別のコミットになる」理由です。",
+        explain: "ID は identifier(見分けるための名前)の略です。ハッシュは内容・親・作者・日時などから計算されます。同じ変更でも親が変わればハッシュも変わる、というのが rebase や amend で「別のコミットになる」理由です。",
         ref: "git-show"
       },
       {
@@ -1150,7 +1150,7 @@ GITD.register("setup", {
       },
       {
         id: "merge-no-ff", name: "git merge --no-ff", read: "必ずマージコミットを作る",
-        desc: "fast-forward できる形でも、あえてマージコミットを作ります。「ここで feat を取り込んだ」というまとまりが履歴に残ります。",
+        desc: "fast-forward(早送り)できる形でも、あえてマージコミットを作ります(--no-ff は no fast-forward の略)。「ここで feat を取り込んだ」というまとまりが履歴に残ります。",
         examples: [["git merge --no-ff feat", "マージコミットを作って取り込む"]],
         figures: [{
           before: ffBefore,
@@ -1331,7 +1331,7 @@ GITD.register("setup", {
         id: "git-remote", name: "git remote", read: "リモートの登録",
         desc: "リモート(GitHub などにあるリポジトリ)に名前をつけて登録・確認します。clone したときは、複製元が `origin` という名前で登録されています。",
         examples: [
-          ["git remote -v", "登録しているリモートを URL つきで表示"],
+          ["git remote -v", "登録しているリモートを URL(Uniform Resource Locator、ネット上の住所)つきで表示"],
           ["git remote add origin https://github.com/taro/app.git", "origin という名前で登録"],
           ["git remote remove old", "登録を消す"]
         ]
@@ -1405,14 +1405,14 @@ GITD.register("setup", {
         id: "r01", q: "登録しているリモートを、URL つきで表示するコマンドは?",
         choices: ["git remote -v", "git remote", "git branch -r", "git config --remote"],
         accepts: ["git remote --verbose"],
-        explain: "`git remote` だけだと名前(origin など)しか出ません。`-v` で取ってくる先(fetch)と送る先(push)の URL が出ます。",
+        explain: "`git remote` だけだと名前(origin など)しか出ません。`-v` で取ってくる先(fetch)と送る先(push)の URL(Uniform Resource Locator、ネット上の住所)が出ます。",
         ref: "git-remote"
       },
       {
         id: "r02", q: "`git init` で作ったリポジトリに、GitHub のリポジトリを origin という名前で登録するコマンドは?",
         choices: ["git remote add origin https://github.com/taro/app.git", "git remote origin https://github.com/taro/app.git", "git clone origin https://github.com/taro/app.git", "git push origin https://github.com/taro/app.git"],
         acceptPatterns: ["^git remote add origin \\S+$"],
-        explain: "`git remote add <名前> <URL>` で登録します。入力モードでは URL は何でも正解です。",
+        explain: "`git remote add <名前> <URL>` で登録します。URL は Uniform Resource Locator(ネット上の住所)の略です。入力モードでは URL は何でも正解です。`init` は initialize(初期化する)の略です。",
         ref: "git-remote"
       },
       {
@@ -1607,7 +1607,7 @@ GITD.register("setup", {
       },
       {
         id: "git-reflog", name: "git reflog", read: "HEAD の足あと",
-        desc: "HEAD やブランチがどこを指してきたかの記録です。reset や rebase で見えなくなったコミットも、しばらくはここからハッシュを見つけて戻せます(手元のリポジトリだけの記録)。",
+        desc: "HEAD やブランチがどこを指してきたかの記録です(reflog は reference log、参照の記録 の略)。reset や rebase で見えなくなったコミットも、しばらくはここからハッシュを見つけて戻せます(手元のリポジトリだけの記録)。",
         examples: [
           ["git reflog", "HEAD の動きの一覧(HEAD@{1} などで指定できる)"],
           ["git reset --hard HEAD@{1}", "1つ前に HEAD がいた位置へ戻す"]
@@ -1699,7 +1699,7 @@ GITD.register("setup", {
       {
         id: "u11", q: "`git reset --hard` で見えなくなったコミットのハッシュを探すコマンドは?",
         choices: ["git reflog", "git log --all", "git stash list", "git status"],
-        explain: "`git reflog` には HEAD が指してきたコミットが残っています。見つけたら `git reset --hard <ハッシュ>` や `git switch -c 名前 <ハッシュ>` で戻せます。`git log --all` は、ブランチからたどれないコミットを出しません。",
+        explain: "`git reflog` には HEAD が指してきたコミットが残っています。見つけたら `git reset --hard <ハッシュ>` や `git switch -c 名前 <ハッシュ>` で戻せます。`git log --all` は、ブランチからたどれないコミットを出しません。`reflog` は reference log(参照の記録)の略です。",
         ref: "git-reflog"
       },
       {
@@ -1742,7 +1742,7 @@ GITD.register("setup", {
         kind: "code",
         choices: ["9c8d7e6", "3f2a1b0", "HEAD@{0}", "HEAD~1"],
         accepts: ["HEAD@{1}"],
-        explain: "reset する前に HEAD がいたのは `HEAD@{1}`、つまり 9c8d7e6 です。`HEAD@{0}` は今の位置(3f2a1b0)です。",
+        explain: "reset する前に HEAD がいたのは `HEAD@{1}`、つまり 9c8d7e6 です。`HEAD@{0}` は今の位置(3f2a1b0)です。`reflog` は reference log(参照の記録)の略です。",
         ref: "git-reflog"
       }
     ]

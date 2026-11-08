@@ -189,6 +189,36 @@
     margin: 10px 0 0;
     line-height: 1.6;
   }
+  /* 単元一覧の下の略語の一覧(折りたたみ) */
+  .abbr-list {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .abbr-list summary {
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .abbr-list summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  .abbr-list ul {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--ink-muted);
+    overflow-wrap: anywhere;
+  }
+  .abbr-list b {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .abbr-list a { color: var(--accent); }
   button {
     font-family: var(--font-body);
     cursor: pointer;
@@ -655,7 +685,7 @@
     border-bottom: 1px solid var(--border);
   }
   .miss-item:last-child { border-bottom: none; }
-  .miss-item a { color: var(--accent); font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .miss-item a { color: var(--accent); font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
   .miss-item a:hover { text-decoration: underline; }
   .miss-item .name { font-weight: 600; }
   .miss-item .no {
@@ -739,7 +769,7 @@
   <header class="hero">
     <p class="eyebrow">WEB BASICS · 全20単元</p>
     <h1>Web道場</h1>
-    <p class="tagline">ネットワーク・HTTP・HTML・CSS・JavaScriptから、JSON・Web API・認証・セキュリティ・キャッシュ・リアルタイム通信・PWAまで、Webのしくみを4択で身につけます。難易度ごとに絞って練習できます。</p>
+    <p class="tagline">ネットワーク・HTTP・HTML・CSS・JavaScriptから、JSON・Web API・認証・セキュリティ・キャッシュ・リアルタイム通信・PWAまで、Webのしくみを4択で身につけます。難易度ごとに絞って練習できます。略語の意味は、下の「この道場に出てくる略語」と各問題の解説にあります。</p>
     <nav class="site-nav" aria-label="Web道場のページ">
       <span aria-current="page">道場</span>
       <a href="reference.html">Web用語帳</a>
@@ -764,6 +794,60 @@
       </div>
       <div class="unit-list" id="unitList" role="group" aria-labelledby="unitHeading"></div>
       <p class="hint">右の数字は、これまでの正答率と挑戦回数です。5問以上答えて70%未満の単元に「苦手」がつきます。</p>
+      <details class="abbr-list">
+        <summary>この道場に出てくる略語</summary>
+        <ul>
+          <li><b>TCP/IP</b>(Transmission Control Protocol/Internet Protocol、インターネットの通信の決まり)</li>
+          <li><b>TCP</b>(Transmission Control Protocol、確実に届ける決まり)</li>
+          <li><b>UDP</b>(User Datagram Protocol、確認なしで送る決まり)</li>
+          <li><b>NAT</b>(Network Address Translation、アドレス変換)</li>
+          <li><b>CIDR</b>(Classless Inter-Domain Routing、アドレス範囲の書き方)</li>
+          <li><b>URL</b>(Uniform Resource Locator、Web上の住所)</li>
+          <li><b>DNS</b>(Domain Name System、名前からアドレスを引く仕組み)</li>
+          <li><b>TTL</b>(Time To Live、有効期間)</li>
+          <li><b>CNAME</b>(Canonical Name、正式な名前への別名)</li>
+          <li><b>HTTP</b>(HyperText Transfer Protocol、Webの通信の決まり)</li>
+          <li><b>HTTPS</b>(HyperText Transfer Protocol Secure、暗号化したWebの通信)</li>
+          <li><b>HTML</b>(HyperText Markup Language、ページの中身を書く言語)</li>
+          <li><b>DOCTYPE</b>(document type、文書の種類の宣言)</li>
+          <li><b>CSS</b>(Cascading Style Sheets、見た目を指定する言語)</li>
+          <li><b>DOM</b>(Document Object Model、ページの木構造)</li>
+          <li><b>CSSOM</b>(CSS Object Model、スタイルの木構造)</li>
+          <li><b>JS</b>(JavaScript、Webで動くプログラム言語)</li>
+          <li><b>JSON</b>(JavaScript Object Notation、データを書く形式)</li>
+          <li><b>YAML</b>(YAML Ain&#x27;t Markup Language、読み書きしやすいデータ形式)</li>
+          <li><b>API</b>(Application Programming Interface、プログラムの窓口)</li>
+          <li><b>REST</b>(Representational State Transfer、Webに沿った設計の考え方)</li>
+          <li><b>CRUD</b>(Create, Read, Update, Delete、作成・読み取り・更新・削除)</li>
+          <li><b>JWT</b>(JSON Web Token、署名付きのトークン)</li>
+          <li><b>OAuth</b>(Open Authorization に由来する名前、権限をゆずる仕組み)</li>
+          <li><b>PKCE</b>(Proof Key for Code Exchange、認可コードの横取り対策)</li>
+          <li><b>OIDC</b>(OpenID Connect、ログインした人を伝える仕組み)</li>
+          <li><b>TLS</b>(Transport Layer Security、通信を暗号化する決まり)</li>
+          <li><b>XSS</b>(Cross-Site Scripting、スクリプトを埋め込む攻撃)</li>
+          <li><b>CSRF</b>(Cross-Site Request Forgery、なりすましリクエストの攻撃)</li>
+          <li><b>SQLi</b>(SQL injection、問い合わせを書きかえる攻撃)</li>
+          <li><b>CORS</b>(Cross-Origin Resource Sharing、別オリジンからの読み取り許可)</li>
+          <li><b>CSP</b>(Content Security Policy、読み込み元の制限)</li>
+          <li><b>ETag</b>(Entity Tag、内容の版を表す目印)</li>
+          <li><b>CDN</b>(Content Delivery Network、各地から配信する仕組み)</li>
+          <li><b>LCP</b>(Largest Contentful Paint、最大の要素が出るまでの時間)</li>
+          <li><b>INP</b>(Interaction to Next Paint、操作への反応の時間)</li>
+          <li><b>CLS</b>(Cumulative Layout Shift、レイアウトのずれ)</li>
+          <li><b>a11y</b>(accessibility の a と y の間の11文字を数字にした書き方、アクセシビリティ)</li>
+          <li><b>SEO</b>(Search Engine Optimization、検索エンジン最適化)</li>
+          <li><b>ARIA</b>(Accessible Rich Internet Applications、支援技術向けの属性)</li>
+          <li><b>SSE</b>(Server-Sent Events、サーバーからの送り続け)</li>
+          <li><b>WebRTC</b>(Web Real-Time Communication、ブラウザどうしの直接通信)</li>
+          <li><b>LB</b>(Load Balancer、負荷分散装置)</li>
+          <li><b>SPA</b>(Single Page Application、1枚のページで動くアプリ)</li>
+          <li><b>SSR</b>(Server-Side Rendering、サーバーでの組み立て)</li>
+          <li><b>SSG</b>(Static Site Generation、前もってページを作る方式)</li>
+          <li><b>npm</b>(Node Package Manager に由来する名前、JavaScriptのパッケージ管理)</li>
+          <li><b>PWA</b>(Progressive Web App、アプリのように使えるWeb)</li>
+        </ul>
+        <p class="hint">ほかの略語は、各問題の解説と <a href="reference.html">Web用語帳</a> で説明しています。</p>
+      </details>
     </div>
 
     <div class="start-bar">
