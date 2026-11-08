@@ -806,7 +806,7 @@
     // 文字の表示
     const j = jst(state.t);
     const sa = Math.round(sunH.alt);
-    document.getElementById("timeLabel").innerHTML = j.mo + "/" + j.d + " " + j.h + ":" + p2(j.mi) + " JST<br>太陽高度 " + (sa < 0 ? "−" + (-sa) : sa) + "°";
+    document.getElementById("timeLabel").innerHTML = j.mo + "/" + j.d + " " + j.h + ":" + p2(j.mi) + " 日本時間<br>太陽高度 " + (sa < 0 ? "−" + (-sa) : sa) + "°";
     updateSelInfo(date, lst);
   }
 
